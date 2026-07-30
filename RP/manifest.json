@@ -1,10 +1,10 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Instant Auto Farms [Resources]",
-    "description": "Resources for Instant Auto Farms - structure build tool icon and text.",
-    "uuid": "85ac97cf-7639-492d-a925-6d2a9ccfb052",
-    "version": [3, 0, 0],
+    "name": "Fieldforge [Resources]",
+    "description": "Resources for Fieldforge - structure build tool icon and text.",
+    "uuid": "cecbd834-9ecd-4d8b-9a84-50375d1d318f",
+    "version": [1, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
   "metadata": {
@@ -13,8 +13,8 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "dd5324eb-be96-44ab-9f93-08ee89f05754",
-      "version": [3, 0, 0]
+      "uuid": "13ab810a-ce64-4b00-bb72-ea25fd2b3450",
+      "version": [1, 0, 0]
     }
   ]
 }
