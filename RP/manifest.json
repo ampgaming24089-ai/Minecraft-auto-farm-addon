@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Buildworks [Resources]",
-    "description": "Resources for Buildworks - structure build tool icon and text.",
-    "uuid": "6fcd3d1e-ac01-446b-985e-97a0d32cf428",
+    "name": "Grovecraft [Resources]",
+    "description": "Resources for Grovecraft - structure build tool icon and text.",
+    "uuid": "b16d6f8d-b8af-4fea-aeaf-9aa606d7c8d6",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
@@ -13,7 +13,7 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "52e19489-e2e3-46e2-b254-848d44a87766",
+      "uuid": "10a15aa9-f2cf-4f7d-a215-e8e031ce87db",
       "version": [1, 0, 0]
     }
   ]

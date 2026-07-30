@@ -1,10 +1,10 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Buildworks [Behavior]",
+    "name": "Grovecraft [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
-    "uuid": "e0165c8f-93d4-4124-9ce7-93b35a150602",
-    "version": [1, 0, 1],
+    "uuid": "6163e766-230c-4f4c-bbb4-37e0d0e93958",
+    "version": [1, 0, 0],
     "min_engine_version": [1, 21, 90]
   },
   "metadata": {
@@ -13,13 +13,13 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "faf16dd3-af18-4781-b44a-7aedc90583af",
-      "version": [1, 0, 1]
+      "uuid": "17a348ad-ea41-4d91-9946-936efbc301f2",
+      "version": [1, 0, 0]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "0f6750c9-454a-4d87-b037-3db40cfd17e9",
+      "uuid": "de430607-2f48-4c21-a99e-e783e3aabe40",
       "version": [1, 0, 0],
       "entry": "scripts/main.js"
     }
@@ -34,7 +34,7 @@
       "version": "2.1.0"
     },
     {
-      "uuid": "6fcd3d1e-ac01-446b-985e-97a0d32cf428",
+      "uuid": "b16d6f8d-b8af-4fea-aeaf-9aa606d7c8d6",
       "version": [1, 0, 0]
     }
   ]
