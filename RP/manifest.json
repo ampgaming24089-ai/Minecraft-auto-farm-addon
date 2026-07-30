@@ -1,0 +1,17 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Auto Farm Addon [RP]",
+    "description": "Resources for the Auto Farm Addon - structure build tool icon and text.",
+    "uuid": "a907c265-45ab-4054-9c2d-ddc5075a3404",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 21, 60]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "c9afff71-3e68-45da-baf8-2f524b688172",
+      "version": [1, 0, 0]
+    }
+  ]
+}

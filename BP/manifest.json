@@ -1,0 +1,38 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Auto Farm Addon [BP]",
+    "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
+    "uuid": "4f608abf-b5c7-4efb-92b6-7a4ccda6b14f",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 21, 60]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "f2e3d6ff-1278-4a40-889a-90178cb327f2",
+      "version": [1, 0, 0]
+    },
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "6ff1ca51-6a96-4e03-b3af-c5d5f72eb8ed",
+      "version": [1, 0, 0],
+      "entry": "scripts/main.js"
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "1.17.0"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "1.3.0"
+    },
+    {
+      "uuid": "a907c265-45ab-4054-9c2d-ddc5075a3404",
+      "version": [1, 0, 0]
+    }
+  ]
+}
