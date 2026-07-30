@@ -2,8 +2,11 @@
   "resource_pack_name": "auto_farm_addon",
   "texture_name": "atlas.items",
   "texture_data": {
-    "autofarm_build_tool": {
-      "textures": "textures/items/structure_tool"
+    "autofarm_iron_beacon": {
+      "textures": "textures/items/iron_beacon"
+    },
+    "autofarm_crop_beacon": {
+      "textures": "textures/items/crop_beacon"
     }
   }
 }

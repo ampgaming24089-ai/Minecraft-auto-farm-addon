@@ -1,4 +1,11 @@
-item.autofarm:build_tool.name=Structure Build Tool
+item.autofarm:iron_beacon_1.name=Iron Farm Beacon (1 Level)
+item.autofarm:iron_beacon_2.name=Iron Farm Beacon (2 Levels)
+item.autofarm:iron_beacon_3.name=Iron Farm Beacon (3 Levels)
+item.autofarm:iron_beacon_4.name=Iron Farm Beacon (4 Levels)
+item.autofarm:crop_beacon_1.name=Crop Farm Beacon (1 Level)
+item.autofarm:crop_beacon_2.name=Crop Farm Beacon (2 Levels)
+item.autofarm:crop_beacon_3.name=Crop Farm Beacon (3 Levels)
+item.autofarm:crop_beacon_4.name=Crop Farm Beacon (4 Levels)
 
 pack.name=Instant Auto Farms [Resources]
-pack.description=Resources for Instant Auto Farms - structure build tool icon and text.
+pack.description=Resources for Instant Auto Farms - beacon item icons and text.

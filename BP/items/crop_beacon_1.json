@@ -1,0 +1,36 @@
+{
+  "format_version": "1.21.60",
+  "minecraft:item": {
+    "description": {
+      "identifier": "autofarm:crop_beacon_1",
+      "menu_category": {
+        "category": "equipment",
+        "group": "itemGroup.name.tool"
+      }
+    },
+    "components": {
+      "minecraft:max_stack_size": 8,
+      "minecraft:hand_equipped": true,
+      "minecraft:glint": true,
+      "minecraft:icon": {
+        "texture": "autofarm_crop_beacon"
+      },
+      "minecraft:display_name": {
+        "value": "item.autofarm:crop_beacon_1.name"
+      },
+      "minecraft:on_use": {
+        "event": "autofarm:build_crop_1",
+        "target": "self"
+      }
+    },
+    "events": {
+      "autofarm:build_crop_1": {
+        "run_command": {
+          "command": [
+            "function crop_farm/level1"
+          ]
+        }
+      }
+    }
+  }
+}
