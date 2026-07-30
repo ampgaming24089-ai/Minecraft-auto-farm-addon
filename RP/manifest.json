@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Aetherworks [Resources]",
-    "description": "Resources for Aetherworks - structure build tool icon and text.",
-    "uuid": "61ceeb6e-2407-4eaa-a6bf-9de055d8f7c6",
+    "name": "Blockspire [Resources]",
+    "description": "Resources for Blockspire - structure build tool icon and text.",
+    "uuid": "c6cef62d-bd1b-41e1-b148-1917ca431365",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
@@ -13,7 +13,7 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "49225b6e-c57c-4bb4-984c-54e6868e41b9",
+      "uuid": "9dc70c25-bf7a-4b78-a29b-7af46b1419b0",
       "version": [1, 0, 0]
     }
   ]
