@@ -1,10 +1,10 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Grovecraft [Behavior]",
+    "name": "Aetherworks [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
-    "uuid": "6163e766-230c-4f4c-bbb4-37e0d0e93958",
-    "version": [1, 0, 1],
+    "uuid": "515171da-363b-49b2-9c37-cc08825f74d9",
+    "version": [1, 0, 0],
     "min_engine_version": [1, 21, 90]
   },
   "metadata": {
@@ -13,13 +13,13 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "17a348ad-ea41-4d91-9946-936efbc301f2",
-      "version": [1, 0, 1]
+      "uuid": "1b4de076-ab39-4574-8491-44cf99e967ba",
+      "version": [1, 0, 0]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "de430607-2f48-4c21-a99e-e783e3aabe40",
+      "uuid": "e2a2db72-64fe-4ded-980d-285dee2bfc34",
       "version": [1, 0, 0],
       "entry": "scripts/main.js"
     }
@@ -34,7 +34,7 @@
       "version": "2.1.0"
     },
     {
-      "uuid": "b16d6f8d-b8af-4fea-aeaf-9aa606d7c8d6",
+      "uuid": "61ceeb6e-2407-4eaa-a6bf-9de055d8f7c6",
       "version": [1, 0, 0]
     }
   ]

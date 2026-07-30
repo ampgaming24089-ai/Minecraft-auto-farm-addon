@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Grovecraft [Resources]",
-    "description": "Resources for Grovecraft - structure build tool icon and text.",
-    "uuid": "b16d6f8d-b8af-4fea-aeaf-9aa606d7c8d6",
+    "name": "Aetherworks [Resources]",
+    "description": "Resources for Aetherworks - structure build tool icon and text.",
+    "uuid": "61ceeb6e-2407-4eaa-a6bf-9de055d8f7c6",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
@@ -13,7 +13,7 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "10a15aa9-f2cf-4f7d-a215-e8e031ce87db",
+      "uuid": "49225b6e-c57c-4bb4-984c-54e6868e41b9",
       "version": [1, 0, 0]
     }
   ]
