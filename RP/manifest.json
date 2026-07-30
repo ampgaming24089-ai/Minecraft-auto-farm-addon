@@ -4,7 +4,7 @@
     "name": "Yieldworks [Resources]",
     "description": "Resources for Yieldworks - structure build tool icon and text.",
     "uuid": "0a16f630-9d61-44a9-babc-9e404cc1ac5a",
-    "version": [1, 0, 0],
+    "version": [1, 0, 1],
     "min_engine_version": [1, 21, 60]
   },
   "metadata": {
@@ -14,7 +14,7 @@
     {
       "type": "resources",
       "uuid": "da9913d4-8e6a-47c1-ab5c-1ebb4168c29b",
-      "version": [1, 0, 0]
+      "version": [1, 0, 1]
     }
   ]
 }
