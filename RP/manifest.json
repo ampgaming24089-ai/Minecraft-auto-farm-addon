@@ -7,6 +7,9 @@
     "version": [2, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
+  "metadata": {
+    "product_type": "addon"
+  },
   "modules": [
     {
       "type": "resources",

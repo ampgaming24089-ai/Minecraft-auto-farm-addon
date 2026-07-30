@@ -16,29 +16,45 @@ Includes two farms, both quad-stackable:
 ## Why this version exists (achievement compatibility)
 
 The first version of this addon used the `@minecraft/server` Script API to
-build farms dynamically from a menu. In testing, activating that pack
-immediately showed Minecraft's own **"You can't earn achievements"**
-dialog, listing *"An external behavior pack was activated"* as the reason —
-before any code even ran. That ruled out Script API entirely: on current
-Bedrock, a behavior pack that declares a `"type": "script"` module appears
-to disable achievements unconditionally, regardless of what the script
-does or whether cheats/experiments are on.
+build farms dynamically from a menu. Activating that pack immediately
+showed Minecraft's own **"You can't earn achievements"** dialog, listing
+*"An external behavior pack was activated"* as the reason.
 
-This version has **no `scripts/` folder and no script module in the
-manifest at all** — it's 100% data-driven (items, recipes, and vanilla
-`.mcfunction` command files, the same mechanism `/function` and command
-blocks use). Each of the 8 beacon items below directly triggers one
-`.mcfunction` file through a plain item-use event; nothing here requires
-cheats, experiments, or the Script API.
+The actual, documented cause: Bedrock disables achievements for any custom
+pack that's missing a specific manifest field —
 
-**Please treat this as unverified until you've tested it.** I can't run a
-Bedrock client myself, and the exact schema for "item triggers a command on
-use" (the `minecraft:on_use` component below) is the one piece I couldn't
-cross-check against a live game. If the beacon doesn't fire when used,
-that's almost certainly a small fix to that one component in
-`BP/items/*.json` — the actual farm layouts (everything the `.mcfunction`
-files do) were validated independently and don't depend on that part being
-right.
+```json
+"metadata": {
+  "product_type": "addon"
+}
+```
+
+— placed alongside `"header"`/`"modules"` in `manifest.json`. Without it,
+Minecraft treats the pack as a potential "cheat world" and blocks
+achievements regardless of what the pack actually does. **Both**
+`BP/manifest.json` and `RP/manifest.json` now include this field. This is
+also almost certainly why community packs like Force Creative-style addons
+stay achievement-friendly despite doing far more invasive things than this
+addon does.
+
+Separately, this version was also rewritten to be **100% data-driven — no
+`scripts/` folder, no script module in the manifest at all.** Farms build
+through items, recipes, and vanilla `.mcfunction` command files (the same
+mechanism `/function` and command blocks use) instead of the Script API.
+That change was a reasonable precaution at the time and isn't being
+reverted, but the `metadata.product_type` field above is the fix that
+actually matters — if you'd rather have the fancier dynamic-menu,
+live-outline-preview version back now that the real cause is known, say so
+and I'll restore it with this field included.
+
+**Please treat the item-trigger mechanism as unverified until you've
+tested it.** I can't run a Bedrock client myself, and the exact schema for
+"item triggers a command on use" (the `minecraft:on_use` component below)
+is the one piece I couldn't cross-check against a live game. If the beacon
+doesn't fire when used, that's almost certainly a small fix to that one
+component in `BP/items/*.json` — the actual farm layouts (everything the
+`.mcfunction` files do) were validated independently and don't depend on
+that part being right.
 
 ## Install
 
