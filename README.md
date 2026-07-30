@@ -109,10 +109,14 @@ builder shared screenshots of, rather than my own from-scratch layouts:
   `"minecraft:lava"` placements in `ironFarm.js` for `"minecraft:magma"` if
   you'd rather have zero loot loss than match the reference exactly.
 - **Crop farm is a pinwheel now, not paired plots.** 4 farmer quadrants
-  around one central collector pit, no minecarts/rails/trapdoors — just a
-  short (1-block-high) wall around the pit, low enough for a farmer
-  standing outside to reach over and share food, tall enough that the
-  caged collector can't walk out, with a hopper floor underneath.
+  around one central collector pit, with a short (1-block-high) wall around
+  the pit — low enough for a farmer standing outside to reach over and
+  share food, tall enough that the caged collector can't walk out. (An
+  earlier version of this redesign dropped the hopper-minecart collection
+  entirely in favor of a bare hopper floor; the reference design's screenshot
+  clearly shows rail and parked minecarts in the pit, so those are back —
+  a hopper under every tile, rail on top, and a parked hopper minecart on
+  the 8 tiles around the collector.)
 
 ## Achievement compatibility (read this first)
 
@@ -156,8 +160,8 @@ the version to test.
    or zip the `BP/` and `RP/` folders together yourself.
 2. Send that `.mcaddon` file to your device and open it — Minecraft will
    import both packs.
-3. In your world settings, add **both** **Pinwheel Farms [Behavior]**
-   *and* **Pinwheel Farms [Resources]** — under their respective
+3. In your world settings, add **both** **Millstone Farms [Behavior]**
+   *and* **Millstone Farms [Resources]** — under their respective
    Behavior Packs / Resource Packs tabs. Adding only one is a common
    mistake and shows up as items with no icon and a raw
    `item.autofarm:...name` name instead of proper text/art, since that
@@ -220,15 +224,16 @@ composter placed directly on top of it — hydrates the whole quadrant and
 serves as that farmer's job site in one tile — with glowstone above for
 light. The collector's pit has a 1-block-high stone brick wall: tall
 enough that the collector can't walk out, short enough that a farmer
-standing right outside can reach over and share surplus food with it. That
-share attempt drops food into the pit, where a 3x3 hopper floor catches it
-and funnels it out to the shared collection chest — no minecarts, rails,
-or trapdoors needed. This is a documented, real Bedrock design (matching a
-specific, widely-used reference tutorial), not an invented one — but it's
-still real (and therefore somewhat unpredictable) villager AI, so give it
-real time before judging it broken. Like the mob farm, this one isn't
-stacked — each of the 1-4 you build is a complete, independent 4-farmer
-pinwheel on the ground, 10 blocks from the next one.
+standing right outside can reach over and share surplus food with it. A
+hopper sits under all 9 pit tiles, with rail and a parked hopper minecart
+on the 8 tiles around the collector's own spot — that share attempt drops
+food onto whichever minecart is nearest, and the hopper below drains it
+out to the shared collection chest. This is a documented, real Bedrock
+design (matching a specific, widely-used reference tutorial), not an
+invented one — but it's still real (and therefore somewhat unpredictable)
+villager AI, so give it real time before judging it broken. Like the mob
+farm, this one isn't stacked — each of the 1-4 you build is a complete,
+independent 4-farmer pinwheel on the ground, 10 blocks from the next one.
 
 **Passive Mob Farm** — An open, heavily-lit grass platform where cows,
 pigs, sheep, and chickens naturally spawn and graze over time (no

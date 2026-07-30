@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Pinwheel Farms [Resources]",
-    "description": "Resources for Pinwheel Farms - structure build tool icon and text.",
-    "uuid": "c9578345-ff29-4d13-9ade-75db73a13dd8",
+    "name": "Millstone Farms [Resources]",
+    "description": "Resources for Millstone Farms - structure build tool icon and text.",
+    "uuid": "a05f76b0-db12-4e0e-84b9-53d936e4e8d3",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
@@ -13,7 +13,7 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "8ddb6f4d-bfaf-41a1-9d9d-5f5e340adf57",
+      "uuid": "fd05b5cd-76f3-49df-bd5f-f1f4f8f5c9bd",
       "version": [1, 0, 0]
     }
   ]

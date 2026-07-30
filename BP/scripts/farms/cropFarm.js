@@ -10,9 +10,10 @@ import { rotateDirection } from "../lib/geometry.js";
  * The collector ("beggar") villager stands in that center pit; every
  * farmer works their own quadrant and, when their inventory fills up,
  * walks to the pit's edge and tries to share surplus food with the caged
- * villager across a short (1-block-high) wall. No minecarts, rails, or
- * trapdoors needed — a hopper floor under the pit itself catches whatever
- * gets tossed in or dropped nearby.
+ * villager across a short (1-block-high) wall. Rail + parked hopper
+ * minecarts cover the pit floor (the reference design uses them, not a
+ * bare hopper floor), with the collector standing on the one tile without
+ * a minecart parked on it.
  *
  *  - Farmland quadrants: 9x9 each, farmers won't work land more than ~4
  *    blocks from their composter, so a composter centered in each 9x9
@@ -24,8 +25,10 @@ import { rotateDirection } from "../lib/geometry.js";
  *  - Center pit: a 1-block-high stone brick wall around a 3x3 floor —
  *    tall enough to fully contain the collector villager (it can't jump
  *    it), short enough that a farmer standing right outside can still
- *    reach over to share food with it. A 3x3 hopper floor catches
- *    whatever lands there and funnels it out to the shared chest.
+ *    reach over to share food with it. A hopper under every tile, rail on
+ *    top, and a parked hopper minecart on each of the 8 tiles around the
+ *    collector catch whatever lands there and funnel it out to the shared
+ *    chest.
  *  - No roof: open and heavily lit like the other farms here.
  *
  * Local space per unit: x 0-22 (width), z 0-22 (depth), y 0-4. Units
@@ -80,7 +83,7 @@ function planUnit(dx, facing) {
   // Center pit: red sandstone floor under the whole gap (decorative, matches
   // the reference design's path), a 1-high stone brick wall ring around the
   // 3x3 interior (tall enough to contain the collector, short enough for
-  // farmers outside to reach over it), and a hopper floor inside.
+  // farmers outside to reach over it).
   parts.push(box([PIT_MIN, 0, PIT_MIN], [PIT_MAX, 0, PIT_MAX], "minecraft:red_sandstone"));
   parts.push(box([PIT_MIN, 1, PIT_MIN], [PIT_MAX, 1, PIT_MIN], "minecraft:stone_bricks"));
   parts.push(box([PIT_MIN, 1, PIT_MAX], [PIT_MAX, 1, PIT_MAX], "minecraft:stone_bricks"));
@@ -89,8 +92,12 @@ function planUnit(dx, facing) {
   parts.push(block(11, 2, 11, "minecraft:glowstone"));
   spawns.push({ x: 11, y: 1, z: 11, typeId: "minecraft:villager" });
 
-  // 3x3 hopper floor, funneled toward the center tile then straight down
-  // into the shared external collection line (built once in plan()).
+  // 3x3 hopper floor funneled toward the center tile then straight down
+  // into the shared external collection line (built once in plan()). Rail
+  // + a parked hopper minecart sit on top of the 8 tiles around the
+  // collector (not the collector's own center tile) — matching the
+  // reference design, this is what actually catches food farmers toss in,
+  // with the hopper below draining whatever the minecart catches.
   const east = rotateDirection("east", facing);
   const west = rotateDirection("west", facing);
   const north = rotateDirection("north", facing);
@@ -104,6 +111,10 @@ function planUnit(dx, facing) {
   parts.push(block(10, 0, 11, "minecraft:hopper", { facing_direction: HOPPER_FACING[east] }));
   parts.push(block(12, 0, 11, "minecraft:hopper", { facing_direction: HOPPER_FACING[west] }));
   parts.push(block(11, 0, 11, "minecraft:hopper", { facing_direction: HOPPER_FACING.down }));
+  for (const [px, pz] of [[10, 10], [12, 10], [10, 12], [12, 12], [11, 10], [11, 12], [10, 11], [12, 11]]) {
+    parts.push(block(px, 1, pz, "minecraft:rail"));
+    spawns.push({ x: px, y: 1, z: pz, typeId: "minecraft:hopper_minecart" });
+  }
 
   // Lighting: perimeter sea lanterns, no roof.
   for (const [x, z] of [[0, 11], [22, 11], [11, 0], [11, 22]]) {
@@ -135,7 +146,7 @@ function planSpine(levels, facing) {
 export const CropFarm = {
   id: "crop_farm",
   name: "Auto Crop Farm",
-  shortDescription: "4 farmers + 1 collector per pinwheel unit, hopper-floor collection.",
+  shortDescription: "4 farmers + 1 collector per pinwheel unit, hopper-minecart pit collection.",
   size: SIZE,
   levelSpacing: LEVEL_SPACING,
   maxLevels: MAX_LEVELS,
