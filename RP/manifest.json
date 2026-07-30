@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hammerstead [Resources]",
-    "description": "Resources for Hammerstead - structure build tool icon and text.",
-    "uuid": "5c2c2402-5e10-4613-919c-d741fdc95a7a",
+    "name": "CraftForge Instant Builds [Resources]",
+    "description": "Resources for CraftForge Instant Builds - structure build tool icon and text.",
+    "uuid": "f708302b-9501-47ea-b337-8b849d28f69f",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
@@ -13,7 +13,7 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "02fad26a-e650-4e47-9095-db6c749b8254",
+      "uuid": "6f4542e8-9420-456c-bf2d-7e30af028225",
       "version": [1, 0, 0]
     }
   ]
