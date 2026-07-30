@@ -141,7 +141,7 @@ function* buildJob(dimension, origin, facing, placements, spawns, player) {
   busyPlayers.delete(player.id);
   try {
     player.onScreenDisplay.setTitle("§aBuild Complete!", {
-      subtitle: "Check the corner rooms and the base chest.",
+      subtitle: "Check each level for its chest — collection is per-floor.",
       fadeInDuration: 10,
       stayDuration: 100,
       fadeOutDuration: 20,

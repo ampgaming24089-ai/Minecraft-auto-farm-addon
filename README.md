@@ -22,16 +22,34 @@ Bedrock's real requirement for iron golems to spawn at all is **20 beds and
 last in-game day** — much bigger than most people assume, and far bigger
 than earlier versions of this addon used (which is why golems never spawned
 and "water doesn't push them" was moot — there was nothing to push). Each
-level here has 6 beds + 6 composters in one open hall, so:
+level here is a full village on its own: **20 beds + 20 composters** in two
+open rows of 10, comfortably over the minimum by itself.
 
-- **4 levels = 24 beds / 24 villagers** — comfortably over the minimum.
-- **1-3 levels may not reliably spawn golems at all.** This farm is only
-  guaranteed to work built at full height. "Difficult to stack" is a
-  reflection of the real mechanic, not a limitation of the addon — a
-  legitimate Bedrock village is inherently large.
+That raises a second, separate mechanic: **Bedrock merges two villages into
+one if their bounds come within 64 blocks of each other**, and a merged
+village shares a single golem population cap (**1 golem per 10 villagers**
+— so a 20-villager village caps at 2 concurrent golems, no matter how big it
+is). Stack levels close together and you don't get more golems by adding
+more floors — you just get one bigger village still capped at 2. To make
+every floor genuinely independent (its own village, its own 2-golem cap),
+**levels here are spaced 80 blocks apart**, clearing the 64-block merge
+threshold with real margin. That means:
+
+- **4 levels = 4 independent villages = up to 8 concurrent golems**, not 2.
+- **The trade-off is height.** A 4-level build is roughly **250 blocks
+  tall.** There is no way to get real independent per-floor spawn caps
+  without that vertical separation — it's a direct consequence of the
+  mechanic, not a shortcut I could design around.
+- **Collection is per-level, not shared.** A hopper shaft spanning 250
+  blocks would take real minutes for a single item to reach the bottom, so
+  each level drops into its own double chest right next to its own kill
+  trench. Check every level's chest, not just the bottom one.
+- **1-3 levels may not reliably spawn golems at all** if you don't fill
+  every level's beds. This farm is only guaranteed to work with every
+  built level fully populated (20/20 beds).
 - **Build it away from any existing village** (100+ blocks is a commonly
-  cited safe distance). A nearby real village can interfere with golem
-  population caps and bed/door linking for this one.
+  cited safe distance) — a nearby real village can merge with your bottom
+  level and throw off its cap too.
 
 ## Achievement compatibility (read this first)
 
@@ -75,8 +93,8 @@ the version to test.
    or zip the `BP/` and `RP/` folders together yourself.
 2. Send that `.mcaddon` file to your device and open it — Minecraft will
    import both packs.
-3. In your world settings, add **both** **Villagecraft [Behavior]**
-   *and* **Villagecraft [Resources]** — under their respective
+3. In your world settings, add **both** **Farmtopia [Behavior]**
+   *and* **Farmtopia [Resources]** — under their respective
    Behavior Packs / Resource Packs tabs. Adding only one is a common
    mistake and shows up as items with no icon and a raw
    `item.autofarm:...name` name instead of proper text/art, since that
@@ -106,20 +124,25 @@ clicked, snapped to the nearest cardinal direction.
 Nothing here is scripted loot or fake spawns — every drop comes from real
 vanilla AI and physics:
 
-**Iron Farm** — An open hall of 6 beds facing 6 composters lets villagers
-freely path between sleeping and working, which is what actually keeps
-them counted as valid village members (sealing them in isolated pods, the
-original design, silently broke this). A caged zombie is visible/near
-enough to raise the village's "under attack" state, which vanilla uses to
-increase golem spawn urgency. Golems spawn on the walled platform above
-(inside the village bounds), get walked into a 2-wide center drain by a
-real inward water current (a full perimeter ring of water sources, not a
-handful of scattered points — that's what actually creates a connected
-current toward the only low point instead of disconnected puddles), fall
-down the shaft onto a magma-block trench, and take real damage-over-time
-until they die. A water current in the trench sweeps the drops into a
-hopper. Magma, not lava, is deliberate: lava sets dropped items on fire and
-destroys them — magma damages the golem without touching the loot.
+**Iron Farm** — Two open rows of 10 beds facing 10 composters each (20 of
+each per level) let villagers freely path between sleeping and working,
+which is what actually keeps them counted as valid village members
+(sealing them in isolated pods, an earlier design, silently broke this).
+Levels are spaced 80 blocks apart vertically — past Bedrock's 64-block
+village-merge distance — so each level is its own independent village with
+its own golem population cap, instead of every floor merging into one
+shared-cap village. A caged zombie on each level is visible/near enough to
+raise that village's "under attack" state, which vanilla uses to increase
+golem spawn urgency. Golems spawn on the walled platform above (inside the
+village bounds), get walked into a 2-wide center drain by a real inward
+water current (a full perimeter ring of water sources, not a handful of
+scattered points — that's what actually creates a connected current toward
+the only low point instead of disconnected puddles), fall down the shaft
+onto a magma-block trench, and take real damage-over-time until they die.
+A water current in the trench sweeps the drops into a hopper feeding that
+level's own chest. Magma, not lava, is deliberate: lava sets dropped items
+on fire and destroys them — magma damages the golem without touching the
+loot.
 
 **Crop Farm** — Two farmer villagers, each in their own 8x8 plot (farmers
 won't work land more than ~4 blocks from their composter, so a wider plot
@@ -137,9 +160,12 @@ documented, real Bedrock design, not an invented one — but it's still real
 (and therefore somewhat unpredictable) villager AI, so give it real time
 before judging it broken.
 
-Both farms funnel every level's output into one shared external hopper
+The crop farm funnels every level's output into one shared external hopper
 shaft, ending in a double chest at ground level right next to the tower —
-not buried, so it's immediately visible without digging.
+not buried, so it's immediately visible without digging. The iron farm is
+different: because its levels are 80 blocks apart (see above), each level
+gets its **own** double chest right next to its own kill trench instead of
+one shared shaft — check every level, not just the bottom.
 
 ## Known limitations / tuning tips
 
@@ -188,17 +214,21 @@ not buried, so it's immediately visible without digging.
   nearby foliage. If you have a specific source suggesting otherwise I'm
   happy to look into it, but I didn't want to add block placements based
   on a mechanic I can't verify is real.
-- **Very tall stacks (4 levels)** mean the bottom level's items travel
-  through a long hopper chain to reach the base chest. This is normal
-  vanilla hopper transfer speed, not a bug — expect a short delay, not data
-  loss (hoppers buffer 5 stacks each).
+- **Very tall crop farm stacks (4 levels)** mean the bottom level's items
+  travel through a long hopper chain to reach the shared base chest. This
+  is normal vanilla hopper transfer speed, not a bug — expect a short
+  delay, not data loss (hoppers buffer 5 stacks each). The iron farm
+  doesn't have this issue since each level collects into its own chest.
 - **Build site**: the tool clears a generous interior volume before
   building, but doesn't touch anything outside the farm's own footprint.
   Build on relatively flat ground, away from any existing village (see
-  above), with clearance above for a 4-level stack — roughly 46 blocks tall
-  for the iron farm (15x15 footprint), 34 tall for the crop farm (23x10
-  footprint, since it's two 8x8 plots side by side rather than stacked
-  around a center).
+  above), with clearance above for a 4-level stack — the iron farm is
+  roughly **250 blocks tall** at 4 levels (15x15 footprint; the height
+  comes directly from the 80-block per-floor spacing needed for
+  independent village golem caps, not padding), while the crop farm is
+  34 blocks tall (23x10 footprint, since it's two 8x8 plots side by side
+  rather than stacked around a center). Check your build height limit
+  before attempting a 4-level iron farm.
 - Module/engine versions in `BP/manifest.json` are set to reasonably recent
   values; if your Minecraft version is newer, update them per Mojang's
   Script API changelog.

@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Villagecraft [Resources]",
-    "description": "Resources for Villagecraft - structure build tool icon and text.",
-    "uuid": "5eef5fba-ffa7-4aa2-95d6-2e4592666f4d",
+    "name": "Farmtopia [Resources]",
+    "description": "Resources for Farmtopia - structure build tool icon and text.",
+    "uuid": "0d050a65-e727-4454-a4bc-d437601ab1b2",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
@@ -13,7 +13,7 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "a412cbda-1aa3-448f-a51d-f9da21dd449b",
+      "uuid": "84cbd554-970d-410d-8edd-1b52257479f0",
       "version": [1, 0, 0]
     }
   ]

@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Villagecraft [Behavior]",
+    "name": "Farmtopia [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
-    "uuid": "b3da5124-d576-44af-8b69-3242c85afa97",
+    "uuid": "02059b69-55db-49f8-ae00-dae9bb1d6f33",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 90]
   },
@@ -13,13 +13,13 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "353f93a4-4d99-4f23-a99b-2afdc99bcfd6",
+      "uuid": "e1eedf1a-0aa8-4764-97dc-f31c569fbc13",
       "version": [1, 0, 0]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "b2680f7f-68ac-45f0-8866-f6897f8403ac",
+      "uuid": "fa595d10-2426-4112-a170-7e4cfc50d27b",
       "version": [1, 0, 0],
       "entry": "scripts/main.js"
     }
@@ -34,7 +34,7 @@
       "version": "2.1.0"
     },
     {
-      "uuid": "5eef5fba-ffa7-4aa2-95d6-2e4592666f4d",
+      "uuid": "0d050a65-e727-4454-a4bc-d437601ab1b2",
       "version": [1, 0, 0]
     }
   ]
