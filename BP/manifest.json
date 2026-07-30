@@ -4,7 +4,7 @@
     "name": "Fieldforge [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
     "uuid": "d6ce2f85-1644-48d8-a43a-67e4936c30d4",
-    "version": [1, 0, 0],
+    "version": [1, 0, 1],
     "min_engine_version": [1, 21, 60]
   },
   "metadata": {
@@ -14,7 +14,7 @@
     {
       "type": "data",
       "uuid": "d8f60b36-f368-40d4-81a1-b9dc2b1386f6",
-      "version": [1, 0, 0]
+      "version": [1, 0, 1]
     },
     {
       "type": "script",

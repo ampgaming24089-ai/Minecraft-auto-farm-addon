@@ -13,7 +13,9 @@
       "minecraft:hand_equipped": true,
       "minecraft:glint": true,
       "minecraft:icon": {
-        "texture": "autofarm_build_tool"
+        "textures": {
+          "default": "autofarm_build_tool"
+        }
       },
       "minecraft:display_name": {
         "value": "item.autofarm:build_tool.name"

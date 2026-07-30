@@ -108,6 +108,11 @@ shaft on the outside of the tower, ending in a double chest at the base.
 
 ## Known limitations / tuning tips
 
+- **Item icon uses `minecraft:icon` -> `textures.default`.** An earlier
+  version used the older `{"texture": "..."}` shorthand, which current
+  Bedrock docs list as deprecated and which showed up as a blank icon and
+  an unresolved `item.autofarm:build_tool` name in testing. Fixed in
+  `BP/items/structure_tool.json`.
 - **Bed and hopper orientation** are set programmatically and rotated to
   match the direction you built in; if a state value mapping doesn't match
   your game version exactly, the bed/hopper still functions — worst case
