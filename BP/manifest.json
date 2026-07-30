@@ -4,7 +4,7 @@
     "name": "Aetherworks [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
     "uuid": "515171da-363b-49b2-9c37-cc08825f74d9",
-    "version": [1, 0, 0],
+    "version": [1, 0, 1],
     "min_engine_version": [1, 21, 90]
   },
   "metadata": {
@@ -14,13 +14,13 @@
     {
       "type": "data",
       "uuid": "1b4de076-ab39-4574-8491-44cf99e967ba",
-      "version": [1, 0, 0]
+      "version": [1, 0, 1]
     },
     {
       "type": "script",
       "language": "javascript",
       "uuid": "e2a2db72-64fe-4ded-980d-285dee2bfc34",
-      "version": [1, 0, 0],
+      "version": [1, 0, 1],
       "entry": "scripts/main.js"
     }
   ],

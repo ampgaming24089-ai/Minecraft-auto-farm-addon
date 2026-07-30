@@ -12,11 +12,22 @@ const FARMS = [IronFarm, CropFarm];
 /** Players currently inside the menu/preview/build flow, so the tool can't be re-triggered mid-flow. */
 const busyPlayers = new Set();
 
-world.afterEvents.playerInteractWithBlock.subscribe((event) => {
-  const { player, itemStack, block, isFirstEvent } = event;
-  if (!isFirstEvent) return; // fires repeatedly while the interact button is held
-  if (!itemStack || itemStack.typeId !== TOOL_ID) return;
+// itemUse fires on every "use held item" action regardless of what's being
+// looked at, unlike playerInteractWithBlock, which mobile touch controls
+// only seem to dispatch for blocks the game already treats as interactive
+// (chests, doors, etc). We raycast for the targeted block ourselves so
+// plain terrain works too.
+world.afterEvents.itemUse.subscribe((event) => {
+  const { source: player, itemStack } = event;
+  if (itemStack.typeId !== TOOL_ID) return;
   if (busyPlayers.has(player.id)) return;
+
+  const hit = player.getBlockFromViewDirection({ maxDistance: 8 });
+  if (!hit) {
+    player.sendMessage("§cLook at a block within 8 blocks, then use the tool again.");
+    return;
+  }
+  const block = hit.block;
 
   const facing = get4DirFacing(player.getViewDirection());
   const origin = { x: block.location.x, y: block.location.y + 1, z: block.location.z };
