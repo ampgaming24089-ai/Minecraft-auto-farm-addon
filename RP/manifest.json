@@ -4,7 +4,7 @@
     "name": "CraftForge Instant Builds [Resources]",
     "description": "Resources for CraftForge Instant Builds - structure build tool icon and text.",
     "uuid": "f708302b-9501-47ea-b337-8b849d28f69f",
-    "version": [1, 0, 0],
+    "version": [1, 0, 1],
     "min_engine_version": [1, 21, 60]
   },
   "metadata": {
@@ -14,7 +14,7 @@
     {
       "type": "resources",
       "uuid": "6f4542e8-9420-456c-bf2d-7e30af028225",
-      "version": [1, 0, 0]
+      "version": [1, 0, 1]
     }
   ]
 }

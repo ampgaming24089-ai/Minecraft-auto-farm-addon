@@ -14,7 +14,7 @@
       "minecraft:glint": true,
       "minecraft:icon": {
         "textures": {
-          "default": "book_enchanted"
+          "default": "autofarm_build_tool_icon"
         }
       },
       "minecraft:display_name": {
