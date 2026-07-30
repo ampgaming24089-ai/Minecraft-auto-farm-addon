@@ -1,13 +1,14 @@
 import { world, system } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import { get4DirFacing, computeBounds } from "./lib/geometry.js";
-import { placeAll, spawnAll } from "./lib/builder.js";
+import { placeAll, spawnAll, fillContainers } from "./lib/builder.js";
 import { showOutline, clearOutline } from "./lib/outline.js";
 import { IronFarm } from "./farms/ironFarm.js";
 import { CropFarm } from "./farms/cropFarm.js";
+import { MobFarm } from "./farms/mobFarm.js";
 
 const TOOL_ID = "autofarm:build_tool";
-const FARMS = [IronFarm, CropFarm];
+const FARMS = [IronFarm, CropFarm, MobFarm];
 
 /** Players currently inside the menu/preview/build flow, so the tool can't be re-triggered mid-flow. */
 const busyPlayers = new Set();
@@ -60,7 +61,7 @@ async function openFarmMenu(player, origin, facing) {
 async function openLevelMenu(player, origin, facing, farm) {
   const form = new ModalFormData()
     .title(farm.name)
-    .slider("Stack height (levels)", 1, farm.maxLevels, { valueStep: 1, defaultValue: farm.maxLevels })
+    .slider(farm.levelLabel ?? "Stack height (levels)", 1, farm.maxLevels, { valueStep: 1, defaultValue: farm.maxLevels })
     .toggle("Show outline preview before building", { defaultValue: true });
 
   const response = await form.show(player);
@@ -75,7 +76,7 @@ async function openLevelMenu(player, origin, facing, farm) {
 
 /** @param {import("@minecraft/server").Player} player */
 async function confirmAndBuild(player, origin, facing, farm, levels, showPreview) {
-  const bounds = computeBounds(origin, farm.size, levels, farm.levelSpacing, facing);
+  const bounds = computeBounds(origin, farm.size, levels, farm.levelSpacing, facing, farm.stackAxis ?? "y");
 
   if (showPreview) {
     showOutline(player, bounds.min, bounds.max);
@@ -85,11 +86,12 @@ async function confirmAndBuild(player, origin, facing, farm, levels, showPreview
   const height = bounds.max.y - bounds.min.y + 1;
   const depth = bounds.max.z - bounds.min.z + 1;
 
+  const unitNoun = farm.unitNoun ?? "Level";
   const form = new ActionFormData()
     .title(`Confirm: ${farm.name}`)
     .body(
       `${farm.shortDescription}\n\n` +
-        `Levels: ${levels}\n` +
+        `${unitNoun}s: ${levels}\n` +
         `Footprint: ${width} x ${depth}\n` +
         `Height: ${height}\n\n` +
         (showPreview ? "The outline is now visible in the world. " : "") +
@@ -114,16 +116,17 @@ async function confirmAndBuild(player, origin, facing, farm, levels, showPreview
 
 function runBuild(player, origin, facing, farm, levels) {
   const dimension = player.dimension;
-  const { placements, spawns } = farm.plan({ levels, facing });
+  const { placements, spawns, fills } = farm.plan({ levels, facing });
 
-  player.sendMessage(`§aBuilding ${farm.name} (${levels} level${levels > 1 ? "s" : ""})...`);
+  const unitNoun = (farm.unitNoun ?? "level").toLowerCase();
+  player.sendMessage(`§aBuilding ${farm.name} (${levels} ${unitNoun}${levels > 1 ? "s" : ""})...`);
 
   system.runJob(
-    buildJob(dimension, origin, facing, placements, spawns, player)
+    buildJob(dimension, origin, facing, placements, spawns, fills ?? [], player)
   );
 }
 
-function* buildJob(dimension, origin, facing, placements, spawns, player) {
+function* buildJob(dimension, origin, facing, placements, spawns, fills, player) {
   yield* placeAll(dimension, origin, placements, facing, 300, (done, total) => {
     try {
       player.onScreenDisplay.setActionBar(`§bPlacing blocks: ${done}/${total}`);
@@ -131,8 +134,16 @@ function* buildJob(dimension, origin, facing, placements, spawns, player) {
       // Player may have logged off mid-build — the job continues regardless.
     }
   });
+  if (fills.length > 0) {
+    try {
+      player.onScreenDisplay.setActionBar("§bStocking fuel...");
+    } catch {
+      // Ignore — cosmetic only.
+    }
+    yield* fillContainers(dimension, origin, fills, facing);
+  }
   try {
-    player.onScreenDisplay.setActionBar("§bSpawning villagers...");
+    player.onScreenDisplay.setActionBar("§bSpawning mobs...");
   } catch {
     // Ignore — cosmetic only.
   }
@@ -141,7 +152,7 @@ function* buildJob(dimension, origin, facing, placements, spawns, player) {
   busyPlayers.delete(player.id);
   try {
     player.onScreenDisplay.setTitle("§aBuild Complete!", {
-      subtitle: "Check each level for its chest — collection is per-floor.",
+      subtitle: "Collection is all in one place — check the shared chest.",
       fadeInDuration: 10,
       stayDuration: 100,
       fadeOutDuration: 20,

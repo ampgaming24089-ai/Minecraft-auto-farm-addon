@@ -33,20 +33,30 @@ import { rotateDirection } from "../lib/geometry.js";
  *  - A caged zombie on each level gives villagers a nearby threat, which
  *    vanilla uses to raise golem-spawn urgency ("village under attack").
  *  - A walled, lit spawn platform sits above the bedrooms on each level,
- *    inside the village bounds, with a center drain hole. Perimeter water
- *    sources create an inward current that walks any spawned golem into
- *    the drain (the same "flat floor + edge water + center hole" mob
- *    funnel used in countless vanilla mob farms).
+ *    inside the village bounds, with a center drain trough. Water only
+ *    flows a limited distance from a source block (about 7 tiles) before
+ *    it stops, and two currents flowing head-on into each other from
+ *    opposite edges create a dead/ambiguous push right where they meet —
+ *    which is exactly where a center drain needs the push to be strongest.
+ *    So the current here only converges on ONE axis: a full-depth water
+ *    column on the west wall flows east, one on the east wall flows west,
+ *    and there is no water on the north/south walls at all. Every tile
+ *    only ever has one clear push direction toward the center trough.
+ *  - No roof — each level is open at the top. A sealed roof was blocking
+ *    light and creating dark pockets hostile mobs could spawn in; leaving
+ *    it open and lighting the place heavily (see step 8) keeps light
+ *    levels high enough that nothing hostile spawns instead.
  *  - Golems drop down a shaft onto a magma-block kill trench. Magma deals
  *    real damage over time (not instant, not scripted) until the golem
  *    dies; a water current in the trench carries the drops into a hopper
- *    that feeds a shared external shaft down to one base chest.
+ *    that feeds a shared external shaft down to one base chest — every
+ *    level drains into the same chest, nothing to check per floor.
  *
- * Local space: x 0-14 (width), z 0-14 (depth), y 0-9 (height per level).
+ * Local space: x 0-14 (width), z 0-14 (depth), y 0-8 (height per level).
  * +z is "forward" (away from the player), +x is "right".
  */
 
-export const SIZE = { x: 15, y: 10, z: 15 };
+export const SIZE = { x: 15, y: 9, z: 15 };
 // 10-tall level + 2-block gap to the level above — deliberately compact so
 // all built levels merge into one combined village (see notes above).
 export const LEVEL_SPACING = 12;
@@ -63,16 +73,17 @@ function planLevel(dy, facing) {
   const parts = [];
   const spawns = [];
 
-  // 1. Outer shell: fills the full floor (y=0), full roof (y=9) and the
-  //    perimeter wall ring for every y in between, in one hollow box.
-  parts.push(box([0, 0, 0], [14, 9, 14], "minecraft:cobblestone", undefined, { hollow: true }));
-
-  // 2. Proper floor material, then clear the interior volume to air so no
-  //    leftover terrain interferes with the rest of the build.
+  // 1. Outer shell: floor plus the 4 side walls only, y=1 to y=8 — no roof
+  //    (open top, see notes above), then clear the interior volume to air
+  //    so no leftover terrain interferes with the rest of the build.
   parts.push(box([0, 0, 0], [14, 0, 14], "minecraft:stone_bricks"));
+  parts.push(box([0, 1, 0], [14, 8, 0], "minecraft:cobblestone"));
+  parts.push(box([0, 1, 14], [14, 8, 14], "minecraft:cobblestone"));
+  parts.push(box([0, 1, 0], [0, 8, 14], "minecraft:cobblestone"));
+  parts.push(box([14, 1, 0], [14, 8, 14], "minecraft:cobblestone"));
   parts.push(box([1, 1, 1], [13, 8, 13], "minecraft:air"));
 
-  // 3. Villager hall: two open rows of 10 beds each, every bed paired with
+  // 2. Villager hall: two open rows of 10 beds each, every bed paired with
   //    its own composter one tile further in, plus a walkway row between
   //    and after each set of rows so villagers can freely path between bed
   //    and workstation — sealing them apart from a job site is what
@@ -114,16 +125,13 @@ function planLevel(dy, facing) {
   parts.push(box([7, 4, 10], [8, 4, 10], "minecraft:air"));
 
   // 6. Spawn platform (village bounds, valid golem spawn surface), drop hole
-  //    in the center (2 wide, matching the shaft above), and an inward
-  //    water current from the edges. A full perimeter ring of water
-  //    sources (not a handful of scattered points) is what actually
-  //    creates a reliable connected current toward the only low point
-  //    (the drain hole) — a few isolated sources just form separate
-  //    puddles that don't push anything anywhere.
+  //    in the center (2 wide, matching the shaft above), and a one-axis
+  //    inward water current: a full-depth column on the west wall flows
+  //    east, one on the east wall flows west, nothing on north/south. Every
+  //    tile has exactly one push direction, straight toward the trough —
+  //    no head-on currents canceling out at the middle.
   parts.push(box([1, 5, 1], [13, 5, 13], "minecraft:stone_bricks"));
   parts.push(box([7, 5, 10], [8, 5, 10], "minecraft:air"));
-  parts.push(box([1, 6, 1], [13, 6, 1], "minecraft:water"));
-  parts.push(box([1, 6, 13], [13, 6, 13], "minecraft:water"));
   parts.push(box([1, 6, 1], [1, 6, 13], "minecraft:water"));
   parts.push(box([13, 6, 1], [13, 6, 13], "minecraft:water"));
 
@@ -140,10 +148,23 @@ function planLevel(dy, facing) {
   const hopperDir = rotateDirection("east", facing);
   parts.push(block(14, 0, 10, "minecraft:hopper", { facing_direction: HOPPER_FACING[hopperDir] }));
 
-  // 8. Lighting to keep hostile mobs from spawning inside (golems are not
-  //    light-gated, so this is safe for the spawn platform too).
-  for (const [x, y, z] of [[0, 2, 4], [14, 2, 4], [7, 2, 0], [7, 2, 14], [0, 7, 10], [14, 7, 10], [7, 7, 0], [7, 7, 14]]) {
-    parts.push(block(x, y, z, "minecraft:sea_lantern"));
+  // 8. Lighting: with no roof, this has to do the job an enclosed room's
+  //    darkness-based hostile-mob immunity used to do for free. Sea
+  //    lanterns (light level 15, don't burn in the sun/rain either) lining
+  //    both walls at hall height AND platform height, plus corner posts,
+  //    keep light levels high enough across the whole footprint that
+  //    nothing hostile spawns even with the top wide open.
+  for (const z of [2, 6, 10]) {
+    parts.push(block(0, 2, z, "minecraft:sea_lantern"));
+    parts.push(block(14, 2, z, "minecraft:sea_lantern"));
+    parts.push(block(0, 7, z, "minecraft:sea_lantern"));
+    parts.push(block(14, 7, z, "minecraft:sea_lantern"));
+  }
+  for (const x of [4, 10]) {
+    parts.push(block(x, 2, 0, "minecraft:sea_lantern"));
+    parts.push(block(x, 2, 14, "minecraft:sea_lantern"));
+    parts.push(block(x, 7, 0, "minecraft:sea_lantern"));
+    parts.push(block(x, 7, 14, "minecraft:sea_lantern"));
   }
 
   const merged = merge(...parts);

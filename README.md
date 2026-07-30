@@ -4,16 +4,23 @@ Instant, stackable auto farms for Minecraft Bedrock / Pocket Edition. Right-clic
 a block with the **Structure Build Tool**, pick a farm from a menu, preview
 its footprint as a particle outline, then confirm to have it built instantly.
 
-Includes two farms, both quad-stackable:
+Includes three farms:
 
 - **Stackable Iron Farm** — an open villager hall (beds + composters, not
   sealed pods — see below for why that matters), a caged zombie for spawn
-  urgency, a walled spawn platform, and a magma-block kill trench that
-  funnels iron/poppy drops into hoppers.
-- **Stackable Auto Crop Farm** — two farmer villagers, each with their own
+  urgency, an open-top lit spawn platform, and a magma-block kill trench
+  that funnels iron/poppy drops into hoppers. Build 1-4 levels, stacked
+  vertically and deliberately close together.
+- **Auto Crop Farm** — two farmer villagers, each with their own
   composter-on-water plot, separated from a caged collector villager by a
   hopper-minecart barrier that catches food they try (and fail) to share
-  across it.
+  across it. Build 1-4 of these as fully separate, independent farms on
+  the ground, 10 blocks apart from each other.
+- **Passive Mob Farm** — a lit, open grass platform where cows/pigs/sheep/
+  chickens spawn and graze, a water funnel pushes them into a fall + magma
+  kill zone, and an auto-smoker cooks the drops before a hopper stores them
+  in a chest. Build 1-4 of these too, same ground-level layout as the crop
+  farm.
 
 ## Important: what "stackable" actually means for the iron farm
 
@@ -62,6 +69,27 @@ single AFK spot at the base:
   cited safe distance) — a nearby real village can merge with yours and
   throw off the cap.
 
+Two more fixes worth calling out explicitly, both found from real in-game
+testing feedback:
+
+- **The water current wasn't pushing golems anywhere.** The earlier design
+  ringed all 4 edges of the spawn platform with water flowing inward. That
+  looks reasonable on paper, but water only flows about 7 blocks from a
+  source before stopping, and two currents flowing head-on into each other
+  from opposite edges create a dead/ambiguous push exactly where they
+  meet — which was exactly the center drain, the one place the push needed
+  to be strongest. The fix drops the north/south edges entirely and only
+  uses a full-depth water column on the west wall (flowing east) and one on
+  the east wall (flowing west). Every tile on the platform now has exactly
+  one clear push direction toward the drain, never two fighting each other.
+- **No more roof.** Each level used to be a fully sealed box. That's gone —
+  every level is now open at the top. An enclosed room's darkness used to
+  be what (accidentally) kept hostile mobs out; with the roof gone, that
+  job is done instead by lighting the place heavily (sea lanterns lining
+  both walls at hall height and platform height on every level), which
+  keeps light levels high enough that nothing hostile spawns despite the
+  open top.
+
 ## Achievement compatibility (read this first)
 
 This took three tries to get right, so here's the real story:
@@ -104,8 +132,8 @@ the version to test.
    or zip the `BP/` and `RP/` folders together yourself.
 2. Send that `.mcaddon` file to your device and open it — Minecraft will
    import both packs.
-3. In your world settings, add **both** **Ironhearth [Behavior]**
-   *and* **Ironhearth [Resources]** — under their respective
+3. In your world settings, add **both** **Homestead Works [Behavior]**
+   *and* **Homestead Works [Resources]** — under their respective
    Behavior Packs / Resource Packs tabs. Adding only one is a common
    mistake and shows up as items with no icon and a raw
    `item.autofarm:...name` name instead of proper text/art, since that
@@ -122,7 +150,9 @@ the version to test.
 2. Stand where you want the farm's front-left corner and right-click the
    ground with the tool.
 3. Pick a farm from the menu.
-4. Pick a stack height (1-4 levels) and whether to show the outline preview.
+4. Pick how many to build (1-4 — stacked levels for the iron farm, or
+   separate ground-level units 10 blocks apart for the crop and mob farms)
+   and whether to show the outline preview.
 5. If enabled, a particle box appears showing exactly where the structure
    will go. Confirm to build it instantly, or cancel — nothing is placed
    until you confirm.
@@ -144,16 +174,15 @@ level merges into one combined village instead of staying separate — see
 "what stackable actually means" above for why deliberately merging beats
 trying to keep floors independent. A caged zombie on each level is
 visible/near enough to raise that village's "under attack" state, which
-vanilla uses to increase golem spawn urgency. Golems spawn on the walled
-platform above each level (inside the village bounds), get walked into a
-2-wide center drain by a real inward water current (a full perimeter ring
-of water sources, not a handful of scattered points — that's what actually
-creates a connected current toward the only low point instead of
-disconnected puddles), fall down the shaft onto a magma-block trench, and
-take real damage-over-time until they die. A water current in the trench
-sweeps the drops into a hopper feeding the shared collection shaft. Magma,
-not lava, is deliberate: lava sets dropped items on fire and destroys
-them — magma damages the golem without touching the loot.
+vanilla uses to increase golem spawn urgency. Golems spawn on the open-top,
+heavily-lit platform above each level (inside the village bounds), get
+walked into a 2-wide center drain by a one-axis water current (west wall
+flows east, east wall flows west, nothing on north/south — see the
+water-current fix above for why), fall down the shaft onto a magma-block
+trench, and take real damage-over-time until they die. A water current in
+the trench sweeps the drops into a hopper feeding the shared collection
+shaft. Magma, not lava, is deliberate: lava sets dropped items on fire and
+destroys them — magma damages the golem without touching the loot.
 
 **Crop Farm** — Two farmer villagers, each in their own 8x8 plot (farmers
 won't work land more than ~4 blocks from their composter, so a wider plot
@@ -162,18 +191,38 @@ composter placed directly on top of it — hydrates the whole plot and
 serves as that farmer's job site in one tile — with glowstone above for
 light. A collector villager is caged in a narrow pen between the two
 plots so it can never wander off. The boundary between each plot and the
-pen is a hopper-block + rail + parked hopper-minecart (walkable — farmers
-step right up to it) with an open trapdoor one block above blocking actual
-crossing. Farmers still approach and try to share surplus food with the
-caged collector across the gap; that attempt drops food right onto the
-minecart row, which a hopper underneath continuously drains. This is a
-documented, real Bedrock design, not an invented one — but it's still real
-(and therefore somewhat unpredictable) villager AI, so give it real time
-before judging it broken.
+pen is a hopper + rail + parked hopper-minecart (walkable — farmers step
+right up to any tile of it) with an open trapdoor one block above blocking
+actual crossing. Farmers still approach and try to share surplus food with
+the caged collector across the gap; that attempt drops food onto whichever
+minecart they're standing at, which the hopper underneath catches. This is
+a documented, real Bedrock design, not an invented one — but it's still
+real (and therefore somewhat unpredictable) villager AI, so give it real
+time before judging it broken. Unlike the iron farm, this one isn't
+stacked — each of the 1-4 you build is a complete, independent farm on the
+ground, 10 blocks from the next one, so there's nothing to merge or share
+between them except the final collection chest.
 
-Both farms funnel every level's output into one shared external hopper
-shaft, ending in a double chest at ground level right next to the tower —
-not buried, so it's immediately visible without digging.
+**Passive Mob Farm** — An open, heavily-lit grass platform where cows,
+pigs, sheep, and chickens naturally spawn and graze over time (no
+breeding required, though feeding them speeds it up) inside a 2-block-high
+fence barrier that keeps them from wandering off the edge early. The same
+one-axis water convergence used to fix the iron farm's platform pushes
+grown animals into a 2-wide center drain, which drops them 14 blocks — far
+enough to kill cows/pigs/sheep outright with fall damage alone. Chickens
+take no fall damage in vanilla, so the landing zone is also lined with
+magma blocks (safe for item drops, unlike lava) as a guaranteed finisher.
+A water current sweeps the raw drops into a hopper that feeds a smoker's
+input slot from directly above — standard vanilla hopper-into-furnace
+behavior, no scripting needed for the cooking itself. The smoker's fuel
+slot is pre-loaded with a stack of coal at build time (good for 512
+smelts), and a second hopper underneath automatically pulls the cooked
+output into the final chest.
+
+All three farms funnel their output into one shared external hopper chain
+ending in a double chest — not buried, so it's immediately visible without
+digging, and there's only ever one chest to check per farm type regardless
+of how many levels/units you built.
 
 ## Known limitations / tuning tips
 
@@ -222,17 +271,26 @@ not buried, so it's immediately visible without digging.
   nearby foliage. If you have a specific source suggesting otherwise I'm
   happy to look into it, but I didn't want to add block placements based
   on a mechanic I can't verify is real.
-- **Very tall stacks (4 levels)** mean the bottom level's items travel
-  through a long hopper chain to reach the base chest. This is normal
-  vanilla hopper transfer speed, not a bug — expect a short delay, not data
-  loss (hoppers buffer 5 stacks each).
+- **Building 4 of the crop or mob farm** means the farthest unit's items
+  travel through a long shared hopper chain (up to ~120 blocks) to reach
+  the one collection chest. This is normal vanilla hopper transfer speed,
+  not a bug — expect a real but bounded delay (each hop is 8 game ticks),
+  not data loss (hoppers buffer 5 stacks each). If you'd rather have faster,
+  fully independent collection per unit at the cost of more chests to
+  check, that's a one-line change in the farm's `plan()` — see "Adding your
+  own farm" below.
+- **Passive Mob Farm fall shaft goes ~15 blocks below where you build.** If
+  you build on ground very close to the world's minimum build height, the
+  kill zone/smoker/chest can clip below it. Build on typical Overworld
+  terrain and this isn't a concern.
 - **Build site**: the tool clears a generous interior volume before
   building, but doesn't touch anything outside the farm's own footprint.
   Build on relatively flat ground, away from any existing village (see
-  above), with clearance above for a 4-level stack — roughly 45 blocks tall
-  for the iron farm (15x15 footprint), 34 tall for the crop farm (23x10
-  footprint, since it's two 8x8 plots side by side rather than stacked
-  around a center).
+  above). Clearance needed: the iron farm is roughly 45 blocks tall at 4
+  levels (15x15 footprint); the crop and mob farms are only ~6-7 blocks
+  tall each but stretch to ~120 blocks wide at 4 units (23x10 and 15x15
+  footprints per unit, 10 blocks apart) since they're built side by side on
+  the ground rather than stacked.
 - Module/engine versions in `BP/manifest.json` are set to reasonably recent
   values; if your Minecraft version is newer, update them per Mojang's
   Script API changelog.
@@ -254,6 +312,7 @@ BP/                      Behavior pack
     lib/outline.js             Particle bounding-box preview
     farms/ironFarm.js           Iron farm layout + mechanics
     farms/cropFarm.js            Crop farm layout + mechanics
+    farms/mobFarm.js              Passive mob farm layout + mechanics
 RP/                      Resource pack (icon, item texture, lang)
   manifest.json             Includes metadata.product_type: "addon"
 build_addon.sh            Packages BP/ + RP/ into dist/AutoFarmAddon.mcaddon
@@ -263,6 +322,19 @@ build_addon.sh            Packages BP/ + RP/ into dist/AutoFarmAddon.mcaddon
 
 Each farm module exports an object with `id`, `name`, `shortDescription`,
 `size`, `levelSpacing`, `maxLevels`, and a `plan({ levels, facing })` method
-returning `{ placements, spawns }` in local space (see `ironFarm.js` for a
-fully worked example). Register it in `FARMS` in `scripts/main.js` and it
-shows up in the menu automatically.
+returning `{ placements, spawns, fills? }` in local space (see `ironFarm.js`
+for a fully worked example of vertical stacking, or `cropFarm.js`/
+`mobFarm.js` for side-by-side ground units). Register it in `FARMS` in
+`scripts/main.js` and it shows up in the menu automatically.
+
+A few optional properties change how the generic build flow treats a farm:
+
+- `stackAxis: "x"` (or `"z"`) — repeat levels sideways in local space
+  instead of stacking them in `y`. Defaults to `"y"` if omitted.
+- `levelLabel` — override the slider's label text in the level-count menu
+  (defaults to `"Stack height (levels)"`).
+- `unitNoun` — override the word used for "N of these" in menus/messages
+  (defaults to `"Level"`).
+- `fills` — a list of `{x, y, z, slot, itemId, amount}` to pre-load into an
+  already-placed container's inventory slot after building (e.g. fuel into
+  a smoker), applied after `placements` but before `spawns`.

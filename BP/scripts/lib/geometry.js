@@ -78,20 +78,30 @@ export function rotateDirection(localDir, facing) {
 
 /**
  * Compute the axis-aligned min/max corners (inclusive) of a structure given
- * its local-space size and level count, in world space.
+ * its local-space size and level count, in world space. Most farms stack
+ * levels vertically (stackAxis "y", the default), but a farm can instead
+ * repeat its unit sideways in local space by setting stackAxis "x" (used by
+ * the crop farm, which places separate ground-level units side by side
+ * instead of stacking them).
  * @param {Vec3} origin
- * @param {{x:number,y:number,z:number}} size local footprint size (per level)
+ * @param {{x:number,y:number,z:number}} size local footprint size (per level/unit)
  * @param {number} levels
- * @param {number} levelSpacing vertical distance between level origins
+ * @param {number} levelSpacing distance between level/unit origins along stackAxis
  * @param {keyof typeof FACINGS} facing
+ * @param {"x"|"y"|"z"} [stackAxis]
  */
-export function computeBounds(origin, size, levels, levelSpacing, facing) {
-  const totalHeight = levelSpacing * (levels - 1) + size.y;
+export function computeBounds(origin, size, levels, levelSpacing, facing, stackAxis = "y") {
+  const extra = levelSpacing * (levels - 1);
+  const effSize = {
+    x: size.x + (stackAxis === "x" ? extra : 0),
+    y: size.y + (stackAxis === "y" ? extra : 0),
+    z: size.z + (stackAxis === "z" ? extra : 0),
+  };
   const corners = [
     { x: 0, y: 0, z: 0 },
-    { x: size.x - 1, y: 0, z: 0 },
-    { x: 0, y: 0, z: size.z - 1 },
-    { x: size.x - 1, y: 0, z: size.z - 1 },
+    { x: effSize.x - 1, y: 0, z: 0 },
+    { x: 0, y: 0, z: effSize.z - 1 },
+    { x: effSize.x - 1, y: 0, z: effSize.z - 1 },
   ].map((c) => toWorld(origin, c, facing));
 
   const minX = Math.min(...corners.map((c) => c.x));
@@ -101,6 +111,6 @@ export function computeBounds(origin, size, levels, levelSpacing, facing) {
 
   return {
     min: { x: minX, y: origin.y, z: minZ },
-    max: { x: maxX, y: origin.y + totalHeight - 1, z: maxZ },
+    max: { x: maxX, y: origin.y + effSize.y - 1, z: maxZ },
   };
 }

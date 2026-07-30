@@ -1,4 +1,4 @@
-import { BlockPermutation } from "@minecraft/server";
+import { BlockPermutation, ItemStack } from "@minecraft/server";
 import { toWorld } from "./geometry.js";
 
 /**
@@ -107,6 +107,38 @@ export function* placeAll(dimension, origin, placements, facing, throttle = 60, 
     }
   }
   if (onProgress) onProgress(placements.length, placements.length);
+}
+
+/**
+ * A "fill" pre-loads one inventory slot of an already-placed container/fuel
+ * block (e.g. coal into a smoker's fuel slot) so auto-cookers etc. work
+ * immediately without the player having to supply fuel by hand first.
+ * @typedef {{x:number,y:number,z:number, slot:number, itemId:string, amount?:number}} ContainerFill
+ */
+
+/**
+ * Set inventory slots on already-placed blocks, rotated/translated into
+ * world space like placeAll. Must run after placeAll so the target blocks
+ * already exist.
+ * @param {import("@minecraft/server").Dimension} dimension
+ * @param {Vec3} origin
+ * @param {ContainerFill[]} fills
+ * @param {keyof import("./geometry.js").FACINGS} facing
+ */
+export function* fillContainers(dimension, origin, fills, facing) {
+  for (const f of fills) {
+    const world = toWorld(origin, f, facing);
+    try {
+      const b = dimension.getBlock(world);
+      const inv = b?.getComponent("minecraft:inventory");
+      if (inv) {
+        inv.container.setItem(f.slot, new ItemStack(f.itemId, f.amount ?? 1));
+      }
+    } catch {
+      // Unloaded chunk edge case — skip rather than abort the whole build.
+    }
+    yield;
+  }
 }
 
 /**
