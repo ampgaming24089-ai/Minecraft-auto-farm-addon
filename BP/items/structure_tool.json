@@ -14,11 +14,11 @@
       "minecraft:glint": true,
       "minecraft:icon": {
         "textures": {
-          "default": "autofarm_build_tool"
+          "default": "book_enchanted"
         }
       },
       "minecraft:display_name": {
-        "value": "item.autofarm:build_tool.name"
+        "value": "Structure Build Tool"
       },
       "minecraft:tags": {
         "tags": ["minecraft:is_tool"]

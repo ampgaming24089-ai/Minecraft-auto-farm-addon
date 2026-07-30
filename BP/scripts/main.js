@@ -12,9 +12,10 @@ const FARMS = [IronFarm, CropFarm];
 /** Players currently inside the menu/preview/build flow, so the tool can't be re-triggered mid-flow. */
 const busyPlayers = new Set();
 
-world.afterEvents.itemUseOn.subscribe((event) => {
-  const { source: player, itemStack, block } = event;
-  if (itemStack.typeId !== TOOL_ID) return;
+world.afterEvents.playerInteractWithBlock.subscribe((event) => {
+  const { player, itemStack, block, isFirstEvent } = event;
+  if (!isFirstEvent) return; // fires repeatedly while the interact button is held
+  if (!itemStack || itemStack.typeId !== TOOL_ID) return;
   if (busyPlayers.has(player.id)) return;
 
   const facing = get4DirFacing(player.getViewDirection());

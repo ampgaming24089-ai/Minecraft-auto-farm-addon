@@ -108,11 +108,23 @@ shaft on the outside of the tower, ending in a double chest at the base.
 
 ## Known limitations / tuning tips
 
-- **Item icon uses `minecraft:icon` -> `textures.default`.** An earlier
-  version used the older `{"texture": "..."}` shorthand, which current
-  Bedrock docs list as deprecated and which showed up as a blank icon and
-  an unresolved `item.autofarm:build_tool` name in testing. Fixed in
-  `BP/items/structure_tool.json`.
+- **Two real bugs fixed after testing, both root-caused against current
+  Bedrock docs/changelogs rather than guessed:**
+  - The tool's icon and name were blank/unresolved because
+    `@minecraft/server` removed the `itemUseOn` event entirely in its
+    2.0.0 release — the manifest still pointed at the old 1.x module line,
+    so the script's event handler silently never fired at all (this is
+    also why the menu never opened). Updated the dependency versions in
+    `BP/manifest.json` to `@minecraft/server` 2.0.0 / `@minecraft/server-ui`
+    2.1.0, and switched the handler in `scripts/main.js` from
+    `world.afterEvents.itemUseOn` to `world.afterEvents.playerInteractWithBlock`
+    (the documented replacement).
+  - To remove any remaining risk from custom texture/lang resolution, the
+    tool's icon now points at the vanilla `book_enchanted` shortname
+    (guaranteed to already exist in the base game) instead of a custom
+    PNG, and its display name is a literal string instead of a
+    translation key — so it doesn't depend on this pack's resource pack
+    content loading correctly at all.
 - **Bed and hopper orientation** are set programmatically and rotated to
   match the direction you built in; if a state value mapping doesn't match
   your game version exactly, the bed/hopper still functions — worst case

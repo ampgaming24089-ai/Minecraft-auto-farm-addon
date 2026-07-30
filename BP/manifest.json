@@ -4,8 +4,8 @@
     "name": "Hammerstead [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
     "uuid": "8ad2c3c2-d8e8-47ab-b336-6bd313e4a2da",
-    "version": [1, 0, 0],
-    "min_engine_version": [1, 21, 60]
+    "version": [1, 0, 1],
+    "min_engine_version": [1, 21, 90]
   },
   "metadata": {
     "product_type": "addon"
@@ -14,24 +14,24 @@
     {
       "type": "data",
       "uuid": "22db0e88-b7d2-4057-9401-c0fc8ea1cef9",
-      "version": [1, 0, 0]
+      "version": [1, 0, 1]
     },
     {
       "type": "script",
       "language": "javascript",
       "uuid": "1b7447b9-e9dd-46cf-a7ae-1329beb66e1f",
-      "version": [1, 0, 0],
+      "version": [1, 0, 1],
       "entry": "scripts/main.js"
     }
   ],
   "dependencies": [
     {
       "module_name": "@minecraft/server",
-      "version": "1.17.0"
+      "version": "2.0.0"
     },
     {
       "module_name": "@minecraft/server-ui",
-      "version": "1.3.0"
+      "version": "2.1.0"
     },
     {
       "uuid": "5c2c2402-5e10-4613-919c-d741fdc95a7a",
