@@ -6,12 +6,32 @@ its footprint as a particle outline, then confirm to have it built instantly.
 
 Includes two farms, both quad-stackable:
 
-- **Stackable Iron Farm** — a real 4-villager village (claimed beds), a
-  caged zombie for spawn urgency, a walled spawn platform, and a
-  magma-block kill trench that funnels iron/poppy drops into hoppers.
-- **Stackable Auto Crop Farm** — four farmland plots worked by farmer
-  villagers, a center villager they periodically try to share surplus food
-  with, and a hopper-minecart collection pen that catches the dropped food.
+- **Stackable Iron Farm** — an open villager hall (beds + composters, not
+  sealed pods — see below for why that matters), a caged zombie for spawn
+  urgency, a walled spawn platform, and a magma-block kill trench that
+  funnels iron/poppy drops into hoppers.
+- **Stackable Auto Crop Farm** — two farmer villagers, each with their own
+  composter-on-water plot, separated from a caged collector villager by a
+  hopper-minecart barrier that catches food they try (and fail) to share
+  across it.
+
+## Important: what "stackable" actually means for the iron farm
+
+Bedrock's real requirement for iron golems to spawn at all is **20 beds and
+10 villagers, with 75% of them having reached and used a workstation in the
+last in-game day** — much bigger than most people assume, and far bigger
+than earlier versions of this addon used (which is why golems never spawned
+and "water doesn't push them" was moot — there was nothing to push). Each
+level here has 6 beds + 6 composters in one open hall, so:
+
+- **4 levels = 24 beds / 24 villagers** — comfortably over the minimum.
+- **1-3 levels may not reliably spawn golems at all.** This farm is only
+  guaranteed to work built at full height. "Difficult to stack" is a
+  reflection of the real mechanic, not a limitation of the addon — a
+  legitimate Bedrock village is inherently large.
+- **Build it away from any existing village** (100+ blocks is a commonly
+  cited safe distance). A nearby real village can interfere with golem
+  population caps and bed/door linking for this one.
 
 ## Achievement compatibility (read this first)
 
@@ -55,8 +75,8 @@ the version to test.
    or zip the `BP/` and `RP/` folders together yourself.
 2. Send that `.mcaddon` file to your device and open it — Minecraft will
    import both packs.
-3. In your world settings, add **both** **Harvestron [Behavior]**
-   *and* **Harvestron [Resources]** — under their respective
+3. In your world settings, add **both** **Villagecraft [Behavior]**
+   *and* **Villagecraft [Resources]** — under their respective
    Behavior Packs / Resource Packs tabs. Adding only one is a common
    mistake and shows up as items with no icon and a raw
    `item.autofarm:...name` name instead of proper text/art, since that
@@ -86,31 +106,36 @@ clicked, snapped to the nearest cardinal direction.
 Nothing here is scripted loot or fake spawns — every drop comes from real
 vanilla AI and physics:
 
-**Iron Farm** — Four sealed bedrooms, each with one claimed bed, make the
-level a valid village. A caged zombie is visible/near enough to raise the
-village's "under attack" state, which vanilla uses to increase golem spawn
-urgency. Golems spawn on the walled platform above (inside the village
-bounds), get walked into a 2-wide center drain by a real inward water
-current (a full perimeter ring of water sources, not a handful of scattered
-points — that's what actually creates a connected current toward the only
-low point instead of a few disconnected puddles), fall down the shaft onto
-a magma-block trench, and take real damage-over-time until they die. A
-water current in the trench sweeps the drops into a hopper. Magma, not
-lava, is deliberate: lava sets dropped items on fire and destroys them —
-magma damages the golem without touching the loot.
+**Iron Farm** — An open hall of 6 beds facing 6 composters lets villagers
+freely path between sleeping and working, which is what actually keeps
+them counted as valid village members (sealing them in isolated pods, the
+original design, silently broke this). A caged zombie is visible/near
+enough to raise the village's "under attack" state, which vanilla uses to
+increase golem spawn urgency. Golems spawn on the walled platform above
+(inside the village bounds), get walked into a 2-wide center drain by a
+real inward water current (a full perimeter ring of water sources, not a
+handful of scattered points — that's what actually creates a connected
+current toward the only low point instead of disconnected puddles), fall
+down the shaft onto a magma-block trench, and take real damage-over-time
+until they die. A water current in the trench sweeps the drops into a
+hopper. Magma, not lava, is deliberate: lava sets dropped items on fire and
+destroys them — magma damages the golem without touching the loot.
 
-**Crop Farm** — Four hydrated farmland plots, each planted with a random
-mix of wheat, carrots, and potatoes, have a composter, which turns a
-spawned villager into a real Farmer (vanilla profession AI handles
-planting/harvesting per crop type). A fenced corridor connects each plot to
-a shared pen holding one more villager, which is fully caged (fenced on
-all 4 sides) so it can never wander off to a farmland plot itself. Real
-vanilla farmer behavior periodically shares surplus food with nearby
-villagers, dropping items on the ground; collection pads (hopper blocks
-topped with rails holding parked hopper minecarts) sit at the pen's 4
-corridor mouths and at the caged villager's own cell, so anything dropped
-where farmers actually stand gets collected. This is the least deterministic
-part of either farm — see the caveat below.
+**Crop Farm** — Two farmer villagers, each in their own 8x8 plot (farmers
+won't work land more than ~4 blocks from their composter, so a wider plot
+just wastes space). Each plot's center tile is a water source with a
+composter placed directly on top of it — hydrates the whole plot and
+serves as that farmer's job site in one tile — with glowstone above for
+light. A collector villager is caged in a narrow pen between the two
+plots so it can never wander off. The boundary between each plot and the
+pen is a hopper-block + rail + parked hopper-minecart (walkable — farmers
+step right up to it) with an open trapdoor one block above blocking actual
+crossing. Farmers still approach and try to share surplus food with the
+caged collector across the gap; that attempt drops food right onto the
+minecart row, which a hopper underneath continuously drains. This is a
+documented, real Bedrock design, not an invented one — but it's still real
+(and therefore somewhat unpredictable) villager AI, so give it real time
+before judging it broken.
 
 Both farms funnel every level's output into one shared external hopper
 shaft, ending in a double chest at ground level right next to the tower —
@@ -146,18 +171,11 @@ not buried, so it's immediately visible without digging.
   your game version exactly, the bed/hopper still functions — worst case
   it's a purely cosmetic mismatch you can fix by breaking and replacing
   that one block.
-- **Villager profession race**: the crop farm's center villager could in
-  rare cases claim a plot's composter before the intended farmer does. If a
-  plot never seems to work, walk over, note which villager has no farmer
-  job, and give it a moment — or break/replace that composter to force a
-  re-claim.
-- **Crop farm collection is the least certain mechanic here.** It relies on
-  real (and somewhat unpredictable) vanilla AI: farmer villagers eventually
-  accumulating more crops than they need and sharing/dropping the surplus
-  near other villagers. This can take real in-game time and isn't perfectly
-  guaranteed the way the iron farm's golem-spawning is. Treat it as "should
-  produce output over time," not "instant," and let it run for a while
-  before concluding it isn't working.
+- **Crop farm collection is still the least deterministic mechanic here.**
+  Each farmer plot has its own dedicated composter now (no more shared
+  job-site race between villagers), but the actual food-sharing-across-the-
+  barrier behavior is real, somewhat unpredictable vanilla AI. Give it real
+  in-game time before concluding it isn't working.
 - **Stay near the build site until you see "Build Complete!"** on screen.
   Building spreads block placement across many ticks to avoid freezing the
   game; a 4-level farm can take a while. If you wander far enough that
@@ -176,8 +194,11 @@ not buried, so it's immediately visible without digging.
   loss (hoppers buffer 5 stacks each).
 - **Build site**: the tool clears a generous interior volume before
   building, but doesn't touch anything outside the farm's own footprint.
-  Build on relatively flat ground with clearance above for a 4-level stack
-  (roughly 48 blocks for the iron farm, 36 for the crop farm).
+  Build on relatively flat ground, away from any existing village (see
+  above), with clearance above for a 4-level stack — roughly 46 blocks tall
+  for the iron farm (15x15 footprint), 34 tall for the crop farm (23x10
+  footprint, since it's two 8x8 plots side by side rather than stacked
+  around a center).
 - Module/engine versions in `BP/manifest.json` are set to reasonably recent
   values; if your Minecraft version is newer, update them per Mojang's
   Script API changelog.

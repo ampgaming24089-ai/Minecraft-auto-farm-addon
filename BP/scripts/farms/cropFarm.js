@@ -4,188 +4,113 @@ import { rotateDirection } from "../lib/geometry.js";
 /**
  * Stackable Auto Crop Farm
  * ========================
- * Real vanilla mechanics only:
+ * This is a real, documented Bedrock design, not an invented one — two
+ * farmer villagers, each in their own 8x8 plot, with a composter-on-water
+ * tower in the center of each plot, separated from a caged "collector"
+ * villager by a hopper-minecart barrier topped with an open trapdoor:
  *
- *  - Four small hydrated farmland plots, each with a composter job-site
- *    block. A spawned villager standing in claim range of an unclaimed
- *    composter automatically becomes a Farmer and will harvest/replant
- *    the plot on its own (vanilla farmer AI — nothing scripted).
- *  - A fenced corridor connects each plot to a shared center pen holding
- *    one extra villager. Farmer villagers that accumulate surplus food
- *    periodically try to share/trade it with nearby villagers — a real
- *    vanilla behavior — which drops items on the ground near whoever
- *    they approach.
- *  - The pen floor (center + the four cells around it) is built from a
- *    hopper block topped with a rail holding a parked hopper minecart.
- *    Any item dropped there lands on/above the minecart and is pulled in;
- *    the block hopper underneath continuously drains the minecart, so
- *    nothing needs to be collected by hand.
- *  - All five collection points funnel into a shared external hopper
- *    shaft that drains to a base chest below the whole stack.
+ *  - Farmland plots: farmers won't work land more than ~4 blocks from
+ *    their composter, so an 8x8 plot centered on one composter is what
+ *    they'll actually farm (a wider plot just wastes space).
+ *  - Composter tower: a water source with a composter directly on top of
+ *    it (survival players need a slab trick to place this; placing blocks
+ *    directly via script skips that entirely) keeps the farmland hydrated
+ *    *and* gives the villager standing there a job site in one tile.
+ *    Glowstone on top lights the plot.
+ *  - Collector villager: caged in a narrow pen so it can never wander off.
+ *  - Barrier: a row of hopper-block + rail + parked hopper-minecart at
+ *    the pen's edge (walkable — farmers can step right up to it), with an
+ *    open trapdoor one block above blocking actual crossing. Farmers
+ *    still path to the edge and attempt to share surplus food with the
+ *    collector across the gap; the attempt drops food right onto the
+ *    minecart row, which is being continuously drained by the hopper
+ *    underneath.
  *
- * Local space: x 0-12 (width), z 0-12 (depth), y 0-6 (height per level).
+ * Local space: x 0-22 (width), z 0-9 (depth), y 0-6 (height per level).
  */
 
-export const SIZE = { x: 13, y: 7, z: 13 };
+export const SIZE = { x: 23, y: 7, z: 10 };
 export const LEVEL_SPACING = 9; // 7 tall level + 2 block gap to the level above
 export const MAX_LEVELS = 4;
 
 const HOPPER_FACING = { down: 0, up: 1, north: 2, south: 3, west: 4, east: 5 };
+const CROPS = ["minecraft:wheat", "minecraft:carrots", "minecraft:potatoes"];
 
-/** One plot's layout, authored explicitly (not derived by rotation, to keep it simple/robust). */
+// Farmer plot A: x1-8, z1-8. Farmer plot B: x14-21, z1-8 (mirrored).
+// Pen (collector villager): x10-12, z1-8. Barriers at x9 and x13.
 const PLOTS = [
-  {
-    // North
-    farmland: [[5, 1], [6, 1], [7, 1], [5, 2], [7, 2], [5, 3], [6, 3], [7, 3]],
-    water: [6, 2],
-    composter: [5, 1],
-    corridor: [6, 4],
-    corridorFlanks: [[5, 4], [7, 4]],
-    borderWalls: [[[4, 0], [4, 4]], [[8, 0], [8, 4]]],
-    farmerSpawn: [7, 2],
-  },
-  {
-    // South
-    farmland: [[5, 9], [6, 9], [7, 9], [5, 10], [7, 10], [5, 11], [6, 11], [7, 11]],
-    water: [6, 10],
-    composter: [5, 11],
-    corridor: [6, 8],
-    corridorFlanks: [[5, 8], [7, 8]],
-    borderWalls: [[[4, 8], [4, 12]], [[8, 8], [8, 12]]],
-    farmerSpawn: [7, 10],
-  },
-  {
-    // West
-    farmland: [[1, 5], [1, 6], [1, 7], [2, 5], [2, 7], [3, 5], [3, 6], [3, 7]],
-    water: [2, 6],
-    composter: [1, 5],
-    corridor: [4, 6],
-    corridorFlanks: [[4, 5], [4, 7]],
-    borderWalls: [[[0, 4], [4, 4]], [[0, 8], [4, 8]]],
-    farmerSpawn: [2, 7],
-  },
-  {
-    // East
-    farmland: [[9, 5], [9, 6], [9, 7], [10, 5], [10, 7], [11, 5], [11, 6], [11, 7]],
-    water: [10, 6],
-    composter: [11, 5],
-    corridor: [8, 6],
-    corridorFlanks: [[8, 5], [8, 7]],
-    borderWalls: [[[8, 4], [12, 4]], [[8, 8], [12, 8]]],
-    farmerSpawn: [10, 7],
-  },
+  { xMin: 1, xMax: 8, tower: [4, 4], farmerSpawn: [4, 3] },
+  { xMin: 14, xMax: 21, tower: [17, 4], farmerSpawn: [17, 3] },
 ];
-
-const CROPS = [
-  { id: "minecraft:wheat" },
-  { id: "minecraft:carrots" },
-  { id: "minecraft:potatoes" },
-];
-
-// Collection pads sit at the pen's 4 corridor mouths (where farmers must
-// physically walk through to reach the pen) plus the center itself, where
-// the trapped villager stands. All feed straight down into local routing.
-const PADS = [
-  { x: 6, z: 4 }, // north gap
-  { x: 6, z: 8 }, // south gap
-  { x: 4, z: 6 }, // west gap
-  { x: 8, z: 6 }, // east gap
-  { x: 6, z: 6 }, // center
-];
+const BARRIERS = [9, 13];
+const PEN_X_MIN = 10;
+const PEN_X_MAX = 12;
 
 function planLevel(dy, facing) {
   const parts = [];
   const spawns = [];
+  const y = (n) => n + dy;
 
-  // Base floor, then clear the interior to air so leftover terrain can't interfere.
-  parts.push(box([0, 0, 0], [12, 0, 12], "minecraft:grass_block"));
-  parts.push(box([1, 1, 1], [11, 5, 11], "minecraft:air"));
-
-  // Roof caps the level so farms can stack; crop growth only needs light
-  // level >= 9, which the lanterns below provide regardless of sky access.
-  parts.push(box([0, 6, 0], [12, 6, 12], "minecraft:cobblestone"));
-
-  // Outer fence ring (perimeter containment).
-  parts.push(box([0, 1, 0], [12, 1, 0], "minecraft:oak_fence"));
-  parts.push(box([0, 1, 12], [12, 1, 12], "minecraft:oak_fence"));
-  parts.push(box([0, 1, 0], [0, 1, 12], "minecraft:oak_fence"));
-  parts.push(box([12, 1, 0], [12, 1, 12], "minecraft:oak_fence"));
-
-  // Corner sea lanterns for reliable growth + hostile-mob-proof lighting.
-  for (const [x, z] of [[6, 0], [6, 12], [0, 6], [12, 6]]) {
-    parts.push(block(x, 1, z, "minecraft:sea_lantern"));
+  // Outer shell: floor, fence ring, roof.
+  parts.push(box([0, 0, 0], [22, 0, 9], "minecraft:grass_block"));
+  parts.push(box([1, 1, 1], [21, 5, 8], "minecraft:air"));
+  parts.push(box([0, 6, 0], [22, 6, 9], "minecraft:cobblestone"));
+  parts.push(box([0, 1, 0], [22, 1, 0], "minecraft:oak_fence"));
+  parts.push(box([0, 1, 9], [22, 1, 9], "minecraft:oak_fence"));
+  parts.push(box([0, 1, 0], [0, 1, 9], "minecraft:oak_fence"));
+  parts.push(box([22, 1, 0], [22, 1, 9], "minecraft:oak_fence"));
+  for (const [x, z] of [[4, 0], [17, 0], [4, 9], [17, 9], [11, 0], [11, 9]]) {
+    parts.push(block(x, y(1), z, "minecraft:sea_lantern"));
   }
 
-  // Four farmland plots.
+  // Two farmer plots.
   for (const plot of PLOTS) {
-    for (const [x, z] of plot.farmland) {
-      const growth = Math.floor(Math.random() * 8);
-      const crop = CROPS[Math.floor(Math.random() * CROPS.length)];
-      parts.push(block(x, 0, z, "minecraft:farmland"));
-      parts.push(block(x, 1, z, crop.id, { growth }));
+    for (let x = plot.xMin; x <= plot.xMax; x++) {
+      for (let z = 1; z <= 8; z++) {
+        if (x === plot.tower[0] && z === plot.tower[1]) continue; // tower tile, handled separately
+        const crop = CROPS[Math.floor(Math.random() * CROPS.length)];
+        const growth = Math.floor(Math.random() * 8);
+        parts.push(block(x, y(0), z, "minecraft:farmland"));
+        parts.push(block(x, y(1), z, crop, { growth }));
+      }
     }
-    parts.push(block(plot.water[0], 0, plot.water[1], "minecraft:water"));
-    // Composter takes the place of a farmland tile as the plot's job site.
-    parts.push(block(plot.composter[0], 0, plot.composter[1], "minecraft:grass_block"));
-    parts.push(block(plot.composter[0], 1, plot.composter[1], "minecraft:composter"));
-    for (const [from, to] of plot.borderWalls) {
-      parts.push(box([from[0], 1, from[1]], [to[0], 1, to[1]], "minecraft:oak_fence"));
-    }
-    for (const [x, z] of plot.corridorFlanks) parts.push(block(x, 1, z, "minecraft:oak_fence"));
-    parts.push(block(plot.corridor[0], 1, plot.corridor[1], "minecraft:air"));
-    spawns.push({ x: plot.farmerSpawn[0], y: 1, z: plot.farmerSpawn[1], typeId: "minecraft:villager" });
+    // Composter-on-water tower: water hydrates the plot, composter is the
+    // job site, glowstone lights it. All placed directly, no slab needed.
+    const [tx, tz] = plot.tower;
+    parts.push(block(tx, y(0), tz, "minecraft:water"));
+    parts.push(block(tx, y(1), tz, "minecraft:composter"));
+    parts.push(block(tx, y(2), tz, "minecraft:glowstone"));
+    spawns.push({ x: plot.farmerSpawn[0], y: y(1), z: plot.farmerSpawn[1], typeId: "minecraft:villager" });
   }
 
-  // Center pen perimeter, with one gap per plot corridor.
-  parts.push(box([4, 1, 4], [4, 1, 8], "minecraft:oak_fence"));
-  parts.push(box([8, 1, 4], [8, 1, 8], "minecraft:oak_fence"));
-  parts.push(box([4, 1, 4], [8, 1, 4], "minecraft:oak_fence"));
-  parts.push(box([4, 1, 8], [8, 1, 8], "minecraft:oak_fence"));
-  parts.push(block(4, 1, 6, "minecraft:air"));
-  parts.push(block(8, 1, 6, "minecraft:air"));
-  parts.push(block(6, 1, 4, "minecraft:air"));
-  parts.push(block(6, 1, 8, "minecraft:air"));
+  // Collector pen: fenced, holds one caged villager.
+  parts.push(box([PEN_X_MIN, 1, 0], [PEN_X_MAX, 1, 0], "minecraft:oak_fence"));
+  parts.push(box([PEN_X_MIN, 1, 9], [PEN_X_MAX, 1, 9], "minecraft:oak_fence"));
+  spawns.push({ x: 11, y: y(1), z: 4, typeId: "minecraft:villager" });
 
-  // Cage the center villager into its own 1x1 cell (fenced on all 4 sides)
-  // so it can never wander out and off to a farmland plot — farmers still
-  // reach it, since the collection pads below sit right at the corridor
-  // mouths the farmers have to walk through anyway.
-  parts.push(block(6, 1, 5, "minecraft:oak_fence"));
-  parts.push(block(6, 1, 7, "minecraft:oak_fence"));
-  parts.push(block(5, 1, 6, "minecraft:oak_fence"));
-  parts.push(block(7, 1, 6, "minecraft:oak_fence"));
-  spawns.push({ x: 6, y: 1, z: 6, typeId: "minecraft:villager" });
-
-  // Collection pads: hopper -> rail -> parked hopper minecart. All face
-  // straight down into local underground routing that converges on the
-  // westbound tunnel out of the footprint.
-  for (const pad of PADS) {
-    parts.push(block(pad.x, 0, pad.z, "minecraft:hopper", { facing_direction: HOPPER_FACING.down }));
-    parts.push(block(pad.x, 1, pad.z, "minecraft:rail"));
-    spawns.push({ x: pad.x, y: 1, z: pad.z, typeId: "minecraft:hopper_minecart" });
-  }
-
-  // Underground routing (y=-1): north/south/east pads relay to the (6,-1,6)
-  // junction below the center pad; the west pad already sits on the
-  // westbound tunnel line. Directions below are pre-rotated with the
-  // build's facing since, unlike block positions, state values aren't
-  // rotated automatically.
-  const south = rotateDirection("south", facing);
-  const north = rotateDirection("north", facing);
+  // Barriers: hopper -> rail -> parked hopper minecart (walkable collection
+  // pad), with an open trapdoor one block above blocking actual crossing
+  // while still letting farmers approach and attempt to share food.
   const west = rotateDirection("west", facing);
-  const east = rotateDirection("east", facing);
-  parts.push(block(6, -1, 4, "minecraft:hopper", { facing_direction: HOPPER_FACING[south] }));
-  parts.push(block(6, -1, 5, "minecraft:hopper", { facing_direction: HOPPER_FACING[south] }));
-  parts.push(block(6, -1, 8, "minecraft:hopper", { facing_direction: HOPPER_FACING[north] }));
-  parts.push(block(6, -1, 7, "minecraft:hopper", { facing_direction: HOPPER_FACING[north] }));
-  parts.push(block(8, -1, 6, "minecraft:hopper", { facing_direction: HOPPER_FACING[west] }));
-  parts.push(block(7, -1, 6, "minecraft:hopper", { facing_direction: HOPPER_FACING[west] }));
-
-  // Underground tunnel from the center junction out to the west wall.
-  for (let x = 6; x >= 0; x--) {
-    parts.push(block(x, -1, 6, "minecraft:hopper", { facing_direction: HOPPER_FACING[west] }));
+  const north = rotateDirection("north", facing);
+  for (const bx of BARRIERS) {
+    for (let z = 1; z <= 8; z++) {
+      parts.push(block(bx, y(0), z, "minecraft:hopper", { facing_direction: HOPPER_FACING[z === 1 ? "down" : north] }));
+      parts.push(block(bx, y(1), z, "minecraft:rail"));
+      parts.push(block(bx, y(2), z, "minecraft:oak_trapdoor", { open_bit: true, upside_down_bit: false, direction: 0 }));
+      spawns.push({ x: bx, y: y(1), z, typeId: "minecraft:hopper_minecart" });
+    }
   }
-  parts.push(block(-1, -1, 6, "minecraft:hopper", { facing_direction: HOPPER_FACING.down }));
+
+  // Underground routing (y=-1): both barrier rows drain north to z=1, then
+  // west out of the footprint. Barrier B's tunnel passes through and
+  // merges into barrier A's at x=9 rather than redefining it.
+  for (let x = 13; x >= 10; x--) {
+    parts.push(block(x, -1, 1, "minecraft:hopper", { facing_direction: HOPPER_FACING[west] }));
+  }
+  for (let x = 9; x >= 0; x--) {
+    parts.push(block(x, -1, 1, "minecraft:hopper", { facing_direction: HOPPER_FACING[west] }));
+  }
 
   const merged = merge(...parts);
   return {
@@ -196,20 +121,19 @@ function planLevel(dy, facing) {
 
 /**
  * External collection shaft + base double chest, shared by every level.
- * The chest sits just 1 block below ground right outside the west wall
- * (not buried deep), so it's easy to find: the bottom of the shaft
- * redirects sideways into it instead of continuing straight down.
+ * The chest sits 1 block below ground right outside the west wall, so
+ * it's easy to find: the bottom of the shaft redirects sideways into it.
  */
 function planShaft(levels, facing) {
   const topY = (levels - 1) * LEVEL_SPACING - 1;
   const west = rotateDirection("west", facing);
   const parts = [
-    block(-1, -1, 6, "minecraft:hopper", { facing_direction: HOPPER_FACING[west] }),
-    block(-2, -1, 6, "minecraft:chest"),
-    block(-3, -1, 6, "minecraft:chest"),
+    block(-1, -1, 1, "minecraft:hopper", { facing_direction: HOPPER_FACING[west] }),
+    block(-2, -1, 1, "minecraft:chest"),
+    block(-3, -1, 1, "minecraft:chest"),
   ];
   for (let y = 0; y <= topY; y++) {
-    parts.push(block(-1, y, 6, "minecraft:hopper", { facing_direction: HOPPER_FACING.down }));
+    parts.push(block(-1, y, 1, "minecraft:hopper", { facing_direction: HOPPER_FACING.down }));
   }
   return merge(...parts);
 }
@@ -217,7 +141,7 @@ function planShaft(levels, facing) {
 export const CropFarm = {
   id: "crop_farm",
   name: "Stackable Auto Crop Farm",
-  shortDescription: "Farmer villagers + trading pen + hopper minecarts, quad-stackable.",
+  shortDescription: "2 farmers, composter-on-water towers, hopper-minecart collection, quad-stackable.",
   size: SIZE,
   levelSpacing: LEVEL_SPACING,
   maxLevels: MAX_LEVELS,

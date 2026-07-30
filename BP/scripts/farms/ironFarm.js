@@ -6,8 +6,18 @@ import { rotateDirection } from "../lib/geometry.js";
  * ===================
  * Real vanilla mechanics only — no commands, no fake loot tables:
  *
- *  - A 4-bed village (one bed per corner room, each claimed by a spawned
- *    villager) makes the level a valid village for iron golem spawning.
+ *  - Bedrock requires a MUCH bigger village than most people assume for
+ *    golems to spawn at all: at least 20 beds and 10 villagers, with 75%
+ *    of villagers having actually reached and used a workstation in the
+ *    last in-game day. A handful of villagers sealed in tiny bedrooms with
+ *    no job site (the original design) never meets that bar, so no golems
+ *    ever spawn — no amount of water-current tuning fixes a farm that
+ *    isn't a valid village in the first place. Each level here has an
+ *    open "hall" of 6 beds + 6 composters (any workstation type counts;
+ *    composters are simplest) that villagers can freely path between, so
+ *    4 stacked levels give 24 beds / 24 villagers — comfortably over the
+ *    minimum once fully built. Lower level counts (1-3) may not reliably
+ *    produce golems at all; this farm is only guaranteed to work at 4.
  *  - A caged zombie gives villagers a nearby threat, which vanilla uses to
  *    raise golem-spawn urgency ("village under attack").
  *  - A walled, lit 13x13 spawn platform sits above the bedrooms, inside the
@@ -33,12 +43,8 @@ export const MAX_LEVELS = 4;
 const HOPPER_FACING = { down: 0, up: 1, north: 2, south: 3, west: 4, east: 5 };
 const BED_DIRECTION = { south: 0, west: 1, north: 2, east: 3 };
 
-const BED_ROOMS = [
-  { bx: 1, bz: 1, extraWallX: 4, extraWallZ: 4, bed: { x: 2, z: 2 } }, // NW
-  { bx: 11, bz: 1, extraWallX: 10, extraWallZ: 4, bed: { x: 12, z: 2 } }, // NE
-  { bx: 1, bz: 11, extraWallX: 4, extraWallZ: 10, bed: { x: 2, z: 12 } }, // SW
-  { bx: 11, bz: 11, extraWallX: 10, extraWallZ: 10, bed: { x: 12, z: 12 } }, // SE
-];
+// 6 evenly-spaced bed/composter columns across the villager hall.
+const HALL_COLUMNS = [2, 4, 6, 8, 10, 12];
 
 /** Build the placement + spawn list for a single level, in local space (y already offset). */
 function planLevel(dy, facing) {
@@ -54,20 +60,19 @@ function planLevel(dy, facing) {
   parts.push(box([0, 0, 0], [14, 0, 14], "minecraft:stone_bricks"));
   parts.push(box([1, 1, 1], [13, 8, 13], "minecraft:air"));
 
-  // 3. Four corner bedrooms, each a sealed 3x3 room with one claimed bed.
-  for (const room of BED_ROOMS) {
-    // Interior-facing walls only — the two shell-facing sides are already
-    // covered by the outer cobblestone shell placed in step 1.
-    parts.push(box([room.extraWallX, 1, room.bz], [room.extraWallX, 3, room.bz + 2], "minecraft:cobblestone"));
-    parts.push(box([room.bx, 1, room.extraWallZ], [room.bx + 2, 3, room.extraWallZ], "minecraft:cobblestone"));
-    parts.push(box([room.bx, 4, room.bz], [room.bx + 2, 4, room.bz + 2], "minecraft:cobblestone"));
-
-    const bedDir = rotateDirection("south", facing);
-    parts.push(block(room.bed.x, 1, room.bed.z - 1, "minecraft:bed", { direction: BED_DIRECTION[bedDir], head_piece_bit: false }));
-    parts.push(block(room.bed.x, 1, room.bed.z, "minecraft:bed", { direction: BED_DIRECTION[bedDir], head_piece_bit: true }));
-    parts.push(block(room.bx, 1, room.bz, "minecraft:torch"));
-
-    spawns.push({ x: room.bed.x, y: 1, z: room.bed.z - 1, typeId: "minecraft:villager" });
+  // 3. Villager hall: 6 beds (z=1-2) facing a row of 6 composters (z=3),
+  //    all in one open room so villagers can actually walk between their
+  //    bed and a workstation — sealing them apart from a job site is what
+  //    silently broke golem spawning in the original per-corner design.
+  const bedDir = rotateDirection("south", facing);
+  for (const x of HALL_COLUMNS) {
+    parts.push(block(x, 1, 1, "minecraft:bed", { direction: BED_DIRECTION[bedDir], head_piece_bit: false }));
+    parts.push(block(x, 1, 2, "minecraft:bed", { direction: BED_DIRECTION[bedDir], head_piece_bit: true }));
+    parts.push(block(x, 1, 3, "minecraft:composter"));
+    spawns.push({ x, y: 1, z: 1, typeId: "minecraft:villager" });
+  }
+  for (const [x, z] of [[1, 1], [13, 1], [7, 3]]) {
+    parts.push(block(x, 1, z, "minecraft:torch"));
   }
 
   // 4. Mid-ceiling separating bedrooms from the spawn platform, with a

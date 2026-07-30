@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Harvestron [Resources]",
-    "description": "Resources for Harvestron - structure build tool icon and text.",
-    "uuid": "5f4f2965-3ed7-4676-a4b6-b8c19ca4c27c",
+    "name": "Villagecraft [Resources]",
+    "description": "Resources for Villagecraft - structure build tool icon and text.",
+    "uuid": "5eef5fba-ffa7-4aa2-95d6-2e4592666f4d",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
@@ -13,7 +13,7 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "5591b48c-41bf-4a1f-8ad7-2a8deea571b0",
+      "uuid": "a412cbda-1aa3-448f-a51d-f9da21dd449b",
       "version": [1, 0, 0]
     }
   ]

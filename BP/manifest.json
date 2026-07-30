@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Harvestron [Behavior]",
+    "name": "Villagecraft [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
-    "uuid": "96abc7df-123c-4390-8cf1-4aefeaf03227",
+    "uuid": "b3da5124-d576-44af-8b69-3242c85afa97",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 90]
   },
@@ -13,13 +13,13 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "e613d04b-55a0-445e-a0d3-5d1bec35ae1a",
+      "uuid": "353f93a4-4d99-4f23-a99b-2afdc99bcfd6",
       "version": [1, 0, 0]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "b03f3cec-8f50-4447-8fda-c3de8a8abac1",
+      "uuid": "b2680f7f-68ac-45f0-8866-f6897f8403ac",
       "version": [1, 0, 0],
       "entry": "scripts/main.js"
     }
@@ -34,7 +34,7 @@
       "version": "2.1.0"
     },
     {
-      "uuid": "5f4f2965-3ed7-4676-a4b6-b8c19ca4c27c",
+      "uuid": "5eef5fba-ffa7-4aa2-95d6-2e4592666f4d",
       "version": [1, 0, 0]
     }
   ]
