@@ -7,15 +7,16 @@ its footprint as a particle outline, then confirm to have it built instantly.
 Includes three farms:
 
 - **Stackable Iron Farm** — an open villager hall (beds + composters, not
-  sealed pods — see below for why that matters), a caged zombie for spawn
-  urgency, an open-top lit spawn platform that's a real water pool (not
-  just a current over a dry floor), and a corner lava kill pocket. Build
-  1-4 levels, stacked vertically and deliberately close together.
+  sealed pods — see below for why that matters), an open-top lit spawn
+  platform that's a real water pool (not just a current over a dry floor),
+  and a corner magma kill pocket. Build 1-4 levels, stacked vertically and
+  deliberately close together.
 - **Auto Crop Farm** — a pinwheel layout: 4 farmer villagers, each with
   their own composter-on-water plot, arranged around ONE caged collector
-  villager at the center, with a hopper floor under the pit catching
-  whatever food gets tossed in. Build 1-4 of these as fully separate,
-  independent farms on the ground, 10 blocks apart from each other.
+  villager at the center, with rail and parked hopper minecarts in the pit
+  catching whatever food gets tossed in. Build 1-4 of these as fully
+  separate, independent farms on the ground, 10 blocks apart from each
+  other.
 - **Passive Mob Farm** — a lit, open grass platform where cows/pigs/sheep/
   chickens spawn and graze, a water funnel pushes them into a fall + magma
   kill zone, and an auto-smoker cooks the drops before a hopper stores them
@@ -101,22 +102,40 @@ builder shared screenshots of, rather than my own from-scratch layouts:
   instead of a hand-placed pool of uniform source blocks, which would have
   no push at all). What changed is the shape: instead of a thin current
   across a mostly-dry floor draining to a center hole, the whole platform
-  fills in as a pool draining to a 2-wide hole in the SE corner, and the
-  kill mechanism below is **lava**, not magma. Lava is what the reference
-  design uses, but it's a real trade-off: magma damages a golem without
-  touching item drops, while lava can destroy a drop that happens to land
-  on it instead of the one hopper tile in the kill pocket. Swap the
-  `"minecraft:lava"` placements in `ironFarm.js` for `"minecraft:magma"` if
-  you'd rather have zero loot loss than match the reference exactly.
+  fills in as a pool draining to a 2-wide hole in the SE corner.
+- **Kill pocket is magma again, not lava.** A version of this pocket briefly
+  used lava (matching a reference design's material list), but it leaked —
+  lava spread out across the surrounding hall floor in testing instead of
+  staying in the intended pocket. I traced through the containment logic
+  and couldn't find where it actually escapes on paper, which means either
+  there's a subtlety in how Bedrock's fluid placement behaves that I don't
+  have full visibility into, or it was stale lava left over from an earlier
+  rebuild at the same spot — I can't say for certain which. Rather than
+  keep guessing at a fluid, it's magma now: a solid block, not a fluid, so
+  it's physically incapable of spreading or leaking no matter what the real
+  cause was. Same real damage-over-time, zero loot loss, zero leak risk.
+- **No more zombie cage.** Earlier versions caged a zombie near the
+  villagers on the theory that a nearby threat raises golem-spawn urgency.
+  That's a real mechanic — on Java, where 3 panicking villagers can
+  emergency-summon a golem. That panic mechanic doesn't exist on Bedrock at
+  all; Bedrock's golem spawning is purely population/bed/workstation-based
+  (see above), so the zombie was doing nothing except taking up space and
+  materials. Removed.
 - **Crop farm is a pinwheel now, not paired plots.** 4 farmer quadrants
   around one central collector pit, with a short (1-block-high) wall around
   the pit — low enough for a farmer standing outside to reach over and
-  share food, tall enough that the caged collector can't walk out. (An
-  earlier version of this redesign dropped the hopper-minecart collection
-  entirely in favor of a bare hopper floor; the reference design's screenshot
-  clearly shows rail and parked minecarts in the pit, so those are back —
-  a hopper under every tile, rail on top, and a parked hopper minecart on
-  the 8 tiles around the collector.)
+  share food, tall enough that the caged collector can't walk out. A hopper
+  sits under every pit tile, rail on top, and a parked hopper minecart on
+  the 8 tiles around the collector — matching the reference design's
+  screenshot, which clearly shows rail and parked minecarts in the pit (an
+  earlier pass here mistakenly replaced that with a bare hopper floor).
+- **Mob farm's water wasn't actually pushing anything.** It still had the
+  original west+east opposing-current pattern (two currents flowing
+  head-on into each other cancel out right where they'd meet) even after
+  that exact bug was found and fixed on the iron farm — the fix was never
+  carried over to this file. Now uses the same west+north
+  adjacent-walls-converge-on-a-corner pattern as the iron farm, with the
+  drain and fall shaft moved to match.
 
 ## Achievement compatibility (read this first)
 
@@ -160,8 +179,8 @@ the version to test.
    or zip the `BP/` and `RP/` folders together yourself.
 2. Send that `.mcaddon` file to your device and open it — Minecraft will
    import both packs.
-3. In your world settings, add **both** **Millstone Farms [Behavior]**
-   *and* **Millstone Farms [Resources]** — under their respective
+3. In your world settings, add **both** **Groundwork Farms [Behavior]**
+   *and* **Groundwork Farms [Resources]** — under their respective
    Behavior Packs / Resource Packs tabs. Adding only one is a common
    mistake and shows up as items with no icon and a raw
    `item.autofarm:...name` name instead of proper text/art, since that
@@ -200,20 +219,17 @@ which is what actually keeps them counted as valid village members
 Levels are spaced close together (12 blocks) on purpose so every built
 level merges into one combined village instead of staying separate — see
 "what stackable actually means" above for why deliberately merging beats
-trying to keep floors independent. A caged zombie on each level is
-visible/near enough to raise that village's "under attack" state, which
-vanilla uses to increase golem spawn urgency. Golems spawn in the open-top,
-heavily-lit water pool above each level (inside the village bounds); a
-source column on the west wall (flows east) and one on the north wall
-(flows south) push everything toward a 2-wide drain in the SE corner, and
-the rest of the pool fills in from those two sources via the game's own
-fluid physics (a hand-filled pool of uniform source blocks would have no
-current — see the water-current notes above). Golems fall down the corner
-shaft onto a lava kill pocket and take real damage over time until they
-die; one hopper tile in the pocket is a direct catch point for the drops,
-feeding the shared collection shaft. This matches a reference design that
-uses lava rather than the zero-loss magma this project used before — see
-the trade-off note above if you'd rather swap that back.
+trying to keep floors independent. No zombie cage — that's a Java-only
+mechanic (see above). Golems spawn in the open-top, heavily-lit water pool
+above each level (inside the village bounds); a source column on the west
+wall (flows east) and one on the north wall (flows south) push everything
+toward a 2-wide drain in the SE corner, and the rest of the pool fills in
+from those two sources via the game's own fluid physics (a hand-filled
+pool of uniform source blocks would have no current — see the
+water-current notes above). Golems fall down the corner shaft onto a magma
+kill pocket and take real damage over time until they die; one hopper tile
+in the pocket is a direct catch point for the drops, feeding the shared
+collection shaft.
 
 **Crop Farm** — A pinwheel: 4 farmer villagers, each in their own 9x9
 quadrant (farmers won't work land more than ~4 blocks from their
@@ -239,17 +255,18 @@ independent 4-farmer pinwheel on the ground, 10 blocks from the next one.
 pigs, sheep, and chickens naturally spawn and graze over time (no
 breeding required, though feeding them speeds it up) inside a 2-block-high
 fence barrier that keeps them from wandering off the edge early. The same
-one-axis water convergence used to fix the iron farm's platform pushes
-grown animals into a 2-wide center drain, which drops them 14 blocks — far
+west+north adjacent-walls water convergence as the iron farm pushes grown
+animals into a 2-wide SE corner drain, which drops them 14 blocks — far
 enough to kill cows/pigs/sheep outright with fall damage alone. Chickens
 take no fall damage in vanilla, so the landing zone is also lined with
-magma blocks (safe for item drops, unlike lava) as a guaranteed finisher.
-A water current sweeps the raw drops into a hopper that feeds a smoker's
-input slot from directly above — standard vanilla hopper-into-furnace
-behavior, no scripting needed for the cooking itself. The smoker's fuel
-slot is pre-loaded with a stack of coal at build time (good for 512
-smelts), and a second hopper underneath automatically pulls the cooked
-output into the final chest.
+magma blocks (safe for item drops, and — being a solid block rather than a
+fluid — physically unable to spread past where it's placed) as a
+guaranteed finisher. A hopper tile in the landing zone directly catches
+drops and feeds a smoker's input slot from directly above — standard
+vanilla hopper-into-furnace behavior, no scripting needed for the cooking
+itself. The smoker's fuel slot is pre-loaded with a stack of coal at build
+time (good for 512 smelts), and a second hopper underneath automatically
+pulls the cooked output into the final chest.
 
 All three farms funnel their output into one shared external hopper chain
 ending in a double chest — not buried, so it's immediately visible without
@@ -314,6 +331,17 @@ of how many levels/units you built.
   you build on ground very close to the world's minimum build height, the
   kill zone/smoker/chest can clip below it. Build on typical Overworld
   terrain and this isn't a concern.
+- **Testing methodology**: every farm change is run through a mock-runtime
+  harness (stub `@minecraft/server` modules) across all 4 facings and every
+  level count, checking for invalid coordinates/ids, accidental overlaps
+  between separately-authored pieces, and — since a real bug slipped
+  through here once (a lava kill pocket that leaked, root cause never
+  fully confirmed) — a flood-fill check that every water/lava placement's
+  reachable open area stays within a sane size, catching containment
+  mistakes before they ship instead of after. This doesn't replace actually
+  testing in-game (it can't verify real Bedrock physics, villager AI, or
+  anything that depends on the live game), but it does catch a real class
+  of authoring mistakes automatically.
 - **Build site**: the tool clears a generous interior volume before
   building, but doesn't touch anything outside the farm's own footprint.
   Build on relatively flat ground, away from any existing village (see

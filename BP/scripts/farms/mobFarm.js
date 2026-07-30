@@ -15,16 +15,19 @@ import { rotateDirection } from "../lib/geometry.js";
  *    animals wheat/seeds/carrots will speed things up.
  *  - A 2-block-high fence barrier rings the platform so animals can wander
  *    and graze without being pushed (or wandering) off the edge early.
- *  - The same one-axis water convergence used on the (now-fixed) iron
- *    farm's platform — a full-depth column on the west wall flowing east,
- *    one on the east wall flowing west, nothing on north/south — funnels
- *    grown animals toward a center drain without any head-on currents
- *    canceling each other out.
+ *  - The same one-axis water convergence used on the iron farm's platform —
+ *    a full-depth column on the west wall flowing east, one on the north
+ *    wall flowing south, converging on a 2-wide drain in the SE corner.
+ *    Two currents flowing head-on into each other (e.g. west+east, or
+ *    north+south) create a dead/ambiguous push right where they'd meet;
+ *    two currents on ADJACENT walls only ever combine, they never cancel,
+ *    which is why the drain is a corner here and not the center.
  *  - The drain drops mobs down a 14-block shaft — enough fall damage to
  *    kill cows/pigs/sheep outright. Chickens take no fall damage in
  *    vanilla, so the landing zone is also lined with magma blocks (safe
- *    for item drops, unlike lava) as a guaranteed finisher for anything
- *    that survives the fall.
+ *    for item drops, unlike lava — magma is a solid block, not a fluid, so
+ *    unlike lava it physically cannot spread/leak beyond where it's
+ *    placed) as a guaranteed finisher for anything that survives the fall.
  *  - Raw drops get swept by a water current into a hopper that feeds
  *    straight into a smoker's input slot from above (standard vanilla
  *    hopper-into-furnace behavior — no scripting needed for the smelting
@@ -62,38 +65,41 @@ function planUnit(dx, facing) {
   parts.push(box([0, 1, 0], [0, 2, 14], "minecraft:oak_fence"));
   parts.push(box([14, 1, 0], [14, 2, 14], "minecraft:oak_fence"));
 
-  // One-axis water convergence toward a 2-wide center drain (x=7-8), same
-  // fix applied to the iron farm: only west/east push, nothing head-on.
-  parts.push(box([7, 0, 7], [8, 0, 7], "minecraft:air"));
+  // One-axis water convergence toward a 2-wide SE corner drain: west wall
+  // flows east, north wall flows south. See notes above for why adjacent
+  // (not opposite) walls are what actually works.
+  parts.push(box([12, 0, 12], [13, 0, 13], "minecraft:air"));
   parts.push(box([1, 1, 1], [1, 1, 13], "minecraft:water"));
-  parts.push(box([13, 1, 1], [13, 1, 13], "minecraft:water"));
+  parts.push(box([1, 1, 1], [13, 1, 1], "minecraft:water"));
 
   // Fall shaft straight down from the drain to the kill zone.
   for (let y = -1; y >= -SHAFT_DEPTH; y--) {
-    parts.push(box([7, y, 7], [8, y, 7], "minecraft:air"));
+    parts.push(box([12, y, 12], [13, y, 13], "minecraft:air"));
   }
 
-  // Kill zone: magma floor (safe for item drops, unlike lava — finishes off
-  // fall-damage-immune chickens and anything else still standing), with a
-  // water current sweeping drops toward the collection hopper.
+  // Kill zone: a fully self-walled pocket (nothing pre-existing to lean on
+  // down here, unlike the above-ground platform). Walls span every y-layer
+  // from the magma's own floor layer up through the ceiling — a wall that
+  // only starts one layer above the floor leaves the floor's own layer
+  // open on that side, which is exactly how a fluid would leak out
+  // undetected. Magma doesn't have that failure mode at all (it's a solid
+  // block, not a fluid — nothing to contain), which is why it's used here
+  // instead of lava.
   const floorY = -SHAFT_DEPTH - 1;
-  parts.push(box([4, floorY + 1, 4], [11, floorY + 2, 4], "minecraft:cobblestone"));
-  parts.push(box([4, floorY + 1, 11], [11, floorY + 2, 11], "minecraft:cobblestone"));
-  parts.push(box([4, floorY + 1, 4], [4, floorY + 2, 11], "minecraft:cobblestone"));
-  parts.push(box([11, floorY + 1, 4], [11, floorY + 2, 11], "minecraft:cobblestone"));
-  parts.push(box([5, floorY, 5], [10, floorY, 10], "minecraft:magma"));
-  parts.push(block(5, floorY + 1, 7, "minecraft:water"));
+  parts.push(box([9, floorY, 9], [14, floorY + 2, 9], "minecraft:cobblestone"));
+  parts.push(box([9, floorY, 14], [14, floorY + 2, 14], "minecraft:cobblestone"));
+  parts.push(box([9, floorY, 9], [9, floorY + 2, 14], "minecraft:cobblestone"));
+  parts.push(box([14, floorY, 9], [14, floorY + 2, 14], "minecraft:cobblestone"));
+  parts.push(box([10, floorY, 10], [13, floorY, 13], "minecraft:magma"));
+  parts.push(block(13, floorY, 13, "minecraft:hopper", { facing_direction: HOPPER_FACING.down }));
 
-  // Cooking chain: catch hopper -> smoker (fed from above) -> output hopper
-  // -> chest. Fuel is pre-loaded separately via the fills list below.
+  // Cooking chain: catch hopper (above) -> smoker (fed from above) ->
+  // output hopper -> chest. Fuel is pre-loaded separately via fills below.
   const east = rotateDirection("east", facing);
-  const down = HOPPER_FACING.down;
-  parts.push(block(10, floorY, 7, "minecraft:hopper", { facing_direction: HOPPER_FACING[east] })); // catches drops, pushes east
-  parts.push(block(11, floorY, 7, "minecraft:hopper", { facing_direction: down })); // feeds down into the smoker's input from above
-  parts.push(block(11, floorY - 1, 7, "minecraft:smoker", { "minecraft:cardinal_direction": east }));
-  parts.push(block(11, floorY - 2, 7, "minecraft:hopper", { facing_direction: HOPPER_FACING[east] })); // pulls cooked output, pushes toward chest
-  parts.push(block(12, floorY - 2, 7, "minecraft:chest"));
-  parts.push(block(13, floorY - 2, 7, "minecraft:chest"));
+  parts.push(block(13, floorY - 1, 13, "minecraft:smoker", { "minecraft:cardinal_direction": east }));
+  parts.push(block(13, floorY - 2, 13, "minecraft:hopper", { facing_direction: HOPPER_FACING[east] })); // pulls cooked output, pushes toward chest
+  parts.push(block(14, floorY - 2, 13, "minecraft:chest"));
+  parts.push(block(15, floorY - 2, 13, "minecraft:chest"));
 
   // Lighting: same open-top philosophy as the iron farm — heavy sea
   // lantern coverage keeps light levels high with no roof to rely on.
@@ -113,7 +119,7 @@ function planUnit(dx, facing) {
     spawns.push({ x, y: 1, z, typeId });
   }
 
-  const fills = [{ x: 11, y: floorY - 1, z: 7, slot: 1, itemId: "minecraft:coal", amount: 64 }];
+  const fills = [{ x: 13, y: floorY - 1, z: 13, slot: 1, itemId: "minecraft:coal", amount: 64 }];
 
   const merged = merge(...parts);
   return {

@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Millstone Farms [Behavior]",
+    "name": "Groundwork Farms [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
-    "uuid": "e553c1bf-0fd1-4682-8023-98091112d768",
+    "uuid": "6d777d9e-1f18-4476-93aa-d05addc86366",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 90]
   },
@@ -13,13 +13,13 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "1b983c70-61a8-43d8-9f76-5430c5ea3697",
+      "uuid": "7750b803-da74-4ccd-a7d1-586b43e23c7d",
       "version": [1, 0, 0]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "a2a24d7c-841d-4f9f-8738-b518323ba2e6",
+      "uuid": "facd1e9f-d031-4300-98a9-a5aadd3a8af4",
       "version": [1, 0, 0],
       "entry": "scripts/main.js"
     }
@@ -34,7 +34,7 @@
       "version": "2.1.0"
     },
     {
-      "uuid": "a05f76b0-db12-4e0e-84b9-53d936e4e8d3",
+      "uuid": "87836772-0c98-4269-b4dd-0f4ac358deef",
       "version": [1, 0, 0]
     }
   ]

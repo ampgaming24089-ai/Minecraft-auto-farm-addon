@@ -30,8 +30,12 @@ import { rotateDirection } from "../lib/geometry.js";
  *    Keeping levels close and letting them merge into one bigger village
  *    is what actually lets every floor spawn golems simultaneously from a
  *    single AFK spot at the base.
- *  - A caged zombie on each level gives villagers a nearby threat, which
- *    vanilla uses to raise golem-spawn urgency ("village under attack").
+ *  - No zombie cage. Earlier versions of this farm included one on the
+ *    theory that a nearby threat raises golem-spawn urgency — that's real
+ *    on Java (3 panicking villagers can emergency-summon a golem), but
+ *    that panic mechanic doesn't exist on Bedrock at all. Bedrock's golem
+ *    spawning is purely population/bed/workstation-based (see above), so a
+ *    caged zombie does nothing here except waste space and materials.
  *  - A walled, lit spawn platform sits above the bedrooms on each level,
  *    inside the village bounds, and is a real water pool — not just a thin
  *    current over a dry floor — matching a well-known reference design. A
@@ -48,16 +52,17 @@ import { rotateDirection } from "../lib/geometry.js";
  *    light and creating dark pockets hostile mobs could spawn in; leaving
  *    it open and lighting the place heavily (see step 8) keeps light
  *    levels high enough that nothing hostile spawns instead.
- *  - Golems drop down a corner shaft onto a lava kill pocket (matching the
- *    reference design's material list, which uses lava rather than the
- *    zero-loss magma this project used earlier) with one hopper tile as a
- *    direct catch point, feeding a shared external shaft down to one base
- *    chest. Water and lava react (into stone/obsidian) if they touch, so
- *    there's no water current inside the pocket sweeping drops clear of
- *    the lava — a drop that lands on a lava tile instead of the hopper
- *    tile can burn. That's a real trade-off of matching the reference
- *    design; swap the "minecraft:lava" placements below for
- *    "minecraft:magma" for a zero-loss version instead.
+ *  - Golems drop down a corner shaft onto a magma kill pocket, with one
+ *    hopper tile as a direct catch point, feeding a shared external shaft
+ *    down to one base chest. An earlier version of this pocket used lava
+ *    (matching a reference design's material list) — that was reverted.
+ *    Lava is a FLUID and spreads into any open neighboring space; the
+ *    pocket's walls only spanned the layer above the lava, not the lava's
+ *    own floor layer, so it leaked out across the hall floor in testing.
+ *    Magma is a solid block, not a fluid — it physically cannot spread or
+ *    leak regardless of what does or doesn't wall it in, which is why it's
+ *    used here instead. It deals the same real damage-over-time without
+ *    touching item drops at all, so there's no loot-loss trade-off either.
  *
  * Local space: x 0-14 (width), z 0-14 (depth), y 0-8 (height per level).
  * +z is "forward" (away from the player), +x is "right".
@@ -115,14 +120,10 @@ function planLevel(dy, facing) {
     parts.push(block(x, 1, 8, "minecraft:torch"));
   }
 
-  // 4. Caged zombie: visible threat that raises golem-spawn urgency.
-  //    Sits past the hall in its own z-band (z=9-11) so it never overlaps
-  //    the two bed rows.
-  parts.push(box([10, 1, 9], [10, 3, 11], "minecraft:glass"));
-  parts.push(box([12, 1, 9], [12, 3, 11], "minecraft:glass"));
-  parts.push(box([10, 1, 9], [12, 3, 9], "minecraft:glass"));
-  parts.push(box([10, 1, 11], [12, 3, 11], "minecraft:glass"));
-  spawns.push({ x: 11, y: 1, z: 10, typeId: "minecraft:zombie" });
+  // 4. Extra floor-level lighting in the open z=9-11 band between the hall
+  //    and the kill pocket wall (no roof, so this has to be lit directly
+  //    rather than relying on an enclosed room).
+  parts.push(block(6, 1, 10, "minecraft:sea_lantern"));
 
   // 5. Mid-ceiling separating bedrooms from the spawn platform, with a
   //    golem drop shaft punched through the SE corner (above the kill
@@ -139,17 +140,15 @@ function planLevel(dy, facing) {
   parts.push(box([1, 6, 1], [1, 6, 13], "minecraft:water"));
   parts.push(box([1, 6, 1], [13, 6, 1], "minecraft:water"));
 
-  // 7. Kill pocket: lava fills the landing zone under the corner drain,
-  //    with one hopper tile as a direct catch point (see the lava-vs-magma
-  //    trade-off note above). Walls seal off the pocket from the hall —
-  //    the cage's own south wall (step 4, at x10-12,z11) already covers
-  //    part of the north side, so only the x=9 and x=13 columns need their
-  //    own wall here.
-  parts.push(box([9, 1, 11], [9, 3, 13], "minecraft:cobblestone"));
-  parts.push(box([13, 1, 11], [13, 3, 11], "minecraft:cobblestone"));
-  parts.push(block(12, 0, 12, "minecraft:lava"));
-  parts.push(block(13, 0, 12, "minecraft:lava"));
-  parts.push(block(12, 0, 13, "minecraft:lava"));
+  // 7. Kill pocket: magma fills the landing zone under the corner drain
+  //    (see the lava-vs-magma note above for why), with one hopper tile as
+  //    a direct catch point. Walls seal the pocket off from the hall on
+  //    every layer from the floor (y=0) up through y=3 — a wall that only
+  //    starts one layer above the floor leaves the floor's own layer open,
+  //    which is exactly how the lava version leaked before.
+  parts.push(box([9, 0, 11], [9, 3, 13], "minecraft:cobblestone"));
+  parts.push(box([9, 0, 11], [13, 3, 11], "minecraft:cobblestone"));
+  parts.push(box([10, 0, 12], [13, 0, 13], "minecraft:magma"));
   const east = rotateDirection("east", facing);
   parts.push(block(13, 0, 13, "minecraft:hopper", { facing_direction: HOPPER_FACING[east] }));
   parts.push(block(14, 0, 13, "minecraft:hopper", { facing_direction: HOPPER_FACING[east] }));
