@@ -71,9 +71,11 @@ function planLevel(dy, facing) {
   }
 
   // 4. Mid-ceiling separating bedrooms from the spawn platform, with a
-  //    golem drop shaft punched through the center.
+  //    golem drop shaft punched through the center. 2 blocks wide (not 1)
+  //    since iron golems have a 1.4-block-wide hitbox and can get stuck
+  //    trying to fall through a single-block gap.
   parts.push(box([1, 4, 1], [13, 4, 13], "minecraft:cobblestone"));
-  parts.push(block(7, 4, 7, "minecraft:air"));
+  parts.push(box([7, 4, 7], [8, 4, 7], "minecraft:air"));
 
   // 5. Caged zombie: visible threat that raises golem-spawn urgency.
   parts.push(box([10, 1, 6], [10, 3, 8], "minecraft:glass"));
@@ -83,9 +85,10 @@ function planLevel(dy, facing) {
   spawns.push({ x: 11, y: 1, z: 7, typeId: "minecraft:zombie" });
 
   // 6. Spawn platform (village bounds, valid golem spawn surface), drop hole
-  //    in the center, and an inward water current from the edges.
+  //    in the center (2 wide, matching the shaft above), and an inward
+  //    water current from the edges.
   parts.push(box([1, 5, 1], [13, 5, 13], "minecraft:stone_bricks"));
-  parts.push(block(7, 5, 7, "minecraft:air"));
+  parts.push(box([7, 5, 7], [8, 5, 7], "minecraft:air"));
   const currentPoints = [
     [3, 3], [11, 3], [3, 11], [11, 11],
     [7, 3], [7, 11], [3, 7], [11, 7],

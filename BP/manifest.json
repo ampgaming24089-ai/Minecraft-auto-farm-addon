@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Blockspire [Behavior]",
+    "name": "Ironbound Works [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
-    "uuid": "116e5c2a-f4a9-4d57-977b-5d583a85b479",
+    "uuid": "6dec68a3-3316-4347-9b06-72cb60465158",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 90]
   },
@@ -13,13 +13,13 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "e8586143-da19-453d-b9fd-e282b922e929",
+      "uuid": "da13884e-5be0-4661-9c78-6667b405efc0",
       "version": [1, 0, 0]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "86fd96f8-8f63-44ec-9090-0065878a7802",
+      "uuid": "22c2c8cc-b393-45e7-b6f0-f69054397096",
       "version": [1, 0, 0],
       "entry": "scripts/main.js"
     }
@@ -34,7 +34,7 @@
       "version": "2.1.0"
     },
     {
-      "uuid": "c6cef62d-bd1b-41e1-b148-1917ca431365",
+      "uuid": "e168ec2e-2801-4734-bab2-660687540155",
       "version": [1, 0, 0]
     }
   ]

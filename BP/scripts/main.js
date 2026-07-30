@@ -124,7 +124,7 @@ function runBuild(player, origin, facing, farm, levels) {
 }
 
 function* buildJob(dimension, origin, facing, placements, spawns, player) {
-  yield* placeAll(dimension, origin, placements, facing, 80, (done, total) => {
+  yield* placeAll(dimension, origin, placements, facing, 300, (done, total) => {
     try {
       player.onScreenDisplay.setActionBar(`§bPlacing blocks: ${done}/${total}`);
     } catch {
@@ -140,6 +140,12 @@ function* buildJob(dimension, origin, facing, placements, spawns, player) {
 
   busyPlayers.delete(player.id);
   try {
+    player.onScreenDisplay.setTitle("§aBuild Complete!", {
+      subtitle: "Check the corner rooms and the base chest.",
+      fadeInDuration: 10,
+      stayDuration: 100,
+      fadeOutDuration: 20,
+    });
     player.sendMessage("§aAuto Farm build complete!");
     player.playSound("random.levelup");
   } catch {

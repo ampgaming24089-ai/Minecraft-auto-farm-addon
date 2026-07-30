@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Blockspire [Resources]",
-    "description": "Resources for Blockspire - structure build tool icon and text.",
-    "uuid": "c6cef62d-bd1b-41e1-b148-1917ca431365",
+    "name": "Ironbound Works [Resources]",
+    "description": "Resources for Ironbound Works - structure build tool icon and text.",
+    "uuid": "e168ec2e-2801-4734-bab2-660687540155",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
@@ -13,7 +13,7 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "9dc70c25-bf7a-4b78-a29b-7af46b1419b0",
+      "uuid": "a0dbe4f8-b3f1-4043-9410-aac652228c7c",
       "version": [1, 0, 0]
     }
   ]

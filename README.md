@@ -55,8 +55,8 @@ the version to test.
    or zip the `BP/` and `RP/` folders together yourself.
 2. Send that `.mcaddon` file to your device and open it — Minecraft will
    import both packs.
-3. In your world settings, add **both** **Blockspire [Behavior]**
-   *and* **Blockspire [Resources]** — under their respective
+3. In your world settings, add **both** **Ironbound Works [Behavior]**
+   *and* **Ironbound Works [Resources]** — under their respective
    Behavior Packs / Resource Packs tabs. Adding only one is a common
    mistake and shows up as items with no icon and a raw
    `item.autofarm:...name` name instead of proper text/art, since that
@@ -141,6 +141,22 @@ shaft on the outside of the tower, ending in a double chest at the base.
   plot never seems to work, walk over, note which villager has no farmer
   job, and give it a moment — or break/replace that composter to force a
   re-claim.
+- **Crop farm collection is the least certain mechanic here.** It relies on
+  real (and somewhat unpredictable) vanilla AI: farmer villagers eventually
+  accumulating more crops than they need and sharing/dropping the surplus
+  near other villagers. This can take real in-game time and isn't perfectly
+  guaranteed the way the iron farm's golem-spawning is. Treat it as "should
+  produce output over time," not "instant," and let it run for a while
+  before concluding it isn't working.
+- **Stay near the build site until you see "Build Complete!"** on screen.
+  Building spreads block placement across many ticks to avoid freezing the
+  game; a 4-level farm can take a while. If you wander far enough that
+  chunks unload mid-build, later placements (including villager spawns,
+  which happen last) can silently fail, leaving an incomplete structure. If
+  that happens, just build again while staying put.
+- **Iron golem drop shaft is 2 blocks wide**, not 1 — golems have a
+  1.4-block-wide hitbox and can get stuck trying to fall through a
+  single-block gap.
 - **Very tall stacks (4 levels)** mean the bottom level's items travel
   through a long hopper chain to reach the base chest. This is normal
   vanilla hopper transfer speed, not a bug — expect a short delay, not data
