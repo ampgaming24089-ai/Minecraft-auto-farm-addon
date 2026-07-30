@@ -16,13 +16,22 @@ Includes two farms, both quad-stackable:
 
 ## Why it's achievement-friendly
 
-Every block placed and every entity spawned goes through the
-`@minecraft/server` Script API (`block.setPermutation`, `dimension.spawnEntity`)
-— never `/give`, `/fill`, `/structure`, or any other slash command. Bedrock
-only disables achievements when a world has cheats turned on; nothing in
-this addon requires cheats. The Structure Build Tool is also obtainable
-through a normal crafting recipe (see below), so a legitimate survival world
-never needs cheats enabled at any point.
+Bedrock disables achievements for a world if cheats are turned on **or** if
+any experimental toggle (including "Beta APIs"/Holiday Creator Features) is
+enabled — even if you never use it. This addon avoids both:
+
+- Every block placed and every entity spawned goes through the
+  `@minecraft/server` Script API (`block.setPermutation`, `dimension.spawnEntity`)
+  — never `/give`, `/fill`, `/structure`, or any other slash command, so
+  cheats never need to be turned on.
+- `BP/manifest.json` depends on the **stable** release of `@minecraft/server`
+  and `@minecraft/server-ui` (plain version numbers, no `-beta` suffix).
+  Stable Script API modules run on a normal world with no experimental
+  toggles at all — do **not** turn on "Beta APIs"/Holiday Creator Features;
+  that toggle disables achievements by itself and this addon doesn't need it.
+- The Structure Build Tool is also obtainable through a normal crafting
+  recipe (see below), so a legitimate survival world never needs cheats or
+  experiments enabled at any point.
 
 ## Install
 
@@ -32,14 +41,17 @@ never needs cheats enabled at any point.
    import both packs automatically.
 3. In your world settings, add both **Auto Farm Addon [BP]** and
    **Auto Farm Addon [RP]** under Behavior Packs / Resource Packs.
-4. Make sure the world has the **Beta APIs** (Additional Modules) experimental
-   toggle enabled — required for any world using `@minecraft/server` scripting.
+4. Leave every toggle under **Experiments** off. Nothing in this addon needs
+   them, and turning any of them on disables achievements regardless of
+   what the addon itself does.
 
-If Minecraft complains about a script API version mismatch on load, open
+If Minecraft complains about a script API version mismatch on load, it means
+your game version's stable module numbers have moved on — open
 `BP/manifest.json` and bump the `@minecraft/server` / `@minecraft/server-ui`
-module versions (and `min_engine_version`) to whatever your game version's
-Script API documentation lists as current — Mojang ships new module versions
-every content update.
+module versions (and `min_engine_version`) to whatever the current **stable**
+(non-beta) versions are per Mojang's Script API documentation. Avoid `-beta`
+suffixed versions — those require the experimental toggle and will cost you
+achievements.
 
 ## Using it in-game
 
