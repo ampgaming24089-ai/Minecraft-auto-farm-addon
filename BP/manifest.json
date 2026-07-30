@@ -1,10 +1,10 @@
 {
   "format_version": 2,
   "header": {
-    "name": "CraftForge Instant Builds [Behavior]",
+    "name": "Yieldworks [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
-    "uuid": "9b1f8e22-e655-4718-94bb-685a6ad0d6be",
-    "version": [1, 0, 1],
+    "uuid": "fa73a424-16d7-48c0-9cf7-095b1c41ba46",
+    "version": [1, 0, 0],
     "min_engine_version": [1, 21, 90]
   },
   "metadata": {
@@ -13,13 +13,13 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "22d77d5a-81e6-44c8-a998-ceea654cf80a",
-      "version": [1, 0, 1]
+      "uuid": "3a5cc637-ef52-4468-8baa-bf813cf583e2",
+      "version": [1, 0, 0]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "b15191ce-b86a-4bb4-9133-f0b79c53f050",
+      "uuid": "119e3328-b15d-40f3-8eff-c130f9c30d75",
       "version": [1, 0, 0],
       "entry": "scripts/main.js"
     }
@@ -34,7 +34,7 @@
       "version": "2.1.0"
     },
     {
-      "uuid": "f708302b-9501-47ea-b337-8b849d28f69f",
+      "uuid": "0a16f630-9d61-44a9-babc-9e404cc1ac5a",
       "version": [1, 0, 0]
     }
   ]

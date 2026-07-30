@@ -1,10 +1,10 @@
 {
   "format_version": 2,
   "header": {
-    "name": "CraftForge Instant Builds [Resources]",
-    "description": "Resources for CraftForge Instant Builds - structure build tool icon and text.",
-    "uuid": "f708302b-9501-47ea-b337-8b849d28f69f",
-    "version": [1, 0, 1],
+    "name": "Yieldworks [Resources]",
+    "description": "Resources for Yieldworks - structure build tool icon and text.",
+    "uuid": "0a16f630-9d61-44a9-babc-9e404cc1ac5a",
+    "version": [1, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
   "metadata": {
@@ -13,8 +13,8 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "6f4542e8-9420-456c-bf2d-7e30af028225",
-      "version": [1, 0, 1]
+      "uuid": "da9913d4-8e6a-47c1-ab5c-1ebb4168c29b",
+      "version": [1, 0, 0]
     }
   ]
 }
