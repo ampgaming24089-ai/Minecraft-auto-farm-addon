@@ -1,8 +1,8 @@
 # Auto Farm Addon (Minecraft Bedrock)
 
-Instant, stackable auto farms for Minecraft Bedrock / Pocket Edition,
-delivered as **craftable beacon items** — no menus, no scripting, no
-commands typed by the player.
+Instant, stackable auto farms for Minecraft Bedrock / Pocket Edition. Right-click
+a block with the **Structure Build Tool**, pick a farm from a menu, preview
+its footprint as a particle outline, then confirm to have it built instantly.
 
 Includes two farms, both quad-stackable:
 
@@ -13,48 +13,41 @@ Includes two farms, both quad-stackable:
   villagers, a center villager they periodically try to share surplus food
   with, and a hopper-minecart collection pen that catches the dropped food.
 
-## Why this version exists (achievement compatibility)
+## Achievement compatibility (read this first)
 
-The first version of this addon used the `@minecraft/server` Script API to
-build farms dynamically from a menu. Activating that pack immediately
-showed Minecraft's own **"You can't earn achievements"** dialog, listing
-*"An external behavior pack was activated"* as the reason.
+This took three tries to get right, so here's the real story:
 
-The actual, documented cause: Bedrock disables achievements for any custom
-pack that's missing a specific manifest field —
+1. **First version** used the Script API with no `metadata.product_type`
+   field. Activating it immediately showed Minecraft's "You can't earn
+   achievements" dialog — *"An external behavior pack was activated."*
+2. **Second version** removed the Script API entirely and rebuilt
+   everything as data-driven items triggering `.mcfunction` files via each
+   item's `minecraft:on_use` component. This turned out to be a dead end:
+   `run_command` (the action that actually invokes the function) requires
+   the **Holiday Creator Features** experimental toggle to work at all —
+   without it, the item silently does nothing, which is exactly what
+   happened when tested. And experimental toggles disable achievements
+   independently of everything else, so this path could never have worked
+   for the stated goal even if the wiring had been correct.
+3. **This version** goes back to the Script API (which doesn't need any
+   experimental toggle — stable, non-beta `@minecraft/server` module
+   versions like the ones this addon depends on never require Beta APIs or
+   Holiday Creator Features) and adds the piece that was actually missing
+   from the start:
+   ```json
+   "metadata": {
+     "product_type": "addon"
+   }
+   ```
+   in **both** `BP/manifest.json` and `RP/manifest.json`. Without this
+   field, Bedrock treats any custom pack as a potential "cheat world" and
+   blocks achievements regardless of what it contains — this is documented
+   community knowledge and matches how other achievement-friendly
+   community addons (e.g. Force Creative-style packs, which do far more
+   invasive things than this one) stay compatible.
 
-```json
-"metadata": {
-  "product_type": "addon"
-}
-```
-
-— placed alongside `"header"`/`"modules"` in `manifest.json`. Without it,
-Minecraft treats the pack as a potential "cheat world" and blocks
-achievements regardless of what the pack actually does. **Both**
-`BP/manifest.json` and `RP/manifest.json` now include this field. This is
-also almost certainly why community packs like Force Creative-style addons
-stay achievement-friendly despite doing far more invasive things than this
-addon does.
-
-Separately, this version was also rewritten to be **100% data-driven — no
-`scripts/` folder, no script module in the manifest at all.** Farms build
-through items, recipes, and vanilla `.mcfunction` command files (the same
-mechanism `/function` and command blocks use) instead of the Script API.
-That change was a reasonable precaution at the time and isn't being
-reverted, but the `metadata.product_type` field above is the fix that
-actually matters — if you'd rather have the fancier dynamic-menu,
-live-outline-preview version back now that the real cause is known, say so
-and I'll restore it with this field included.
-
-**Please treat the item-trigger mechanism as unverified until you've
-tested it.** I can't run a Bedrock client myself, and the exact schema for
-"item triggers a command on use" (the `minecraft:on_use` component below)
-is the one piece I couldn't cross-check against a live game. If the beacon
-doesn't fire when used, that's almost certainly a small fix to that one
-component in `BP/items/*.json` — the actual farm layouts (everything the
-`.mcfunction` files do) were validated independently and don't depend on
-that part being right.
+So: Script API + `product_type: addon`, no experiments, no cheats. This is
+the version to test.
 
 ## Install
 
@@ -62,34 +55,31 @@ that part being right.
    or zip the `BP/` and `RP/` folders together yourself.
 2. Send that `.mcaddon` file to your device and open it — Minecraft will
    import both packs.
-3. In your world settings, add both **Instant Auto Farms [Behavior]** and
-   **Instant Auto Farms [Resources]** under Behavior Packs / Resource Packs.
-4. Leave everything under **Experiments** off and cheats off — nothing here
-   needs them.
+3. In your world settings, add **both** **Instant Auto Farms [Behavior]**
+   *and* **Instant Auto Farms [Resources]** — under their respective
+   Behavior Packs / Resource Packs tabs. Adding only one is a common
+   mistake and shows up as items with no icon and a raw
+   `item.autofarm:...name` name instead of proper text/art, since that
+   text and icon live in the resource pack.
+4. Leave everything under **Experiments** off, and leave cheats off.
+   Nothing here needs them.
 
 ## Using it in-game
 
-Each farm/level combination is its own craftable item (8 total), since
-there's no menu to pick from anymore:
+1. Craft a **Structure Build Tool**: iron ingot / emerald / iron ingot on
+   the top row, stick in the bottom-middle row (see `BP/recipes/build_tool.json`,
+   or check the recipe book). It's also in the Creative inventory under
+   Equipment.
+2. Stand where you want the farm's front-left corner and right-click the
+   ground with the tool.
+3. Pick a farm from the menu.
+4. Pick a stack height (1-4 levels) and whether to show the outline preview.
+5. If enabled, a particle box appears showing exactly where the structure
+   will go. Confirm to build it instantly, or cancel — nothing is placed
+   until you confirm.
 
-| Item | Recipe (shapeless) |
-|---|---|
-| Iron Farm Beacon (1-4 Levels) | 1 iron block + *N* emeralds + 1 stick |
-| Crop Farm Beacon (1-4 Levels) | 1 hay block + *N* emeralds + 1 stick |
-
-(*N* = the level count, so a 3-level beacon costs 3 emeralds.) All 8 are
-also in the Creative inventory under Equipment.
-
-To build: stand where you want the **northwest floor corner** of the farm,
-then use (right-click) the beacon. The structure always builds extending
-east (+X) and south (+Z) from that spot — orientation is fixed rather than
-based on which way you're facing, which keeps the placement commands
-simple and reliable. You'll get a chat message when it starts and when
-it's done.
-
-**Building on the same spot twice will duplicate villagers/zombies** (the
-blocks just get overwritten, but each use spawns a fresh set of mobs) — move
-to a new location for each beacon use rather than reusing one spot.
+The farm is built facing away from the direction you were looking when you
+clicked, snapped to the nearest cardinal direction.
 
 ## How the mechanics actually work
 
@@ -118,58 +108,54 @@ shaft on the outside of the tower, ending in a double chest at the base.
 
 ## Known limitations / tuning tips
 
-- **The item-use trigger is the one unverified piece.** See the
-  achievement-compatibility section above.
-- **Fixed orientation.** No facing detection (that required the Script
-  API), so every build extends the same direction (+X/+Z). Plan your
-  approach position accordingly.
-- **Bed and hopper orientation states** are hardcoded to one consistent
-  layout; if a state value doesn't match your game version exactly, the
-  bed/hopper still functions — worst case it's a cosmetic mismatch fixable
-  by breaking and replacing that one block.
+- **Bed and hopper orientation** are set programmatically and rotated to
+  match the direction you built in; if a state value mapping doesn't match
+  your game version exactly, the bed/hopper still functions — worst case
+  it's a purely cosmetic mismatch you can fix by breaking and replacing
+  that one block.
 - **Villager profession race**: the crop farm's center villager could in
   rare cases claim a plot's composter before the intended farmer does. If a
-  plot never seems to work, break/replace that composter to force a
+  plot never seems to work, walk over, note which villager has no farmer
+  job, and give it a moment — or break/replace that composter to force a
   re-claim.
 - **Very tall stacks (4 levels)** mean the bottom level's items travel
-  through a long hopper chain to reach the base chest — normal vanilla
-  transfer speed, not a bug.
-- **Build site**: clear, relatively flat ground with headroom for a
-  4-level stack (roughly 46 blocks for the iron farm, 34 for the crop farm)
-  extending east and south of where you stand.
-- `min_engine_version` in both manifests is set to a recent value; if your
-  game complains on import, bump it in `BP/manifest.json` /
-  `RP/manifest.json` to match your installed version.
+  through a long hopper chain to reach the base chest. This is normal
+  vanilla hopper transfer speed, not a bug — expect a short delay, not data
+  loss (hoppers buffer 5 stacks each).
+- **Build site**: the tool clears a generous interior volume before
+  building, but doesn't touch anything outside the farm's own footprint.
+  Build on relatively flat ground with clearance above for a 4-level stack
+  (roughly 48 blocks for the iron farm, 36 for the crop farm).
+- Module/engine versions in `BP/manifest.json` are set to reasonably recent
+  values; if your Minecraft version is newer, update them per Mojang's
+  Script API changelog.
+- If a beacon/tool shows up with no icon and a raw translation key as its
+  name, the resource pack isn't active for that world — see step 3 under
+  Install.
 
 ## Project layout
 
 ```
-BP/                      Behavior pack (100% data-driven, no scripts/)
-  manifest.json
-  items/*.json             8 beacon items (iron/crop x 1-4 levels)
-  recipes/*.json            Matching shapeless crafting recipes
-  functions/
-    iron_farm/level[1-4].mcfunction    Generated command sequences
-    crop_farm/level[1-4].mcfunction
-RP/                      Resource pack (icons, item names)
-tools/                   Dev-only generator (not shipped in the .mcaddon)
-  cmdBuilder.js            fill/setblock/summon command formatting
-  ironFarmLayout.js         Iron farm geometry -> command list
-  cropFarmLayout.js          Crop farm geometry -> command list
-  generate.js                Writes BP/functions/**/*.mcfunction
-  generateItems.js            Writes BP/items/*.json + BP/recipes/*.json
-  validateFunctions.js         Sanity-checks generated command syntax
+BP/                      Behavior pack
+  manifest.json            Includes metadata.product_type: "addon"
+  items/structure_tool.json
+  recipes/build_tool.json
+  scripts/
+    main.js               Item-use handler, menus, build orchestration
+    lib/geometry.js         Facing + rotation math
+    lib/builder.js            Block/entity placement generators (system.runJob-safe)
+    lib/outline.js             Particle bounding-box preview
+    farms/ironFarm.js           Iron farm layout + mechanics
+    farms/cropFarm.js            Crop farm layout + mechanics
+RP/                      Resource pack (icon, item texture, lang)
+  manifest.json             Includes metadata.product_type: "addon"
 build_addon.sh            Packages BP/ + RP/ into dist/AutoFarmAddon.mcaddon
 ```
 
-## Regenerating the functions/items
+## Adding your own farm
 
-The `.mcfunction` and item/recipe JSON files are generated, not hand-written.
-After changing a layout in `tools/ironFarmLayout.js` or
-`tools/cropFarmLayout.js`, regenerate and re-validate:
-
-```
-node tools/generate.js
-node tools/generateItems.js
-node tools/validateFunctions.js
-```
+Each farm module exports an object with `id`, `name`, `shortDescription`,
+`size`, `levelSpacing`, `maxLevels`, and a `plan({ levels, facing })` method
+returning `{ placements, spawns }` in local space (see `ironFarm.js` for a
+fully worked example). Register it in `FARMS` in `scripts/main.js` and it
+shows up in the menu automatically.

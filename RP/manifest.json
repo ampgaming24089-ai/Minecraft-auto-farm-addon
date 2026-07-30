@@ -2,9 +2,9 @@
   "format_version": 2,
   "header": {
     "name": "Instant Auto Farms [Resources]",
-    "description": "Resources for Instant Auto Farms - beacon item icons and text.",
-    "uuid": "72949818-8076-4152-90f2-76e9fcfd2b68",
-    "version": [2, 0, 0],
+    "description": "Resources for Instant Auto Farms - structure build tool icon and text.",
+    "uuid": "85ac97cf-7639-492d-a925-6d2a9ccfb052",
+    "version": [3, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
   "metadata": {
@@ -13,8 +13,8 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "d06ef769-1ae6-4294-b640-bf1773a90745",
-      "version": [2, 0, 0]
+      "uuid": "dd5324eb-be96-44ab-9f93-08ee89f05754",
+      "version": [3, 0, 0]
     }
   ]
 }
