@@ -4,7 +4,7 @@
     "name": "Grovecraft [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
     "uuid": "6163e766-230c-4f4c-bbb4-37e0d0e93958",
-    "version": [1, 0, 0],
+    "version": [1, 0, 1],
     "min_engine_version": [1, 21, 90]
   },
   "metadata": {
@@ -14,7 +14,7 @@
     {
       "type": "data",
       "uuid": "17a348ad-ea41-4d91-9946-936efbc301f2",
-      "version": [1, 0, 0]
+      "version": [1, 0, 1]
     },
     {
       "type": "script",

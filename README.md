@@ -108,23 +108,29 @@ shaft on the outside of the tower, ending in a double chest at the base.
 
 ## Known limitations / tuning tips
 
-- **Two real bugs fixed after testing, both root-caused against current
-  Bedrock docs/changelogs rather than guessed:**
-  - The tool's icon and name were blank/unresolved because
-    `@minecraft/server` removed the `itemUseOn` event entirely in its
-    2.0.0 release — the manifest still pointed at the old 1.x module line,
-    so the script's event handler silently never fired at all (this is
-    also why the menu never opened). Updated the dependency versions in
-    `BP/manifest.json` to `@minecraft/server` 2.0.0 / `@minecraft/server-ui`
-    2.1.0, and switched the handler in `scripts/main.js` from
-    `world.afterEvents.itemUseOn` to `world.afterEvents.playerInteractWithBlock`
-    (the documented replacement).
-  - To remove any remaining risk from custom texture/lang resolution, the
-    tool's icon now points at the vanilla `book_enchanted` shortname
-    (guaranteed to already exist in the base game) instead of a custom
-    PNG, and its display name is a literal string instead of a
-    translation key — so it doesn't depend on this pack's resource pack
-    content loading correctly at all.
+- **Three real bugs found and fixed via testing + the in-game content
+  log** (Settings → Creator → Content Log), not guesswork:
+  1. `@minecraft/server` removed the `itemUseOn` event entirely in its
+     2.0.0 release, and the manifest still pointed at the old 1.x module
+     line — the script's event handler likely never loaded at all.
+     Updated `BP/manifest.json` to `@minecraft/server` 2.0.0 /
+     `@minecraft/server-ui` 2.1.0, and switched
+     `scripts/main.js` from `world.afterEvents.itemUseOn` to
+     `world.afterEvents.playerInteractWithBlock` (the documented
+     replacement).
+  2. **The actual cause of the persistent blank icon**, found via the
+     content log's exact error text: `menu_category -> group: string
+     must be prefixed with a namespace`. `BP/items/structure_tool.json`
+     had `"group": "itemGroup.name.tool"` with no namespace, which made
+     the *entire item* fail to parse — so no icon fix could ever have
+     worked, because the item using that icon never successfully loaded
+     in the first place. Fixed to `"minecraft:itemGroup.name.tool"`.
+  3. The tool's icon points at a texture this pack ships itself
+     (`RP/textures/items/build_tool_icon.png`) rather than trying to
+     reference a vanilla texture by path without shipping it — that
+     approach produced the same "missing icon" error reliably in
+     testing, so item icons apparently require the file to be physically
+     present in the resource pack that declares the shortname.
 - **Bed and hopper orientation** are set programmatically and rotated to
   match the direction you built in; if a state value mapping doesn't match
   your game version exactly, the bed/hopper still functions — worst case

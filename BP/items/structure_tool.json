@@ -5,7 +5,7 @@
       "identifier": "autofarm:build_tool",
       "menu_category": {
         "category": "equipment",
-        "group": "itemGroup.name.tool"
+        "group": "minecraft:itemGroup.name.tool"
       }
     },
     "components": {
