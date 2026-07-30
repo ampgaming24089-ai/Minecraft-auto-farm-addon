@@ -55,8 +55,8 @@ the version to test.
    or zip the `BP/` and `RP/` folders together yourself.
 2. Send that `.mcaddon` file to your device and open it — Minecraft will
    import both packs.
-3. In your world settings, add **both** **Yieldworks [Behavior]**
-   *and* **Yieldworks [Resources]** — under their respective
+3. In your world settings, add **both** **Buildworks [Behavior]**
+   *and* **Buildworks [Resources]** — under their respective
    Behavior Packs / Resource Packs tabs. Adding only one is a common
    mistake and shows up as items with no icon and a raw
    `item.autofarm:...name` name instead of proper text/art, since that

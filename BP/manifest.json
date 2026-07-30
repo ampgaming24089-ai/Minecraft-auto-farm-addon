@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Yieldworks [Behavior]",
+    "name": "Buildworks [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
-    "uuid": "fa73a424-16d7-48c0-9cf7-095b1c41ba46",
+    "uuid": "e0165c8f-93d4-4124-9ce7-93b35a150602",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 90]
   },
@@ -13,13 +13,13 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "3a5cc637-ef52-4468-8baa-bf813cf583e2",
+      "uuid": "faf16dd3-af18-4781-b44a-7aedc90583af",
       "version": [1, 0, 0]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "119e3328-b15d-40f3-8eff-c130f9c30d75",
+      "uuid": "0f6750c9-454a-4d87-b037-3db40cfd17e9",
       "version": [1, 0, 0],
       "entry": "scripts/main.js"
     }
@@ -34,7 +34,7 @@
       "version": "2.1.0"
     },
     {
-      "uuid": "0a16f630-9d61-44a9-babc-9e404cc1ac5a",
+      "uuid": "6fcd3d1e-ac01-446b-985e-97a0d32cf428",
       "version": [1, 0, 0]
     }
   ]
