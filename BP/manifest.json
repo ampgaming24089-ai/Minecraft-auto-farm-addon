@@ -4,7 +4,7 @@
     "name": "Buildworks [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
     "uuid": "e0165c8f-93d4-4124-9ce7-93b35a150602",
-    "version": [1, 0, 0],
+    "version": [1, 0, 1],
     "min_engine_version": [1, 21, 90]
   },
   "metadata": {
@@ -14,7 +14,7 @@
     {
       "type": "data",
       "uuid": "faf16dd3-af18-4781-b44a-7aedc90583af",
-      "version": [1, 0, 0]
+      "version": [1, 0, 1]
     },
     {
       "type": "script",

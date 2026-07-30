@@ -12,11 +12,7 @@
       "minecraft:max_stack_size": 1,
       "minecraft:hand_equipped": true,
       "minecraft:glint": true,
-      "minecraft:icon": {
-        "textures": {
-          "default": "autofarm_build_tool_icon"
-        }
-      },
+      "minecraft:icon": "autofarm_build_tool_icon",
       "minecraft:display_name": {
         "value": "Structure Build Tool"
       },
