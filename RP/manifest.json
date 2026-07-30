@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Fieldforge [Resources]",
-    "description": "Resources for Fieldforge - structure build tool icon and text.",
-    "uuid": "cecbd834-9ecd-4d8b-9a84-50375d1d318f",
+    "name": "Hammerstead [Resources]",
+    "description": "Resources for Hammerstead - structure build tool icon and text.",
+    "uuid": "5c2c2402-5e10-4613-919c-d741fdc95a7a",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
@@ -13,7 +13,7 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "13ab810a-ce64-4b00-bb72-ea25fd2b3450",
+      "uuid": "02fad26a-e650-4e47-9095-db6c749b8254",
       "version": [1, 0, 0]
     }
   ]
