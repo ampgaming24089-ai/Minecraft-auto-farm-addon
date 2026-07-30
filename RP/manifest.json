@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Farmtopia [Resources]",
-    "description": "Resources for Farmtopia - structure build tool icon and text.",
-    "uuid": "0d050a65-e727-4454-a4bc-d437601ab1b2",
+    "name": "Ironhearth [Resources]",
+    "description": "Resources for Ironhearth - structure build tool icon and text.",
+    "uuid": "0ace214e-ef1d-4bbe-8994-51ee913272f9",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
@@ -13,7 +13,7 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "84cbd554-970d-410d-8edd-1b52257479f0",
+      "uuid": "eff65785-4e27-4674-8388-6526fb4a5fc8",
       "version": [1, 0, 0]
     }
   ]

@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Farmtopia [Behavior]",
+    "name": "Ironhearth [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
-    "uuid": "02059b69-55db-49f8-ae00-dae9bb1d6f33",
+    "uuid": "b6a8ab7c-0705-4ce3-8bb8-e1402b0b3524",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 90]
   },
@@ -13,13 +13,13 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "e1eedf1a-0aa8-4764-97dc-f31c569fbc13",
+      "uuid": "f807bf9a-1430-4d1b-8cb2-ca2b650638e2",
       "version": [1, 0, 0]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "fa595d10-2426-4112-a170-7e4cfc50d27b",
+      "uuid": "fc0789ce-7127-497c-8089-2b686e8da934",
       "version": [1, 0, 0],
       "entry": "scripts/main.js"
     }
@@ -34,7 +34,7 @@
       "version": "2.1.0"
     },
     {
-      "uuid": "0d050a65-e727-4454-a4bc-d437601ab1b2",
+      "uuid": "0ace214e-ef1d-4bbe-8994-51ee913272f9",
       "version": [1, 0, 0]
     }
   ]
