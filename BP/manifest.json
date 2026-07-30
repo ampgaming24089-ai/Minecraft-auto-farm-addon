@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Homestead Works [Behavior]",
+    "name": "Pinwheel Farms [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
-    "uuid": "8da1c2a6-7dc9-4c8d-b931-87b431bc4f95",
+    "uuid": "26c50363-82c7-4d71-963f-172b8925c94b",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 90]
   },
@@ -13,13 +13,13 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "a92578c8-799e-44b2-ba0e-01681dbfb070",
+      "uuid": "3e70322e-b6f5-4baf-a846-8fda9350eaf2",
       "version": [1, 0, 0]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "0b22d867-b6b3-49c2-bbf6-8e4b13bb0aa0",
+      "uuid": "32ca0798-a1d6-47f0-aa9a-0a7a367b2929",
       "version": [1, 0, 0],
       "entry": "scripts/main.js"
     }
@@ -34,7 +34,7 @@
       "version": "2.1.0"
     },
     {
-      "uuid": "77168dd9-adb2-49af-a253-64f9efb91bd6",
+      "uuid": "c9578345-ff29-4d13-9ade-75db73a13dd8",
       "version": [1, 0, 0]
     }
   ]

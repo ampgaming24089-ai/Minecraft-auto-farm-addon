@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Homestead Works [Resources]",
-    "description": "Resources for Homestead Works - structure build tool icon and text.",
-    "uuid": "77168dd9-adb2-49af-a253-64f9efb91bd6",
+    "name": "Pinwheel Farms [Resources]",
+    "description": "Resources for Pinwheel Farms - structure build tool icon and text.",
+    "uuid": "c9578345-ff29-4d13-9ade-75db73a13dd8",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
@@ -13,7 +13,7 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "4a07574c-3531-4e40-ba4b-32e058665771",
+      "uuid": "8ddb6f4d-bfaf-41a1-9d9d-5f5e340adf57",
       "version": [1, 0, 0]
     }
   ]

@@ -8,14 +8,14 @@ Includes three farms:
 
 - **Stackable Iron Farm** — an open villager hall (beds + composters, not
   sealed pods — see below for why that matters), a caged zombie for spawn
-  urgency, an open-top lit spawn platform, and a magma-block kill trench
-  that funnels iron/poppy drops into hoppers. Build 1-4 levels, stacked
-  vertically and deliberately close together.
-- **Auto Crop Farm** — two farmer villagers, each with their own
-  composter-on-water plot, separated from a caged collector villager by a
-  hopper-minecart barrier that catches food they try (and fail) to share
-  across it. Build 1-4 of these as fully separate, independent farms on
-  the ground, 10 blocks apart from each other.
+  urgency, an open-top lit spawn platform that's a real water pool (not
+  just a current over a dry floor), and a corner lava kill pocket. Build
+  1-4 levels, stacked vertically and deliberately close together.
+- **Auto Crop Farm** — a pinwheel layout: 4 farmer villagers, each with
+  their own composter-on-water plot, arranged around ONE caged collector
+  villager at the center, with a hopper floor under the pit catching
+  whatever food gets tossed in. Build 1-4 of these as fully separate,
+  independent farms on the ground, 10 blocks apart from each other.
 - **Passive Mob Farm** — a lit, open grass platform where cows/pigs/sheep/
   chickens spawn and graze, a water funnel pushes them into a fall + magma
   kill zone, and an auto-smoker cooks the drops before a hopper stores them
@@ -90,6 +90,30 @@ testing feedback:
   keeps light levels high enough that nothing hostile spawns despite the
   open top.
 
+Both the iron farm's platform and the crop farm's layout were rebuilt again
+after that to match specific, widely-used reference designs the actual
+builder shared screenshots of, rather than my own from-scratch layouts:
+
+- **Iron farm platform is now a real pool, and the kill point moved to a
+  corner.** The push mechanism is unchanged (it's the fix above — a source
+  column on 2 adjacent walls only, everything else left for the game's own
+  fluid physics to fill in, so it still has a real single-direction push
+  instead of a hand-placed pool of uniform source blocks, which would have
+  no push at all). What changed is the shape: instead of a thin current
+  across a mostly-dry floor draining to a center hole, the whole platform
+  fills in as a pool draining to a 2-wide hole in the SE corner, and the
+  kill mechanism below is **lava**, not magma. Lava is what the reference
+  design uses, but it's a real trade-off: magma damages a golem without
+  touching item drops, while lava can destroy a drop that happens to land
+  on it instead of the one hopper tile in the kill pocket. Swap the
+  `"minecraft:lava"` placements in `ironFarm.js` for `"minecraft:magma"` if
+  you'd rather have zero loot loss than match the reference exactly.
+- **Crop farm is a pinwheel now, not paired plots.** 4 farmer quadrants
+  around one central collector pit, no minecarts/rails/trapdoors — just a
+  short (1-block-high) wall around the pit, low enough for a farmer
+  standing outside to reach over and share food, tall enough that the
+  caged collector can't walk out, with a hopper floor underneath.
+
 ## Achievement compatibility (read this first)
 
 This took three tries to get right, so here's the real story:
@@ -132,8 +156,8 @@ the version to test.
    or zip the `BP/` and `RP/` folders together yourself.
 2. Send that `.mcaddon` file to your device and open it — Minecraft will
    import both packs.
-3. In your world settings, add **both** **Homestead Works [Behavior]**
-   *and* **Homestead Works [Resources]** — under their respective
+3. In your world settings, add **both** **Pinwheel Farms [Behavior]**
+   *and* **Pinwheel Farms [Resources]** — under their respective
    Behavior Packs / Resource Packs tabs. Adding only one is a common
    mistake and shows up as items with no icon and a raw
    `item.autofarm:...name` name instead of proper text/art, since that
@@ -174,34 +198,37 @@ level merges into one combined village instead of staying separate — see
 "what stackable actually means" above for why deliberately merging beats
 trying to keep floors independent. A caged zombie on each level is
 visible/near enough to raise that village's "under attack" state, which
-vanilla uses to increase golem spawn urgency. Golems spawn on the open-top,
-heavily-lit platform above each level (inside the village bounds), get
-walked into a 2-wide center drain by a one-axis water current (west wall
-flows east, east wall flows west, nothing on north/south — see the
-water-current fix above for why), fall down the shaft onto a magma-block
-trench, and take real damage-over-time until they die. A water current in
-the trench sweeps the drops into a hopper feeding the shared collection
-shaft. Magma, not lava, is deliberate: lava sets dropped items on fire and
-destroys them — magma damages the golem without touching the loot.
+vanilla uses to increase golem spawn urgency. Golems spawn in the open-top,
+heavily-lit water pool above each level (inside the village bounds); a
+source column on the west wall (flows east) and one on the north wall
+(flows south) push everything toward a 2-wide drain in the SE corner, and
+the rest of the pool fills in from those two sources via the game's own
+fluid physics (a hand-filled pool of uniform source blocks would have no
+current — see the water-current notes above). Golems fall down the corner
+shaft onto a lava kill pocket and take real damage over time until they
+die; one hopper tile in the pocket is a direct catch point for the drops,
+feeding the shared collection shaft. This matches a reference design that
+uses lava rather than the zero-loss magma this project used before — see
+the trade-off note above if you'd rather swap that back.
 
-**Crop Farm** — Two farmer villagers, each in their own 8x8 plot (farmers
-won't work land more than ~4 blocks from their composter, so a wider plot
-just wastes space). Each plot's center tile is a water source with a
-composter placed directly on top of it — hydrates the whole plot and
+**Crop Farm** — A pinwheel: 4 farmer villagers, each in their own 9x9
+quadrant (farmers won't work land more than ~4 blocks from their
+composter, so a composter centered in each quadrant covers the whole
+thing), arranged around a single collector villager caged in a small pit
+at the center. Each quadrant's center tile is a water source with a
+composter placed directly on top of it — hydrates the whole quadrant and
 serves as that farmer's job site in one tile — with glowstone above for
-light. A collector villager is caged in a narrow pen between the two
-plots so it can never wander off. The boundary between each plot and the
-pen is a hopper + rail + parked hopper-minecart (walkable — farmers step
-right up to any tile of it) with an open trapdoor one block above blocking
-actual crossing. Farmers still approach and try to share surplus food with
-the caged collector across the gap; that attempt drops food onto whichever
-minecart they're standing at, which the hopper underneath catches. This is
-a documented, real Bedrock design, not an invented one — but it's still
-real (and therefore somewhat unpredictable) villager AI, so give it real
-time before judging it broken. Unlike the iron farm, this one isn't
-stacked — each of the 1-4 you build is a complete, independent farm on the
-ground, 10 blocks from the next one, so there's nothing to merge or share
-between them except the final collection chest.
+light. The collector's pit has a 1-block-high stone brick wall: tall
+enough that the collector can't walk out, short enough that a farmer
+standing right outside can reach over and share surplus food with it. That
+share attempt drops food into the pit, where a 3x3 hopper floor catches it
+and funnels it out to the shared collection chest — no minecarts, rails,
+or trapdoors needed. This is a documented, real Bedrock design (matching a
+specific, widely-used reference tutorial), not an invented one — but it's
+still real (and therefore somewhat unpredictable) villager AI, so give it
+real time before judging it broken. Like the mob farm, this one isn't
+stacked — each of the 1-4 you build is a complete, independent 4-farmer
+pinwheel on the ground, 10 blocks from the next one.
 
 **Passive Mob Farm** — An open, heavily-lit grass platform where cows,
 pigs, sheep, and chickens naturally spawn and graze over time (no
@@ -255,10 +282,9 @@ of how many levels/units you built.
   it's a purely cosmetic mismatch you can fix by breaking and replacing
   that one block.
 - **Crop farm collection is still the least deterministic mechanic here.**
-  Each farmer plot has its own dedicated composter now (no more shared
-  job-site race between villagers), but the actual food-sharing-across-the-
-  barrier behavior is real, somewhat unpredictable vanilla AI. Give it real
-  in-game time before concluding it isn't working.
+  Each farmer quadrant has its own dedicated composter, but the actual
+  food-sharing-into-the-pit behavior is real, somewhat unpredictable
+  vanilla AI. Give it real in-game time before concluding it isn't working.
 - **Stay near the build site until you see "Build Complete!"** on screen.
   Building spreads block placement across many ticks to avoid freezing the
   game; a 4-level farm can take a while. If you wander far enough that
@@ -287,8 +313,8 @@ of how many levels/units you built.
   building, but doesn't touch anything outside the farm's own footprint.
   Build on relatively flat ground, away from any existing village (see
   above). Clearance needed: the iron farm is roughly 45 blocks tall at 4
-  levels (15x15 footprint); the crop and mob farms are only ~6-7 blocks
-  tall each but stretch to ~120 blocks wide at 4 units (23x10 and 15x15
+  levels (15x15 footprint); the crop and mob farms are only ~5-7 blocks
+  tall each but stretch to ~120 blocks wide at 4 units (23x23 and 15x15
   footprints per unit, 10 blocks apart) since they're built side by side on
   the ground rather than stacked.
 - Module/engine versions in `BP/manifest.json` are set to reasonably recent

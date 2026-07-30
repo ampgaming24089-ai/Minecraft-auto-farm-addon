@@ -33,24 +33,31 @@ import { rotateDirection } from "../lib/geometry.js";
  *  - A caged zombie on each level gives villagers a nearby threat, which
  *    vanilla uses to raise golem-spawn urgency ("village under attack").
  *  - A walled, lit spawn platform sits above the bedrooms on each level,
- *    inside the village bounds, with a center drain trough. Water only
- *    flows a limited distance from a source block (about 7 tiles) before
- *    it stops, and two currents flowing head-on into each other from
- *    opposite edges create a dead/ambiguous push right where they meet —
- *    which is exactly where a center drain needs the push to be strongest.
- *    So the current here only converges on ONE axis: a full-depth water
- *    column on the west wall flows east, one on the east wall flows west,
- *    and there is no water on the north/south walls at all. Every tile
- *    only ever has one clear push direction toward the center trough.
+ *    inside the village bounds, and is a real water pool — not just a thin
+ *    current over a dry floor — matching a well-known reference design. A
+ *    source column on the west wall (flows east) and one on the north wall
+ *    (flows south) combine to push everything toward the SE corner; the
+ *    rest of the pool fills in naturally from those two sources within
+ *    moments of the chunk loading, the same way it would in survival. A
+ *    hand-placed pool of uniform source blocks would have NO push at all
+ *    (source blocks touching other source blocks don't create a current —
+ *    only the edge where a source meets open space does), so it matters
+ *    that only those two walls are literal sources and the rest is left
+ *    for the game's own fluid physics to fill in.
  *  - No roof — each level is open at the top. A sealed roof was blocking
  *    light and creating dark pockets hostile mobs could spawn in; leaving
  *    it open and lighting the place heavily (see step 8) keeps light
  *    levels high enough that nothing hostile spawns instead.
- *  - Golems drop down a shaft onto a magma-block kill trench. Magma deals
- *    real damage over time (not instant, not scripted) until the golem
- *    dies; a water current in the trench carries the drops into a hopper
- *    that feeds a shared external shaft down to one base chest — every
- *    level drains into the same chest, nothing to check per floor.
+ *  - Golems drop down a corner shaft onto a lava kill pocket (matching the
+ *    reference design's material list, which uses lava rather than the
+ *    zero-loss magma this project used earlier) with one hopper tile as a
+ *    direct catch point, feeding a shared external shaft down to one base
+ *    chest. Water and lava react (into stone/obsidian) if they touch, so
+ *    there's no water current inside the pocket sweeping drops clear of
+ *    the lava — a drop that lands on a lava tile instead of the hopper
+ *    tile can burn. That's a real trade-off of matching the reference
+ *    design; swap the "minecraft:lava" placements below for
+ *    "minecraft:magma" for a zero-loss version instead.
  *
  * Local space: x 0-14 (width), z 0-14 (depth), y 0-8 (height per level).
  * +z is "forward" (away from the player), +x is "right".
@@ -118,35 +125,34 @@ function planLevel(dy, facing) {
   spawns.push({ x: 11, y: 1, z: 10, typeId: "minecraft:zombie" });
 
   // 5. Mid-ceiling separating bedrooms from the spawn platform, with a
-  //    golem drop shaft punched through the center (above the trench).
-  //    2 blocks wide (not 1) since iron golems have a 1.4-block-wide
+  //    golem drop shaft punched through the SE corner (above the kill
+  //    pocket). 2x2, not 1-wide, since iron golems have a 1.4-block-wide
   //    hitbox and can get stuck trying to fall through a single-block gap.
   parts.push(box([1, 4, 1], [13, 4, 13], "minecraft:cobblestone"));
-  parts.push(box([7, 4, 10], [8, 4, 10], "minecraft:air"));
+  parts.push(box([12, 4, 12], [13, 4, 13], "minecraft:air"));
 
-  // 6. Spawn platform (village bounds, valid golem spawn surface), drop hole
-  //    in the center (2 wide, matching the shaft above), and a one-axis
-  //    inward water current: a full-depth column on the west wall flows
-  //    east, one on the east wall flows west, nothing on north/south. Every
-  //    tile has exactly one push direction, straight toward the trough —
-  //    no head-on currents canceling out at the middle.
+  // 6. Spawn platform: a real pool (see notes above), source columns on
+  //    the west and north walls only, converging toward the SE corner
+  //    drain (2-wide, matching the shaft above).
   parts.push(box([1, 5, 1], [13, 5, 13], "minecraft:stone_bricks"));
-  parts.push(box([7, 5, 10], [8, 5, 10], "minecraft:air"));
+  parts.push(box([12, 5, 12], [13, 5, 13], "minecraft:air"));
   parts.push(box([1, 6, 1], [1, 6, 13], "minecraft:water"));
-  parts.push(box([13, 6, 1], [13, 6, 13], "minecraft:water"));
+  parts.push(box([1, 6, 1], [13, 6, 1], "minecraft:water"));
 
-  // 7. Kill trench: magma floor the golem lands in after falling down the
-  //    shaft, with a water current sweeping drops into a hopper embedded
-  //    in the east wall, which pushes out into the shared external
-  //    collection shaft (see planShaft) — one shaft is fine here since
-  //    levels are close together, not hundreds of blocks apart.
-  parts.push(box([4, 1, 9], [13, 2, 9], "minecraft:cobblestone")); // trench north wall
-  parts.push(box([4, 1, 11], [13, 2, 11], "minecraft:cobblestone")); // trench south wall
-  parts.push(box([4, 1, 10], [4, 2, 10], "minecraft:cobblestone")); // trench closed end
-  parts.push(box([5, 0, 10], [13, 0, 10], "minecraft:magma"));
-  parts.push(block(5, 1, 10, "minecraft:water"));
-  const hopperDir = rotateDirection("east", facing);
-  parts.push(block(14, 0, 10, "minecraft:hopper", { facing_direction: HOPPER_FACING[hopperDir] }));
+  // 7. Kill pocket: lava fills the landing zone under the corner drain,
+  //    with one hopper tile as a direct catch point (see the lava-vs-magma
+  //    trade-off note above). Walls seal off the pocket from the hall —
+  //    the cage's own south wall (step 4, at x10-12,z11) already covers
+  //    part of the north side, so only the x=9 and x=13 columns need their
+  //    own wall here.
+  parts.push(box([9, 1, 11], [9, 3, 13], "minecraft:cobblestone"));
+  parts.push(box([13, 1, 11], [13, 3, 11], "minecraft:cobblestone"));
+  parts.push(block(12, 0, 12, "minecraft:lava"));
+  parts.push(block(13, 0, 12, "minecraft:lava"));
+  parts.push(block(12, 0, 13, "minecraft:lava"));
+  const east = rotateDirection("east", facing);
+  parts.push(block(13, 0, 13, "minecraft:hopper", { facing_direction: HOPPER_FACING[east] }));
+  parts.push(block(14, 0, 13, "minecraft:hopper", { facing_direction: HOPPER_FACING[east] }));
 
   // 8. Lighting: with no roof, this has to do the job an enclosed room's
   //    darkness-based hostile-mob immunity used to do for free. Sea
@@ -186,12 +192,12 @@ function planShaft(levels, facing) {
   const topY = (levels - 1) * LEVEL_SPACING;
   const east = rotateDirection("east", facing);
   const parts = [
-    block(16, 0, 10, "minecraft:chest"),
-    block(17, 0, 10, "minecraft:chest"),
-    block(15, 0, 10, "minecraft:hopper", { facing_direction: HOPPER_FACING[east] }),
+    block(16, 0, 13, "minecraft:chest"),
+    block(17, 0, 13, "minecraft:chest"),
+    block(15, 0, 13, "minecraft:hopper", { facing_direction: HOPPER_FACING[east] }),
   ];
   for (let y = 1; y <= topY; y++) {
-    parts.push(block(15, y, 10, "minecraft:hopper", { facing_direction: HOPPER_FACING.down }));
+    parts.push(block(15, y, 13, "minecraft:hopper", { facing_direction: HOPPER_FACING.down }));
   }
   return merge(...parts);
 }
