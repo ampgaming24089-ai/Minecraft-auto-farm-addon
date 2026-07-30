@@ -1,9 +1,9 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Ironbound Works [Resources]",
-    "description": "Resources for Ironbound Works - structure build tool icon and text.",
-    "uuid": "e168ec2e-2801-4734-bab2-660687540155",
+    "name": "Harvestron [Resources]",
+    "description": "Resources for Harvestron - structure build tool icon and text.",
+    "uuid": "5f4f2965-3ed7-4676-a4b6-b8c19ca4c27c",
     "version": [1, 0, 0],
     "min_engine_version": [1, 21, 60]
   },
@@ -13,7 +13,7 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "a0dbe4f8-b3f1-4043-9410-aac652228c7c",
+      "uuid": "5591b48c-41bf-4a1f-8ad7-2a8deea571b0",
       "version": [1, 0, 0]
     }
   ]

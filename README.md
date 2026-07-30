@@ -55,8 +55,8 @@ the version to test.
    or zip the `BP/` and `RP/` folders together yourself.
 2. Send that `.mcaddon` file to your device and open it — Minecraft will
    import both packs.
-3. In your world settings, add **both** **Ironbound Works [Behavior]**
-   *and* **Ironbound Works [Resources]** — under their respective
+3. In your world settings, add **both** **Harvestron [Behavior]**
+   *and* **Harvestron [Resources]** — under their respective
    Behavior Packs / Resource Packs tabs. Adding only one is a common
    mistake and shows up as items with no icon and a raw
    `item.autofarm:...name` name instead of proper text/art, since that
@@ -90,21 +90,31 @@ vanilla AI and physics:
 level a valid village. A caged zombie is visible/near enough to raise the
 village's "under attack" state, which vanilla uses to increase golem spawn
 urgency. Golems spawn on the walled platform above (inside the village
-bounds), get walked into a center drain by a real inward water current, fall
-down a shaft onto a magma-block trench, and take real damage-over-time until
-they die. A water current in the trench sweeps the drops into a hopper.
+bounds), get walked into a 2-wide center drain by a real inward water
+current (a full perimeter ring of water sources, not a handful of scattered
+points — that's what actually creates a connected current toward the only
+low point instead of a few disconnected puddles), fall down the shaft onto
+a magma-block trench, and take real damage-over-time until they die. A
+water current in the trench sweeps the drops into a hopper. Magma, not
+lava, is deliberate: lava sets dropped items on fire and destroys them —
+magma damages the golem without touching the loot.
 
-**Crop Farm** — Four hydrated farmland plots each have a composter, which
-turns a spawned villager into a real Farmer (vanilla profession AI handles
-planting/harvesting). A fenced corridor connects each plot to a shared pen
-holding one more villager. Real vanilla farmer behavior periodically shares
-surplus food with nearby villagers, dropping items on the ground; the pen
-floor is hopper blocks topped with rails holding parked hopper minecarts, so
-anything dropped there is collected immediately and drained into hoppers
-below.
+**Crop Farm** — Four hydrated farmland plots, each planted with a random
+mix of wheat, carrots, and potatoes, have a composter, which turns a
+spawned villager into a real Farmer (vanilla profession AI handles
+planting/harvesting per crop type). A fenced corridor connects each plot to
+a shared pen holding one more villager, which is fully caged (fenced on
+all 4 sides) so it can never wander off to a farmland plot itself. Real
+vanilla farmer behavior periodically shares surplus food with nearby
+villagers, dropping items on the ground; collection pads (hopper blocks
+topped with rails holding parked hopper minecarts) sit at the pen's 4
+corridor mouths and at the caged villager's own cell, so anything dropped
+where farmers actually stand gets collected. This is the least deterministic
+part of either farm — see the caveat below.
 
 Both farms funnel every level's output into one shared external hopper
-shaft on the outside of the tower, ending in a double chest at the base.
+shaft, ending in a double chest at ground level right next to the tower —
+not buried, so it's immediately visible without digging.
 
 ## Known limitations / tuning tips
 
@@ -154,9 +164,12 @@ shaft on the outside of the tower, ending in a double chest at the base.
   chunks unload mid-build, later placements (including villager spawns,
   which happen last) can silently fail, leaving an incomplete structure. If
   that happens, just build again while staying put.
-- **Iron golem drop shaft is 2 blocks wide**, not 1 — golems have a
-  1.4-block-wide hitbox and can get stuck trying to fall through a
-  single-block gap.
+- **On leaves and golem spawning**: leaves aren't part of the vanilla iron
+  golem spawn algorithm as far as I'm aware — spawning depends on village
+  size/bed count, golem population cap, and a valid flat surface, not
+  nearby foliage. If you have a specific source suggesting otherwise I'm
+  happy to look into it, but I didn't want to add block placements based
+  on a mechanic I can't verify is real.
 - **Very tall stacks (4 levels)** mean the bottom level's items travel
   through a long hopper chain to reach the base chest. This is normal
   vanilla hopper transfer speed, not a bug — expect a short delay, not data

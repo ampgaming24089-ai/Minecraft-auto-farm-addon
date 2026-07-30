@@ -76,13 +76,21 @@ const PLOTS = [
   },
 ];
 
-// Pen collection pads: [x, z, facing-toward-center]
+const CROPS = [
+  { id: "minecraft:wheat" },
+  { id: "minecraft:carrots" },
+  { id: "minecraft:potatoes" },
+];
+
+// Collection pads sit at the pen's 4 corridor mouths (where farmers must
+// physically walk through to reach the pen) plus the center itself, where
+// the trapped villager stands. All feed straight down into local routing.
 const PADS = [
-  { x: 6, z: 5, facing: "south" }, // north pad
-  { x: 6, z: 7, facing: "north" }, // south pad
-  { x: 5, z: 6, facing: "east" }, // west pad
-  { x: 7, z: 6, facing: "west" }, // east pad
-  { x: 6, z: 6, facing: "down" }, // center pad
+  { x: 6, z: 4 }, // north gap
+  { x: 6, z: 8 }, // south gap
+  { x: 4, z: 6 }, // west gap
+  { x: 8, z: 6 }, // east gap
+  { x: 6, z: 6 }, // center
 ];
 
 function planLevel(dy, facing) {
@@ -112,8 +120,9 @@ function planLevel(dy, facing) {
   for (const plot of PLOTS) {
     for (const [x, z] of plot.farmland) {
       const growth = Math.floor(Math.random() * 8);
+      const crop = CROPS[Math.floor(Math.random() * CROPS.length)];
       parts.push(block(x, 0, z, "minecraft:farmland"));
-      parts.push(block(x, 1, z, "minecraft:wheat", { growth }));
+      parts.push(block(x, 1, z, crop.id, { growth }));
     }
     parts.push(block(plot.water[0], 0, plot.water[1], "minecraft:water"));
     // Composter takes the place of a farmland tile as the plot's job site.
@@ -136,23 +145,45 @@ function planLevel(dy, facing) {
   parts.push(block(8, 1, 6, "minecraft:air"));
   parts.push(block(6, 1, 4, "minecraft:air"));
   parts.push(block(6, 1, 8, "minecraft:air"));
+
+  // Cage the center villager into its own 1x1 cell (fenced on all 4 sides)
+  // so it can never wander out and off to a farmland plot — farmers still
+  // reach it, since the collection pads below sit right at the corridor
+  // mouths the farmers have to walk through anyway.
+  parts.push(block(6, 1, 5, "minecraft:oak_fence"));
+  parts.push(block(6, 1, 7, "minecraft:oak_fence"));
+  parts.push(block(5, 1, 6, "minecraft:oak_fence"));
+  parts.push(block(7, 1, 6, "minecraft:oak_fence"));
   spawns.push({ x: 6, y: 1, z: 6, typeId: "minecraft:villager" });
 
-  // Collection pads: hopper -> rail -> parked hopper minecart, routed to
-  // the center, then tunneled underground out of the footprint to the
-  // west where the shared external shaft carries everything to the base.
+  // Collection pads: hopper -> rail -> parked hopper minecart. All face
+  // straight down into local underground routing that converges on the
+  // westbound tunnel out of the footprint.
   for (const pad of PADS) {
-    const dir = rotateDirection(pad.facing === "down" ? "north" : pad.facing, facing);
-    const facingValue = pad.facing === "down" ? HOPPER_FACING.down : HOPPER_FACING[dir];
-    parts.push(block(pad.x, 0, pad.z, "minecraft:hopper", { facing_direction: facingValue }));
+    parts.push(block(pad.x, 0, pad.z, "minecraft:hopper", { facing_direction: HOPPER_FACING.down }));
     parts.push(block(pad.x, 1, pad.z, "minecraft:rail"));
     spawns.push({ x: pad.x, y: 1, z: pad.z, typeId: "minecraft:hopper_minecart" });
   }
 
-  // Underground tunnel from the center pad out to the west wall.
-  const tunnelDir = rotateDirection("west", facing);
+  // Underground routing (y=-1): north/south/east pads relay to the (6,-1,6)
+  // junction below the center pad; the west pad already sits on the
+  // westbound tunnel line. Directions below are pre-rotated with the
+  // build's facing since, unlike block positions, state values aren't
+  // rotated automatically.
+  const south = rotateDirection("south", facing);
+  const north = rotateDirection("north", facing);
+  const west = rotateDirection("west", facing);
+  const east = rotateDirection("east", facing);
+  parts.push(block(6, -1, 4, "minecraft:hopper", { facing_direction: HOPPER_FACING[south] }));
+  parts.push(block(6, -1, 5, "minecraft:hopper", { facing_direction: HOPPER_FACING[south] }));
+  parts.push(block(6, -1, 8, "minecraft:hopper", { facing_direction: HOPPER_FACING[north] }));
+  parts.push(block(6, -1, 7, "minecraft:hopper", { facing_direction: HOPPER_FACING[north] }));
+  parts.push(block(8, -1, 6, "minecraft:hopper", { facing_direction: HOPPER_FACING[west] }));
+  parts.push(block(7, -1, 6, "minecraft:hopper", { facing_direction: HOPPER_FACING[west] }));
+
+  // Underground tunnel from the center junction out to the west wall.
   for (let x = 6; x >= 0; x--) {
-    parts.push(block(x, -1, 6, "minecraft:hopper", { facing_direction: HOPPER_FACING[tunnelDir] }));
+    parts.push(block(x, -1, 6, "minecraft:hopper", { facing_direction: HOPPER_FACING[west] }));
   }
   parts.push(block(-1, -1, 6, "minecraft:hopper", { facing_direction: HOPPER_FACING.down }));
 
@@ -163,14 +194,21 @@ function planLevel(dy, facing) {
   };
 }
 
-/** External collection shaft + base double chest, shared by every level. */
-function planShaft(levels) {
+/**
+ * External collection shaft + base double chest, shared by every level.
+ * The chest sits just 1 block below ground right outside the west wall
+ * (not buried deep), so it's easy to find: the bottom of the shaft
+ * redirects sideways into it instead of continuing straight down.
+ */
+function planShaft(levels, facing) {
   const topY = (levels - 1) * LEVEL_SPACING - 1;
+  const west = rotateDirection("west", facing);
   const parts = [
-    block(-1, -3, 6, "minecraft:chest"),
-    block(-2, -3, 6, "minecraft:chest"),
+    block(-1, -1, 6, "minecraft:hopper", { facing_direction: HOPPER_FACING[west] }),
+    block(-2, -1, 6, "minecraft:chest"),
+    block(-3, -1, 6, "minecraft:chest"),
   ];
-  for (let y = -2; y <= topY; y++) {
+  for (let y = 0; y <= topY; y++) {
     parts.push(block(-1, y, 6, "minecraft:hopper", { facing_direction: HOPPER_FACING.down }));
   }
   return merge(...parts);
@@ -195,7 +233,7 @@ export const CropFarm = {
       placements.push(...p);
       spawns.push(...s);
     }
-    placements.push(...planShaft(levels));
+    placements.push(...planShaft(levels, facing));
     return { placements, spawns };
   },
 };

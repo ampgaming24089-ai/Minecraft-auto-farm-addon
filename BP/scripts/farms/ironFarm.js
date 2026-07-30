@@ -86,14 +86,17 @@ function planLevel(dy, facing) {
 
   // 6. Spawn platform (village bounds, valid golem spawn surface), drop hole
   //    in the center (2 wide, matching the shaft above), and an inward
-  //    water current from the edges.
+  //    water current from the edges. A full perimeter ring of water
+  //    sources (not a handful of scattered points) is what actually
+  //    creates a reliable connected current toward the only low point
+  //    (the drain hole) — a few isolated sources just form separate
+  //    puddles that don't push anything anywhere.
   parts.push(box([1, 5, 1], [13, 5, 13], "minecraft:stone_bricks"));
   parts.push(box([7, 5, 7], [8, 5, 7], "minecraft:air"));
-  const currentPoints = [
-    [3, 3], [11, 3], [3, 11], [11, 11],
-    [7, 3], [7, 11], [3, 7], [11, 7],
-  ];
-  for (const [x, z] of currentPoints) parts.push(block(x, 6, z, "minecraft:water"));
+  parts.push(box([1, 6, 1], [13, 6, 1], "minecraft:water"));
+  parts.push(box([1, 6, 13], [13, 6, 13], "minecraft:water"));
+  parts.push(box([1, 6, 1], [1, 6, 13], "minecraft:water"));
+  parts.push(box([13, 6, 1], [13, 6, 13], "minecraft:water"));
 
   // 7. Kill trench: magma floor the golem lands in after falling down the
   //    shaft, with a water current sweeping drops into a hopper embedded
@@ -119,14 +122,22 @@ function planLevel(dy, facing) {
   };
 }
 
-/** External collection shaft + base double chest, shared by every level. */
-function planShaft(levels) {
+/**
+ * External collection shaft + base double chest, shared by every level.
+ * The chest sits at ground level right next to the tower (not buried),
+ * so it's immediately visible/reachable without digging: the shaft
+ * hoppers all face down except the bottom one, which redirects sideways
+ * into the chest.
+ */
+function planShaft(levels, facing) {
   const topY = (levels - 1) * LEVEL_SPACING;
+  const east = rotateDirection("east", facing);
   const parts = [
-    block(15, -2, 7, "minecraft:chest"),
-    block(16, -2, 7, "minecraft:chest"),
+    block(16, 0, 7, "minecraft:chest"),
+    block(17, 0, 7, "minecraft:chest"),
+    block(15, 0, 7, "minecraft:hopper", { facing_direction: HOPPER_FACING[east] }),
   ];
-  for (let y = -1; y <= topY; y++) {
+  for (let y = 1; y <= topY; y++) {
     parts.push(block(15, y, 7, "minecraft:hopper", { facing_direction: HOPPER_FACING.down }));
   }
   return merge(...parts);
@@ -151,7 +162,7 @@ export const IronFarm = {
       placements.push(...p);
       spawns.push(...s);
     }
-    placements.push(...planShaft(levels));
+    placements.push(...planShaft(levels, facing));
     return { placements, spawns };
   },
 };
