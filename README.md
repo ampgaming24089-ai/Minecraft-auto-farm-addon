@@ -39,8 +39,8 @@ enabled — even if you never use it. This addon avoids both:
    or simply zip the `BP/` and `RP/` folders together yourself.
 2. Send that `.mcaddon` file to your device and open it — Minecraft will
    import both packs automatically.
-3. In your world settings, add both **Auto Farm Addon [BP]** and
-   **Auto Farm Addon [RP]** under Behavior Packs / Resource Packs.
+3. In your world settings, add both **Instant Auto Farms [Behavior]** and
+   **Instant Auto Farms [Resources]** under Behavior Packs / Resource Packs.
 4. Leave every toggle under **Experiments** off. Nothing in this addon needs
    them, and turning any of them on disables achievements regardless of
    what the addon itself does.
