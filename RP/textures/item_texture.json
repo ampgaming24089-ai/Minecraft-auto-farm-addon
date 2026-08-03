@@ -4,6 +4,12 @@
   "texture_data": {
     "autofarm_build_tool_icon": {
       "textures": "textures/items/build_tool_icon"
+    },
+    "autofarm_fishing_rod_icon": {
+      "textures": "textures/items/auto_fishing_rod_icon"
+    },
+    "autofarm_villager_wand_icon": {
+      "textures": "textures/items/villager_wand_icon"
     }
   }
 }

@@ -1,0 +1,24 @@
+{
+  "format_version": "1.21.60",
+  "minecraft:item": {
+    "description": {
+      "identifier": "autofarm:auto_fishing_rod",
+      "menu_category": {
+        "category": "equipment",
+        "group": "minecraft:itemGroup.name.fishingRod"
+      }
+    },
+    "components": {
+      "minecraft:max_stack_size": 1,
+      "minecraft:hand_equipped": true,
+      "minecraft:glint": true,
+      "minecraft:icon": "autofarm_fishing_rod_icon",
+      "minecraft:display_name": {
+        "value": "Auto Fishing Rod"
+      },
+      "minecraft:tags": {
+        "tags": ["minecraft:is_tool"]
+      }
+    }
+  }
+}

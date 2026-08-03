@@ -81,7 +81,7 @@ const BED_DIRECTION = { south: 0, west: 1, north: 2, east: 3 };
 const HALL_COLUMNS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 /** Build the placement + spawn list for a single level, in local space (y already offset). */
-function planLevel(dy, facing) {
+export function planLevel(dy, facing) {
   const parts = [];
   const spawns = [];
 
@@ -187,7 +187,7 @@ function planLevel(dy, facing) {
  * chest. Fine as one shared shaft since levels are only 12 blocks apart,
  * not hundreds — the hopper chain drains in well under a second.
  */
-function planShaft(levels, facing) {
+export function planShaft(levels, facing) {
   const topY = (levels - 1) * LEVEL_SPACING;
   const east = rotateDirection("east", facing);
   const parts = [

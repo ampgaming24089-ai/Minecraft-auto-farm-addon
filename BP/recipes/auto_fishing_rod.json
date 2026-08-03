@@ -1,0 +1,20 @@
+{
+  "format_version": "1.21.60",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "autofarm:auto_fishing_rod"
+    },
+    "tags": ["crafting_table"],
+    "pattern": ["C", "R", "S"],
+    "key": {
+      "C": { "item": "minecraft:clock" },
+      "R": { "item": "minecraft:fishing_rod" },
+      "S": { "item": "minecraft:redstone" }
+    },
+    "unlock": [{ "item": "minecraft:fishing_rod" }],
+    "result": {
+      "item": "autofarm:auto_fishing_rod",
+      "count": 1
+    }
+  }
+}

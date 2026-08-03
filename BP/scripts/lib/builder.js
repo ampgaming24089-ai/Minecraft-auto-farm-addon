@@ -144,6 +144,14 @@ export function* fillContainers(dimension, origin, fills, facing) {
 /**
  * Spawn a list of entities at local-space points, rotated/translated into
  * world space. Spread across ticks like placeAll.
+ *
+ * An optional `inventory` array on a spawn point ({slot, itemId, amount})
+ * fills that entity's own inventory slots right after it spawns — used by
+ * the giant crop farm to pre-load a farmer villager's carry slots with junk
+ * items so it can never pick harvested crops back up (the real, documented
+ * mechanic behind every "single villager + hopper floor" giant farm: a
+ * farmer with a full inventory drops what it harvests on the ground instead
+ * of holding it).
  * @param {import("@minecraft/server").Dimension} dimension
  * @param {Vec3} origin
  * @param {SpawnPoint[]} spawns
@@ -153,7 +161,15 @@ export function* spawnAll(dimension, origin, spawns, facing) {
   for (const s of spawns) {
     const world = toWorld(origin, s, facing);
     try {
-      dimension.spawnEntity(s.typeId, { x: world.x + 0.5, y: world.y, z: world.z + 0.5 });
+      const entity = dimension.spawnEntity(s.typeId, { x: world.x + 0.5, y: world.y, z: world.z + 0.5 });
+      if (s.inventory && entity) {
+        const inv = entity.getComponent("minecraft:inventory");
+        if (inv) {
+          for (const item of s.inventory) {
+            inv.container.setItem(item.slot, new ItemStack(item.itemId, item.amount ?? 1));
+          }
+        }
+      }
     } catch {
       // Best effort — a blocked spawn location shouldn't abort the whole build.
     }

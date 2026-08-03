@@ -3,12 +3,33 @@ import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import { get4DirFacing, computeBounds } from "./lib/geometry.js";
 import { placeAll, spawnAll, fillContainers } from "./lib/builder.js";
 import { showOutline, clearOutline } from "./lib/outline.js";
+import { registerAutoFishingRod } from "./lib/autoFishingRod.js";
+import { registerVillagerManager } from "./lib/villagerManager.js";
 import { IronFarm } from "./farms/ironFarm.js";
+import { IronGolemFarm } from "./farms/ironGolemFarm.js";
 import { CropFarm } from "./farms/cropFarm.js";
+import { GiantCropFarm } from "./farms/giantCropFarm.js";
 import { MobFarm } from "./farms/mobFarm.js";
+import { KelpFarm } from "./farms/kelpFarm.js";
+import { FishFarm } from "./farms/fishFarm.js";
+import { PillagerOutpostFarm } from "./farms/pillagerOutpostFarm.js";
+import { TradingHall } from "./farms/tradingHall.js";
 
 const TOOL_ID = "autofarm:build_tool";
-const FARMS = [IronFarm, CropFarm, MobFarm];
+const FARMS = [
+  IronFarm,
+  IronGolemFarm,
+  CropFarm,
+  GiantCropFarm,
+  KelpFarm,
+  MobFarm,
+  FishFarm,
+  PillagerOutpostFarm,
+  TradingHall,
+];
+
+registerAutoFishingRod(world);
+registerVillagerManager(world);
 
 /** Players currently inside the menu/preview/build flow, so the tool can't be re-triggered mid-flow. */
 const busyPlayers = new Set();
@@ -54,6 +75,10 @@ async function openFarmMenu(player, origin, facing) {
   }
 
   const farm = FARMS[response.selection];
+  if (farm.fixedLevels) {
+    await confirmAndBuild(player, origin, facing, farm, farm.fixedLevels, true);
+    return;
+  }
   await openLevelMenu(player, origin, facing, farm);
 }
 
