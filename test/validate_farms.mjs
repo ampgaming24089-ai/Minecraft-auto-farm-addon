@@ -6,7 +6,6 @@
 // timing, or villager AI) — it only catches authoring mistakes that would
 // otherwise only surface as a silent failure or crash in-game.
 import { IronFarm } from "../BP/scripts/farms/ironFarm.js";
-import { IronGolemFarm } from "../BP/scripts/farms/ironGolemFarm.js";
 import { CropFarm } from "../BP/scripts/farms/cropFarm.js";
 import { GiantCropFarm } from "../BP/scripts/farms/giantCropFarm.js";
 import { MobFarm } from "../BP/scripts/farms/mobFarm.js";
@@ -15,7 +14,7 @@ import { FishFarm } from "../BP/scripts/farms/fishFarm.js";
 import { PillagerOutpostFarm } from "../BP/scripts/farms/pillagerOutpostFarm.js";
 import { TradingHall } from "../BP/scripts/farms/tradingHall.js";
 
-const FARMS = [IronFarm, IronGolemFarm, CropFarm, GiantCropFarm, MobFarm, KelpFarm, FishFarm, PillagerOutpostFarm, TradingHall];
+const FARMS = [IronFarm, CropFarm, GiantCropFarm, MobFarm, KelpFarm, FishFarm, PillagerOutpostFarm, TradingHall];
 const FACINGS = ["north", "south", "east", "west"];
 
 let failures = 0;

@@ -6,7 +6,6 @@ import { showOutline, clearOutline } from "./lib/outline.js";
 import { registerAutoFishingRod } from "./lib/autoFishingRod.js";
 import { registerVillagerManager } from "./lib/villagerManager.js";
 import { IronFarm } from "./farms/ironFarm.js";
-import { IronGolemFarm } from "./farms/ironGolemFarm.js";
 import { CropFarm } from "./farms/cropFarm.js";
 import { GiantCropFarm } from "./farms/giantCropFarm.js";
 import { MobFarm } from "./farms/mobFarm.js";
@@ -18,7 +17,6 @@ import { TradingHall } from "./farms/tradingHall.js";
 const TOOL_ID = "autofarm:build_tool";
 const FARMS = [
   IronFarm,
-  IronGolemFarm,
   CropFarm,
   GiantCropFarm,
   KelpFarm,

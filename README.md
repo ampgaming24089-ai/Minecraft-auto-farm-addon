@@ -4,19 +4,18 @@ Instant, stackable auto farms for Minecraft Bedrock / Pocket Edition. Right-clic
 a block with the **Structure Build Tool**, pick a farm from a menu, preview
 its footprint as a particle outline, then confirm to have it built instantly.
 
-Includes nine farms, plus two standalone tools:
+Includes eight farms, plus two standalone tools:
 
-- **Stackable Iron Farm** — an open villager hall (beds + composters, not
-  sealed pods — see below for why that matters), an open-top lit spawn
-  platform that's a real water pool (not just a current over a dry floor),
-  and a corner magma kill pocket. Build 1-4 levels, stacked vertically and
-  deliberately close together.
-- **Iron Golem Farm (Single Tier)** — the exact same researched, working
-  iron-farm layout above, but registered as its own single-tier menu entry
-  (20 beds, 20 composter workstations, water push, magma kill chamber,
-  hopper collection) with no level slider, since that's what was actually
-  asked for as a standalone farm. Pick "Stackable Iron Farm" instead if you
-  want the option to merge multiple tiers into one bigger village.
+- **Iron Golem Farm** — rebuilt from scratch as a single, tried-and-true
+  one-tier design (no stacking, no level slider — one clean build). An
+  open villager hall (beds + composters, not sealed pods — see below for
+  why that matters) fills exactly 20 beds + 20 composter workstations with
+  20 villagers, spawned as plain adults so none of them can turn out to be
+  nitwits (see below for why that's true "by construction," not a runtime
+  check). An open-top lit spawn platform is a real water pool (not just a
+  current over a dry floor) pushing golems down an 8-block shaft onto a
+  checkerboard of lit campfires — real, item-safe damage over time,
+  finishing off what the fall softened — into a hopper floor.
 - **Auto Crop Farm** — a pinwheel layout: 4 farmer villagers, each with
   their own composter-on-water plot, arranged around ONE caged collector
   villager at the center, with rail and parked hopper minecarts in the pit
@@ -53,11 +52,12 @@ Includes nine farms, plus two standalone tools:
   search the world for structures, so, like every farm here, you position
   it yourself). Pillager Captains — identifiable by the Ominous Banner they
   carry — have a real chance to drop an Ominous Bottle on death, so this is
-  a legitimate way to farm them. Kill system is a 23-block fall shaft (past
-  the threshold for guaranteed fall damage) into a piston crusher on a
-  2-observer clock, not a "trident killer" — see the module's header
-  comment for why that specific ask isn't something a static structure can
-  actually automate, and what was built instead.
+  a legitimate way to farm them. You do the killing yourself, in a real
+  6x6 bottom chamber reached by a safe ladder shaft + door: a 12-block
+  fall (~9 damage) softens whatever drops without being outright lethal,
+  so there's always something left to finish by hand — which also gets
+  you real player-kill loot bonuses (Looting, kill-gated drops) an
+  automated kill never would. A full hopper floor collects it either way.
 - **Librarian Trading Hall** — 5-librarian-stall sections (bed + lectern
   each, bookshelf decor, fence front you can trade across), 1-4 sections
   (up to 20 librarians). Paired with the **Villager Manager Wand** (see
@@ -81,105 +81,75 @@ Two standalone tools (craftable, also in the Creative inventory):
   so you still have to glance at the trade screen yourself — this just
   makes acting on it near-instant instead of manual block-breaking.
 
-## Important: what "stackable" actually means for the iron farm
+## Iron Golem Farm: rebuilt as a single tried-and-true tier
 
-Bedrock's real requirement for iron golems to spawn at all is **20 beds and
-10 villagers, with 75% of them having reached and used a workstation in the
-last in-game day** — much bigger than most people assume, and far bigger
-than earlier versions of this addon used (which is why golems never spawned
-and "water doesn't push them" was moot — there was nothing to push). Each
-level here has **20 beds + 20 composters** in two open rows of 10.
+This farm was rebuilt from scratch (the old multi-tier stacking version and
+its separate single-tier wrapper are both gone — `ironFarm.js` is a fresh
+file). It's deliberately just ONE tier, ONE menu entry, no level slider —
+that's what was asked for, and it also sidesteps a real complication the
+old stacked version had to work around (merging multiple tiers into one
+combined village to share a population cap, only active near the player).
+One tier keeps that entirely out of the picture.
 
-The golem population cap is **1 golem per 10 villagers in a village**. An
-earlier version of this addon tried to give every floor its own
-*independent* cap by spacing levels far enough apart (80+ blocks) that
-Bedrock wouldn't merge them into one village. That turned out to be a
-mistake, based on a mechanic I'd missed:
+The numbers are still the real, researched ones: Bedrock's actual
+requirement for golems to spawn at all is **20 beds and 10 villagers, with
+75% of them having reached and used a workstation in the last in-game
+day** — much bigger than most people assume. This farm fills every one of
+those 20 slots: **20 beds + 20 composter workstations + 20 villagers**, in
+two open rows of 10 so villagers can freely path between bed and
+workstation (sealing them into isolated pods silently breaks this).
 
-**A village only spawns golems while a player is standing inside its
-"activation region"** — the village's bounds expanded outward by roughly
-32-48 blocks depending on your simulation distance setting. The distance
-needed to keep two villages from merging is *larger* than that (~64+ blocks
-beyond each village's own bounds). Since the separation-to-avoid-merging is
-always bigger than the activation range, **there is no single spot you can
-stand that keeps two truly separate villages both active at once** — you'd
-only ever activate whichever one you're currently near, and the others sit
-idle. That's true whether the farms are stacked vertically or spread out
-horizontally on the ground — spreading them out doesn't fix it, it just
-changes which axis the wasted distance is on.
+**No nitwits, and here's exactly why that's true:** in Bedrock, a villager
+only has a chance (10%) to become a nitwit at the moment a bred baby grows
+into an adult. That growth step never happens here — every villager is
+spawned directly as a plain adult (same as a spawn egg), so it never goes
+through the roll that could make it one. There's no documented, stable way
+for Script API to read a villager's profession afterward to double-check,
+so this is a guarantee "by construction," not a runtime check — worth
+being upfront about rather than claiming a verification step that doesn't
+actually exist.
 
-So this farm does the opposite: **levels are built close together on
-purpose so they merge into one combined village.** More levels = more total
-villagers = a higher population cap, and because it's one village with one
-activation region, every floor can spawn golems simultaneously from a
-single AFK spot at the base:
+**Water push**: a source column on the west wall (flowing east) and one on
+the north wall (flowing south) converge on a 2-wide SE corner drain. Two
+currents on OPPOSITE walls flowing head-on into each other create a
+dead/ambiguous push exactly where they'd meet; two currents on ADJACENT
+walls only ever combine, never cancel — that's why the drain is a corner,
+not the center, and why it's 2 walls with real source blocks (not a
+hand-filled pool of uniform sources, which would have no current at all).
 
-- **4 levels = 80 villagers in one village = a population cap of 8**
-  concurrent golems, all reachable from one spot.
-- **Height is back to normal** — a 4-level build is about 45 blocks tall,
-  not 250.
-- **Collection is shared again** — one external hopper shaft down to one
-  base chest, since the levels are close enough together that this is
-  fast, not the minutes-long chain a spread-out design would need.
-- **1-3 levels may not reliably spawn golems at all** if you don't fill
-  every level's beds. This farm is only guaranteed to work with every
-  built level fully populated (20/20 beds per level).
-- **Build it away from any existing village** (100+ blocks is a commonly
-  cited safe distance) — a nearby real village can merge with yours and
-  throw off the cap.
+**Kill chamber: campfires, not lava/magma.** A lit campfire deals real,
+verified damage over time (~2 damage/second) and — unlike lava or fire —
+does not destroy item drops and doesn't set the mob on fire either. Iron
+golems have 100 HP, so an 8-block fall first (real fall-damage math, not
+enough alone to kill something with that much health, but a meaningful
+head start) softens them before they land on a floor checkerboarded
+between lit campfires and hoppers. That checkerboard matters: a campfire
+is solid on top, so a hopper placed directly UNDER one can never reach
+items resting on it (they sit a full block above the hopper's suction
+range) — interleaving hopper tiles at the same layer, right next to every
+campfire, is what actually lets the drops get collected.
 
-Two more fixes worth calling out explicitly, both found from real in-game
-testing feedback:
+**No roof.** The hall and platform are open at the top; an enclosed room's
+darkness used to be what (accidentally) kept hostile mobs out, so it's lit
+heavily instead (sea lanterns at hall height and platform height) to keep
+light levels high enough that nothing hostile spawns despite the open top.
 
-- **The water current wasn't pushing golems anywhere.** The earlier design
-  ringed all 4 edges of the spawn platform with water flowing inward. That
-  looks reasonable on paper, but water only flows about 7 blocks from a
-  source before stopping, and two currents flowing head-on into each other
-  from opposite edges create a dead/ambiguous push exactly where they
-  meet — which was exactly the center drain, the one place the push needed
-  to be strongest. The fix drops the north/south edges entirely and only
-  uses a full-depth water column on the west wall (flowing east) and one on
-  the east wall (flowing west). Every tile on the platform now has exactly
-  one clear push direction toward the drain, never two fighting each other.
-- **No more roof.** Each level used to be a fully sealed box. That's gone —
-  every level is now open at the top. An enclosed room's darkness used to
-  be what (accidentally) kept hostile mobs out; with the roof gone, that
-  job is done instead by lighting the place heavily (sea lanterns lining
-  both walls at hall height and platform height on every level), which
-  keeps light levels high enough that nothing hostile spawns despite the
-  open top.
+**No zombie cage.** A caged zombie near the villagers (on the theory that a
+nearby threat raises golem-spawn urgency) is a real mechanic — on Java,
+where 3 panicking villagers can emergency-summon a golem. That panic
+mechanic doesn't exist on Bedrock at all; Bedrock's golem spawning is
+purely population/bed/workstation-based (see above), so a caged zombie
+does nothing here except take up space.
 
-Both the iron farm's platform and the crop farm's layout were rebuilt again
-after that to match specific, widely-used reference designs the actual
-builder shared screenshots of, rather than my own from-scratch layouts:
+**Build it away from any existing village** (100+ blocks is a commonly
+cited safe distance) — a nearby real village can merge with yours and
+throw off the population cap / golem count.
 
-- **Iron farm platform is now a real pool, and the kill point moved to a
-  corner.** The push mechanism is unchanged (it's the fix above — a source
-  column on 2 adjacent walls only, everything else left for the game's own
-  fluid physics to fill in, so it still has a real single-direction push
-  instead of a hand-placed pool of uniform source blocks, which would have
-  no push at all). What changed is the shape: instead of a thin current
-  across a mostly-dry floor draining to a center hole, the whole platform
-  fills in as a pool draining to a 2-wide hole in the SE corner.
-- **Kill pocket is magma again, not lava.** A version of this pocket briefly
-  used lava (matching a reference design's material list), but it leaked —
-  lava spread out across the surrounding hall floor in testing instead of
-  staying in the intended pocket. I traced through the containment logic
-  and couldn't find where it actually escapes on paper, which means either
-  there's a subtlety in how Bedrock's fluid placement behaves that I don't
-  have full visibility into, or it was stale lava left over from an earlier
-  rebuild at the same spot — I can't say for certain which. Rather than
-  keep guessing at a fluid, it's magma now: a solid block, not a fluid, so
-  it's physically incapable of spreading or leaking no matter what the real
-  cause was. Same real damage-over-time, zero loot loss, zero leak risk.
-- **No more zombie cage.** Earlier versions caged a zombie near the
-  villagers on the theory that a nearby threat raises golem-spawn urgency.
-  That's a real mechanic — on Java, where 3 panicking villagers can
-  emergency-summon a golem. That panic mechanic doesn't exist on Bedrock at
-  all; Bedrock's golem spawning is purely population/bed/workstation-based
-  (see above), so the zombie was doing nothing except taking up space and
-  materials. Removed.
-- **Crop farm is a pinwheel now, not paired plots.** 4 farmer quadrants
+The crop farm's pinwheel layout and the mob farm's water push were also
+matched to specific, widely-used reference designs rather than invented
+from scratch:
+
+- **Crop farm is a pinwheel**, 4 farmer quadrants
   around one central collector pit, with a short (1-block-high) wall around
   the pit — low enough for a farmer standing outside to reach over and
   share food, tall enough that the caged collector can't walk out. A hopper
@@ -277,24 +247,21 @@ needs the build tool; use them directly.
 Nothing here is scripted loot or fake spawns — every drop comes from real
 vanilla AI and physics:
 
-**Iron Farm** — Two open rows of 10 beds facing 10 composters each (20 of
-each per level) let villagers freely path between sleeping and working,
-which is what actually keeps them counted as valid village members
-(sealing them in isolated pods, an earlier design, silently broke this).
-Levels are spaced close together (12 blocks) on purpose so every built
-level merges into one combined village instead of staying separate — see
-"what stackable actually means" above for why deliberately merging beats
-trying to keep floors independent. No zombie cage — that's a Java-only
-mechanic (see above). Golems spawn in the open-top, heavily-lit water pool
-above each level (inside the village bounds); a source column on the west
-wall (flows east) and one on the north wall (flows south) push everything
+**Iron Golem Farm** — Two open rows of 10 beds facing 10 composters each
+(20 of each, 20 villagers spawned as plain adults so none can roll a
+nitwit) let villagers freely path between sleeping and working, which is
+what actually keeps them counted as valid village members (sealing them in
+isolated pods, an earlier design, silently broke this). No zombie cage —
+that's a Java-only mechanic (see above). Golems spawn in the open-top,
+heavily-lit water pool above the hall; a source column on the west wall
+(flows east) and one on the north wall (flows south) push everything
 toward a 2-wide drain in the SE corner, and the rest of the pool fills in
 from those two sources via the game's own fluid physics (a hand-filled
 pool of uniform source blocks would have no current — see the
-water-current notes above). Golems fall down the corner shaft onto a magma
-kill pocket and take real damage over time until they die; one hopper tile
-in the pocket is a direct catch point for the drops, feeding the shared
-collection shaft.
+water-current notes above). Golems fall 8 blocks onto a checkerboard of
+lit campfires and hoppers — real, item-safe damage over time (campfires
+don't destroy drops, unlike lava/fire) finishes off what the fall
+softened, and the interleaved hopper tiles catch every drop.
 
 **Crop Farm** — A pinwheel: 4 farmer villagers, each in their own 9x9
 quadrant (farmers won't work land more than ~4 blocks from their
@@ -414,18 +381,20 @@ within the structure's own bounds, so building a new "highest point" there
 is what redirects those spawns onto the platform. The platform is
 deliberately left unlit (every other farm here lights its platform
 heavily) — ordinary hostile mobs can spawn here too, but that's fine, they
-fall down the same shaft and die the same way. A real "auto trident
+fall down the same shaft into the same chamber. A real "auto trident
 killer" (a Channeling trident thrown during an actual thunderstorm) only
 works while it's storming and needs a Channeling trident to begin with —
 not something a static structure can keep running unattended, and not
-something this addon should hand you out of nowhere either. Instead, the
-kill system is the other real, always-on mechanic: a 23-block fall shaft
-(past the threshold for guaranteed lethal fall damage on most mobs) into a
-landing tile where a piston, driven by a 2-observer clock (two observers
-facing each other perpetually retrigger one another — the standard minimal
-redstone clock, no external power needed), repeatedly shoves a block in to
-suffocate whatever the fall didn't already kill. A hopper floor under the
-chamber catches every drop.
+something this addon should hand you out of nowhere either. Instead, YOU
+do the killing: a 12-block fall shaft (real fall-damage math — about 9
+damage, enough to soften most outpost mobs without being lethal on its
+own) drops everything into a real 6x6, 2-tall bottom chamber, reached by
+an enclosed ladder shaft and a proper 2-tall door so you can walk down and
+finish the fight yourself — which also means the kill is credited to you,
+qualifying for player-kill-only loot bonuses (Looting, certain gated
+drops) that an automated kill never would. The whole chamber floor is a
+two-layer hopper grid, so whatever you kill still gets collected
+automatically even though the kill itself isn't.
 
 **Librarian Trading Hall** — 5-stall sections, each an unemployed villager
 next to a lectern (ordinary profession-claiming — no scripting needed for
@@ -532,7 +501,8 @@ put one on a mob-drop item.
   vanilla AI. Give it real in-game time before concluding it isn't working.
 - **Stay near the build site until you see "Build Complete!"** on screen.
   Building spreads block placement across many ticks to avoid freezing the
-  game; a 4-level farm can take a while. If you wander far enough that
+  game; a large farm (the Giant Crop Farm's hundreds of hoppers, or 4 units
+  of any ground farm) can take a while. If you wander far enough that
   chunks unload mid-build, later placements (including villager spawns,
   which happen last) can silently fail, leaving an incomplete structure. If
   that happens, just build again while staying put.
@@ -568,11 +538,13 @@ put one on a mob-drop item.
 - **Build site**: the tool clears a generous interior volume before
   building, but doesn't touch anything outside the farm's own footprint.
   Build on relatively flat ground, away from any existing village (see
-  above). Clearance needed: the iron farm is roughly 45 blocks tall at 4
-  levels (15x15 footprint); the crop and mob farms are only ~5-7 blocks
-  tall each but stretch to ~120 blocks wide at 4 units (23x23 and 15x15
-  footprints per unit, 10 blocks apart) since they're built side by side on
-  the ground rather than stacked.
+  above). Clearance needed: the iron farm is a single ~9-block-tall,
+  15x15 build (plus the 8-block kill shaft below); the crop and mob farms
+  are only ~5-7 blocks tall each but stretch to ~120 blocks wide at 4
+  units (23x23 and 15x15 footprints per unit, 10 blocks apart) since
+  they're built side by side on the ground rather than stacked; the
+  Pillager Outpost Farm digs its ladder shaft + chamber roughly 20 blocks
+  below wherever you build it, so make sure there's clearance underneath.
 - Module/engine versions in `BP/manifest.json` are set to reasonably recent
   values; if your Minecraft version is newer, update them per Mojang's
   Script API changelog.
@@ -594,8 +566,7 @@ BP/                      Behavior pack
     lib/outline.js             Particle bounding-box preview
     lib/autoFishingRod.js      Auto Fishing Rod toggle + loot-roll loop
     lib/villagerManager.js     Villager Manager Wand (reroll/replace)
-    farms/ironFarm.js           Stackable iron farm layout + mechanics
-    farms/ironGolemFarm.js       Single-tier wrapper around ironFarm.js
+    farms/ironFarm.js           Single-tier iron golem farm (campfire kill)
     farms/cropFarm.js            4-farmer pinwheel crop farm
     farms/giantCropFarm.js        19x19 single-villager crop farm + bees
     farms/kelpFarm.js              One-tick observer/piston kelp farm
@@ -622,10 +593,11 @@ villager AI — only actual in-game testing can do that.
 
 Each farm module exports an object with `id`, `name`, `shortDescription`,
 `size`, `levelSpacing`, `maxLevels`, and a `plan({ levels, facing })` method
-returning `{ placements, spawns, fills? }` in local space (see `ironFarm.js`
-for a fully worked example of vertical stacking, or `cropFarm.js`/
-`mobFarm.js` for side-by-side ground units). Register it in `FARMS` in
-`scripts/main.js` and it shows up in the menu automatically.
+returning `{ placements, spawns, fills? }` in local space (see `cropFarm.js`/
+`mobFarm.js` for side-by-side ground units, or `ironFarm.js`/
+`pillagerOutpostFarm.js` for a single fixed-position build via
+`fixedLevels`). Register it in `FARMS` in `scripts/main.js` and it shows up
+in the menu automatically.
 
 A few optional properties change how the generic build flow treats a farm:
 
@@ -639,8 +611,8 @@ A few optional properties change how the generic build flow treats a farm:
   already-placed container's inventory slot after building (e.g. fuel into
   a smoker), applied after `placements` but before `spawns`.
 - `fixedLevels` — skip the level-count menu entirely and always build
-  exactly this many (see `ironGolemFarm.js`/`pillagerOutpostFarm.js` for
-  farms meant to go in one specific spot rather than being repeated).
+  exactly this many (see `ironFarm.js`/`pillagerOutpostFarm.js` for farms
+  meant to go in one specific spot rather than being repeated).
 - A `spawns` entry can include an `inventory` array of
   `{slot, itemId, amount}` to pre-fill that specific entity's own carry
   slots right after it spawns (see `giantCropFarm.js`'s farmer villager).

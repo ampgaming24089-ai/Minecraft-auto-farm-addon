@@ -4,7 +4,7 @@
     "name": "Groundwork Farms [Behavior]",
     "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
     "uuid": "6d777d9e-1f18-4476-93aa-d05addc86366",
-    "version": [1, 1, 0],
+    "version": [1, 2, 0],
     "min_engine_version": [1, 21, 90]
   },
   "metadata": {
@@ -14,13 +14,13 @@
     {
       "type": "data",
       "uuid": "7750b803-da74-4ccd-a7d1-586b43e23c7d",
-      "version": [1, 1, 0]
+      "version": [1, 2, 0]
     },
     {
       "type": "script",
       "language": "javascript",
       "uuid": "facd1e9f-d031-4300-98a9-a5aadd3a8af4",
-      "version": [1, 1, 0],
+      "version": [1, 2, 0],
       "entry": "scripts/main.js"
     }
   ],
@@ -35,7 +35,7 @@
     },
     {
       "uuid": "87836772-0c98-4269-b4dd-0f4ac358deef",
-      "version": [1, 1, 0]
+      "version": [1, 2, 0]
     }
   ]
 }
