@@ -1,29 +1,29 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hollow Veil §7- Behavior Pack",
+    "name": "Hallowed Depths §7- Behavior Pack",
     "description": "A ghost & demon dimension: new mobs, 3 bosses, custom armor, trading, quests, and a portal ritual.",
-    "uuid": "3e85d62f-2918-4945-bc3c-11574175bfac",
+    "uuid": "885991b9-2285-453c-88d9-b9caa859c2fc",
     "version": [1, 0, 0],
     "min_engine_version": [1, 26, 10]
   },
   "modules": [
     {
       "type": "data",
-      "uuid": "d5e75d36-c1a7-41f7-b2c3-3be5b6897e4d",
+      "uuid": "64e7a8dd-cef4-42e5-a82e-9b9ccd145a19",
       "version": [1, 0, 0]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "c28440ce-6920-48cc-8436-eb1fd12ccfff",
+      "uuid": "915cf596-e3c7-4014-978e-df04a7f46861",
       "entry": "scripts/main.js",
       "version": [1, 0, 0]
     }
   ],
   "dependencies": [
     {
-      "uuid": "f1789be7-2c4d-42bc-b5bc-fa88895e7c57",
+      "uuid": "ae6e6ecc-4012-4967-b18f-602b77319602",
       "version": [1, 0, 0]
     },
     {
@@ -36,7 +36,7 @@
     }
   ],
   "metadata": {
-    "authors": ["Hollow Veil Team"],
+    "authors": ["Hallowed Depths Team"],
     "product_type": "addon"
   }
 }

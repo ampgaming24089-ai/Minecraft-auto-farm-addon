@@ -1,7 +1,7 @@
 ## Hollow Veil - display strings
 
-pack.name=Hollow Veil - Resource Pack
-pack.description=Textures, models, sounds and atmosphere for the Hollow Veil dimension.
+pack.name=Hallowed Depths - Resource Pack
+pack.description=Textures, models, sounds and atmosphere for the Hallowed Depths dimension.
 
 itemGroup.name.hollowveil.currency=Hollow Veil Materials
 itemGroup.name.hollowveil.trinkets=Hollow Veil Trinkets

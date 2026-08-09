@@ -1,4 +1,7 @@
-# Hollow Veil — a Minecraft Bedrock dimension add-on
+# Hallowed Depths — a Minecraft Bedrock dimension add-on
+
+(packaged/pack-facing name; the dimension is still called "the Hollow Veil"
+in-fiction throughout the story and UI — see `docs/STORY.md`)
 
 A ghosts-and-demons dimension add-on for Minecraft Bedrock: a custom
 dimension, 8 regular mobs with scripted abilities, 3 bosses with

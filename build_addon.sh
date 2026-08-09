@@ -5,7 +5,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OUT="${1:-$ROOT/dist}"
-NAME="HollowVeil"
+NAME="HallowedDepths"
 
 rm -rf "$OUT"
 mkdir -p "$OUT"
