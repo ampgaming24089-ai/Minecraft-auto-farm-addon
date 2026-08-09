@@ -10,12 +10,18 @@ rendering pipeline that have been stable for years and will load correctly
 today:
 
 - **`RP/fogs/hollow_veil_fog.json`** — a dedicated fog profile for the
-  dimension: a close, heavy, violet-grey fog band (fog starts at 12 blocks,
-  fully opaque by 55) plus a volumetric density layer, so the Veil always
-  reads as thick and close even in open areas.
-- **`RP/biomes_client.json`** — ties that fog profile to the
-  `hollowveil:hollow_veil` biome and gives its water a murky violet tint
-  distinct from Overworld water.
+  dimension: a close, heavy, violet-grey fog band (fog starts at 10 blocks,
+  fully opaque by 55), so the Veil always reads as thick and close even in
+  open areas. Schema verified against Mojang's own vanilla biome fog files
+  (`basalt_deltas_fog_setting.json` etc. in `bedrock-samples`).
+- **`RP/biomes_client.json`** — ties that fog profile to whatever biome the
+  dimension actually reports. Because Hollow Veil is a **script-registered
+  custom dimension** (see `docs/DIMENSION.md`) it has no biome of its own
+  to key off; this currently guesses `minecraft:the_void`, the standard
+  Bedrock void biome, since that's the most likely default for an empty
+  custom dimension. If that guess is wrong for a given game version, the
+  fog file itself still loads fine (valid schema either way) — the only
+  effect is the color grading not visually kicking in, not an error.
 - **Particle ambience** — `hollow_king_pulse_particle`, `soul_wisp_particle`,
   `banshee_scream_particle`, `ember_particle`, `shade_teleport_particle` and
   `portal_particle` (`RP/particles/`, sprites in

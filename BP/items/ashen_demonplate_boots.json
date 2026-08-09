@@ -1,18 +1,47 @@
 {
   "format_version": "1.21.0",
   "minecraft:item": {
-    "description": { "identifier": "hollowveil:ashen_demonplate_boots", "menu_category": { "category": "equipment", "group": "itemGroup.name.boots" } },
+    "description": {
+      "identifier": "hollowveil:ashen_demonplate_boots",
+      "menu_category": {
+        "category": "equipment",
+        "group": "itemGroup.name.boots"
+      }
+    },
     "components": {
       "minecraft:max_stack_size": 1,
-      "minecraft:icon": { "texture": "ashen_demonplate_boots" },
-      "minecraft:display_name": { "value": "item.hollowveil:ashen_demonplate_boots.name" },
-      "minecraft:wearable": { "slot": "slot.armor.feet", "dispensable": true },
-      "minecraft:armor": { "protection": 4 },
+      "minecraft:icon": "ashen_demonplate_boots",
+      "minecraft:display_name": {
+        "value": "item.hollowveil:ashen_demonplate_boots.name"
+      },
+      "minecraft:wearable": {
+        "slot": "slot.armor.feet",
+        "protection": 4
+      },
       "minecraft:glint": true,
-      "minecraft:durability": { "max_durability": 520 },
-      "minecraft:enchantable": { "slot": "armor_feet", "value": 20 },
-      "minecraft:repairable": { "repair_items": [ { "items": [ "hollowveil:demon_horn" ], "repair_amount": "max_durability * 0.2" } ] },
-      "minecraft:tags": { "tags": [ "hollowveil:boss_armor", "hollowveil:ashen_demonplate" ] }
+      "minecraft:durability": {
+        "max_durability": 520
+      },
+      "minecraft:enchantable": {
+        "slot": "armor_feet",
+        "value": 20
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": [
+              "hollowveil:demon_horn"
+            ],
+            "repair_amount": "query.max_durability * 0.2"
+          }
+        ]
+      },
+      "minecraft:tags": {
+        "tags": [
+          "hollowveil:boss_armor",
+          "hollowveil:ashen_demonplate"
+        ]
+      }
     }
   }
 }

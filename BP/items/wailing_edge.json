@@ -1,21 +1,46 @@
 {
   "format_version": "1.21.0",
   "minecraft:item": {
-    "description": { "identifier": "hollowveil:wailing_edge", "menu_category": { "category": "equipment", "group": "itemGroup.name.sword" } },
+    "description": {
+      "identifier": "hollowveil:wailing_edge",
+      "menu_category": {
+        "category": "equipment",
+        "group": "itemGroup.name.sword"
+      }
+    },
     "components": {
       "minecraft:max_stack_size": 1,
-      "minecraft:icon": { "texture": "wailing_edge" },
-      "minecraft:display_name": { "value": "item.hollowveil:wailing_edge.name" },
+      "minecraft:icon": "wailing_edge",
+      "minecraft:display_name": {
+        "value": "item.hollowveil:wailing_edge.name"
+      },
       "minecraft:hand_equipped": true,
-      "minecraft:weapon": {},
       "minecraft:glint": true,
       "minecraft:damage": 8,
-      "minecraft:durability": { "max_durability": 1150 },
-      "minecraft:enchantable": { "slot": "sword", "value": 20 },
-      "minecraft:repairable": {
-        "repair_items": [ { "items": [ "hollowveil:banshee_vocal_cord" ], "repair_amount": "max_durability * 0.2" } ]
+      "minecraft:durability": {
+        "max_durability": 1150
       },
-      "minecraft:tags": { "tags": [ "minecraft:is_sword", "minecraft:sword", "hollowveil:boss_weapon" ] }
+      "minecraft:enchantable": {
+        "slot": "sword",
+        "value": 20
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": [
+              "hollowveil:banshee_vocal_cord"
+            ],
+            "repair_amount": "query.max_durability * 0.2"
+          }
+        ]
+      },
+      "minecraft:tags": {
+        "tags": [
+          "minecraft:is_sword",
+          "minecraft:sword",
+          "hollowveil:boss_weapon"
+        ]
+      }
     }
   }
 }

@@ -5,7 +5,7 @@
     "description": "Textures, models, sounds, atmospherics and UI for the Hollow Veil ghost & demon dimension.",
     "uuid": "f1789be7-2c4d-42bc-b5bc-fa88895e7c57",
     "version": [1, 0, 0],
-    "min_engine_version": [1, 21, 0]
+    "min_engine_version": [1, 26, 10]
   },
   "modules": [
     {

@@ -4,34 +4,65 @@
     "description": {
       "identifier": "hollowveil:occultist",
       "is_spawnable": false,
-      "is_summonable": true,
-      "properties": {}
+      "is_summonable": true
     },
     "components": {
-      "minecraft:type_family": { "family": ["hollow_veil", "occultist", "npc", "trader"] },
-      "minecraft:collision_box": { "width": 0.6, "height": 1.95 },
-      "minecraft:health": { "value": 30, "max": 30 },
+      "minecraft:type_family": {
+        "family": [
+          "hollow_veil",
+          "occultist",
+          "npc",
+          "trader"
+        ]
+      },
+      "minecraft:collision_box": {
+        "width": 0.6,
+        "height": 1.95
+      },
+      "minecraft:health": {
+        "value": 30,
+        "max": 30
+      },
       "minecraft:physics": {},
-      "minecraft:pushable": { "is_pushable": true, "is_pushable_by_piston": false },
-      "minecraft:navigation.walk": { "can_path_over_water": false, "avoid_water": true, "can_pass_doors": true },
+      "minecraft:pushable": {
+        "is_pushable": true,
+        "is_pushable_by_piston": false
+      },
+      "minecraft:navigation.walk": {
+        "can_path_over_water": false,
+        "avoid_water": true,
+        "can_pass_doors": true
+      },
       "minecraft:movement.basic": {},
-      "minecraft:movement": { "value": 0.2 },
+      "minecraft:movement": {
+        "value": 0.2
+      },
       "minecraft:jump.static": {},
-      "minecraft:persistent": true,
+      "minecraft:persistent": {},
       "minecraft:despawn": {},
-      "minecraft:is_immune_to_zombification": {},
-      "minecraft:behavior.hurt_by_target": { "priority": 1 },
-      "minecraft:behavior.move_indoors": { "priority": 4 },
-      "minecraft:behavior.random_stroll": { "priority": 6, "speed_multiplier": 0.6, "xz_dist": 6 },
-      "minecraft:behavior.look_at_player": { "priority": 7, "look_distance": 8 },
-      "minecraft:behavior.random_look_around": { "priority": 8 },
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
+      "minecraft:behavior.move_indoors": {
+        "priority": 4
+      },
+      "minecraft:behavior.random_stroll": {
+        "priority": 6,
+        "speed_multiplier": 0.6,
+        "xz_dist": 6
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 7,
+        "look_distance": 8
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 8
+      },
       "minecraft:trade_table": {
         "table": "trading/occultist_trades.json",
-        "convert_trades_before_leveling": false,
-        "persist_trades": true
+        "display_name": "entity.hollowveil:occultist.name"
       },
-      "minecraft:nameable": {},
-      "minecraft:is_immune_to_fire": true
+      "minecraft:nameable": {}
     },
     "events": {
       "minecraft:entity_spawned": {}

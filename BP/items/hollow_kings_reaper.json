@@ -1,21 +1,46 @@
 {
   "format_version": "1.21.0",
   "minecraft:item": {
-    "description": { "identifier": "hollowveil:hollow_kings_reaper", "menu_category": { "category": "equipment", "group": "itemGroup.name.sword" } },
+    "description": {
+      "identifier": "hollowveil:hollow_kings_reaper",
+      "menu_category": {
+        "category": "equipment",
+        "group": "itemGroup.name.sword"
+      }
+    },
     "components": {
       "minecraft:max_stack_size": 1,
-      "minecraft:icon": { "texture": "hollow_kings_reaper" },
-      "minecraft:display_name": { "value": "item.hollowveil:hollow_kings_reaper.name" },
+      "minecraft:icon": "hollow_kings_reaper",
+      "minecraft:display_name": {
+        "value": "item.hollowveil:hollow_kings_reaper.name"
+      },
       "minecraft:hand_equipped": true,
-      "minecraft:weapon": {},
       "minecraft:glint": true,
       "minecraft:damage": 9,
-      "minecraft:durability": { "max_durability": 1300 },
-      "minecraft:enchantable": { "slot": "sword", "value": 20 },
-      "minecraft:repairable": {
-        "repair_items": [ { "items": [ "hollowveil:spectral_dust" ], "repair_amount": "max_durability * 0.2" } ]
+      "minecraft:durability": {
+        "max_durability": 1300
       },
-      "minecraft:tags": { "tags": [ "minecraft:is_sword", "minecraft:sword", "hollowveil:boss_weapon" ] }
+      "minecraft:enchantable": {
+        "slot": "sword",
+        "value": 20
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": [
+              "hollowveil:spectral_dust"
+            ],
+            "repair_amount": "query.max_durability * 0.2"
+          }
+        ]
+      },
+      "minecraft:tags": {
+        "tags": [
+          "minecraft:is_sword",
+          "minecraft:sword",
+          "hollowveil:boss_weapon"
+        ]
+      }
     }
   }
 }

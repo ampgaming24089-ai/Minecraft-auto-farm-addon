@@ -18,17 +18,20 @@ of the story they're built to tell.
 2. Send that file to a device with Minecraft Bedrock and open it, or copy
    `BP/` and `RP/` directly into your world's
    `com.mojang/development_behavior_packs` / `development_resource_packs`.
-3. **When creating the world**, enable these experiments (Create New World
-   → Experiments): **Upcoming Creator Features**. See `docs/DIMENSION.md`
-   if the dimension itself fails to generate on your game version — that's
-   the one part of this add-on built on an API that's still moving.
-4. Add both packs to the world (Behavior Packs tab and Resource Packs tab).
+3. Add both packs to the world (Behavior Packs tab and Resource Packs tab).
+   No experimental toggles are required — the custom dimension registers
+   itself via the (stable) Script API on world load. This requires a
+   fairly recent game version (the manifest targets `min_engine_version`
+   1.26.10, matching `@minecraft/server` 2.8.0); see `docs/DIMENSION.md`
+   if anything about the dimension itself needs adjusting for your
+   specific version.
 
 ## What's in it
 
-- **The Hollow Veil dimension** (`hollowveil:hollow_veil`) — a custom flat
-  dimension with its own biome, fog profile and water color.
-  `docs/DIMENSION.md`.
+- **The Hollow Veil dimension** (`hollowveil:hollow_veil`) — a custom
+  dimension registered via the Script API, with a hand-built island
+  (terrain, ore veins, altars, village) raised the first time anyone
+  arrives, since custom dimensions start as an empty void. `docs/DIMENSION.md`.
 - **Getting there** — craft `Soulforged Obsidian`, build a 4-wide-by-5-tall
   frame (or bigger, up to nether-portal-sized), light it with a
   `Wraithfire Igniter`. The frame detector is a from-scratch
@@ -100,6 +103,21 @@ mechanics) do not depend on the art and work identically either way.
   next step.
 - Per-mob ambient/hurt/death sound hookups aren't wired individually;
   only the scripted ability SFX (scream, portal, buffet, etc.) play.
-- The dimension's world generator (`BP/dimensions/hollow_veil.json`) uses
-  the newest, least stable part of the Bedrock creator API — see
-  `docs/DIMENSION.md` if it needs adjusting for your game version.
+- The dimension's default biome guess (`minecraft:the_void` in
+  `RP/biomes_client.json`) is a best-effort atmosphere hook — see
+  `docs/SHADER.md`. It doesn't affect anything functional if it's wrong,
+  only the fog/water color polish.
+
+## Corrected against a real device test
+
+The first build of this addon was validated by JSON schema/reference
+checks alone and shipped several bugs a live client caught immediately
+(wrong dimension format, a whole class of item-component shapes that
+changed since the format I'd used, a script event name that doesn't exist
+and crashed the entire script on load, etc.). Every one of those was
+root-caused against Mojang's own `bedrock-samples` repo and Microsoft's
+official `custom_dimensions` sample rather than guessed twice — see
+`docs/DIMENSION.md` for the big one (dimensions moved from a data file to
+a Script API call entirely). If you hit something this pass didn't catch,
+the same approach applies: check the shape against a real vanilla
+file/schema in `bedrock-samples` before guessing.

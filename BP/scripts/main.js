@@ -1,10 +1,19 @@
-import { world, ItemStack } from "@minecraft/server";
+import { world, system, ItemStack } from "@minecraft/server";
+import { HOLLOW_VEIL } from "./world/build.js";
 import { startPortalTicking } from "./portal/portal.js";
 import { startBossAI } from "./bosses/bossAI.js";
 import { registerMobAbilities, startWraithPhasing } from "./mobs/abilities.js";
+import { startMobSpawner } from "./mobs/spawner.js";
 import { registerItemHandlers, startPassiveItemEffects } from "./items/tools.js";
 import { registerBossWeapons } from "./items/weapons.js";
 import { startArmorSetBonuses } from "./armor/setBonuses.js";
+
+// Custom dimensions must be registered during the restricted "startup"
+// phase - see docs/DIMENSION.md for why this replaced the old static
+// BP/dimensions/*.json approach.
+system.beforeEvents.startup.subscribe((ev) => {
+  ev.dimensionRegistry.registerCustomDimension(HOLLOW_VEIL);
+});
 
 registerMobAbilities();
 registerItemHandlers();
@@ -14,6 +23,7 @@ registerBossWeapons();
 startPortalTicking();
 startBossAI();
 startWraithPhasing();
+startMobSpawner();
 startPassiveItemEffects();
 startArmorSetBonuses();
 

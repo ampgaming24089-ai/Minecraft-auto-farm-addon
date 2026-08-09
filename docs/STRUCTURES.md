@@ -17,17 +17,21 @@ static structure:
 
 ## How a chamber gets triggered
 
-1. World generation scatters a single **Ritual Altar** block
-   (`hollowveil:ritual_altar`) per boss inside its themed sub-biome pocket
-   (see `BP/features/*` + `BP/feature_rules/*`).
+1. Three **Ritual Altar** blocks (`hollowveil:ritual_altar`) — one per boss
+   — are placed directly by `BP/scripts/world/build.js` when the island is
+   first raised (see `docs/DIMENSION.md`; this used to be a world-gen
+   feature scatter, which doesn't run in a script-registered void
+   dimension, so placement moved into the same build pass as the terrain).
 2. The player crafts that boss's **Sigil** (e.g. `hollowveil:sigil_hollow_king`)
    from materials found in the dimension and right-clicks it on the altar.
 3. `scripts/bosses/chambers.js` clears/builds a themed room around the altar
-   (Sunken Crypt / Widow's Hollow / Cinder Bastion — see `docs/STORY.md`),
-   seals the entrance behind the player, and spawns the boss at the center.
-4. On boss death the seal is removed, the loot chest unlocks, and the altar
-   goes on a cooldown (`BOSS_COOLDOWN_TICKS` in `chambers.js`) before it can
-   be used again, so the fight is repeatable without being spammable.
+   (Sunken Crypt / Widow's Hollow / Cinder Bastion — see `docs/STORY.md`)
+   and spawns the boss at the center. The sigil is consumed on use.
+4. The boss's `minecraft:loot` table drops its guaranteed unique sword and
+   armor set directly on death (no separate chest). The altar goes on a
+   world-wide cooldown per boss type (`BOSS_COOLDOWN_TICKS` in
+   `chambers.js`) before it can summon that boss again, so the fight is
+   repeatable without being spammable.
 
 ## Replacing a chamber with a hand-built one (optional, recommended for a
    visual upgrade)

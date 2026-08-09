@@ -1,9 +1,17 @@
 {
   "format_version": "1.21.0",
   "minecraft:recipe_furnace": {
-    "description": { "identifier": "hollowveil:wraithsteel_ingot_smelting" },
-    "tags": [ "furnace", "blast_furnace" ],
+    "description": {
+      "identifier": "hollowveil:wraithsteel_ingot_smelting"
+    },
+    "tags": [
+      "furnace",
+      "blast_furnace"
+    ],
     "input": "hollowveil:wraithsteel_scrap",
-    "output": "hollowveil:wraithsteel_ingot"
+    "output": "hollowveil:wraithsteel_ingot",
+    "unlock": {
+      "context": "AlwaysUnlocked"
+    }
   }
 }

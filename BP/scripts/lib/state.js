@@ -51,6 +51,7 @@ export const KEYS = {
   QUEST_STAGE: "hollowveil:quest_stage",
   RETURN_POS: "hollowveil:return_pos",
   PORTAL_COOLDOWN: "hollowveil:portal_cooldown",
+  ALTAR_POSITIONS: "hollowveil:altar_positions",
 };
 
 export function bossesDefeated() {

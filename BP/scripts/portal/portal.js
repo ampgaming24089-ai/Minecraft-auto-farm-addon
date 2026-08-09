@@ -1,12 +1,12 @@
 import { world, system } from "@minecraft/server";
 import { KEYS, getWorldFlag, setWorldFlag, getPlayerJson, setPlayerJson } from "../lib/state.js";
-import { buildHollowHamlet } from "../village/village.js";
+import { ensureWorldBuilt, HOLLOW_VEIL, ISLAND_CENTER } from "../world/build.js";
 
 const FRAME_BLOCK = "hollowveil:soulforged_obsidian";
 const PORTAL_BLOCK = "hollowveil:veil_portal";
-const HOLLOW_VEIL = "hollowveil:hollow_veil";
-const ARRIVAL_POS = { x: 0, y: 70, z: 0 };
+const ARRIVAL_POS = { x: ISLAND_CENTER.x, y: ISLAND_CENTER.y, z: ISLAND_CENTER.z + 20 };
 const PORTAL_COOLDOWN_TICKS = 100; // 5s, long enough to clear the block
+const RETURN_PORTAL_BUILT_FLAG = "hollowveil:return_portal_built";
 
 function isFrameBlock(dimension, pos) {
   try {
@@ -117,21 +117,26 @@ function fillPortal(dimension, frame) {
   dimension.runCommandAsync(`fill ${from.x} ${from.y} ${from.z} ${to.x} ${to.y} ${to.z} ${PORTAL_BLOCK}`);
 }
 
-function ensureArrivalPlatform() {
-  if (getWorldFlag(KEYS.ARRIVAL_BUILT)) return;
-  const dim = world.getDimension(HOLLOW_VEIL);
+function buildReturnPortalFrame(dim) {
+  if (getWorldFlag(RETURN_PORTAL_BUILT_FLAG)) return;
+  setWorldFlag(RETURN_PORTAL_BUILT_FLAG, true);
   const { x, y, z } = ARRIVAL_POS;
-  // stone pad
-  dim.runCommandAsync(`fill ${x - 3} ${y - 1} ${z - 3} ${x + 3} ${y - 1} ${z + 3} hollowveil:bonestone`);
-  dim.runCommandAsync(`fill ${x - 3} ${y} ${z - 3} ${x + 3} ${y + 3} ${z + 3} air`);
-  // a pre-built, pre-lit return portal frame (4 wide x 5 tall, facing +x)
+  // a pre-built, pre-lit return portal frame (4 wide x 5 tall, facing +x) at
+  // the edge of Hollow Hamlet
   dim.runCommandAsync(`fill ${x - 1} ${y} ${z + 2} ${x + 2} ${y} ${z + 2} ${FRAME_BLOCK}`);
   dim.runCommandAsync(`fill ${x - 1} ${y + 4} ${z + 2} ${x + 2} ${y + 4} ${z + 2} ${FRAME_BLOCK}`);
   dim.runCommandAsync(`fill ${x - 1} ${y + 1} ${z + 2} ${x - 1} ${y + 3} ${z + 2} ${FRAME_BLOCK}`);
   dim.runCommandAsync(`fill ${x + 2} ${y + 1} ${z + 2} ${x + 2} ${y + 3} ${z + 2} ${FRAME_BLOCK}`);
   dim.runCommandAsync(`fill ${x} ${y + 1} ${z + 2} ${x + 1} ${y + 3} ${z + 2} ${PORTAL_BLOCK}`);
-  setWorldFlag(KEYS.ARRIVAL_BUILT, true);
-  buildHollowHamlet(dim, { x: x + 24, y, z: 0 });
+}
+
+async function sendPlayerToHollowVeil(player, pos) {
+  setPlayerJson(player, KEYS.RETURN_POS, { dimension: player.dimension.id, pos: { x: pos.x, y: pos.y, z: pos.z } });
+  player.sendMessage("§5You step through into the Hollow Veil...");
+  await ensureWorldBuilt();
+  const dim = world.getDimension(HOLLOW_VEIL);
+  buildReturnPortalFrame(dim);
+  player.teleport({ x: ARRIVAL_POS.x + 0.5, y: ARRIVAL_POS.y, z: ARRIVAL_POS.z + 0.5 }, { dimension: dim });
 }
 
 export function startPortalTicking() {
@@ -157,11 +162,7 @@ export function startPortalTicking() {
         player.sendMessage("§7The veil releases you back to the world you know.");
         player.teleport(dest, { dimension: targetDim });
       } else {
-        setPlayerJson(player, KEYS.RETURN_POS, { dimension: player.dimension.id, pos: { x: pos.x, y: pos.y, z: pos.z } });
-        ensureArrivalPlatform();
-        const dim = world.getDimension(HOLLOW_VEIL);
-        player.sendMessage("§5You step through into the Hollow Veil...");
-        player.teleport({ x: ARRIVAL_POS.x + 0.5, y: ARRIVAL_POS.y, z: ARRIVAL_POS.z + 0.5 }, { dimension: dim });
+        sendPlayerToHollowVeil(player, pos);
       }
     }
   }, 10);

@@ -5,7 +5,7 @@
     "description": "A ghost & demon dimension: new mobs, 3 bosses, custom armor, trading, quests, and a portal ritual.",
     "uuid": "3e85d62f-2918-4945-bc3c-11574175bfac",
     "version": [1, 0, 0],
-    "min_engine_version": [1, 21, 0]
+    "min_engine_version": [1, 26, 10]
   },
   "modules": [
     {
@@ -28,14 +28,13 @@
     },
     {
       "module_name": "@minecraft/server",
-      "version": "1.13.0"
+      "version": "2.8.0"
     },
     {
       "module_name": "@minecraft/server-ui",
-      "version": "1.2.0"
+      "version": "2.0.0"
     }
   ],
-  "capabilities": ["experimental_custom_biomes"],
   "metadata": {
     "authors": ["Hollow Veil Team"],
     "product_type": "addon"

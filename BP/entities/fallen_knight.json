@@ -4,59 +4,103 @@
     "description": {
       "identifier": "hollowveil:fallen_knight",
       "is_spawnable": true,
-      "is_summonable": true,
-      "properties": {}
-    },
-    "component_groups": {
-      "hollowveil:cg_blocking": {
-        "minecraft:damage_sensor": {
-          "triggers": [
-            { "cause": "all", "deals_damage": true, "on_damage": { "event": "hollowveil:absorb_hit" } }
-          ]
-        }
-      }
+      "is_summonable": true
     },
     "components": {
-      "minecraft:type_family": { "family": ["hollow_veil", "undead", "fallen_knight", "mob"] },
-      "minecraft:collision_box": { "width": 0.7, "height": 2.0 },
-      "minecraft:health": { "value": 42, "max": 42 },
-      "minecraft:knockback_resistance": { "value": 0.7 },
+      "minecraft:type_family": {
+        "family": [
+          "hollow_veil",
+          "undead",
+          "fallen_knight",
+          "mob"
+        ]
+      },
+      "minecraft:collision_box": {
+        "width": 0.7,
+        "height": 2.0
+      },
+      "minecraft:health": {
+        "value": 42,
+        "max": 42
+      },
+      "minecraft:knockback_resistance": {
+        "value": 0.7
+      },
       "minecraft:physics": {},
-      "minecraft:navigation.walk": { "can_path_over_water": false, "avoid_water": true, "can_pass_doors": true, "can_break_doors": false },
+      "minecraft:navigation.walk": {
+        "can_path_over_water": false,
+        "avoid_water": true,
+        "can_pass_doors": true,
+        "can_break_doors": false
+      },
       "minecraft:movement.basic": {},
-      "minecraft:movement": { "value": 0.2 },
+      "minecraft:movement": {
+        "value": 0.2
+      },
       "minecraft:jump.static": {},
-      "minecraft:despawn": { "despawn_from_distance": {} },
-      "minecraft:persistent": true,
-      "minecraft:behavior.hurt_by_target": { "priority": 1 },
+      "minecraft:despawn": {
+        "despawn_from_distance": {}
+      },
+      "minecraft:persistent": {},
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
       "minecraft:behavior.nearest_attackable_target": {
         "priority": 2,
         "must_see": true,
         "within_radius": 16,
-        "entity_types": [ { "filters": { "test": "is_family", "subject": "other", "value": "player" }, "max_dist": 16 } ]
+        "entity_types": [
+          {
+            "filters": {
+              "test": "is_family",
+              "subject": "other",
+              "value": "player"
+            },
+            "max_dist": 16
+          }
+        ]
       },
-      "minecraft:behavior.melee_attack": { "priority": 3, "speed_multiplier": 0.95, "track_target": true },
-      "minecraft:attack": { "damage": { "range_min": 6, "range_max": 9 } },
+      "minecraft:behavior.melee_attack": {
+        "priority": 3,
+        "speed_multiplier": 0.95,
+        "track_target": true
+      },
+      "minecraft:attack": {
+        "damage": {
+          "range_min": 6,
+          "range_max": 9
+        }
+      },
       "minecraft:timer": {
         "looping": true,
-        "time": [5, 9],
-        "time_down_event": { "event": "hollowveil:shield_up" },
+        "time": [
+          5,
+          9
+        ],
+        "time_down_event": {
+          "event": "hollowveil:shield_up"
+        },
         "randomInterval": true
       },
-      "minecraft:behavior.random_stroll": { "priority": 6, "speed_multiplier": 0.7 },
-      "minecraft:behavior.look_at_player": { "priority": 7 },
-      "minecraft:loot": { "table": "loot_tables/mobs/fallen_knight.json" },
-      "minecraft:experience_reward": { "on_death": "query.last_hit_by_player ? 12 : 0" },
+      "minecraft:behavior.random_stroll": {
+        "priority": 6,
+        "speed_multiplier": 0.7
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 7
+      },
+      "minecraft:loot": {
+        "table": "loot_tables/mobs/fallen_knight.json"
+      },
+      "minecraft:experience_reward": {
+        "on_death": "query.last_hit_by_player ? 12 : 0"
+      },
       "minecraft:nameable": {}
     },
     "events": {
       "minecraft:entity_spawned": {},
-      "hollowveil:shield_up": {
-        "add": { "component_groups": ["hollowveil:cg_blocking"] },
-        "trigger": { "filters": { "test": "true" }, "event": "hollowveil:shield_down" }
-      },
-      "hollowveil:shield_down": { "remove": { "component_groups": ["hollowveil:cg_blocking"] } },
-      "hollowveil:absorb_hit": {}
+      "hollowveil:shield_up": {},
+      "hollowveil:shield_down": {}
     }
   }
 }

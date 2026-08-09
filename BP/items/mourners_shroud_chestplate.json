@@ -1,18 +1,47 @@
 {
   "format_version": "1.21.0",
   "minecraft:item": {
-    "description": { "identifier": "hollowveil:mourners_shroud_chestplate", "menu_category": { "category": "equipment", "group": "itemGroup.name.chestplate" } },
+    "description": {
+      "identifier": "hollowveil:mourners_shroud_chestplate",
+      "menu_category": {
+        "category": "equipment",
+        "group": "itemGroup.name.chestplate"
+      }
+    },
     "components": {
       "minecraft:max_stack_size": 1,
-      "minecraft:icon": { "texture": "mourners_shroud_chestplate" },
-      "minecraft:display_name": { "value": "item.hollowveil:mourners_shroud_chestplate.name" },
-      "minecraft:wearable": { "slot": "slot.armor.chest", "dispensable": true },
-      "minecraft:armor": { "protection": 7 },
+      "minecraft:icon": "mourners_shroud_chestplate",
+      "minecraft:display_name": {
+        "value": "item.hollowveil:mourners_shroud_chestplate.name"
+      },
+      "minecraft:wearable": {
+        "slot": "slot.armor.chest",
+        "protection": 7
+      },
       "minecraft:glint": true,
-      "minecraft:durability": { "max_durability": 600 },
-      "minecraft:enchantable": { "slot": "armor_torso", "value": 20 },
-      "minecraft:repairable": { "repair_items": [ { "items": [ "hollowveil:banshee_vocal_cord" ], "repair_amount": "max_durability * 0.2" } ] },
-      "minecraft:tags": { "tags": [ "hollowveil:boss_armor", "hollowveil:mourners_shroud" ] }
+      "minecraft:durability": {
+        "max_durability": 600
+      },
+      "minecraft:enchantable": {
+        "slot": "armor_torso",
+        "value": 20
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": [
+              "hollowveil:banshee_vocal_cord"
+            ],
+            "repair_amount": "query.max_durability * 0.2"
+          }
+        ]
+      },
+      "minecraft:tags": {
+        "tags": [
+          "hollowveil:boss_armor",
+          "hollowveil:mourners_shroud"
+        ]
+      }
     }
   }
 }

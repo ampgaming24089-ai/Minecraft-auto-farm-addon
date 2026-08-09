@@ -56,7 +56,7 @@ export function registerMobAbilities() {
     }
   });
 
-  world.afterEvents.dataDrivenEntityTriggerEvent.subscribe((ev) => {
+  world.afterEvents.dataDrivenEntityTrigger.subscribe((ev) => {
     switch (ev.eventId) {
       case "hollowveil:scream_tick":
         bansheeScream(ev.entity);
@@ -66,9 +66,13 @@ export function registerMobAbilities() {
         break;
       case "hollowveil:shield_up":
         ev.entity.setDynamicProperty("hollowveil:shielding", true);
+        scheduleShieldDrop(ev.entity);
         break;
       case "hollowveil:shield_down":
         ev.entity.setDynamicProperty("hollowveil:shielding", false);
+        break;
+      case "hollowveil:toggle_visibility":
+        togglePoltergeistVisibility(ev.entity);
         break;
       case "hollowveil:go_fleeing":
       case "hollowveil:calm_down":
@@ -78,6 +82,32 @@ export function registerMobAbilities() {
         break;
     }
   });
+}
+
+const SHIELD_DURATION_TICKS = 60; // ~3s, matches the knight's shield-up telegraph
+
+function scheduleShieldDrop(knight) {
+  system.runTimeout(() => {
+    try {
+      knight.triggerEvent("hollowveil:shield_down");
+    } catch {
+      /* knight may have died in the meantime */
+    }
+  }, SHIELD_DURATION_TICKS);
+}
+
+function togglePoltergeistVisibility(poltergeist) {
+  try {
+    if (poltergeist.getDynamicProperty("hollowveil:hidden")) {
+      poltergeist.setDynamicProperty("hollowveil:hidden", false);
+      poltergeist.removeEffect("invisibility");
+    } else {
+      poltergeist.setDynamicProperty("hollowveil:hidden", true);
+      poltergeist.addEffect("invisibility", 200, { amplifier: 0, showParticles: false });
+    }
+  } catch {
+    /* effect API shape may differ across versions; visibility just won't toggle this cycle */
+  }
 }
 
 function stealFromPlayer(player, imp) {

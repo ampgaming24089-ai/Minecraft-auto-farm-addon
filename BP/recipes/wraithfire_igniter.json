@@ -1,13 +1,30 @@
 {
   "format_version": "1.21.0",
   "minecraft:recipe_shapeless": {
-    "description": { "identifier": "hollowveil:wraithfire_igniter" },
-    "tags": [ "crafting_table" ],
-    "ingredients": [
-      { "item": "minecraft:flint_and_steel" },
-      { "item": "hollowveil:spectral_dust", "count": 2 },
-      { "item": "hollowveil:soul_shard", "count": 2 }
+    "description": {
+      "identifier": "hollowveil:wraithfire_igniter"
+    },
+    "tags": [
+      "crafting_table"
     ],
-    "result": { "item": "hollowveil:wraithfire_igniter" }
+    "ingredients": [
+      {
+        "item": "minecraft:flint_and_steel"
+      },
+      {
+        "item": "hollowveil:spectral_dust",
+        "count": 2
+      },
+      {
+        "item": "hollowveil:soul_shard",
+        "count": 2
+      }
+    ],
+    "result": {
+      "item": "hollowveil:wraithfire_igniter"
+    },
+    "unlock": {
+      "context": "AlwaysUnlocked"
+    }
   }
 }

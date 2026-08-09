@@ -1,14 +1,33 @@
 {
   "format_version": "1.21.0",
   "minecraft:item": {
-    "description": { "identifier": "hollowveil:ghost_ward_charm", "menu_category": { "category": "items", "group": "itemGroup.name.hollowveil.trinkets" } },
+    "description": {
+      "identifier": "hollowveil:ghost_ward_charm",
+      "menu_category": {
+        "category": "items",
+        "group": "itemGroup.name.hollowveil.trinkets"
+      }
+    },
     "components": {
       "minecraft:max_stack_size": 1,
-      "minecraft:icon": { "texture": "ghost_ward_charm" },
-      "minecraft:display_name": { "value": "item.hollowveil:ghost_ward_charm.name" },
+      "minecraft:icon": "ghost_ward_charm",
+      "minecraft:display_name": {
+        "value": "item.hollowveil:ghost_ward_charm.name"
+      },
       "minecraft:glint": true,
-      "minecraft:durability": { "max_durability": 200 },
-      "minecraft:repairable": { "repair_items": [ { "items": [ "hollowveil:spectral_dust" ], "repair_amount": "max_durability * 0.5" } ] }
+      "minecraft:durability": {
+        "max_durability": 200
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": [
+              "hollowveil:spectral_dust"
+            ],
+            "repair_amount": "query.max_durability * 0.5"
+          }
+        ]
+      }
     }
   }
 }

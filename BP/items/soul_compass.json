@@ -1,13 +1,20 @@
 {
   "format_version": "1.21.0",
   "minecraft:item": {
-    "description": { "identifier": "hollowveil:soul_compass", "menu_category": { "category": "items", "group": "itemGroup.name.hollowveil.trinkets" } },
+    "description": {
+      "identifier": "hollowveil:soul_compass",
+      "menu_category": {
+        "category": "items",
+        "group": "itemGroup.name.hollowveil.trinkets"
+      }
+    },
     "components": {
       "minecraft:max_stack_size": 1,
-      "minecraft:icon": { "texture": "soul_compass" },
-      "minecraft:display_name": { "value": "item.hollowveil:soul_compass.name" },
+      "minecraft:icon": "soul_compass",
+      "minecraft:display_name": {
+        "value": "item.hollowveil:soul_compass.name"
+      },
       "minecraft:hand_equipped": true,
-      "minecraft:use_duration": 0.05,
       "minecraft:glint": false
     }
   }

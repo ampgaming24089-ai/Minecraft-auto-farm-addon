@@ -1,9 +1,0 @@
-{
-  "format_version": "1.13.0",
-  "minecraft:single_block_feature": {
-    "description": { "identifier": "hollowveil:ritual_altar_feature" },
-    "places_block": { "block": "hollowveil:ritual_altar" },
-    "enforce_survivability_rules": false,
-    "enforce_placement_rules": true
-  }
-}

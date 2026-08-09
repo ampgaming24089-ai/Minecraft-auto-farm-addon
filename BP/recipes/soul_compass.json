@@ -1,14 +1,31 @@
 {
   "format_version": "1.21.0",
   "minecraft:recipe_shapeless": {
-    "description": { "identifier": "hollowveil:soul_compass" },
-    "tags": [ "crafting_table" ],
-    "ingredients": [
-      { "item": "minecraft:compass" },
-      { "item": "hollowveil:spectral_dust" },
-      { "item": "hollowveil:spectral_dust" },
-      { "item": "hollowveil:spectral_dust" }
+    "description": {
+      "identifier": "hollowveil:soul_compass"
+    },
+    "tags": [
+      "crafting_table"
     ],
-    "result": { "item": "hollowveil:soul_compass" }
+    "ingredients": [
+      {
+        "item": "minecraft:compass"
+      },
+      {
+        "item": "hollowveil:spectral_dust"
+      },
+      {
+        "item": "hollowveil:spectral_dust"
+      },
+      {
+        "item": "hollowveil:spectral_dust"
+      }
+    ],
+    "result": {
+      "item": "hollowveil:soul_compass"
+    },
+    "unlock": {
+      "context": "AlwaysUnlocked"
+    }
   }
 }
