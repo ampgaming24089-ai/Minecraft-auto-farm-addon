@@ -1,0 +1,28 @@
+{
+  "format_version": "1.10.0",
+  "render_controllers": {
+    "controller.render.hv_dragon": {
+      "arrays": {
+        "textures": {
+          "Array.color": [
+            "Texture.variant0",
+            "Texture.variant1",
+            "Texture.variant2",
+            "Texture.variant3",
+            "Texture.variant4",
+            "Texture.variant5"
+          ]
+        }
+      },
+      "geometry": "Geometry.default",
+      "materials": [
+        {
+          "*": "Material.default"
+        }
+      ],
+      "textures": [
+        "Array.color[query.variant]"
+      ]
+    }
+  }
+}

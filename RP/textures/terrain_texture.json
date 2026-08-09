@@ -13,8 +13,17 @@
     "ashwood_planks": {
       "textures": "textures/blocks/ashwood_planks"
     },
+    "bastion_brick": {
+      "textures": "textures/blocks/bastion_brick"
+    },
     "bonestone": {
       "textures": "textures/blocks/bonestone"
+    },
+    "ember_coal_ore": {
+      "textures": "textures/blocks/ember_coal_ore"
+    },
+    "glimmershroom": {
+      "textures": "textures/blocks/glimmershroom"
     },
     "ritual_altar_side": {
       "textures": "textures/blocks/ritual_altar_side"
@@ -28,8 +37,20 @@
     "soulforged_obsidian": {
       "textures": "textures/blocks/soulforged_obsidian"
     },
+    "spawner_cage": {
+      "textures": "textures/blocks/spawner_cage"
+    },
+    "sunken_bricks": {
+      "textures": "textures/blocks/sunken_bricks"
+    },
+    "veil_mud": {
+      "textures": "textures/blocks/veil_mud"
+    },
     "veil_portal": {
       "textures": "textures/blocks/veil_portal"
+    },
+    "veilsteel_ore": {
+      "textures": "textures/blocks/veilsteel_ore"
     },
     "wraithsteel_ore": {
       "textures": "textures/blocks/wraithsteel_ore"

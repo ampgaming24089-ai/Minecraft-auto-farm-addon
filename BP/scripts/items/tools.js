@@ -114,6 +114,13 @@ function applyLanternEffects(player) {
       }
     }
   }
+  if (items.some((i) => i.typeId === "hollowveil:featherfall_charm")) {
+    try {
+      player.addEffect("slow_falling", LANTERN_INTERVAL + 5, { amplifier: 0, showParticles: false });
+    } catch {
+      /* ignore */
+    }
+  }
 }
 
 export function hasGhostWard(player) {

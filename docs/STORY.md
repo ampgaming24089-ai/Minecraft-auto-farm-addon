@@ -63,6 +63,32 @@ and are the player's main quest-giver and shop.
    resolves (three real victories, a village restored) without overpromising
    content that doesn't exist yet.
 
+## The Four Territories
+
+Beyond Hollow Hamlet's safe core, the Veil breaks into four territories,
+each a different way the corruption settled (see `docs/WORLD.md` for the
+technical side):
+
+- **The Ashlands and the Ember Bastion** — where Malacoda's heat bled
+  furthest into the Veil. The Bastion was a Warden waystation once; its
+  Sentinels still guard it out of habit, not orders, because no one ever
+  told them to stop.
+- **Boneyard Marsh** — where the Hollow King's hoarded memories settled
+  like silt. The Bonehide Elk and Glimmershroom Toads that live there are
+  the closest thing left to ordinary wildlife — the corruption barely
+  reached this far, which is why it's the one territory that still feels
+  a little alive.
+- **The Sunken Ruins and the Sunken City** — a second Warden waystation,
+  older than the Bastion, drowned in the Widow's grief rather than water.
+  The Wraithguards patrolling it were once its keepers; the Ashwing Bats
+  that roost in its towers came later and don't remember it as anything
+  but home.
+- **Veil Dragons** — not Wardens, not corrupted, not native to the crossing
+  at all. Nobody in Hollow Hamlet agrees on where they came from, only
+  that an egg turns up sometimes where a Wraithguard falls, and that a
+  hatchling raised on ember fruit will carry a rider anywhere in the Veil
+  without ever asking why you're going there.
+
 ## Tone Notes for Future Content
 
 - The Veil is *sad*, not just spooky — the "monsters" are victims of the

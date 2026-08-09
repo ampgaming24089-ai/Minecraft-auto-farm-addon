@@ -1,0 +1,10 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_furnace": {
+    "description": { "identifier": "hollowveil:veilsteel_ingot_smelting" },
+    "tags": [ "furnace", "blast_furnace" ],
+    "input": "hollowveil:veilsteel_scrap",
+    "output": "hollowveil:veilsteel_ingot",
+    "unlock": { "context": "AlwaysUnlocked" }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:block": {
+    "description": { "identifier": "hollowveil:ember_coal_ore", "menu_category": { "category": "construction" }, "traits": {} },
+    "components": {
+      "minecraft:material_instances": { "*": { "texture": "ember_coal_ore", "render_method": "opaque" } },
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:destructible_by_mining": { "seconds_to_destroy": 3.5 },
+      "minecraft:destructible_by_explosion": { "explosion_resistance": 6 },
+      "minecraft:map_color": "#7a3a1a",
+      "minecraft:loot": "loot_tables/blocks/ember_coal_ore.json"
+    }
+  }
+}

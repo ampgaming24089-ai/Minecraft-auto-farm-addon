@@ -52,6 +52,7 @@ export const KEYS = {
   RETURN_POS: "hollowveil:return_pos",
   PORTAL_COOLDOWN: "hollowveil:portal_cooldown",
   ALTAR_POSITIONS: "hollowveil:altar_positions",
+  SPAWNER_POSITIONS: "hollowveil:spawner_positions",
 };
 
 export function bossesDefeated() {

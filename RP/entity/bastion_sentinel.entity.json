@@ -1,0 +1,23 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "hollowveil:bastion_sentinel",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/bastion_sentinel"
+      },
+      "geometry": {
+        "default": "geometry.hv_bastion_sentinel"
+      },
+      "render_controllers": [
+        "controller.render.hv_default"
+      ],
+      "scripts": {
+        "scale": "1.0"
+      }
+    }
+  }
+}

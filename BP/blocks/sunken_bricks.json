@@ -1,0 +1,13 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:block": {
+    "description": { "identifier": "hollowveil:sunken_bricks", "menu_category": { "category": "construction" }, "traits": {} },
+    "components": {
+      "minecraft:material_instances": { "*": { "texture": "sunken_bricks", "render_method": "opaque" } },
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:destructible_by_mining": { "seconds_to_destroy": 2.5 },
+      "minecraft:destructible_by_explosion": { "explosion_resistance": 6 },
+      "minecraft:map_color": "#3f5652"
+    }
+  }
+}

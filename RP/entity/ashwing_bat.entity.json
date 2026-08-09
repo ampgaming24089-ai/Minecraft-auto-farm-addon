@@ -1,0 +1,23 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "hollowveil:ashwing_bat",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/ashwing_bat"
+      },
+      "geometry": {
+        "default": "geometry.hv_ashwing_bat"
+      },
+      "render_controllers": [
+        "controller.render.hv_default"
+      ],
+      "scripts": {
+        "scale": "0.5"
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shapeless": {
+    "description": { "identifier": "hollowveil:veil_marrow_stew" },
+    "tags": [ "crafting_table" ],
+    "ingredients": [
+      { "item": "minecraft:bowl" },
+      { "item": "hollowveil:elk_marrow" },
+      { "item": "hollowveil:glimmershroom_item" }
+    ],
+    "result": { "item": "hollowveil:veil_marrow_stew" },
+    "unlock": { "context": "AlwaysUnlocked" }
+  }
+}

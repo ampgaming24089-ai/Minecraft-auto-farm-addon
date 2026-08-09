@@ -1,0 +1,236 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.hv_bastion_sentinel",
+        "texture_width": 55,
+        "texture_height": 75,
+        "visible_bounds_width": 2.4,
+        "visible_bounds_height": 3.0,
+        "visible_bounds_offset": [
+          0,
+          1.1,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "body",
+          "pivot": [
+            0,
+            10,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -5.5,
+                9,
+                -3.5
+              ],
+              "size": [
+                11,
+                13,
+                7
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "pauldron_l",
+          "pivot": [
+            6,
+            21,
+            0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                4.5,
+                19.5,
+                -4
+              ],
+              "size": [
+                3,
+                3,
+                5
+              ],
+              "uv": [
+                36,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "pauldron_r",
+          "pivot": [
+            -6,
+            21,
+            0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -7.5,
+                19.5,
+                -4
+              ],
+              "size": [
+                3,
+                3,
+                5
+              ],
+              "uv": [
+                0,
+                20
+              ]
+            }
+          ]
+        },
+        {
+          "name": "head",
+          "pivot": [
+            0,
+            23,
+            0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -4,
+                22,
+                -4
+              ],
+              "size": [
+                8,
+                8,
+                8
+              ],
+              "uv": [
+                16,
+                20
+              ]
+            }
+          ]
+        },
+        {
+          "name": "arm_l",
+          "pivot": [
+            7,
+            19,
+            0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                5.5,
+                8,
+                -2.5
+              ],
+              "size": [
+                4,
+                13,
+                5
+              ],
+              "uv": [
+                0,
+                36
+              ]
+            }
+          ]
+        },
+        {
+          "name": "arm_r",
+          "pivot": [
+            -7,
+            19,
+            0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -9.5,
+                8,
+                -2.5
+              ],
+              "size": [
+                4,
+                13,
+                5
+              ],
+              "uv": [
+                18,
+                36
+              ]
+            }
+          ]
+        },
+        {
+          "name": "leg_l",
+          "pivot": [
+            2.5,
+            9,
+            0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                0.5,
+                -5,
+                -2.5
+              ],
+              "size": [
+                4,
+                14,
+                5
+              ],
+              "uv": [
+                36,
+                36
+              ]
+            }
+          ]
+        },
+        {
+          "name": "leg_r",
+          "pivot": [
+            -2.5,
+            9,
+            0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -4.5,
+                -5,
+                -2.5
+              ],
+              "size": [
+                4,
+                14,
+                5
+              ],
+              "uv": [
+                0,
+                55
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

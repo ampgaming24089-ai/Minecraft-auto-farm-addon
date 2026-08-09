@@ -17,8 +17,26 @@
     "banshee_vocal_cord": {
       "textures": "textures/items/banshee_vocal_cord"
     },
+    "bat_membrane": {
+      "textures": "textures/items/bat_membrane"
+    },
+    "chitin": {
+      "textures": "textures/items/chitin"
+    },
     "demon_horn": {
       "textures": "textures/items/demon_horn"
+    },
+    "dragon_egg": {
+      "textures": "textures/items/dragon_egg"
+    },
+    "elk_hide": {
+      "textures": "textures/items/elk_hide"
+    },
+    "elk_marrow": {
+      "textures": "textures/items/elk_marrow"
+    },
+    "ember_coal": {
+      "textures": "textures/items/ember_coal"
     },
     "ember_core": {
       "textures": "textures/items/ember_core"
@@ -26,8 +44,20 @@
     "ember_dust": {
       "textures": "textures/items/ember_dust"
     },
+    "ember_fruit": {
+      "textures": "textures/items/ember_fruit"
+    },
+    "embered_scale": {
+      "textures": "textures/items/embered_scale"
+    },
+    "featherfall_charm": {
+      "textures": "textures/items/featherfall_charm"
+    },
     "ghost_ward_charm": {
       "textures": "textures/items/ghost_ward_charm"
+    },
+    "glimmershroom_item": {
+      "textures": "textures/items/glimmershroom_item"
     },
     "hollow_kings_reaper": {
       "textures": "textures/items/hollow_kings_reaper"
@@ -49,6 +79,9 @@
     },
     "mourners_shroud_leggings": {
       "textures": "textures/items/mourners_shroud_leggings"
+    },
+    "sentinel_core": {
+      "textures": "textures/items/sentinel_core"
     },
     "sigil_hollow_king": {
       "textures": "textures/items/sigil_hollow_king"
@@ -82,6 +115,30 @@
     },
     "spirit_lantern": {
       "textures": "textures/items/spirit_lantern"
+    },
+    "toad_mucus": {
+      "textures": "textures/items/toad_mucus"
+    },
+    "veil_marrow_stew": {
+      "textures": "textures/items/veil_marrow_stew"
+    },
+    "veilsteel_axe": {
+      "textures": "textures/items/veilsteel_axe"
+    },
+    "veilsteel_ingot": {
+      "textures": "textures/items/veilsteel_ingot"
+    },
+    "veilsteel_pickaxe": {
+      "textures": "textures/items/veilsteel_pickaxe"
+    },
+    "veilsteel_plating": {
+      "textures": "textures/items/veilsteel_plating"
+    },
+    "veilsteel_scrap": {
+      "textures": "textures/items/veilsteel_scrap"
+    },
+    "veilsteel_sword": {
+      "textures": "textures/items/veilsteel_sword"
     },
     "wailing_edge": {
       "textures": "textures/items/wailing_edge"

@@ -1,0 +1,14 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:item": {
+    "description": { "identifier": "hollowveil:ember_fruit", "menu_category": { "category": "items", "group": "itemGroup.name.hollowveil.currency" } },
+    "components": {
+      "minecraft:max_stack_size": 64,
+      "minecraft:icon": "ember_fruit",
+      "minecraft:display_name": { "value": "item.hollowveil:ember_fruit.name" },
+      "minecraft:food": { "nutrition": 5, "saturation_modifier": "good", "can_always_eat": false },
+      "minecraft:use_animation": { "value": "eat" },
+      "minecraft:use_modifiers": { "start_using": "always", "use_duration": 1.6, "movement_modifier": 0.35 }
+    }
+  }
+}

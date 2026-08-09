@@ -1,0 +1,14 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:block": {
+    "description": { "identifier": "hollowveil:sentinel_spawner", "menu_category": { "category": "none" }, "traits": {} },
+    "components": {
+      "minecraft:material_instances": { "*": { "texture": "spawner_cage", "render_method": "alpha_test", "ambient_occlusion": false } },
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:destructible_by_mining": { "seconds_to_destroy": 14 },
+      "minecraft:destructible_by_explosion": { "explosion_resistance": 40 },
+      "minecraft:light_emission": 6,
+      "minecraft:map_color": "#7a5a2a"
+    }
+  }
+}

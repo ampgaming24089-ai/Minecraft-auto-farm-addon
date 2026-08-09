@@ -17,7 +17,7 @@ of the story they're built to tell.
 
 ## Install
 
-1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HollowVeil.mcaddon`.
+1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowedDepths.mcaddon`.
 2. Send that file to a device with Minecraft Bedrock and open it, or copy
    `BP/` and `RP/` directly into your world's
    `com.mojang/development_behavior_packs` / `development_resource_packs`.
@@ -70,6 +70,28 @@ of the story they're built to tell.
   resistance + damage resistance). `BP/scripts/armor/setBonuses.js`.
 - **World atmosphere** ("the shader ask"): what Bedrock add-ons can
   actually ship instead of a real shader pack, and why. `docs/SHADER.md`.
+- **4 themed regions + 2 landmark structures**: the island splits into
+  Ashlands, the Ember Bastion territory, Boneyard Marsh and the Sunken
+  Ruins around a neutral core, each with its own ground palette and mob
+  roster; the Ember Bastion and Sunken City are hand-built fortress/ruin
+  structures with loot chests and spawner blocks. `docs/WORLD.md`.
+- **7 more mobs**: 3 passive (Ashwing Bat, Bonehide Elk, Glimmershroom
+  Toad — real resources, not just scenery) and 4 hostile (Bastion
+  Sentinel, City Wraithguard, Marrow Crawler, Ashen Whelp), each dropping
+  materials that feed specific new recipes (veilsteel tools, Featherfall
+  Charm, Veil Marrow Stew). `BP/entities/`.
+- **Custom spawner blocks** guard both structures — a script-driven
+  equivalent of vanilla monster spawners, since a script-registered void
+  dimension has no world-gen pass to place real ones in.
+  `BP/scripts/world/spawners.js`.
+- **A new ore/food/fuel chain**: Veilsteel (a harder tier than Wraithsteel)
+  and Ember Coal (a longer-burning fuel) as mineable ores, plus Ember
+  Fruit and Veil Marrow Stew as dimension-native food.
+- **Tameable, rideable Veil Dragons** in 6 colors — hatch a `Dragon Egg`
+  (structure loot, a rare Wraithguard drop, or an expensive Occultist
+  trade), feed it Ember Fruit/Veil Marrow Stew to tame it (the same
+  temper-based system as vanilla horses), then ride and fly it once
+  tamed. `BP/entities/veil_dragon.json`, `BP/scripts/items/dragon.js`.
 
 ## Regenerating the art
 
@@ -110,6 +132,14 @@ mechanics) do not depend on the art and work identically either way.
   `RP/biomes_client.json`) is a best-effort atmosphere hook — see
   `docs/SHADER.md`. It doesn't affect anything functional if it's wrong,
   only the fog/water color polish.
+- The Veil Dragon's flight steering (`minecraft:rideable` +
+  `minecraft:tamemount` + `minecraft:behavior.mount_pathing`, the same
+  components vanilla horses use, combined with flying navigation the way
+  our ghost mobs already use it) is the single least-verified mechanic in
+  this pack — it's a plausible composition of two separately-proven
+  patterns, not something confirmed by a matching vanilla flying+
+  player-steered mount. If it doesn't feel controllable in-game, that's
+  the first place to look.
 
 ## Corrected against a real device test
 

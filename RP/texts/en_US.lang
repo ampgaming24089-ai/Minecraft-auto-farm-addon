@@ -32,6 +32,26 @@ item.hollowveil:sigil_hollow_king.name=Sigil of the Hollow King
 item.hollowveil:sigil_weeping_widow.name=Sigil of the Weeping Widow
 item.hollowveil:sigil_malacoda.name=Sigil of Malacoda
 
+item.hollowveil:veilsteel_scrap.name=Veilsteel Scrap
+item.hollowveil:veilsteel_ingot.name=Veilsteel Ingot
+item.hollowveil:ember_coal.name=Ember Coal
+item.hollowveil:sentinel_core.name=Sentinel Core
+item.hollowveil:veilsteel_plating.name=Veilsteel Plating
+item.hollowveil:chitin.name=Crawler Chitin
+item.hollowveil:embered_scale.name=Embered Scale
+item.hollowveil:elk_hide.name=Bonehide Elk Hide
+item.hollowveil:elk_marrow.name=Elk Marrow
+item.hollowveil:bat_membrane.name=Ashwing Membrane
+item.hollowveil:toad_mucus.name=Glimmer Mucus
+item.hollowveil:glimmershroom_item.name=Glimmershroom
+item.hollowveil:ember_fruit.name=Ember Fruit
+item.hollowveil:veil_marrow_stew.name=Veil Marrow Stew
+item.hollowveil:veilsteel_sword.name=Veilsteel Sword
+item.hollowveil:veilsteel_pickaxe.name=Veilsteel Pickaxe
+item.hollowveil:veilsteel_axe.name=Veilsteel Axe
+item.hollowveil:featherfall_charm.name=Featherfall Charm
+item.hollowveil:dragon_egg.name=Veil Dragon Egg
+
 item.hollowveil:spectral_regalia_helmet.name=Spectral Regalia Helm
 item.hollowveil:spectral_regalia_chestplate.name=Spectral Regalia Chestplate
 item.hollowveil:spectral_regalia_leggings.name=Spectral Regalia Leggings
@@ -54,6 +74,17 @@ tile.hollowveil:wraithsteel_ore.name=Wraithsteel Ore
 tile.hollowveil:ritual_altar.name=Ritual Altar
 tile.hollowveil:soul_lantern.name=Soul Lantern
 tile.hollowveil:veil_portal.name=Veil Portal
+tile.hollowveil:veilsteel_ore.name=Veilsteel Ore
+tile.hollowveil:ember_coal_ore.name=Ember Coal Ore
+tile.hollowveil:sunken_bricks.name=Sunken Bricks
+tile.hollowveil:bastion_brick.name=Bastion Brick
+tile.hollowveil:veil_mud.name=Veil Mud
+tile.hollowveil:glimmershroom.name=Glimmershroom
+tile.hollowveil:wraith_spawner.name=Wraith Spawner
+tile.hollowveil:hellhound_spawner.name=Hellhound Spawner
+tile.hollowveil:sentinel_spawner.name=Sentinel Spawner
+tile.hollowveil:wraithguard_spawner.name=Wraithguard Spawner
+tile.hollowveil:crawler_spawner.name=Crawler Spawner
 
 ## Entities
 entity.hollowveil:wraith.name=Wraith
@@ -70,6 +101,14 @@ entity.hollowveil:weeping_widow.name=The Weeping Widow
 entity.hollowveil:malacoda.name=Malacoda, the Ashen Demon
 entity.hollowveil:debris_projectile.name=Debris
 entity.hollowveil:imp_fireball.name=Imp Fireball
+entity.hollowveil:ashwing_bat.name=Ashwing Bat
+entity.hollowveil:bonehide_elk.name=Bonehide Elk
+entity.hollowveil:glimmershroom_toad.name=Glimmershroom Toad
+entity.hollowveil:bastion_sentinel.name=Bastion Sentinel
+entity.hollowveil:city_wraithguard.name=City Wraithguard
+entity.hollowveil:marrow_crawler.name=Marrow Crawler
+entity.hollowveil:ashen_whelp.name=Ashen Whelp
+entity.hollowveil:veil_dragon.name=Veil Dragon
 
 ## Biome
 biome.hollowveil:hollow_veil=Hollow Veil

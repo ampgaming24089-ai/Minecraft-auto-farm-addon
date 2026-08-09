@@ -1,0 +1,7 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:item": {
+    "description": { "identifier": "hollowveil:sentinel_core", "menu_category": { "category": "items", "group": "itemGroup.name.hollowveil.currency" } },
+    "components": { "minecraft:max_stack_size": 64, "minecraft:icon": "sentinel_core", "minecraft:display_name": { "value": "item.hollowveil:sentinel_core.name" } }
+  }
+}

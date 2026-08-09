@@ -62,6 +62,22 @@ PAL = {
     "malacoda":      {"side": (120, 30, 20, 255), "top": (150, 45, 30, 255), "front": (90, 20, 12, 255)},
     "malacoda_wing": {"side": (35, 15, 15, 255), "top": (45, 20, 20, 255), "front": (20, 8, 8, 255)},
     "malacoda_horn": (30, 25, 25, 255),
+    # new mobs
+    "ashwing_bat":   {"side": (55, 40, 55, 255), "top": (75, 55, 75, 255), "front": (35, 25, 38, 255)},
+    "bonehide_elk":  {"side": (205, 195, 175, 255), "top": (225, 215, 195, 255), "front": (175, 165, 148, 255)},
+    "glimmershroom_toad": {"side": (110, 170, 150, 255), "top": (140, 205, 185, 255), "front": (85, 140, 122, 255)},
+    "bastion_sentinel": {"side": (90, 55, 40, 255), "top": (115, 75, 55, 255), "front": (65, 38, 28, 255)},
+    "bastion_sentinel_trim": (225, 150, 60, 255),
+    "city_wraithguard": {"side": (70, 90, 110, 255), "top": (95, 118, 140, 255), "front": (48, 65, 82, 255)},
+    "marrow_crawler": {"side": (75, 60, 50, 255), "top": (95, 78, 65, 255), "front": (50, 40, 34, 255)},
+    "ashen_whelp":   {"side": (170, 60, 40, 255), "top": (195, 80, 55, 255), "front": (135, 40, 25, 255)},
+    # dragon color variants (index order matches minecraft:variant value)
+    "dragon_0": {"side": (170, 40, 40, 255), "top": (200, 60, 55, 255), "front": (120, 25, 25, 255)},   # ember red
+    "dragon_1": {"side": (50, 90, 200, 255), "top": (80, 120, 225, 255), "front": (30, 60, 150, 255)},  # veil blue
+    "dragon_2": {"side": (60, 180, 100, 255), "top": (90, 210, 130, 255), "front": (35, 130, 70, 255)}, # marsh green
+    "dragon_3": {"side": (160, 70, 210, 255), "top": (190, 100, 235, 255), "front": (110, 45, 160, 255)}, # spectral purple
+    "dragon_4": {"side": (230, 195, 60, 255), "top": (250, 220, 100, 255), "front": (180, 145, 30, 255)}, # gold
+    "dragon_5": {"side": (40, 40, 48, 255), "top": (60, 60, 70, 255), "front": (20, 20, 25, 255)},      # obsidian black
 }
 
 
@@ -245,6 +261,60 @@ def draw_igniter(draw):
     draw.polygon([(19, 5), (26, 5), (26, 12), (22, 15), (18, 11)], fill=(210, 175, 90, 255), outline=(90, 70, 30, 255))
 
 
+def draw_plate(draw, color):
+    draw.rounded_rectangle([7, 9, 25, 23], radius=3, fill=color, outline=shade(color, -70))
+    for x, y in [(10, 12), (22, 12), (10, 20), (22, 20)]:
+        draw.ellipse([x - 1, y - 1, x + 1, y + 1], fill=shade(color, -90))
+    draw.line([(9, 16), (23, 16)], fill=shade(color, 40), width=1)
+
+
+def draw_chitin_shard(draw, color):
+    draw.polygon([(16, 3), (21, 12), (18, 26), (14, 26), (11, 12)], fill=color, outline=shade(color, -70))
+    draw.line([(16, 6), (16, 22)], fill=shade(color, -50), width=1)
+
+
+def draw_hide(draw, color):
+    draw.polygon([(8, 6), (22, 5), (25, 15), (20, 27), (10, 25), (6, 14)], fill=color, outline=shade(color, -70))
+    draw.line([(10, 10), (20, 12)], fill=shade(color, -30), width=1)
+    draw.line([(9, 17), (19, 19)], fill=shade(color, -30), width=1)
+
+
+def draw_membrane(draw, color):
+    draw.polygon([(9, 6), (24, 10), (20, 22), (12, 24), (9, 15)], fill=color, outline=shade(color, -70))
+    for x in range(11, 22, 3):
+        draw.line([(9, 6), (x, 20)], fill=shade(color, -40), width=1)
+
+
+def draw_mushroom_icon(draw, cap_color, stem_color):
+    draw.ellipse([13, 18, 19, 27], fill=stem_color, outline=shade(stem_color, -60))
+    draw.pieslice([6, 4, 26, 22], 180, 360, fill=cap_color, outline=shade(cap_color, -70))
+    for x, y in [(11, 12), (16, 9), (21, 12)]:
+        draw.ellipse([x - 1, y - 1, x + 1, y + 1], fill=shade(cap_color, 60))
+
+
+def draw_fruit(draw, color):
+    draw.ellipse([9, 11, 23, 25], fill=color, outline=shade(color, -70))
+    draw.line([(16, 11), (18, 5)], fill=(90, 60, 30, 255), width=2)
+    draw.ellipse([17, 4, 22, 8], fill=(70, 130, 70, 255), outline=shade((70, 130, 70, 255), -60))
+    draw.ellipse([12, 14, 16, 18], fill=shade(color, 60))
+
+
+def draw_stew_bowl(draw, fill_color):
+    draw.pieslice([6, 14, 26, 28], 0, 180, fill=(120, 110, 100, 255), outline=(60, 50, 45, 255))
+    draw.ellipse([7, 12, 25, 20], fill=fill_color, outline=shade(fill_color, -60))
+    draw.ellipse([11, 14, 15, 17], fill=shade(fill_color, 40))
+
+
+def draw_dragon_egg(draw, color):
+    draw.ellipse([10, 6, 22, 27], fill=color, outline=shade(color, -80))
+    rnd = random.Random(hash(color))
+    for _ in range(8):
+        x = rnd.randint(11, 21)
+        y = rnd.randint(9, 24)
+        draw.ellipse([x, y, x + 2, y + 2], fill=shade(color, 70))
+    draw.ellipse([12, 9, 16, 13], fill=shade(color, 90))
+
+
 def draw_charm(draw, accent):
     draw.ellipse([10, 4, 22, 10], outline=(120, 110, 90, 255), width=2)
     draw.polygon([(9, 12), (23, 12), (16, 28)], fill=(70, 70, 80, 255), outline=shade(accent, -60))
@@ -274,6 +344,25 @@ ITEM_ICONS = {
     "sigil_hollow_king": lambda d: draw_rune_paper(d, (140, 100, 210, 255)),
     "sigil_weeping_widow": lambda d: draw_rune_paper(d, (200, 140, 220, 255)),
     "sigil_malacoda": lambda d: draw_rune_paper(d, (230, 90, 40, 255)),
+    "veilsteel_scrap": lambda d: draw_nugget(d, (90, 100, 140, 255)),
+    "veilsteel_ingot": lambda d: draw_nugget(d, (170, 180, 220, 255)),
+    "ember_coal": lambda d: draw_nugget(d, (50, 35, 30, 255)),
+    "sentinel_core": lambda d: draw_gem(d, (230, 170, 60, 255)),
+    "veilsteel_plating": lambda d: draw_plate(d, (150, 160, 200, 255)),
+    "chitin": lambda d: draw_chitin_shard(d, (120, 100, 70, 255)),
+    "embered_scale": lambda d: draw_chitin_shard(d, (220, 110, 50, 255)),
+    "elk_hide": lambda d: draw_hide(d, (150, 120, 90, 255)),
+    "elk_marrow": lambda d: draw_nugget(d, (235, 225, 210, 255)),
+    "bat_membrane": lambda d: draw_membrane(d, (70, 55, 80, 220)),
+    "toad_mucus": lambda d: draw_dust_pile(d, (150, 220, 120, 255)),
+    "glimmershroom_item": lambda d: draw_mushroom_icon(d, (130, 220, 200, 255), (220, 225, 210, 255)),
+    "ember_fruit": lambda d: draw_fruit(d, (230, 90, 50, 255)),
+    "veil_marrow_stew": lambda d: draw_stew_bowl(d, (190, 170, 140, 255)),
+    "veilsteel_sword": lambda d: draw_sword(d, (170, 180, 220, 255), (90, 70, 120, 255)),
+    "veilsteel_pickaxe": lambda d: draw_pickaxe(d, (170, 180, 220, 255), (90, 70, 120, 255)),
+    "veilsteel_axe": lambda d: draw_axe(d, (170, 180, 220, 255), (90, 70, 120, 255)),
+    "featherfall_charm": lambda d: draw_charm(d, (200, 190, 230, 255)),
+    "dragon_egg": lambda d: draw_dragon_egg(d, (110, 60, 150, 255)),
 }
 
 for setname, hcol, ccol, lcol, bcol in [
@@ -311,15 +400,25 @@ def gen_block_textures():
         "ritual_altar_top": (130, 60, 120, 255),
         "soul_lantern": (244, 230, 184, 255),
         "veil_portal": (90, 40, 130, 200),
+        "veilsteel_ore": (90, 85, 120, 255),
+        "ember_coal_ore": (70, 45, 35, 255),
+        "sunken_bricks": (55, 80, 75, 255),
+        "bastion_brick": (70, 42, 40, 255),
+        "veil_mud": (55, 58, 42, 255),
+        "glimmershroom": (110, 150, 135, 255),
+        "spawner_cage": (30, 40, 35, 160),
     }
     for name, color in blocks.items():
         img = noise_fill((16, 16), color, variance=16, seed=hash(name) % 999)
         d = ImageDraw.Draw(img)
-        if name == "wraithsteel_ore":
+        if name in ("wraithsteel_ore", "veilsteel_ore", "ember_coal_ore"):
             rnd = random.Random(3)
+            speck = (200, 210, 220, 255) if name == "wraithsteel_ore" else (
+                (210, 190, 255, 255) if name == "veilsteel_ore" else (25, 20, 18, 255)
+            )
             for _ in range(10):
                 x, y = rnd.randint(1, 14), rnd.randint(1, 14)
-                d.ellipse([x, y, x + 2, y + 2], fill=(200, 210, 220, 255))
+                d.ellipse([x, y, x + 2, y + 2], fill=speck)
         if name == "soul_lantern":
             d.rectangle([3, 3, 12, 12], fill=(255, 250, 220, 255))
             d.rectangle([0, 0, 15, 15], outline=(120, 100, 60, 255))
@@ -331,6 +430,21 @@ def gen_block_textures():
         if name.startswith("ritual_altar") or name == "soulforged_obsidian":
             for i in range(0, 16, 4):
                 d.line([(i, 0), (i, 15)], fill=shade(color, -20))
+        if name in ("sunken_bricks", "bastion_brick"):
+            for y in range(0, 16, 4):
+                d.line([(0, y), (15, y)], fill=shade(color, -40))
+            for x in range(0, 16, 8):
+                d.line([(x, 0), (x, 15)], fill=shade(color, -40))
+        if name == "glimmershroom":
+            rnd = random.Random(5)
+            for _ in range(14):
+                x, y = rnd.randint(0, 15), rnd.randint(0, 15)
+                d.ellipse([x, y, x + 1, y + 1], fill=(210, 250, 235, 255))
+        if name == "spawner_cage":
+            for x in range(0, 16, 3):
+                d.line([(x, 0), (x, 15)], fill=(15, 20, 18, 200), width=1)
+            for y in range(0, 16, 3):
+                d.line([(0, y), (15, y)], fill=(15, 20, 18, 200), width=1)
         save(img, RP, "textures", "blocks", f"{name}.png")
     print(f"wrote {len(blocks)} block textures")
 

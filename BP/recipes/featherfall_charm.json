@@ -1,0 +1,14 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shapeless": {
+    "description": { "identifier": "hollowveil:featherfall_charm" },
+    "tags": [ "crafting_table" ],
+    "ingredients": [
+      { "item": "hollowveil:bat_membrane", "count": 3 },
+      { "item": "hollowveil:spectral_dust" },
+      { "item": "minecraft:string" }
+    ],
+    "result": { "item": "hollowveil:featherfall_charm" },
+    "unlock": { "context": "AlwaysUnlocked" }
+  }
+}

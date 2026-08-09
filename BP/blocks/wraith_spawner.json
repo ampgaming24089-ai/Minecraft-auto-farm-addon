@@ -1,0 +1,14 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:block": {
+    "description": { "identifier": "hollowveil:wraith_spawner", "menu_category": { "category": "none" }, "traits": {} },
+    "components": {
+      "minecraft:material_instances": { "*": { "texture": "spawner_cage", "render_method": "alpha_test", "ambient_occlusion": false } },
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:destructible_by_mining": { "seconds_to_destroy": 12 },
+      "minecraft:destructible_by_explosion": { "explosion_resistance": 30 },
+      "minecraft:light_emission": 6,
+      "minecraft:map_color": "#4a6a5a"
+    }
+  }
+}

@@ -4,8 +4,10 @@ import { startPortalTicking } from "./portal/portal.js";
 import { startBossAI } from "./bosses/bossAI.js";
 import { registerMobAbilities, startWraithPhasing } from "./mobs/abilities.js";
 import { startMobSpawner } from "./mobs/spawner.js";
+import { startStructureSpawners } from "./world/spawners.js";
 import { registerItemHandlers, startPassiveItemEffects } from "./items/tools.js";
 import { registerBossWeapons } from "./items/weapons.js";
+import { registerDragonEgg } from "./items/dragon.js";
 import { startArmorSetBonuses } from "./armor/setBonuses.js";
 
 // Custom dimensions must be registered during the restricted "startup"
@@ -18,12 +20,14 @@ system.beforeEvents.startup.subscribe((ev) => {
 registerMobAbilities();
 registerItemHandlers();
 registerBossWeapons();
+registerDragonEgg();
 
 // --- one-time subsystem start -------------------------------------------
 startPortalTicking();
 startBossAI();
 startWraithPhasing();
 startMobSpawner();
+startStructureSpawners();
 startPassiveItemEffects();
 startArmorSetBonuses();
 

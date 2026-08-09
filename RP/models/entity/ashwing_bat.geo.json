@@ -1,0 +1,182 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.hv_ashwing_bat",
+        "texture_width": 55,
+        "texture_height": 17,
+        "visible_bounds_width": 1.2,
+        "visible_bounds_height": 1.0,
+        "visible_bounds_offset": [
+          0,
+          0.6,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "body",
+          "pivot": [
+            0,
+            8,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -2,
+                7,
+                -2.5
+              ],
+              "size": [
+                4,
+                3,
+                5
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "head",
+          "pivot": [
+            0,
+            10,
+            -3
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -1.5,
+                9,
+                -5
+              ],
+              "size": [
+                3,
+                3,
+                3
+              ],
+              "uv": [
+                18,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ear_l",
+          "pivot": [
+            1,
+            12,
+            -3.5
+          ],
+          "parent": "head",
+          "cubes": [
+            {
+              "origin": [
+                0.5,
+                11.5,
+                -4
+              ],
+              "size": [
+                1,
+                1.5,
+                1
+              ],
+              "uv": [
+                30,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "ear_r",
+          "pivot": [
+            -1,
+            12,
+            -3.5
+          ],
+          "parent": "head",
+          "cubes": [
+            {
+              "origin": [
+                -1.5,
+                11.5,
+                -4
+              ],
+              "size": [
+                1,
+                1.5,
+                1
+              ],
+              "uv": [
+                34,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "wing_l",
+          "pivot": [
+            2,
+            9,
+            0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                2,
+                6,
+                -2
+              ],
+              "size": [
+                4,
+                4,
+                4
+              ],
+              "uv": [
+                38,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "wing_r",
+          "pivot": [
+            -2,
+            9,
+            0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                6,
+                -2
+              ],
+              "size": [
+                4,
+                4,
+                4
+              ],
+              "uv": [
+                0,
+                8
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:item": {
+    "description": { "identifier": "hollowveil:veilsteel_plating", "menu_category": { "category": "items", "group": "itemGroup.name.hollowveil.currency" } },
+    "components": { "minecraft:max_stack_size": 64, "minecraft:icon": "veilsteel_plating", "minecraft:display_name": { "value": "item.hollowveil:veilsteel_plating.name" } }
+  }
+}

@@ -340,6 +340,125 @@ add(
     visible_bounds=(5.5, 6.5, 3.5),
 )
 
+# --- New passive mobs ---
+add(
+    "ashwing_bat",
+    "ashwing_bat",
+    [
+        bone("body", [0, 8, 0], [cube("body", [-2, 7, -2.5], [4, 3, 5])]),
+        bone("head", [0, 10, -3], [cube("head", [-1.5, 9, -5], [3, 3, 3])], parent="body"),
+        bone("ear_l", [1, 12, -3.5], [cube("ear_l", [0.5, 11.5, -4], [1, 1.5, 1])], parent="head"),
+        bone("ear_r", [-1, 12, -3.5], [cube("ear_r", [-1.5, 11.5, -4], [1, 1.5, 1])], parent="head"),
+        bone("wing_l", [2, 9, 0], [cube("wing_l", [2, 6, -2], [4, 4, 4])], parent="body"),
+        bone("wing_r", [-2, 9, 0], [cube("wing_r", [-6, 6, -2], [4, 4, 4])], parent="body"),
+    ],
+    scale=0.5,
+    visible_bounds=(1.2, 1.0, 0.6),
+)
+
+add(
+    "bonehide_elk",
+    "bonehide_elk",
+    [
+        bone("body", [0, 13, 0], [cube("body", [-5, 10, -9], [10, 8, 18])]),
+        bone("head", [0, 16, -11], [cube("head", [-3, 14, -14], [6, 6, 6]), cube("snout", [-2, 14.5, -16.5], [4, 3, 2.5])], parent="body"),
+        bone("antler_l", [2, 21, -12], [cube("antler_l", [1, 20, -13], [1, 6, 1])], parent="head"),
+        bone("antler_r", [-2, 21, -12], [cube("antler_r", [-2, 20, -13], [1, 6, 1])], parent="head"),
+        bone("tail", [0, 15, 9], [cube("tail", [-1, 12, 9], [2, 4, 2])], parent="body"),
+        bone("leg_fl", [3.5, 10, -6], [cube("leg_fl", [1.5, 0, -7.5], [3, 10, 3])], parent="body"),
+        bone("leg_fr", [-3.5, 10, -6], [cube("leg_fr", [-4.5, 0, -7.5], [3, 10, 3])], parent="body"),
+        bone("leg_bl", [3.5, 10, 6], [cube("leg_bl", [1.5, 0, 4.5], [3, 10, 3])], parent="body"),
+        bone("leg_br", [-3.5, 10, 6], [cube("leg_br", [-4.5, 0, 4.5], [3, 10, 3])], parent="body"),
+    ],
+    visible_bounds=(2.2, 2.2, 1.4),
+)
+
+add(
+    "glimmershroom_toad",
+    "glimmershroom_toad",
+    [
+        bone("body", [0, 4, 0], [cube("body", [-4, 2, -5], [8, 5, 10])]),
+        bone("head", [0, 6, -5], [cube("head", [-3, 3, -8], [6, 4, 3])], parent="body"),
+        bone("eye_l", [1.5, 8, -7.5], [cube("eye_l", [1, 6.5, -8.2], [1.5, 1.5, 1])], parent="head"),
+        bone("eye_r", [-1.5, 8, -7.5], [cube("eye_r", [-2.5, 6.5, -8.2], [1.5, 1.5, 1])], parent="head"),
+        bone("leg_fl", [3, 2, -3], [cube("leg_fl", [2, 0, -4], [2, 2, 2])], parent="body"),
+        bone("leg_fr", [-3, 2, -3], [cube("leg_fr", [-4, 0, -4], [2, 2, 2])], parent="body"),
+        bone("leg_bl", [3, 2, 3], [cube("leg_bl", [2, 0, 2], [2, 2, 2])], parent="body"),
+        bone("leg_br", [-3, 2, 3], [cube("leg_br", [-4, 0, 2], [2, 2, 2])], parent="body"),
+    ],
+    scale=0.6,
+    visible_bounds=(1.2, 0.8, 0.8),
+)
+
+# --- New hostile mobs ---
+add(
+    "bastion_sentinel",
+    "bastion_sentinel",
+    [
+        bone("body", [0, 10, 0], [cube("body", [-5.5, 9, -3.5], [11, 13, 7])]),
+        bone("pauldron_l", [6, 21, 0], [cube("pl", [4.5, 19.5, -4], [3, 3, 5], "front")], parent="body"),
+        bone("pauldron_r", [-6, 21, 0], [cube("pr", [-7.5, 19.5, -4], [3, 3, 5], "front")], parent="body"),
+        bone("head", [0, 23, 0], [cube("head", [-4, 22, -4], [8, 8, 8])], parent="body"),
+        bone("arm_l", [7, 19, 0], [cube("arm_l", [5.5, 8, -2.5], [4, 13, 5])], parent="body"),
+        bone("arm_r", [-7, 19, 0], [cube("arm_r", [-9.5, 8, -2.5], [4, 13, 5])], parent="body"),
+        bone("leg_l", [2.5, 9, 0], [cube("leg_l", [0.5, -5, -2.5], [4, 14, 5])], parent="body"),
+        bone("leg_r", [-2.5, 9, 0], [cube("leg_r", [-4.5, -5, -2.5], [4, 14, 5])], parent="body"),
+    ],
+    visible_bounds=(2.4, 3.0, 1.1),
+)
+
+add(
+    "city_wraithguard",
+    "city_wraithguard",
+    [
+        bone("body", [0, 12, 0], [cube("robe", [-5, 5, -3], [10, 12, 6])]),
+        bone("torso", [0, 17, 0], [cube("torso", [-4, 17, -3], [8, 8, 6])], parent="body"),
+        bone("head", [0, 25, 0], [cube("head", [-4, 25, -4], [8, 8, 8])], parent="torso"),
+        bone("helm_spike", [0, 33, 0], [cube("spike", [-0.5, 33, -0.5], [1, 4, 1], "top")], parent="head"),
+        bone("arm_l", [6, 21, 0], [cube("arm_l", [4.5, 12, -1.5], [3, 11, 3])], parent="torso"),
+        bone("arm_r", [-6, 21, 0], [cube("arm_r", [-7.5, 12, -1.5], [3, 11, 3])], parent="torso"),
+        bone("tail", [0, 5, 4], [cube("robe_tail", [-4, 0, 4], [8, 6, 2])], parent="body"),
+    ],
+    visible_bounds=(2.0, 2.8, 1.0),
+)
+
+add(
+    "marrow_crawler",
+    "marrow_crawler",
+    [
+        bone("body", [0, 5, 0], [cube("body", [-5, 3, -7], [10, 5, 14])]),
+        bone("head", [0, 6, -8], [cube("head", [-2.5, 4, -11], [5, 4, 4])], parent="body"),
+        bone("fang_l", [1, 5, -11], [cube("fang_l", [0.5, 4, -12], [1, 2, 1])], parent="head"),
+        bone("fang_r", [-1, 5, -11], [cube("fang_r", [-1.5, 4, -12], [1, 2, 1])], parent="head"),
+        bone("leg1_l", [5, 4, -5], [cube("leg1_l", [4, 2, -6.5], [4, 2, 2])], parent="body"),
+        bone("leg1_r", [-5, 4, -5], [cube("leg1_r", [-8, 2, -6.5], [4, 2, 2])], parent="body"),
+        bone("leg2_l", [5, 4, -1], [cube("leg2_l", [4, 2, -2], [4, 2, 2])], parent="body"),
+        bone("leg2_r", [-5, 4, -1], [cube("leg2_r", [-8, 2, -2], [4, 2, 2])], parent="body"),
+        bone("leg3_l", [5, 4, 3], [cube("leg3_l", [4, 2, 2], [4, 2, 2])], parent="body"),
+        bone("leg3_r", [-5, 4, 3], [cube("leg3_r", [-8, 2, 2], [4, 2, 2])], parent="body"),
+    ],
+    scale=0.85,
+    visible_bounds=(2.0, 1.2, 1.6),
+)
+
+add(
+    "ashen_whelp",
+    "ashen_whelp",
+    [
+        bone("body", [0, 6, 0], [cube("body", [-2, 4, -1.5], [4, 5, 3])]),
+        bone("head", [0, 11, 0], [cube("head", [-2, 11, -2], [4, 4, 4])], parent="body"),
+        bone("horn_l", [1, 15, 0], [cube("horn_l", [0.5, 15, -0.5], [1, 2, 1], "top")], parent="head"),
+        bone("horn_r", [-1, 15, 0], [cube("horn_r", [-1.5, 15, -0.5], [1, 2, 1], "top")], parent="head"),
+        bone("arm_l", [2.5, 9, 0], [cube("arm_l", [2, 5, -1], [1.5, 4, 2])], parent="body"),
+        bone("arm_r", [-2.5, 9, 0], [cube("arm_r", [-3.5, 5, -1], [1.5, 4, 2])], parent="body"),
+        bone("leg_l", [1, 4, 0], [cube("leg_l", [0.2, 0, -1], [1.6, 4, 2])], parent="body"),
+        bone("leg_r", [-1, 4, 0], [cube("leg_r", [-1.8, 0, -1], [1.6, 4, 2])], parent="body"),
+        bone("tail", [0, 5, 1.5], [cube("tail", [-0.5, 4, 1.5], [1, 1, 4])], parent="body"),
+    ],
+    scale=0.55,
+    visible_bounds=(1.2, 1.4, 0.7),
+)
+
 # --- Projectiles (tiny) ---
 add(
     "debris_projectile",
@@ -357,8 +476,118 @@ add(
 )
 
 
+DRAGON_BONES = [
+    bone("body", [0, 14, 0], [cube("body", [-6, 11, -10], [12, 10, 20])]),
+    bone("neck", [0, 20, -10], [cube("neck", [-3.5, 17, -15], [7, 7, 6])], parent="body"),
+    bone("head", [0, 21, -16], [cube("head", [-3, 18, -21], [6, 6, 6]), cube("snout", [-2, 19, -24], [4, 3, 3])], parent="neck"),
+    bone("horn_l", [1.5, 25, -18], [cube("horn_l", [1, 24, -19], [1, 4, 1], "top")], parent="head"),
+    bone("horn_r", [-1.5, 25, -18], [cube("horn_r", [-2, 24, -19], [1, 4, 1], "top")], parent="head"),
+    bone("tail1", [0, 14, 10], [cube("tail1", [-3, 11, 10], [6, 6, 10])], parent="body"),
+    bone("tail2", [0, 13, 20], [cube("tail2", [-2, 11, 20], [4, 4, 9])], parent="tail1"),
+    bone("wing_l", [6, 20, -2], [cube("wing_l", [6, 12, -8], [2, 14, 20], "front")], parent="body"),
+    bone("wing_r", [-6, 20, -2], [cube("wing_r", [-8, 12, -8], [2, 14, 20], "front")], parent="body"),
+    bone("leg_fl", [4, 11, -6], [cube("leg_fl", [1.5, 0, -8], [5, 11, 5])], parent="body"),
+    bone("leg_fr", [-4, 11, -6], [cube("leg_fr", [-6.5, 0, -8], [5, 11, 5])], parent="body"),
+    bone("leg_bl", [4, 11, 6], [cube("leg_bl", [1.5, 0, 4], [5, 11, 5])], parent="body"),
+    bone("leg_br", [-4, 11, 6], [cube("leg_br", [-6.5, 0, 4], [5, 11, 5])], parent="body"),
+]
+
+DRAGON_COLOR_KEYS = ["dragon_0", "dragon_1", "dragon_2", "dragon_3", "dragon_4", "dragon_5"]
+
+
+def build_dragon():
+    """One geometry shared by 6 differently-painted textures, switched at
+    runtime via minecraft:variant + a render-controller texture array - the
+    same mechanism vanilla horses use for coat colors (verified against
+    Mojang's horse.json/horse render controller)."""
+    atlas = boxuv.Atlas(max_width=96)
+    for b in DRAGON_BONES:
+        for cube_def in b["cubes"]:
+            c = boxuv.Cube(cube_def["name"], cube_def["origin"], cube_def["size"])
+            atlas.place(c)
+            cube_def["_uv"] = c.uv
+    w, h = atlas.finalize_size()
+
+    for i, pal_key in enumerate(DRAGON_COLOR_KEYS):
+        palette = PAL[pal_key]
+        img = boxuv.new_canvas(w, h)
+        draw = ImageDraw.Draw(img)
+        for bi, b in enumerate(DRAGON_BONES):
+            for ci, cube_def in enumerate(b["cubes"]):
+                part = cube_def.get("part", "side")
+                pal = palette if part == "side" else {**palette, "side": palette.get(part, palette.get("side"))}
+                c = boxuv.Cube(cube_def["name"], cube_def["origin"], cube_def["size"])
+                c.uv = cube_def["_uv"]
+                boxuv.paint_cube(draw, c, pal, seed=i * 100 + bi * 10 + ci)
+        save(img, RP, "textures", "entity", f"veil_dragon_{i}.png")
+
+    geo_bones = []
+    for b in DRAGON_BONES:
+        gb = {"name": b["name"], "pivot": list(b["pivot"])}
+        if b.get("parent"):
+            gb["parent"] = b["parent"]
+        gb["cubes"] = [{"origin": list(c["origin"]), "size": list(c["size"]), "uv": list(c["_uv"])} for c in b["cubes"]]
+        geo_bones.append(gb)
+
+    geo = {
+        "format_version": "1.16.0",
+        "minecraft:geometry": [
+            {
+                "description": {
+                    "identifier": "geometry.hv_veil_dragon",
+                    "texture_width": w,
+                    "texture_height": h,
+                    "visible_bounds_width": 6,
+                    "visible_bounds_height": 5,
+                    "visible_bounds_offset": [0, 2, 0],
+                },
+                "bones": geo_bones,
+            }
+        ],
+    }
+    geo_path = os.path.join(RP, "models", "entity", "veil_dragon.geo.json")
+    os.makedirs(os.path.dirname(geo_path), exist_ok=True)
+    with open(geo_path, "w") as f:
+        json.dump(geo, f, indent=2)
+
+    render_controller = {
+        "format_version": "1.10.0",
+        "render_controllers": {
+            "controller.render.hv_dragon": {
+                "arrays": {"textures": {"Array.color": [f"Texture.variant{i}" for i in range(6)]}},
+                "geometry": "Geometry.default",
+                "materials": [{"*": "Material.default"}],
+                "textures": ["Array.color[query.variant]"],
+            }
+        },
+    }
+    rc_path = os.path.join(RP, "render_controllers", "hv_dragon.render_controllers.json")
+    with open(rc_path, "w") as f:
+        json.dump(render_controller, f, indent=2)
+
+    client_entity = {
+        "format_version": "1.16.0",
+        "minecraft:client_entity": {
+            "description": {
+                "identifier": "hollowveil:veil_dragon",
+                "materials": {"default": "entity_alphatest"},
+                "textures": {f"variant{i}": f"textures/entity/veil_dragon_{i}" for i in range(6)},
+                "geometry": {"default": "geometry.hv_veil_dragon"},
+                "render_controllers": ["controller.render.hv_dragon"],
+                "scripts": {"scale": "1.0"},
+            }
+        },
+    }
+    ce_path = os.path.join(RP, "entity", "veil_dragon.entity.json")
+    with open(ce_path, "w") as f:
+        json.dump(client_entity, f, indent=2)
+
+    print("built entity veil_dragon (6 color variants)")
+
+
 def run():
     write_shared_render_controller()
+    build_dragon()
     for identifier, palette_key, bones, scale, vb in ENTITIES:
         palette = PAL[palette_key]
         resolved_bones = []

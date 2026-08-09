@@ -1,0 +1,236 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.hv_glimmershroom_toad",
+        "texture_width": 61,
+        "texture_height": 20,
+        "visible_bounds_width": 1.2,
+        "visible_bounds_height": 0.8,
+        "visible_bounds_offset": [
+          0,
+          0.8,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "body",
+          "pivot": [
+            0,
+            4,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -4,
+                2,
+                -5
+              ],
+              "size": [
+                8,
+                5,
+                10
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "head",
+          "pivot": [
+            0,
+            6,
+            -5
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -3,
+                3,
+                -8
+              ],
+              "size": [
+                6,
+                4,
+                3
+              ],
+              "uv": [
+                36,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "eye_l",
+          "pivot": [
+            1.5,
+            8,
+            -7.5
+          ],
+          "parent": "head",
+          "cubes": [
+            {
+              "origin": [
+                1,
+                6.5,
+                -8.2
+              ],
+              "size": [
+                1.5,
+                1.5,
+                1
+              ],
+              "uv": [
+                54,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "eye_r",
+          "pivot": [
+            -1.5,
+            8,
+            -7.5
+          ],
+          "parent": "head",
+          "cubes": [
+            {
+              "origin": [
+                -2.5,
+                6.5,
+                -8.2
+              ],
+              "size": [
+                1.5,
+                1.5,
+                1
+              ],
+              "uv": [
+                0,
+                15
+              ]
+            }
+          ]
+        },
+        {
+          "name": "leg_fl",
+          "pivot": [
+            3,
+            2,
+            -3
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                2,
+                0,
+                -4
+              ],
+              "size": [
+                2,
+                2,
+                2
+              ],
+              "uv": [
+                6,
+                15
+              ]
+            }
+          ]
+        },
+        {
+          "name": "leg_fr",
+          "pivot": [
+            -3,
+            2,
+            -3
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -4,
+                0,
+                -4
+              ],
+              "size": [
+                2,
+                2,
+                2
+              ],
+              "uv": [
+                14,
+                15
+              ]
+            }
+          ]
+        },
+        {
+          "name": "leg_bl",
+          "pivot": [
+            3,
+            2,
+            3
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                2,
+                0,
+                2
+              ],
+              "size": [
+                2,
+                2,
+                2
+              ],
+              "uv": [
+                22,
+                15
+              ]
+            }
+          ]
+        },
+        {
+          "name": "leg_br",
+          "pivot": [
+            -3,
+            2,
+            3
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -4,
+                0,
+                2
+              ],
+              "size": [
+                2,
+                2,
+                2
+              ],
+              "uv": [
+                30,
+                15
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
