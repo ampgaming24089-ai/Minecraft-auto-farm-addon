@@ -1,0 +1,12 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:item": {
+    "description": { "identifier": "hollowveil:soul_shard", "menu_category": { "category": "items", "group": "itemGroup.name.hollowveil.currency" } },
+    "components": {
+      "minecraft:max_stack_size": 64,
+      "minecraft:icon": { "texture": "soul_shard" },
+      "minecraft:display_name": { "value": "item.hollowveil:soul_shard.name" },
+      "minecraft:glint": false
+    }
+  }
+}

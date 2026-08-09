@@ -1,0 +1,23 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "hollowveil:fallen_knight",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/fallen_knight"
+      },
+      "geometry": {
+        "default": "geometry.hv_fallen_knight"
+      },
+      "render_controllers": [
+        "controller.render.hv_default"
+      ],
+      "scripts": {
+        "scale": "1.0"
+      }
+    }
+  }
+}

@@ -1,0 +1,182 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.hv_occultist",
+        "texture_width": 61,
+        "texture_height": 39,
+        "visible_bounds_width": 2.2,
+        "visible_bounds_height": 2.9,
+        "visible_bounds_offset": [
+          0,
+          1.1,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "body",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -5,
+                3,
+                -3
+              ],
+              "size": [
+                10,
+                13,
+                6
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "hood_back",
+          "pivot": [
+            0,
+            22,
+            2
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -4,
+                20,
+                1.5
+              ],
+              "size": [
+                8,
+                4,
+                2
+              ],
+              "uv": [
+                32,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "head",
+          "pivot": [
+            0,
+            22,
+            0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -4,
+                20,
+                -4
+              ],
+              "size": [
+                8,
+                8,
+                8
+              ],
+              "uv": [
+                0,
+                19
+              ]
+            }
+          ]
+        },
+        {
+          "name": "arm_l",
+          "pivot": [
+            6,
+            18,
+            0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                5,
+                6,
+                -1.5
+              ],
+              "size": [
+                3,
+                12,
+                3
+              ],
+              "uv": [
+                32,
+                19
+              ]
+            }
+          ]
+        },
+        {
+          "name": "arm_r",
+          "pivot": [
+            -6,
+            18,
+            0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -8,
+                6,
+                -1.5
+              ],
+              "size": [
+                3,
+                12,
+                3
+              ],
+              "uv": [
+                44,
+                19
+              ]
+            }
+          ]
+        },
+        {
+          "name": "staff",
+          "pivot": [
+            -8,
+            6,
+            0
+          ],
+          "parent": "arm_r",
+          "cubes": [
+            {
+              "origin": [
+                -8.5,
+                0,
+                -0.5
+              ],
+              "size": [
+                1,
+                18,
+                1
+              ],
+              "uv": [
+                56,
+                19
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

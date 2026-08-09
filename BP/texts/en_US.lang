@@ -1,2 +1,75 @@
-pack.name=Groundwork Farms [Behavior]
-pack.description=Instant stackable auto farms - build tool, menu-driven, achievement friendly.
+## Hollow Veil - display strings
+
+pack.name=Hollow Veil - Resource Pack
+pack.description=Textures, models, sounds and atmosphere for the Hollow Veil dimension.
+
+itemGroup.name.hollowveil.currency=Hollow Veil Materials
+itemGroup.name.hollowveil.trinkets=Hollow Veil Trinkets
+itemGroup.name.hollowveil.sigils=Warden Sigils
+itemGroup.name.hollowveil.tools=Hollow Veil Tools
+
+## Items
+item.hollowveil:soul_shard.name=Soul Shard
+item.hollowveil:ember_dust.name=Ember Dust
+item.hollowveil:spectral_dust.name=Spectral Dust
+item.hollowveil:demon_horn.name=Demon Horn
+item.hollowveil:banshee_vocal_cord.name=Banshee Vocal Cord
+item.hollowveil:wraithsteel_scrap.name=Wraithsteel Scrap
+item.hollowveil:wraithsteel_ingot.name=Wraithsteel Ingot
+item.hollowveil:ember_core.name=Ember Core
+item.hollowveil:ghost_ward_charm.name=Ghost Ward Charm
+item.hollowveil:spirit_lantern.name=Spirit Lantern
+item.hollowveil:soul_compass.name=Soul Compass
+item.hollowveil:journal.name=Hollow Veil Journal
+item.hollowveil:wraithfire_igniter.name=Wraithfire Igniter
+item.hollowveil:wraithsteel_sword.name=Wraithsteel Sword
+item.hollowveil:wraithsteel_pickaxe.name=Wraithsteel Pickaxe
+item.hollowveil:wraithsteel_axe.name=Wraithsteel Axe
+item.hollowveil:hollow_kings_reaper.name=Hollow King's Reaper
+item.hollowveil:wailing_edge.name=Wailing Edge
+item.hollowveil:malacodas_fang.name=Malacoda's Fang
+item.hollowveil:sigil_hollow_king.name=Sigil of the Hollow King
+item.hollowveil:sigil_weeping_widow.name=Sigil of the Weeping Widow
+item.hollowveil:sigil_malacoda.name=Sigil of Malacoda
+
+item.hollowveil:spectral_regalia_helmet.name=Spectral Regalia Helm
+item.hollowveil:spectral_regalia_chestplate.name=Spectral Regalia Chestplate
+item.hollowveil:spectral_regalia_leggings.name=Spectral Regalia Leggings
+item.hollowveil:spectral_regalia_boots.name=Spectral Regalia Boots
+item.hollowveil:mourners_shroud_helmet.name=Mourner's Shroud Hood
+item.hollowveil:mourners_shroud_chestplate.name=Mourner's Shroud Wrap
+item.hollowveil:mourners_shroud_leggings.name=Mourner's Shroud Leggings
+item.hollowveil:mourners_shroud_boots.name=Mourner's Shroud Boots
+item.hollowveil:ashen_demonplate_helmet.name=Ashen Demonplate Helm
+item.hollowveil:ashen_demonplate_chestplate.name=Ashen Demonplate Chestplate
+item.hollowveil:ashen_demonplate_leggings.name=Ashen Demonplate Leggings
+item.hollowveil:ashen_demonplate_boots.name=Ashen Demonplate Boots
+
+## Blocks
+tile.hollowveil:soulforged_obsidian.name=Soulforged Obsidian
+tile.hollowveil:ashwood_log.name=Ashwood Log
+tile.hollowveil:ashwood_planks.name=Ashwood Planks
+tile.hollowveil:bonestone.name=Bonestone
+tile.hollowveil:wraithsteel_ore.name=Wraithsteel Ore
+tile.hollowveil:ritual_altar.name=Ritual Altar
+tile.hollowveil:soul_lantern.name=Soul Lantern
+tile.hollowveil:veil_portal.name=Veil Portal
+
+## Entities
+entity.hollowveil:wraith.name=Wraith
+entity.hollowveil:banshee.name=Banshee
+entity.hollowveil:poltergeist.name=Poltergeist
+entity.hollowveil:hellhound.name=Hellhound
+entity.hollowveil:imp.name=Imp
+entity.hollowveil:shade.name=Shade
+entity.hollowveil:fallen_knight.name=Fallen Knight
+entity.hollowveil:soul_wisp.name=Soul Wisp
+entity.hollowveil:occultist.name=Occultist
+entity.hollowveil:hollow_king.name=The Hollow King
+entity.hollowveil:weeping_widow.name=The Weeping Widow
+entity.hollowveil:malacoda.name=Malacoda, the Ashen Demon
+entity.hollowveil:debris_projectile.name=Debris
+entity.hollowveil:imp_fireball.name=Imp Fireball
+
+## Biome
+biome.hollowveil:hollow_veil=Hollow Veil

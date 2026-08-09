@@ -1,0 +1,10 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shaped": {
+    "description": { "identifier": "hollowveil:wraithsteel_pickaxe" },
+    "tags": [ "crafting_table" ],
+    "pattern": [ "III", " S ", " S " ],
+    "key": { "I": { "item": "hollowveil:wraithsteel_ingot" }, "S": { "item": "minecraft:stick" } },
+    "result": { "item": "hollowveil:wraithsteel_pickaxe" }
+  }
+}

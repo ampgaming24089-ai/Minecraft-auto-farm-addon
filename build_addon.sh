@@ -1,17 +1,32 @@
 #!/usr/bin/env bash
-# Packages BP/ and RP/ into a single .mcaddon for one-tap import on mobile,
-# or drag-and-drop import on desktop.
+# Packages BP/ and RP/ into .mcpack files plus a combined .mcaddon.
+# Usage: ./build_addon.sh [output_dir]  (defaults to ./dist)
 set -euo pipefail
-cd "$(dirname "$0")"
 
-OUT_DIR="dist"
-OUT_FILE="$OUT_DIR/AutoFarmAddon.mcaddon"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OUT="${1:-$ROOT/dist}"
+NAME="HollowVeil"
 
-mkdir -p "$OUT_DIR"
-rm -f "$OUT_FILE"
+rm -rf "$OUT"
+mkdir -p "$OUT"
 
-zip -r -X "$OUT_FILE" BP RP \
-  -x "*.DS_Store" \
-  -x "**/__pycache__/*"
+pack_dir() {
+  local src="$1" dest="$2"
+  (cd "$src" && zip -r -X -q "$dest" . -x '.*')
+}
 
-echo "Built $OUT_FILE"
+pack_dir "$ROOT/BP" "$OUT/${NAME}_BP.mcpack"
+pack_dir "$ROOT/RP" "$OUT/${NAME}_RP.mcpack"
+
+TMP="$(mktemp -d)"
+mkdir -p "$TMP/BP" "$TMP/RP"
+cp -r "$ROOT/BP/." "$TMP/BP/"
+cp -r "$ROOT/RP/." "$TMP/RP/"
+(cd "$TMP" && zip -r -X -q "$OUT/${NAME}.mcaddon" BP RP -x '.*')
+rm -rf "$TMP"
+
+echo "Built:"
+ls -lh "$OUT"
+echo
+echo "Import ${NAME}.mcaddon on a device with Minecraft Bedrock installed"
+echo "(or copy the BP/RP folders straight into com.mojang/development_*_packs)."

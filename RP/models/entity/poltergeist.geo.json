@@ -1,0 +1,128 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.hv_poltergeist",
+        "texture_width": 57,
+        "texture_height": 13,
+        "visible_bounds_width": 1.4,
+        "visible_bounds_height": 1.4,
+        "visible_bounds_offset": [
+          0,
+          0.7,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "core",
+          "pivot": [
+            0,
+            10,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -3,
+                7,
+                -3
+              ],
+              "size": [
+                6,
+                6,
+                6
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "debris1",
+          "pivot": [
+            4,
+            12,
+            0
+          ],
+          "parent": "core",
+          "cubes": [
+            {
+              "origin": [
+                3,
+                10,
+                -1.5
+              ],
+              "size": [
+                3,
+                3,
+                3
+              ],
+              "uv": [
+                24,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "debris2",
+          "pivot": [
+            -4,
+            9,
+            2
+          ],
+          "parent": "core",
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                8,
+                1
+              ],
+              "size": [
+                2,
+                2,
+                2
+              ],
+              "uv": [
+                36,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "debris3",
+          "pivot": [
+            0,
+            14,
+            -3
+          ],
+          "parent": "core",
+          "cubes": [
+            {
+              "origin": [
+                -3,
+                13,
+                -5
+              ],
+              "size": [
+                4,
+                1,
+                2
+              ],
+              "uv": [
+                44,
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

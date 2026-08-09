@@ -1,0 +1,16 @@
+{
+  "format_version": "1.20.0",
+  "minecraft:spawn_rules": {
+    "description": { "identifier": "hollowveil:imp", "population_control": "monster" },
+    "conditions": [
+      {
+        "minecraft:spawns_on_surface": {},
+        "minecraft:brightness_filter": { "min": 0, "max": 12 },
+        "minecraft:biome_filter": { "test": "has_biome_tag", "value": "hollow_veil" },
+        "minecraft:weight": { "default": 80 },
+        "minecraft:herd": { "min_size": 1, "max_size": 3 },
+        "minecraft:density_limit": { "surface": 6 }
+      }
+    ]
+  }
+}

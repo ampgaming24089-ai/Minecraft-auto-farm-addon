@@ -1,0 +1,11 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:item": {
+    "description": { "identifier": "hollowveil:spectral_dust", "menu_category": { "category": "items", "group": "itemGroup.name.hollowveil.currency" } },
+    "components": {
+      "minecraft:max_stack_size": 64,
+      "minecraft:icon": { "texture": "spectral_dust" },
+      "minecraft:display_name": { "value": "item.hollowveil:spectral_dust.name" }
+    }
+  }
+}

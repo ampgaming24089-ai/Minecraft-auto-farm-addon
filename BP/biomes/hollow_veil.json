@@ -1,0 +1,10 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:biome": {
+    "description": { "identifier": "hollowveil:hollow_veil" },
+    "components": {
+      "minecraft:climate": { "temperature": 0.35, "downfall": 0.7, "snow_accumulation": [0, 0] },
+      "minecraft:tags": { "tags": [ "hollow_veil", "spooky", "no_legacy_worldgen" ] }
+    }
+  }
+}

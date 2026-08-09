@@ -1,0 +1,13 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shapeless": {
+    "description": { "identifier": "hollowveil:sigil_hollow_king" },
+    "tags": [ "crafting_table" ],
+    "ingredients": [
+      { "item": "hollowveil:spectral_dust", "count": 3 },
+      { "item": "hollowveil:soul_shard", "count": 5 },
+      { "item": "minecraft:paper" }
+    ],
+    "result": { "item": "hollowveil:sigil_hollow_king" }
+  }
+}

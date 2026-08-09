@@ -1,0 +1,52 @@
+{
+  "format_version": "1.20.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "hollowveil:banshee",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "properties": {}
+    },
+    "components": {
+      "minecraft:type_family": { "family": ["hollow_veil", "undead", "banshee", "mob"] },
+      "minecraft:collision_box": { "width": 0.7, "height": 2.1 },
+      "minecraft:health": { "value": 26, "max": 26 },
+      "minecraft:physics": { "has_gravity": false },
+      "minecraft:pushable": { "is_pushable": false },
+      "minecraft:navigation.fly": { "can_path_over_water": true, "can_pass_doors": false, "can_path_from_air": true, "avoid_water": false },
+      "minecraft:movement.fly": {},
+      "minecraft:movement": { "value": 0.22 },
+      "minecraft:flying_speed": 0.07,
+      "minecraft:despawn": { "despawn_from_distance": {} },
+      "minecraft:persistent": false,
+      "minecraft:behavior.float": { "priority": 0 },
+      "minecraft:behavior.hurt_by_target": { "priority": 1 },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "must_see": false,
+        "within_radius": 20,
+        "entity_types": [
+          { "filters": { "test": "is_family", "subject": "other", "value": "player" }, "max_dist": 20 }
+        ]
+      },
+      "minecraft:behavior.hover": { "priority": 4, "hover_height": [4, 8], "duration": 4 },
+      "minecraft:behavior.melee_attack": { "priority": 5, "speed_multiplier": 0.9, "track_target": true },
+      "minecraft:attack": { "damage": { "range_min": 2, "range_max": 4 } },
+      "minecraft:behavior.random_fly": { "priority": 6, "xz_dist": 9, "y_dist": 6, "y_offset": 3 },
+      "minecraft:behavior.look_at_player": { "priority": 7 },
+      "minecraft:timer": {
+        "looping": true,
+        "time": [6, 11],
+        "time_down_event": { "event": "hollowveil:scream_tick" },
+        "randomInterval": true
+      },
+      "minecraft:loot": { "table": "loot_tables/mobs/banshee.json" },
+      "minecraft:experience_reward": { "on_death": "query.last_hit_by_player ? 8 : 0" },
+      "minecraft:nameable": {}
+    },
+    "events": {
+      "hollowveil:scream_tick": {},
+      "minecraft:entity_spawned": {}
+    }
+  }
+}

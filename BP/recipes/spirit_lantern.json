@@ -1,0 +1,15 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shaped": {
+    "description": { "identifier": "hollowveil:spirit_lantern" },
+    "tags": [ "crafting_table" ],
+    "pattern": [ " G ", "SIS", " W " ],
+    "key": {
+      "G": { "item": "minecraft:glowstone_dust" },
+      "S": { "item": "hollowveil:soul_shard" },
+      "I": { "item": "hollowveil:wraithsteel_ingot" },
+      "W": { "item": "minecraft:soul_torch" }
+    },
+    "result": { "item": "hollowveil:spirit_lantern" }
+  }
+}

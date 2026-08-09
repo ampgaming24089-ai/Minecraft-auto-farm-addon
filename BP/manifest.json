@@ -1,41 +1,43 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Groundwork Farms [Behavior]",
-    "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
-    "uuid": "6d777d9e-1f18-4476-93aa-d05addc86366",
+    "name": "Hollow Veil §7- Behavior Pack",
+    "description": "A ghost & demon dimension: new mobs, 3 bosses, custom armor, trading, quests, and a portal ritual.",
+    "uuid": "3e85d62f-2918-4945-bc3c-11574175bfac",
     "version": [1, 0, 0],
-    "min_engine_version": [1, 21, 90]
-  },
-  "metadata": {
-    "product_type": "addon"
+    "min_engine_version": [1, 21, 0]
   },
   "modules": [
     {
       "type": "data",
-      "uuid": "7750b803-da74-4ccd-a7d1-586b43e23c7d",
+      "uuid": "d5e75d36-c1a7-41f7-b2c3-3be5b6897e4d",
       "version": [1, 0, 0]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "facd1e9f-d031-4300-98a9-a5aadd3a8af4",
-      "version": [1, 0, 0],
-      "entry": "scripts/main.js"
+      "uuid": "c28440ce-6920-48cc-8436-eb1fd12ccfff",
+      "entry": "scripts/main.js",
+      "version": [1, 0, 0]
     }
   ],
   "dependencies": [
     {
+      "uuid": "f1789be7-2c4d-42bc-b5bc-fa88895e7c57",
+      "version": [1, 0, 0]
+    },
+    {
       "module_name": "@minecraft/server",
-      "version": "2.0.0"
+      "version": "1.13.0"
     },
     {
       "module_name": "@minecraft/server-ui",
-      "version": "2.1.0"
-    },
-    {
-      "uuid": "87836772-0c98-4269-b4dd-0f4ac358deef",
-      "version": [1, 0, 0]
+      "version": "1.2.0"
     }
-  ]
+  ],
+  "capabilities": ["experimental_custom_biomes"],
+  "metadata": {
+    "authors": ["Hollow Veil Team"],
+    "product_type": "addon"
+  }
 }

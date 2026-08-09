@@ -1,0 +1,23 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "hollowveil:weeping_widow",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/weeping_widow"
+      },
+      "geometry": {
+        "default": "geometry.hv_weeping_widow"
+      },
+      "render_controllers": [
+        "controller.render.hv_default"
+      ],
+      "scripts": {
+        "scale": "1.5"
+      }
+    }
+  }
+}

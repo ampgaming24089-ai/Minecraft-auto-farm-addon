@@ -1,0 +1,15 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shapeless": {
+    "description": { "identifier": "hollowveil:soul_lantern_block" },
+    "tags": [ "crafting_table" ],
+    "ingredients": [
+      { "item": "hollowveil:soul_shard" },
+      { "item": "hollowveil:soul_shard" },
+      { "item": "hollowveil:soul_shard" },
+      { "item": "hollowveil:soul_shard" },
+      { "item": "minecraft:glowstone_dust" }
+    ],
+    "result": { "item": "hollowveil:soul_lantern" }
+  }
+}

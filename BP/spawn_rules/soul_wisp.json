@@ -1,0 +1,16 @@
+{
+  "format_version": "1.20.0",
+  "minecraft:spawn_rules": {
+    "description": { "identifier": "hollowveil:soul_wisp", "population_control": "ambient" },
+    "conditions": [
+      {
+        "minecraft:spawns_on_surface": {},
+        "minecraft:brightness_filter": { "min": 0, "max": 15 },
+        "minecraft:biome_filter": { "test": "has_biome_tag", "value": "hollow_veil" },
+        "minecraft:weight": { "default": 110 },
+        "minecraft:herd": { "min_size": 2, "max_size": 4 },
+        "minecraft:density_limit": { "surface": 10 }
+      }
+    ]
+  }
+}

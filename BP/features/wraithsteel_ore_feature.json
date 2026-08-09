@@ -1,0 +1,13 @@
+{
+  "format_version": "1.13.0",
+  "minecraft:ore_feature": {
+    "description": { "identifier": "hollowveil:wraithsteel_ore_feature" },
+    "count": 6,
+    "replace_rules": [
+      {
+        "places_block": { "block": "hollowveil:wraithsteel_ore" },
+        "may_replace": [ { "block": "minecraft:stone" }, { "block": "minecraft:deepslate" } ]
+      }
+    ]
+  }
+}

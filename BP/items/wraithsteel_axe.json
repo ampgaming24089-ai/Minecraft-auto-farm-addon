@@ -1,0 +1,24 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:item": {
+    "description": { "identifier": "hollowveil:wraithsteel_axe", "menu_category": { "category": "equipment", "group": "itemGroup.name.axe" } },
+    "components": {
+      "minecraft:max_stack_size": 1,
+      "minecraft:icon": { "texture": "wraithsteel_axe" },
+      "minecraft:display_name": { "value": "item.hollowveil:wraithsteel_axe.name" },
+      "minecraft:hand_equipped": true,
+      "minecraft:weapon": {},
+      "minecraft:damage": 8,
+      "minecraft:durability": { "max_durability": 700 },
+      "minecraft:enchantable": { "slot": "axe", "value": 14 },
+      "minecraft:repairable": {
+        "repair_items": [ { "items": [ "hollowveil:wraithsteel_ingot" ], "repair_amount": "max_durability * 0.25" } ]
+      },
+      "minecraft:digger": {
+        "use_efficiency": true,
+        "destroy_speeds": [ { "block": { "tags": "q.any_tag('wood', 'diamond_pick_diggable')" }, "speed": 9 } ]
+      },
+      "minecraft:tags": { "tags": [ "minecraft:is_axe", "minecraft:diamond_tier" ] }
+    }
+  }
+}

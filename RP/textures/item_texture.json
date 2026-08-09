@@ -1,9 +1,108 @@
 {
-  "resource_pack_name": "auto_farm_addon",
+  "resource_pack_name": "hollowveil_rp",
   "texture_name": "atlas.items",
   "texture_data": {
-    "autofarm_build_tool_icon": {
-      "textures": "textures/items/build_tool_icon"
+    "ashen_demonplate_boots": {
+      "textures": "textures/items/ashen_demonplate_boots"
+    },
+    "ashen_demonplate_chestplate": {
+      "textures": "textures/items/ashen_demonplate_chestplate"
+    },
+    "ashen_demonplate_helmet": {
+      "textures": "textures/items/ashen_demonplate_helmet"
+    },
+    "ashen_demonplate_leggings": {
+      "textures": "textures/items/ashen_demonplate_leggings"
+    },
+    "banshee_vocal_cord": {
+      "textures": "textures/items/banshee_vocal_cord"
+    },
+    "demon_horn": {
+      "textures": "textures/items/demon_horn"
+    },
+    "ember_core": {
+      "textures": "textures/items/ember_core"
+    },
+    "ember_dust": {
+      "textures": "textures/items/ember_dust"
+    },
+    "ghost_ward_charm": {
+      "textures": "textures/items/ghost_ward_charm"
+    },
+    "hollow_kings_reaper": {
+      "textures": "textures/items/hollow_kings_reaper"
+    },
+    "journal": {
+      "textures": "textures/items/journal"
+    },
+    "malacodas_fang": {
+      "textures": "textures/items/malacodas_fang"
+    },
+    "mourners_shroud_boots": {
+      "textures": "textures/items/mourners_shroud_boots"
+    },
+    "mourners_shroud_chestplate": {
+      "textures": "textures/items/mourners_shroud_chestplate"
+    },
+    "mourners_shroud_helmet": {
+      "textures": "textures/items/mourners_shroud_helmet"
+    },
+    "mourners_shroud_leggings": {
+      "textures": "textures/items/mourners_shroud_leggings"
+    },
+    "sigil_hollow_king": {
+      "textures": "textures/items/sigil_hollow_king"
+    },
+    "sigil_malacoda": {
+      "textures": "textures/items/sigil_malacoda"
+    },
+    "sigil_weeping_widow": {
+      "textures": "textures/items/sigil_weeping_widow"
+    },
+    "soul_compass": {
+      "textures": "textures/items/soul_compass"
+    },
+    "soul_shard": {
+      "textures": "textures/items/soul_shard"
+    },
+    "spectral_dust": {
+      "textures": "textures/items/spectral_dust"
+    },
+    "spectral_regalia_boots": {
+      "textures": "textures/items/spectral_regalia_boots"
+    },
+    "spectral_regalia_chestplate": {
+      "textures": "textures/items/spectral_regalia_chestplate"
+    },
+    "spectral_regalia_helmet": {
+      "textures": "textures/items/spectral_regalia_helmet"
+    },
+    "spectral_regalia_leggings": {
+      "textures": "textures/items/spectral_regalia_leggings"
+    },
+    "spirit_lantern": {
+      "textures": "textures/items/spirit_lantern"
+    },
+    "wailing_edge": {
+      "textures": "textures/items/wailing_edge"
+    },
+    "wraithfire_igniter": {
+      "textures": "textures/items/wraithfire_igniter"
+    },
+    "wraithsteel_axe": {
+      "textures": "textures/items/wraithsteel_axe"
+    },
+    "wraithsteel_ingot": {
+      "textures": "textures/items/wraithsteel_ingot"
+    },
+    "wraithsteel_pickaxe": {
+      "textures": "textures/items/wraithsteel_pickaxe"
+    },
+    "wraithsteel_scrap": {
+      "textures": "textures/items/wraithsteel_scrap"
+    },
+    "wraithsteel_sword": {
+      "textures": "textures/items/wraithsteel_sword"
     }
   }
 }

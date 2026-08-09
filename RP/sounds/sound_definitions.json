@@ -1,0 +1,65 @@
+{
+  "format_version": "1.14.0",
+  "sound_definitions": {
+    "hollowveil.portal.ignite": {
+      "category": "ambient",
+      "sounds": [
+        "sounds/hollowveil/portal_ignite"
+      ]
+    },
+    "hollowveil.debris.throw": {
+      "category": "hostile",
+      "sounds": [
+        "sounds/hollowveil/debris_throw"
+      ]
+    },
+    "hollowveil.debris.hit": {
+      "category": "hostile",
+      "sounds": [
+        "sounds/hollowveil/debris_hit"
+      ]
+    },
+    "hollowveil.imp.throw": {
+      "category": "hostile",
+      "sounds": [
+        "sounds/hollowveil/imp_throw"
+      ]
+    },
+    "hollowveil.imp.hit": {
+      "category": "hostile",
+      "sounds": [
+        "sounds/hollowveil/imp_hit"
+      ]
+    },
+    "hollowveil.banshee.scream": {
+      "category": "hostile",
+      "sounds": [
+        "sounds/hollowveil/banshee_scream"
+      ]
+    },
+    "hollowveil.widow.wail": {
+      "category": "hostile",
+      "sounds": [
+        "sounds/hollowveil/widow_wail"
+      ]
+    },
+    "hollowveil.malacoda.buffet": {
+      "category": "hostile",
+      "sounds": [
+        "sounds/hollowveil/malacoda_buffet"
+      ]
+    },
+    "hollowveil.hollow_king.pulse": {
+      "category": "hostile",
+      "sounds": [
+        "sounds/hollowveil/hollow_king_pulse"
+      ]
+    },
+    "hollowveil.village.restore": {
+      "category": "ambient",
+      "sounds": [
+        "sounds/hollowveil/village_restore"
+      ]
+    }
+  }
+}

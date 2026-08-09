@@ -1,0 +1,31 @@
+{
+  "format_version": "1.20.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "hollowveil:imp_fireball",
+      "is_spawnable": false,
+      "is_summonable": true
+    },
+    "components": {
+      "minecraft:type_family": { "family": ["hollow_veil_projectile"] },
+      "minecraft:collision_box": { "width": 0.3, "height": 0.3 },
+      "minecraft:physics": {},
+      "minecraft:projectile": {
+        "on_hit": {
+          "impact_damage": { "damage": 4, "knockback": true },
+          "catch_fire": { "duration": 3 },
+          "particle_on_hit": { "particle_type": "hollowveil:ember_particle", "num_particles": 6 }
+        },
+        "power": 1.1,
+        "gravity": 0.0,
+        "uncertainty_base": 3,
+        "anchor": 1,
+        "should_bounce": false,
+        "hit_sound": "hollowveil.imp.hit",
+        "shoot_sound": "hollowveil.imp.throw"
+      },
+      "minecraft:despawn": { "despawn_from_distance": {} }
+    },
+    "events": { "minecraft:entity_spawned": {} }
+  }
+}

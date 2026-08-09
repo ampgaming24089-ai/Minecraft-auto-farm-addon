@@ -1,0 +1,59 @@
+{
+  "format_version": "1.20.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "hollowveil:hollow_king",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "properties": {}
+    },
+    "component_groups": {
+      "hollowveil:cg_phase2": {
+        "minecraft:movement": { "value": 0.24 },
+        "minecraft:attack": { "damage": { "range_min": 9, "range_max": 13 } }
+      },
+      "hollowveil:cg_phase3": {
+        "minecraft:movement": { "value": 0.3 },
+        "minecraft:attack": { "damage": { "range_min": 12, "range_max": 17 } },
+        "minecraft:scale": { "value": 1.15 }
+      }
+    },
+    "components": {
+      "minecraft:type_family": { "family": ["hollow_veil", "hollow_veil_boss", "undead", "boss"] },
+      "minecraft:collision_box": { "width": 1.4, "height": 3.1 },
+      "minecraft:health": { "value": 200, "max": 200 },
+      "minecraft:boss": { "should_darken_sky": true, "hud_range": 55 },
+      "minecraft:knockback_resistance": { "value": 0.95 },
+      "minecraft:physics": { "has_gravity": false },
+      "minecraft:pushable": { "is_pushable": false },
+      "minecraft:navigation.fly": { "can_path_over_water": true, "can_pass_doors": false, "can_path_from_air": true },
+      "minecraft:movement.fly": {},
+      "minecraft:movement": { "value": 0.2 },
+      "minecraft:flying_speed": 0.07,
+      "minecraft:persistent": true,
+      "minecraft:despawn": {},
+      "minecraft:behavior.hurt_by_target": { "priority": 1 },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "must_see": false,
+        "within_radius": 30,
+        "entity_types": [ { "filters": { "test": "is_family", "subject": "other", "value": "player" }, "max_dist": 30 } ]
+      },
+      "minecraft:behavior.melee_attack": { "priority": 3, "speed_multiplier": 1.0, "track_target": true, "reach_multiplier": 1.8 },
+      "minecraft:attack": { "damage": { "range_min": 8, "range_max": 12 } },
+      "minecraft:behavior.random_fly": { "priority": 6, "xz_dist": 6, "y_dist": 4, "y_offset": 3 },
+      "minecraft:behavior.look_at_player": { "priority": 7 },
+      "minecraft:loot": { "table": "loot_tables/bosses/hollow_king.json" },
+      "minecraft:experience_reward": { "on_death": "query.last_hit_by_player ? 120 : 0" },
+      "minecraft:nameable": {},
+      "minecraft:conditional_bandwidth_optimization": {}
+    },
+    "events": {
+      "minecraft:entity_spawned": {},
+      "hollowveil:to_phase2": { "add": { "component_groups": ["hollowveil:cg_phase2"] } },
+      "hollowveil:to_phase3": { "add": { "component_groups": ["hollowveil:cg_phase3"] } },
+      "hollowveil:memory_pulse": {},
+      "hollowveil:summon_adds": {}
+    }
+  }
+}

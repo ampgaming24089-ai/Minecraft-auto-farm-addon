@@ -1,0 +1,29 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:fog_settings": {
+    "description": { "identifier": "hollowveil:hollow_veil_fog" },
+    "distance": {
+      "fog_layers": [
+        {
+          "fog_color": "#2a2035",
+          "fog_start_distance": 12,
+          "fog_end_distance": 55,
+          "render_distance_type": "render"
+        }
+      ]
+    },
+    "volumetric": {
+      "density": {
+        "uniform": {
+          "max_density": 0.28,
+          "max_density_height": 40,
+          "zero_density_height": 5
+        }
+      },
+      "media_coefficients": {
+        "scattering": { "r": 0.42, "g": 0.35, "b": 0.55 },
+        "absorption": { "r": 0.05, "g": 0.05, "b": 0.08 }
+      }
+    }
+  }
+}

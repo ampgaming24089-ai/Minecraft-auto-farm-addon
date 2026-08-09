@@ -1,0 +1,97 @@
+{
+  "tiers": [
+    {
+      "total_exp_required": 0,
+      "trades": [
+        {
+          "wants": [ { "item": "hollowveil:soul_shard", "quantity": 8, "price_multiplier": 0 } ],
+          "gives": [ { "item": "minecraft:emerald", "quantity": 1 } ],
+          "max_uses": 99,
+          "reward_exp": true
+        },
+        {
+          "wants": [ { "item": "hollowveil:ember_dust", "quantity": 8, "price_multiplier": 0 } ],
+          "gives": [ { "item": "minecraft:emerald", "quantity": 1 } ],
+          "max_uses": 99,
+          "reward_exp": true
+        },
+        {
+          "wants": [ { "item": "minecraft:emerald", "quantity": 3, "price_multiplier": 0 } ],
+          "gives": [ { "item": "hollowveil:journal", "quantity": 1 } ],
+          "max_uses": 1,
+          "reward_exp": true
+        },
+        {
+          "wants": [ { "item": "minecraft:emerald", "quantity": 5, "price_multiplier": 0 } ],
+          "gives": [ { "item": "hollowveil:soul_compass", "quantity": 1 } ],
+          "max_uses": 4,
+          "reward_exp": true
+        },
+        {
+          "wants": [ { "item": "minecraft:emerald", "quantity": 4, "price_multiplier": 0 } ],
+          "gives": [ { "item": "hollowveil:ashwood_log", "quantity": 8 } ],
+          "max_uses": 99,
+          "reward_exp": true
+        }
+      ]
+    },
+    {
+      "total_exp_required": 10,
+      "trades": [
+        {
+          "wants": [ { "item": "hollowveil:spectral_dust", "quantity": 6, "price_multiplier": 0 } ],
+          "gives": [ { "item": "hollowveil:wraithsteel_ingot", "quantity": 2 } ],
+          "max_uses": 16,
+          "reward_exp": true
+        },
+        {
+          "wants": [ { "item": "minecraft:emerald", "quantity": 10, "price_multiplier": 0 } ],
+          "gives": [ { "item": "hollowveil:spirit_lantern", "quantity": 1 } ],
+          "max_uses": 4,
+          "reward_exp": true
+        },
+        {
+          "wants": [ { "item": "minecraft:emerald", "quantity": 14, "price_multiplier": 0 } ],
+          "gives": [ { "item": "hollowveil:ghost_ward_charm", "quantity": 1 } ],
+          "max_uses": 4,
+          "reward_exp": true
+        },
+        {
+          "wants": [
+            { "item": "hollowveil:demon_horn", "quantity": 4, "price_multiplier": 0 },
+            { "item": "minecraft:emerald", "quantity": 6, "price_multiplier": 0 }
+          ],
+          "gives": [ { "item": "minecraft:enchanted_book", "quantity": 1 } ],
+          "max_uses": 8,
+          "reward_exp": true
+        }
+      ]
+    },
+    {
+      "total_exp_required": 40,
+      "trades": [
+        {
+          "wants": [
+            { "item": "hollowveil:banshee_vocal_cord", "quantity": 3, "price_multiplier": 0 },
+            { "item": "minecraft:emerald", "quantity": 10, "price_multiplier": 0 }
+          ],
+          "gives": [ { "item": "minecraft:enchanted_book", "quantity": 1 } ],
+          "max_uses": 8,
+          "reward_exp": true
+        },
+        {
+          "wants": [ { "item": "minecraft:emerald", "quantity": 20, "price_multiplier": 0 } ],
+          "gives": [ { "item": "hollowveil:wraithsteel_ingot", "quantity": 6 } ],
+          "max_uses": 16,
+          "reward_exp": true
+        },
+        {
+          "wants": [ { "item": "minecraft:diamond", "quantity": 3, "price_multiplier": 0 } ],
+          "gives": [ { "item": "hollowveil:soul_shard", "quantity": 32 } ],
+          "max_uses": 16,
+          "reward_exp": true
+        }
+      ]
+    }
+  ]
+}

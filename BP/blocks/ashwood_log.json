@@ -1,0 +1,17 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:block": {
+    "description": { "identifier": "hollowveil:ashwood_log", "menu_category": { "category": "construction" }, "traits": {} },
+    "components": {
+      "minecraft:material_instances": {
+        "up": { "texture": "ashwood_log_top", "render_method": "opaque" },
+        "down": { "texture": "ashwood_log_top", "render_method": "opaque" },
+        "*": { "texture": "ashwood_log_side", "render_method": "opaque" }
+      },
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:destructible_by_mining": { "seconds_to_destroy": 2 },
+      "minecraft:destructible_by_explosion": { "explosion_resistance": 2 },
+      "minecraft:map_color": "#3a2b28"
+    }
+  }
+}

@@ -1,0 +1,209 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.hv_banshee",
+        "texture_width": 59,
+        "texture_height": 57,
+        "visible_bounds_width": 2.5,
+        "visible_bounds_height": 2.8,
+        "visible_bounds_offset": [
+          0,
+          1.2,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "body",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -7,
+                4,
+                -4
+              ],
+              "size": [
+                14,
+                10,
+                8
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "torso",
+          "pivot": [
+            0,
+            16,
+            0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -4.5,
+                15,
+                -3
+              ],
+              "size": [
+                9,
+                9,
+                6
+              ],
+              "uv": [
+                0,
+                18
+              ]
+            }
+          ]
+        },
+        {
+          "name": "head",
+          "pivot": [
+            0,
+            24,
+            0
+          ],
+          "parent": "torso",
+          "cubes": [
+            {
+              "origin": [
+                -3.5,
+                24,
+                -3.5
+              ],
+              "size": [
+                7,
+                8,
+                7
+              ],
+              "uv": [
+                30,
+                18
+              ]
+            }
+          ]
+        },
+        {
+          "name": "hair",
+          "pivot": [
+            0,
+            26,
+            -3.5
+          ],
+          "parent": "head",
+          "cubes": [
+            {
+              "origin": [
+                -4,
+                20,
+                -5.5
+              ],
+              "size": [
+                8,
+                6,
+                2
+              ],
+              "uv": [
+                0,
+                33
+              ]
+            }
+          ]
+        },
+        {
+          "name": "left_arm",
+          "pivot": [
+            5.5,
+            22,
+            0
+          ],
+          "parent": "torso",
+          "cubes": [
+            {
+              "origin": [
+                4.5,
+                12,
+                -1.5
+              ],
+              "size": [
+                3,
+                10,
+                3
+              ],
+              "uv": [
+                20,
+                33
+              ]
+            }
+          ]
+        },
+        {
+          "name": "right_arm",
+          "pivot": [
+            -5.5,
+            22,
+            0
+          ],
+          "parent": "torso",
+          "cubes": [
+            {
+              "origin": [
+                -7.5,
+                12,
+                -1.5
+              ],
+              "size": [
+                3,
+                10,
+                3
+              ],
+              "uv": [
+                32,
+                33
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tail",
+          "pivot": [
+            0,
+            4,
+            4
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -5,
+                0,
+                4
+              ],
+              "size": [
+                10,
+                8,
+                2
+              ],
+              "uv": [
+                0,
+                46
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

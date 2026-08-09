@@ -1,0 +1,23 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "hollowveil:hellhound",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/hellhound"
+      },
+      "geometry": {
+        "default": "geometry.hv_hellhound"
+      },
+      "render_controllers": [
+        "controller.render.hv_default"
+      ],
+      "scripts": {
+        "scale": "1.0"
+      }
+    }
+  }
+}

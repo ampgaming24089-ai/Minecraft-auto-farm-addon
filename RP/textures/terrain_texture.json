@@ -1,0 +1,38 @@
+{
+  "resource_pack_name": "hollowveil_rp",
+  "texture_name": "atlas.terrain",
+  "padding": 8,
+  "num_mip_levels": 4,
+  "texture_data": {
+    "ashwood_log_side": {
+      "textures": "textures/blocks/ashwood_log_side"
+    },
+    "ashwood_log_top": {
+      "textures": "textures/blocks/ashwood_log_top"
+    },
+    "ashwood_planks": {
+      "textures": "textures/blocks/ashwood_planks"
+    },
+    "bonestone": {
+      "textures": "textures/blocks/bonestone"
+    },
+    "ritual_altar_side": {
+      "textures": "textures/blocks/ritual_altar_side"
+    },
+    "ritual_altar_top": {
+      "textures": "textures/blocks/ritual_altar_top"
+    },
+    "soul_lantern": {
+      "textures": "textures/blocks/soul_lantern"
+    },
+    "soulforged_obsidian": {
+      "textures": "textures/blocks/soulforged_obsidian"
+    },
+    "veil_portal": {
+      "textures": "textures/blocks/veil_portal"
+    },
+    "wraithsteel_ore": {
+      "textures": "textures/blocks/wraithsteel_ore"
+    }
+  }
+}

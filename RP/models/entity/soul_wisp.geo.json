@@ -1,0 +1,128 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.hv_soul_wisp",
+        "texture_width": 29,
+        "texture_height": 9,
+        "visible_bounds_width": 1,
+        "visible_bounds_height": 1,
+        "visible_bounds_offset": [
+          0,
+          0.5,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "core",
+          "pivot": [
+            0,
+            9,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -2,
+                7,
+                -2
+              ],
+              "size": [
+                4,
+                4,
+                4
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "t1",
+          "pivot": [
+            2,
+            9,
+            0
+          ],
+          "parent": "core",
+          "cubes": [
+            {
+              "origin": [
+                2,
+                8,
+                -0.5
+              ],
+              "size": [
+                1,
+                4,
+                1
+              ],
+              "uv": [
+                16,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "t2",
+          "pivot": [
+            -2,
+            9,
+            1
+          ],
+          "parent": "core",
+          "cubes": [
+            {
+              "origin": [
+                -3,
+                8,
+                0.5
+              ],
+              "size": [
+                1,
+                4,
+                1
+              ],
+              "uv": [
+                20,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "t3",
+          "pivot": [
+            0,
+            9,
+            -2
+          ],
+          "parent": "core",
+          "cubes": [
+            {
+              "origin": [
+                -0.5,
+                8,
+                -3
+              ],
+              "size": [
+                1,
+                4,
+                1
+              ],
+              "uv": [
+                24,
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

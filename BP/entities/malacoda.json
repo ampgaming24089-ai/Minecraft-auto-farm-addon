@@ -1,0 +1,61 @@
+{
+  "format_version": "1.20.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "hollowveil:malacoda",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "properties": {}
+    },
+    "component_groups": {
+      "hollowveil:cg_phase2": {
+        "minecraft:movement": { "value": 0.3 },
+        "minecraft:attack": { "damage": { "range_min": 10, "range_max": 15 } }
+      },
+      "hollowveil:cg_phase3": {
+        "minecraft:movement": { "value": 0.38 },
+        "minecraft:attack": { "damage": { "range_min": 14, "range_max": 20 } },
+        "minecraft:scale": { "value": 1.2 },
+        "minecraft:fire_immune": true
+      }
+    },
+    "components": {
+      "minecraft:type_family": { "family": ["hollow_veil", "hollow_veil_boss", "demon", "boss"] },
+      "minecraft:collision_box": { "width": 1.6, "height": 3.4 },
+      "minecraft:health": { "value": 260, "max": 260 },
+      "minecraft:boss": { "should_darken_sky": true, "hud_range": 60 },
+      "minecraft:knockback_resistance": { "value": 0.95 },
+      "minecraft:fire_immune": true,
+      "minecraft:physics": {},
+      "minecraft:navigation.walk": { "can_path_over_water": false, "avoid_water": true, "can_pass_doors": true },
+      "minecraft:movement.basic": {},
+      "minecraft:movement": { "value": 0.26 },
+      "minecraft:jump.static": { "jump_power": 0.5 },
+      "minecraft:persistent": true,
+      "minecraft:despawn": {},
+      "minecraft:behavior.hurt_by_target": { "priority": 1 },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "must_see": true,
+        "within_radius": 32,
+        "entity_types": [ { "filters": { "test": "is_family", "subject": "other", "value": "player" }, "max_dist": 32 } ]
+      },
+      "minecraft:behavior.melee_attack": { "priority": 3, "speed_multiplier": 1.05, "track_target": true },
+      "minecraft:attack": { "damage": { "range_min": 9, "range_max": 14 } },
+      "minecraft:behavior.ranged_attack": { "priority": 4, "attack_interval_min": 3, "attack_interval_max": 5, "attack_radius": 14 },
+      "minecraft:shooter": { "def": "hollowveil:imp_fireball" },
+      "minecraft:behavior.random_stroll": { "priority": 6, "speed_multiplier": 0.8 },
+      "minecraft:behavior.look_at_player": { "priority": 7 },
+      "minecraft:loot": { "table": "loot_tables/bosses/malacoda.json" },
+      "minecraft:experience_reward": { "on_death": "query.last_hit_by_player ? 160 : 0" },
+      "minecraft:nameable": {}
+    },
+    "events": {
+      "minecraft:entity_spawned": {},
+      "hollowveil:to_phase2": { "add": { "component_groups": ["hollowveil:cg_phase2"] } },
+      "hollowveil:to_phase3": { "add": { "component_groups": ["hollowveil:cg_phase3"] } },
+      "hollowveil:wing_buffet": {},
+      "hollowveil:summon_adds": {}
+    }
+  }
+}

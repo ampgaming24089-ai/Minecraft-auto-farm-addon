@@ -1,0 +1,14 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shapeless": {
+    "description": { "identifier": "hollowveil:soulforged_obsidian" },
+    "tags": [ "crafting_table" ],
+    "ingredients": [
+      { "item": "minecraft:obsidian" },
+      { "item": "hollowveil:soul_shard" },
+      { "item": "hollowveil:soul_shard" },
+      { "item": "hollowveil:spectral_dust" }
+    ],
+    "result": { "item": "hollowveil:soulforged_obsidian" }
+  }
+}

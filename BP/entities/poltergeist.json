@@ -1,0 +1,56 @@
+{
+  "format_version": "1.20.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "hollowveil:poltergeist",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "properties": {}
+    },
+    "component_groups": {
+      "hollowveil:cg_hidden": { "minecraft:invisible": {} },
+      "hollowveil:cg_visible": {}
+    },
+    "components": {
+      "minecraft:type_family": { "family": ["hollow_veil", "undead", "poltergeist", "mob"] },
+      "minecraft:collision_box": { "width": 0.5, "height": 1.0 },
+      "minecraft:health": { "value": 16, "max": 16 },
+      "minecraft:physics": { "has_gravity": false },
+      "minecraft:pushable": { "is_pushable": false },
+      "minecraft:navigation.fly": { "can_path_over_water": true, "can_pass_doors": false, "can_path_from_air": true, "avoid_water": false },
+      "minecraft:movement.fly": {},
+      "minecraft:movement": { "value": 0.2 },
+      "minecraft:flying_speed": 0.06,
+      "minecraft:despawn": { "despawn_from_distance": {} },
+      "minecraft:persistent": false,
+      "minecraft:behavior.float": { "priority": 0 },
+      "minecraft:behavior.hurt_by_target": { "priority": 1 },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "must_see": false,
+        "within_radius": 16,
+        "entity_types": [ { "filters": { "test": "is_family", "subject": "other", "value": "player" }, "max_dist": 16 } ]
+      },
+      "minecraft:behavior.ranged_attack": { "priority": 3, "attack_interval_min": 2, "attack_interval_max": 4, "attack_radius": 12 },
+      "minecraft:shooter": { "def": "hollowveil:debris_projectile" },
+      "minecraft:behavior.random_fly": { "priority": 6, "xz_dist": 7, "y_dist": 5, "y_offset": 1 },
+      "minecraft:behavior.look_at_player": { "priority": 7 },
+      "minecraft:timer": {
+        "looping": true,
+        "time": [4, 9],
+        "time_down_event": { "event": "hollowveil:toggle_visibility" },
+        "randomInterval": true
+      },
+      "minecraft:loot": { "table": "loot_tables/mobs/poltergeist.json" },
+      "minecraft:experience_reward": { "on_death": "query.last_hit_by_player ? 5 : 0" },
+      "minecraft:nameable": {}
+    },
+    "events": {
+      "minecraft:entity_spawned": { "add": { "component_groups": ["hollowveil:cg_visible"] } },
+      "hollowveil:toggle_visibility": { "randomize": [
+        { "weight": 1, "add": { "component_groups": ["hollowveil:cg_hidden"] }, "remove": { "component_groups": ["hollowveil:cg_visible"] } },
+        { "weight": 1, "add": { "component_groups": ["hollowveil:cg_visible"] }, "remove": { "component_groups": ["hollowveil:cg_hidden"] } }
+      ] }
+    }
+  }
+}
