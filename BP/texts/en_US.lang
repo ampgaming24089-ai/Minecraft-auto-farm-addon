@@ -1,7 +1,7 @@
 ## Hollow Veil - display strings
 
-pack.name=Hallowed Depths - Behavior Pack
-pack.description=Mobs, bosses, items, loot, trading and scripts for the Hallowed Depths dimension.
+pack.name=Hallow Dimension - Behavior Pack
+pack.description=Mobs, bosses, items, loot, trading and scripts for the Hallow Dimension.
 
 itemGroup.name.hollowveil.currency=Hollow Veil Materials
 itemGroup.name.hollowveil.trinkets=Hollow Veil Trinkets

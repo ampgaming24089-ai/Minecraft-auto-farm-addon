@@ -1,30 +1,50 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Depths §7- Behavior Pack",
-    "description": "A ghost & demon dimension: new mobs, 3 bosses, custom armor, trading, quests, and a portal ritual.",
+    "name": "Hallow Dimension §7- Behavior Pack",
+    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallow Dimension.",
     "uuid": "885991b9-2285-453c-88d9-b9caa859c2fc",
-    "version": [1, 0, 0],
-    "min_engine_version": [1, 26, 30]
+    "version": [
+      1,
+      1,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      30
+    ]
   },
   "modules": [
     {
       "type": "data",
       "uuid": "64e7a8dd-cef4-42e5-a82e-9b9ccd145a19",
-      "version": [1, 0, 0]
+      "version": [
+        1,
+        1,
+        0
+      ]
     },
     {
       "type": "script",
       "language": "javascript",
       "uuid": "915cf596-e3c7-4014-978e-df04a7f46861",
       "entry": "scripts/main.js",
-      "version": [1, 0, 0]
+      "version": [
+        1,
+        1,
+        0
+      ]
     }
   ],
   "dependencies": [
     {
       "uuid": "ae6e6ecc-4012-4967-b18f-602b77319602",
-      "version": [1, 0, 0]
+      "version": [
+        1,
+        1,
+        0
+      ]
     },
     {
       "module_name": "@minecraft/server",
@@ -36,7 +56,9 @@
     }
   ],
   "metadata": {
-    "authors": ["Hallowed Depths Team"],
+    "authors": [
+      "Hallow Dimension Team"
+    ],
     "product_type": "addon"
   }
 }

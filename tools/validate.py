@@ -266,6 +266,25 @@ def check_references():
                     err(f"{rel(f)}: references undefined {ident}")
 
 
+# --- 9. the two manifests agree with each other --------------------------
+def check_manifests():
+    bp = json.load(open(os.path.join(BP, "manifest.json")))
+    rp = json.load(open(os.path.join(RP, "manifest.json")))
+    for name, this, other in (("BP", bp, rp), ("RP", rp, bp)):
+        other_uuid = other["header"]["uuid"]
+        other_ver = other["header"]["version"]
+        dep = next((d for d in this.get("dependencies", []) if d.get("uuid") == other_uuid), None)
+        if dep is None:
+            err(f"{name}/manifest.json: no dependency on the other pack ({other_uuid})")
+        elif dep.get("version") != other_ver:
+            # a stale dependency version reads as an unresolved dependency
+            # in-game and the pack cannot be enabled
+            err(f"{name}/manifest.json: dependency version {dep.get('version')} "
+                f"does not match the other pack's header version {other_ver}")
+    if bp["header"]["min_engine_version"] != rp["header"]["min_engine_version"]:
+        warnings.append("BP and RP min_engine_version differ")
+
+
 def main():
     lang = load_lang()
     n_json = check_json()
@@ -276,6 +295,7 @@ def main():
     check_rp_refs()
     check_sounds_particles()
     check_references()
+    check_manifests()
 
     print(f"checked {n_json} JSON files, {n_js} scripts")
     for s in skipped:

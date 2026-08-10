@@ -1,27 +1,45 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Depths §7- Resource Pack",
-    "description": "Textures, models, sounds, atmospherics and UI for the Hallowed Depths ghost & demon dimension.",
+    "name": "Hallow Dimension §7- Resource Pack",
+    "description": "Textures, models, sounds and atmosphere for the Hallow Dimension.",
     "uuid": "ae6e6ecc-4012-4967-b18f-602b77319602",
-    "version": [1, 0, 0],
-    "min_engine_version": [1, 26, 30]
+    "version": [
+      1,
+      1,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      30
+    ]
   },
   "modules": [
     {
       "type": "resources",
       "uuid": "583094e0-638f-4560-8015-ff61a552ec14",
-      "version": [1, 0, 0]
+      "version": [
+        1,
+        1,
+        0
+      ]
     }
   ],
   "dependencies": [
     {
       "uuid": "885991b9-2285-453c-88d9-b9caa859c2fc",
-      "version": [1, 0, 0]
+      "version": [
+        1,
+        1,
+        0
+      ]
     }
   ],
   "metadata": {
-    "authors": ["Hallowed Depths Team"],
+    "authors": [
+      "Hallow Dimension Team"
+    ],
     "product_type": "addon"
   }
 }

@@ -1,4 +1,4 @@
-# Hallowed Depths — a Minecraft Bedrock dimension add-on
+# Hallow Dimension — a Minecraft Bedrock dimension add-on
 
 (packaged/pack-facing name; the dimension is still called "the Hollow Veil"
 in-fiction throughout the story and UI — see `docs/STORY.md`)
@@ -17,7 +17,7 @@ of the story they're built to tell.
 
 ## Install
 
-1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowedDepths.mcaddon`.
+1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowDimension.mcaddon`.
 2. Send that file to a device with Minecraft Bedrock and open it, or copy
    `BP/` and `RP/` directly into your world's
    `com.mojang/development_behavior_packs` / `development_resource_packs`.
