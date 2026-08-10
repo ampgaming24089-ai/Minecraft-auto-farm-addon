@@ -1,12 +1,12 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallow Dimension §7- Resource Pack",
+    "name": "Hallow Dimension v2 §7- Resource Pack",
     "description": "Textures, models, sounds and atmosphere for the Hallow Dimension.",
-    "uuid": "ae6e6ecc-4012-4967-b18f-602b77319602",
+    "uuid": "da0cf01f-a51c-4d87-b44b-34823328adf8",
     "version": [
-      1,
-      1,
+      2,
+      0,
       0
     ],
     "min_engine_version": [
@@ -18,27 +18,27 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "583094e0-638f-4560-8015-ff61a552ec14",
+      "uuid": "0f251285-1535-4d56-89e7-41c4a1143e5e",
       "version": [
-        1,
-        1,
+        2,
+        0,
         0
       ]
     }
   ],
   "dependencies": [
     {
-      "uuid": "885991b9-2285-453c-88d9-b9caa859c2fc",
+      "uuid": "f0806793-e96d-4a61-a128-07ea3e3ed81b",
       "version": [
-        1,
-        1,
+        2,
+        0,
         0
       ]
     }
   ],
   "metadata": {
     "authors": [
-      "Hallow Dimension Team"
+      "Hallow Dimension v2 Team"
     ],
     "product_type": "addon"
   }

@@ -1,12 +1,12 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallow Dimension §7- Behavior Pack",
+    "name": "Hallow Dimension v2 §7- Behavior Pack",
     "description": "Mobs, bosses, items, loot, trading and scripts for the Hallow Dimension.",
-    "uuid": "885991b9-2285-453c-88d9-b9caa859c2fc",
+    "uuid": "f0806793-e96d-4a61-a128-07ea3e3ed81b",
     "version": [
-      1,
-      1,
+      2,
+      0,
       0
     ],
     "min_engine_version": [
@@ -18,31 +18,31 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "64e7a8dd-cef4-42e5-a82e-9b9ccd145a19",
+      "uuid": "72f17a26-4315-4da5-bd56-726b955baae4",
       "version": [
-        1,
-        1,
+        2,
+        0,
         0
       ]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "915cf596-e3c7-4014-978e-df04a7f46861",
+      "uuid": "36d910e6-19c8-4464-8aaa-e878ad5775bc",
       "entry": "scripts/main.js",
       "version": [
-        1,
-        1,
+        2,
+        0,
         0
       ]
     }
   ],
   "dependencies": [
     {
-      "uuid": "ae6e6ecc-4012-4967-b18f-602b77319602",
+      "uuid": "da0cf01f-a51c-4d87-b44b-34823328adf8",
       "version": [
-        1,
-        1,
+        2,
+        0,
         0
       ]
     },
@@ -57,7 +57,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallow Dimension Team"
+      "Hallow Dimension v2 Team"
     ],
     "product_type": "addon"
   }

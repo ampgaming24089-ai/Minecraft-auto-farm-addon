@@ -329,6 +329,28 @@ def check_manifests():
     if bp["header"]["min_engine_version"] != rp["header"]["min_engine_version"]:
         warnings.append("BP and RP min_engine_version differ")
 
+    # Every UUID in both manifests must be distinct. A repeated one makes the
+    # game reject the import as a duplicate pack.
+    seen = {}
+    for side, man in (("BP", bp), ("RP", rp)):
+        entries = [(f"{side} header", man["header"]["uuid"])]
+        entries += [(f"{side} {m['type']} module", m["uuid"]) for m in man["modules"]]
+        for label, u in entries:
+            if u in seen:
+                err(f"duplicate UUID {u} used by both {seen[u]} and {label}")
+            seen[u] = label
+
+    # These shipped in earlier builds. Reusing one is what produced the
+    # "Duplicate pack detected" error on import, so they are now banned.
+    RETIRED = {
+        "885991b9-2285-453c-88d9-b9caa859c2fc", "64e7a8dd-cef4-42e5-a82e-9b9ccd145a19",
+        "915cf596-e3c7-4014-978e-df04a7f46861", "ae6e6ecc-4012-4967-b18f-602b77319602",
+        "583094e0-638f-4560-8015-ff61a552ec14",
+    }
+    for u, label in seen.items():
+        if u in RETIRED:
+            err(f"{label} reuses a previously published UUID ({u}) - imports will collide")
+
 
 def main():
     lang = load_lang()
