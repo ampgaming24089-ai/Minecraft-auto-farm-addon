@@ -11,6 +11,9 @@ import { registerDragonEgg } from "./items/dragon.js";
 import { startArmorSetBonuses } from "./armor/setBonuses.js";
 import { registerShop } from "./ui/shop.js";
 import { startAmbience } from "./mobs/ambience.js";
+import { startTerrainStreaming } from "./world/terrain.js";
+import { startSiteBuilding } from "./world/sites.js";
+import { startAtmosphere } from "./world/atmosphere.js";
 
 // Custom dimensions must be registered during the restricted "startup"
 // phase - see docs/DIMENSION.md for why this replaced the old static
@@ -46,6 +49,9 @@ for (const [name, fn] of [
   ["wraith phasing", startWraithPhasing],
   ["mob spawner", startMobSpawner],
   ["structure spawners", startStructureSpawners],
+  ["terrain streaming", startTerrainStreaming],
+  ["site building", startSiteBuilding],
+  ["atmosphere", startAtmosphere],
   ["ambience", startAmbience],
   ["passive item effects", startPassiveItemEffects],
   ["armor set bonuses", startArmorSetBonuses],

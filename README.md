@@ -33,9 +33,10 @@ of the story they're built to tell.
 ## What's in it
 
 - **The Hollow Veil dimension** (`hollowveil:hollow_veil`) — a custom
-  dimension registered via the Script API, with a hand-built island
-  (terrain, ore veins, altars, village) raised the first time anyone
-  arrives, since custom dimensions start as an empty void. `docs/DIMENSION.md`.
+  dimension registered via the Script API. It starts as an empty void, so
+  every block is placed by this addon: the hub (village + altars) is raised
+  on first arrival and the rest of the 512-radius world streams in around
+  players as they explore. `docs/DIMENSION.md`, `docs/WORLD.md`.
 - **Getting there** — build a 4-wide-by-5-tall frame (or bigger, up to
   nether-portal-sized) out of `Iron Blocks`, light it with a
   `Soulfire Igniter` (soul sand + iron ingot instead of flint's flint +
@@ -51,8 +52,11 @@ of the story they're built to tell.
   Fallen Knight (periodically shields, refunding half the damage it takes
   while up), Soul Wisp (passive light/currency source that flees).
   `BP/entities/`, `BP/scripts/mobs/abilities.js`.
-- **3 bosses**, each with 3 health-gated phases, add-summoning, a signature
-  AoE ability, a native Bedrock boss health bar, and a **guaranteed**
+- **3 escalating boss fights**, each with 3 health-gated phases. Every
+  phase change fires a knockback shockwave, summons a bigger ring of adds
+  than the last, and tightens the boss's ability cadence (to 45% of its
+  base interval by phase 3); the final phase enrages the boss with speed,
+  strength and resistance. Each has a signature AoE ability, a native Bedrock boss health bar, and a **guaranteed**
   unique sword + full armor set drop (no RNG on the unique items - only
   bonus currency rolls): the Hollow King, the Weeping Widow, Malacoda the
   Ashen Demon. `BP/entities/`, `BP/scripts/bosses/`.
@@ -80,25 +84,41 @@ of the story they're built to tell.
   resistance + damage resistance). `BP/scripts/armor/setBonuses.js`.
 - **World atmosphere** ("the shader ask"): what Bedrock add-ons can
   actually ship instead of a real shader pack, and why. `docs/SHADER.md`.
-- **4 themed regions + 2 landmark structures**: the island splits into
-  Ashlands, the Ember Bastion territory, Boneyard Marsh and the Sunken
-  Ruins around a neutral core, each with its own ground palette and mob
-  roster; the Ember Bastion and Sunken City are hand-built fortress/ruin
-  structures with loot chests and spawner blocks. `docs/WORLD.md`.
+- **A 512-radius streaming world** — the old fixed 90-block island is gone.
+  Terrain is generated one 32x32 sector at a time around players and
+  persisted, so the world is ~130x bigger without the load spike that
+  building it up front would cause. `docs/WORLD.md`,
+  `BP/scripts/world/terrain.js`.
+- **4 noise-shaped biomes**, each with its own ground, features, fog and
+  mob roster: the Grave Moors (headstones, dead trees, wraiths), the
+  Ashlands (blackstone, magma vents, hellhounds), the Boneyard Marsh
+  (mud, pools, glimmershrooms, elk) and the Sunken Ruins (drowned
+  stonework, wraithguards). Coverage is roughly even and borders are
+  irregular, so exploring crosses territory instead of quadrants.
+  `BP/scripts/world/biomes.js`.
+- **76 randomly-placed landmarks** across 10 types — graveyards,
+  mausoleums, watchtowers, ember bastions, camps, bone nests, huts,
+  drowned cities, arches, and crypts with stairs down to a buried loot
+  room. Each is filtered to its biome, spaced apart, and built when you
+  get near it. `BP/scripts/world/sites.js`.
+- **Per-biome fog and a dark palette** — each biome pushes its own fog
+  definition via the `/fog` command as you cross into it, all of them dark
+  and close, with natural light kept deliberately scarce.
+  `BP/scripts/world/atmosphere.js`, `RP/fogs/`.
 - **7 more mobs**: 3 passive (Ashwing Bat, Bonehide Elk, Glimmershroom
   Toad — real resources, not just scenery) and 4 hostile (Bastion
   Sentinel, City Wraithguard, Marrow Crawler, Ashen Whelp), each dropping
   materials that feed specific new recipes (veilsteel tools, Featherfall
   Charm, Veil Marrow Stew). `BP/entities/`.
-- **Custom spawner blocks** guard both structures — a script-driven
+- **Custom spawner blocks** guard the landmarks — a script-driven
   equivalent of vanilla monster spawners, since a script-registered void
   dimension has no world-gen pass to place real ones in.
   `BP/scripts/world/spawners.js`.
 - **A three-tier ore chain plus food/fuel**: Wraithsteel (diamond-equivalent,
   lava-orange), Veilsteel (netherite-equivalent, black with a blue sheen),
   and Hollowforged Steel (exceeds netherite, white with glowing red
-  cracks — the rarest material in the Veil, five single-block deposits on
-  the bedrock floor per world) as mineable ore tiers, Ember Coal as a
+  cracks — the rarest material in the Veil, gated behind an extra rarity
+  roll on top of an already-low per-sector count) as mineable ore tiers, Ember Coal as a
   longer-burning fuel, plus Ember Fruit and Veil Marrow Stew as
   dimension-native food.
 - **Tameable, rideable Veil Dragons** in 6 colors — hatch a `Dragon Egg`
@@ -172,11 +192,14 @@ not depend on the art and work identically either way.
     the place to add write-up once it's been tested in-game.
 - No hand-authored `.mcstructure` boss rooms yet — procedural rooms work
   but a decorator's pass would look much better (`docs/STRUCTURES.md`).
-- Bone animation is a shared generic idle-sway/walk-cycle pair
-  (`RP/animations/hv_generic.animation.json`, `tools/gen_animations.py`)
-  applied to every entity's bones by name, not bespoke per-creature
-  animation. It reads as alive at a glance instead of a static "blank
-  outline"; a hand-keyframed pass per entity would still look better.
+- Bone animation is per-archetype, not per-creature: six sets (ghost,
+  biped, quadruped, crawler, winged, boss) in
+  `RP/animations/hv_generic.animation.json`, assigned by
+  `tools/gen_animations.py`. A ghost drifts and trails its hem, a hound
+  trots on diagonal legs, a crawler runs a wave down six legs, wings beat
+  on a time-driven flap so they move while hovering, and bosses move slow
+  and heavy. Creatures sharing an archetype still share motion, and there
+  are no per-mob attack/hurt clips yet — that is the next step.
 - Per-mob ambient/hurt/death sound hookups aren't wired individually;
   only the scripted ability SFX (scream, portal, buffet, etc.) play.
 - The dimension's default biome guess (`minecraft:the_void` in

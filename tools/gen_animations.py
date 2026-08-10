@@ -1,24 +1,19 @@
 #!/usr/bin/env python3
 """
-Generates one shared idle/walk animation pair and wires it into every
-living-mob entity file, so mobs stop being static "blank outline" models.
+Generates per-archetype bone animations and wires each entity to the set
+that matches how it actually moves.
 
-Bone names vary a lot across this pack's roster (humanoid arm_l/arm_r vs
-left_arm/right_arm, quadruped leg_fl/fr/bl/br, crawler leg1_l/leg2_l/...,
-wings, tails, accessory bones like horns/antlers/ears/pauldrons/cloaks). A
-single shared animation file just lists every bone name any entity in the
-roster uses; Bedrock silently ignores bone names an entity's geometry
-doesn't have (this is the same mechanism vanilla uses to share one
-"humanoid" animation set across differently-rigged mobs), so one generic
-pair works for all of them without per-entity authoring.
+There used to be exactly one shared idle + walk pair applied to every
+creature, so a ghost, a hound, a spider and a dragon all moved identically -
+which is why the roster read as "little to no unique animations". Now each
+entity is assigned an archetype (ghost / biped / quadruped / crawler /
+winged / boss), and each archetype gets its own idle and locomotion clips
+built from its own bone list.
 
-Verified against Mojang's bedrock-samples: spider.animation.json for the
-anim_time_update + math.sin(query.anim_time * ...) leg-swing pattern, and
-fox.animation.json for a plain query.anim_time idle sway with no
-anim_time_update override (defaults to real elapsed seconds). The
-description.animations / scripts.animate wiring mirrors horse_v2 and
-chicken.animation.json (mixing unconditional and {name: condition} entries
-in the same array).
+Bone names still vary across the roster, and Bedrock ignores animation
+entries for bones a model doesn't have - the same mechanism vanilla uses to
+share one humanoid animation set across differently-rigged mobs - so an
+archetype clip can safely list every naming variant.
 
 Run with: python3 tools/gen_animations.py
 """
@@ -28,109 +23,190 @@ import os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RP = os.path.join(ROOT, "RP")
 
-# Entities that are projectiles, not living mobs - no idle/walk motion.
-SKIP_ENTITIES = {"debris_projectile", "imp_fireball"}
+# Entities that are projectiles, not creatures.
+SKIP = {"debris_projectile", "imp_fireball"}
 
-IDLE_BONES = {}
-WALK_BONES = {}
+ARCHETYPE = {
+    # drift, never touch the ground, no leg cycle at all
+    "wraith": "ghost", "banshee": "ghost", "poltergeist": "ghost",
+    "shade": "ghost", "soul_wisp": "ghost", "city_wraithguard": "ghost",
+    # walk on two legs, swing arms
+    "fallen_knight": "biped", "bastion_sentinel": "biped",
+    "occultist": "biped", "imp": "biped",
+    # four legs, diagonal trot
+    "hellhound": "quadruped", "bonehide_elk": "quadruped",
+    "glimmershroom_toad": "quadruped",
+    # many legs, travelling wave
+    "marrow_crawler": "crawler",
+    # wings do the work
+    "ashwing_bat": "winged", "ashen_whelp": "winged", "veil_dragon": "winged",
+    # bosses get their own heavier, slower presence
+    "hollow_king": "boss", "weeping_widow": "boss", "malacoda": "boss",
+}
+DEFAULT_ARCHETYPE = "biped"
 
-
-def idle(name, expr_by_axis):
-    IDLE_BONES.setdefault(name, {}).update(expr_by_axis)
-
-
-def walk(name, expr_by_axis):
-    WALK_BONES.setdefault(name, {}).update(expr_by_axis)
-
-
-# --- head: a slow nod ------------------------------------------------------
-idle("head", {"rotation": ["math.sin(query.anim_time * 30.0) * 4.0", 0.0, 0.0]})
-
-# --- root bones: gentle breathing bob --------------------------------------
-for root in ("body", "base", "core", "legs"):
-    idle(root, {"position": [0.0, "math.sin(query.anim_time * 40.0) * 0.4", 0.0]})
-
-# --- secondary torso-ish bones: slight sway --------------------------------
-for i, name in enumerate(("torso", "hair", "veil", "dress", "hood_back", "staff", "neck")):
-    phase = i * 25
-    idle(name, {"rotation": [0.0, 0.0, f"math.sin(query.anim_time * 14.0 + {phase}) * 2.5"]})
-
-# --- triple accessory sets (cloak_a/b/c, crown_a/b/c): staggered sway ------
-for group in ("cloak", "crown"):
-    for i, suffix in enumerate("abc"):
-        phase = i * 40
-        idle(f"{group}_{suffix}", {"rotation": [0.0, 0.0, f"math.sin(query.anim_time * 12.0 + {phase}) * 3.0"]})
-
-# --- arm pairs: idle sway, walk counter-swing with the legs ----------------
-ARM_PAIRS = [("left_arm", "right_arm"), ("arm_l", "arm_r"), ("spider_arm_l", "spider_arm_r")]
-for left, right in ARM_PAIRS:
-    idle(left, {"rotation": [0.0, 0.0, "math.sin(query.anim_time * 25.0) * 3.0"]})
-    idle(right, {"rotation": [0.0, 0.0, "-math.sin(query.anim_time * 25.0) * 3.0"]})
-    walk(left, {"rotation": ["-math.sin(query.anim_time * 38.17) * 15.0", 0.0, 0.0]})
-    walk(right, {"rotation": ["math.sin(query.anim_time * 38.17) * 15.0", 0.0, 0.0]})
-
-# --- simple biped leg pair: idle weight-shift, walk full swing ------------
-idle("leg_l", {"rotation": ["math.sin(query.anim_time * 18.0) * 2.0", 0.0, 0.0]})
-idle("leg_r", {"rotation": ["-math.sin(query.anim_time * 18.0) * 2.0", 0.0, 0.0]})
-walk("leg_l", {"rotation": ["math.sin(query.anim_time * 38.17) * 25.0", 0.0, 0.0]})
-walk("leg_r", {"rotation": ["-math.sin(query.anim_time * 38.17) * 25.0", 0.0, 0.0]})
-
-# --- quadruped legs: still at idle, diagonal trot gait on walk ------------
-walk("leg_fl", {"rotation": ["math.sin(query.anim_time * 38.17) * 22.0", 0.0, 0.0]})
-walk("leg_br", {"rotation": ["math.sin(query.anim_time * 38.17) * 22.0", 0.0, 0.0]})
-walk("leg_fr", {"rotation": ["-math.sin(query.anim_time * 38.17) * 22.0", 0.0, 0.0]})
-walk("leg_bl", {"rotation": ["-math.sin(query.anim_time * 38.17) * 22.0", 0.0, 0.0]})
-
-# --- many-legged crawler: still at idle, spider-style wave gait on walk ---
-for i in range(1, 4):
-    phase = (i - 1) * 90
-    walk(f"leg{i}_l", {"rotation": [f"math.sin(query.anim_time * 38.17 + {phase}) * 20.0", 0.0, 0.0]})
-    walk(f"leg{i}_r", {"rotation": [f"-math.sin(query.anim_time * 38.17 + {phase}) * 20.0", 0.0, 0.0]})
-
-# --- tails: a slow, slightly out-of-phase sway -----------------------------
-idle("tail", {"rotation": ["math.sin(query.anim_time * 16.0) * 6.0", 0.0, 0.0]})
-idle("tail1", {"rotation": ["math.sin(query.anim_time * 16.0) * 6.0", 0.0, 0.0]})
-idle("tail2", {"rotation": ["math.sin(query.anim_time * 16.0 - 30.0) * 8.0", 0.0, 0.0]})
-
-# --- wings: a slow resting flap, not a full flight flap --------------------
-idle("wing_l", {"rotation": [0.0, 0.0, "math.sin(query.anim_time * 20.0) * 4.0"]})
-idle("wing_r", {"rotation": [0.0, 0.0, "-math.sin(query.anim_time * 20.0) * 4.0"]})
-
-# --- small paired accessories: a subtle twitch -----------------------------
-ACCESSORY_PAIRS = [
-    ("ear_l", "ear_r"), ("antler_l", "antler_r"), ("horn_l", "horn_r"),
-    ("fang_l", "fang_r"), ("eye_l", "eye_r"), ("pauldron_l", "pauldron_r"),
-]
-for left, right in ACCESSORY_PAIRS:
-    idle(left, {"rotation": [0.0, 0.0, "math.sin(query.anim_time * 15.0) * 2.0"]})
-    idle(right, {"rotation": [0.0, 0.0, "-math.sin(query.anim_time * 15.0) * 2.0"]})
-
-# --- helm spike: tiny bob ---------------------------------------------------
-idle("helm_spike", {"position": [0.0, "math.sin(query.anim_time * 18.0) * 0.2", 0.0]})
-
-# --- floating motes/debris (soul_wisp, poltergeist): orbiting bob ---------
-for i, name in enumerate(("t1", "t2", "t3", "debris1", "debris2", "debris3")):
-    phase = i * 120
-    idle(name, {"position": [0.0, f"math.sin(query.anim_time * 25.0 + {phase}) * 3.0", 0.0]})
+ARM_PAIRS = [("left_arm", "right_arm"), ("arm_l", "arm_r")]
+LEG_PAIRS = [("leg_l", "leg_r")]
+QUAD_LEGS = [("leg_fl", "leg_br"), ("leg_fr", "leg_bl")]  # diagonal pairs
+ROOTS = ("body", "base", "core", "legs", "dress")
+HEADS = ("head",)
 
 
-def gen_animation_file():
-    data = {
-        "format_version": "1.10.0",
-        "animations": {
-            "animation.hv.idle": {"loop": True, "bones": IDLE_BONES},
-            "animation.hv.walk": {
-                "loop": True,
-                "anim_time_update": "query.modified_distance_moved",
-                "bones": WALK_BONES,
-            },
-        },
-    }
+def sin(expr, amp, phase=0.0, t="query.anim_time"):
+    ph = f" + {phase}" if phase else ""
+    return f"math.sin({t} * {expr}{ph}) * {amp}"
+
+
+def build():
+    anims = {}
+
+    # ---- ghost: slow vertical drift, gentle roll, trailing hem ----------
+    idle = {}
+    for r in ROOTS:
+        idle[r] = {"position": [0.0, sin(28.0, 1.6), 0.0],
+                   "rotation": [0.0, sin(11.0, 3.0), 0.0]}
+    idle["head"] = {"rotation": [sin(24.0, 5.0), 0.0, 0.0]}
+    for l, r in ARM_PAIRS:
+        idle[l] = {"rotation": [sin(20.0, 6.0), 0.0, sin(16.0, 8.0)]}
+        idle[r] = {"rotation": [sin(20.0, 6.0, 40), 0.0, f"-{sin(16.0, 8.0)}"]}
+    for n in ("tail", "hair", "veil", "cloak_a", "cloak_b", "cloak_c", "t1", "t2", "t3"):
+        idle[n] = {"rotation": [sin(18.0, 9.0), 0.0, 0.0]}
+    anims["animation.hv.ghost.idle"] = {"loop": True, "bones": idle}
+    # moving: lean into the drift, hem streams back
+    move = {}
+    for r in ROOTS:
+        move[r] = {"rotation": [-8.0, 0.0, 0.0], "position": [0.0, sin(46.0, 2.2), 0.0]}
+    for n in ("tail", "hair", "veil", "cloak_a", "cloak_b", "cloak_c"):
+        move[n] = {"rotation": [f"22.0 + {sin(40.0, 8.0)}", 0.0, 0.0]}
+    anims["animation.hv.ghost.move"] = {
+        "loop": True, "anim_time_update": "query.modified_distance_moved", "bones": move}
+
+    # ---- biped: arm/leg counter-swing ----------------------------------
+    idle = {r: {"position": [0.0, sin(38.0, 0.35), 0.0]} for r in ROOTS}
+    idle["head"] = {"rotation": [sin(26.0, 4.0), sin(9.0, 6.0), 0.0]}
+    for l, r in ARM_PAIRS:
+        idle[l] = {"rotation": [0.0, 0.0, sin(22.0, 3.0)]}
+        idle[r] = {"rotation": [0.0, 0.0, f"-{sin(22.0, 3.0)}"]}
+    for n in ("pauldron_l", "pauldron_r", "staff", "tail"):
+        idle[n] = {"rotation": [0.0, 0.0, sin(18.0, 2.5)]}
+    anims["animation.hv.biped.idle"] = {"loop": True, "bones": idle}
+    move = {}
+    for l, r in ARM_PAIRS:
+        move[l] = {"rotation": [sin(38.17, -38.0), 0.0, 0.0]}
+        move[r] = {"rotation": [sin(38.17, 38.0), 0.0, 0.0]}
+    for l, r in LEG_PAIRS:
+        move[l] = {"rotation": [sin(38.17, 42.0), 0.0, 0.0]}
+        move[r] = {"rotation": [sin(38.17, -42.0), 0.0, 0.0]}
+    for r in ROOTS:
+        move[r] = {"position": [0.0, f"math.abs({sin(76.34, 0.9)})", 0.0]}
+    anims["animation.hv.biped.move"] = {
+        "loop": True, "anim_time_update": "query.modified_distance_moved", "bones": move}
+
+    # ---- quadruped: diagonal trot, head bob ----------------------------
+    idle = {r: {"position": [0.0, sin(30.0, 0.3), 0.0]} for r in ROOTS}
+    idle["head"] = {"rotation": [sin(20.0, 5.0), 0.0, 0.0]}
+    idle["tail"] = {"rotation": [0.0, sin(26.0, 12.0), 0.0]}
+    for n in ("ear_l", "antler_l", "eye_l"):
+        idle[n] = {"rotation": [0.0, 0.0, sin(17.0, 4.0)]}
+    for n in ("ear_r", "antler_r", "eye_r"):
+        idle[n] = {"rotation": [0.0, 0.0, f"-{sin(17.0, 4.0)}"]}
+    anims["animation.hv.quadruped.idle"] = {"loop": True, "bones": idle}
+    move = {}
+    for a, b in QUAD_LEGS:
+        move[a] = {"rotation": [sin(38.17, 40.0), 0.0, 0.0]}
+        move[b] = {"rotation": [sin(38.17, 40.0), 0.0, 0.0]}
+    move["leg_fr"] = {"rotation": [sin(38.17, -40.0), 0.0, 0.0]}
+    move["leg_bl"] = {"rotation": [sin(38.17, -40.0), 0.0, 0.0]}
+    for r in ROOTS:
+        move[r] = {"position": [0.0, f"math.abs({sin(76.34, 1.1)})", 0.0],
+                   "rotation": [sin(76.34, 3.0), 0.0, 0.0]}
+    move["head"] = {"rotation": [sin(76.34, 7.0), 0.0, 0.0]}
+    move["tail"] = {"rotation": [sin(38.17, 16.0), 0.0, 0.0]}
+    anims["animation.hv.quadruped.move"] = {
+        "loop": True, "anim_time_update": "query.modified_distance_moved", "bones": move}
+
+    # ---- crawler: travelling wave down the legs, low skittering body ----
+    idle = {r: {"position": [0.0, sin(44.0, 0.25), 0.0]} for r in ROOTS}
+    for i in range(1, 4):
+        idle[f"leg{i}_l"] = {"rotation": [0.0, 0.0, sin(30.0, 4.0, i * 60)]}
+        idle[f"leg{i}_r"] = {"rotation": [0.0, 0.0, f"-{sin(30.0, 4.0, i * 60)}"]}
+    idle["fang_l"] = {"rotation": [0.0, sin(50.0, 6.0), 0.0]}
+    idle["fang_r"] = {"rotation": [0.0, f"-{sin(50.0, 6.0)}", 0.0]}
+    anims["animation.hv.crawler.idle"] = {"loop": True, "bones": idle}
+    move = {}
+    for i in range(1, 4):
+        ph = (i - 1) * 120
+        move[f"leg{i}_l"] = {"rotation": [sin(76.34, 26.0, ph), 0.0, sin(76.34, 16.0, ph)]}
+        move[f"leg{i}_r"] = {"rotation": [sin(76.34, 26.0, ph + 180), 0.0, f"-{sin(76.34, 16.0, ph + 180)}"]}
+    for r in ROOTS:
+        move[r] = {"position": [0.0, f"math.abs({sin(152.0, 0.6)})", 0.0],
+                   "rotation": [0.0, sin(76.34, 4.0), 0.0]}
+    anims["animation.hv.crawler.move"] = {
+        "loop": True, "anim_time_update": "query.modified_distance_moved", "bones": move}
+
+    # ---- winged: real flap, driven by time (not distance) so it beats
+    # while hovering too ------------------------------------------------
+    idle = {}
+    idle["wing_l"] = {"rotation": [0.0, 0.0, sin(110.0, 34.0)]}
+    idle["wing_r"] = {"rotation": [0.0, 0.0, f"-{sin(110.0, 34.0)}"]}
+    for r in ROOTS:
+        idle[r] = {"position": [0.0, sin(110.0, 1.1, 90), 0.0]}
+    idle["head"] = {"rotation": [sin(30.0, 5.0), 0.0, 0.0]}
+    idle["neck"] = {"rotation": [sin(26.0, 4.0), 0.0, 0.0]}
+    for n in ("tail", "tail1"):
+        idle[n] = {"rotation": [sin(24.0, 8.0), 0.0, 0.0]}
+    idle["tail2"] = {"rotation": [sin(24.0, 11.0, 40), 0.0, 0.0]}
+    for n in ("leg_fl", "leg_fr", "leg_bl", "leg_br"):
+        idle[n] = {"rotation": [22.0, 0.0, 0.0]}  # tucked while airborne
+    anims["animation.hv.winged.idle"] = {"loop": True, "bones": idle}
+    move = {}
+    move["wing_l"] = {"rotation": [0.0, 0.0, sin(150.0, 52.0)]}
+    move["wing_r"] = {"rotation": [0.0, 0.0, f"-{sin(150.0, 52.0)}"]}
+    for r in ROOTS:
+        move[r] = {"rotation": [-10.0, 0.0, 0.0]}
+    move["neck"] = {"rotation": [8.0, 0.0, 0.0]}
+    anims["animation.hv.winged.move"] = {"loop": True, "bones": move}
+
+    # ---- boss: slow, heavy, deliberate ---------------------------------
+    idle = {}
+    for r in ROOTS:
+        idle[r] = {"position": [0.0, sin(16.0, 1.2), 0.0], "rotation": [0.0, sin(7.0, 2.0), 0.0]}
+    idle["head"] = {"rotation": [sin(14.0, 4.0), sin(6.0, 9.0), 0.0]}
+    idle["torso"] = {"rotation": [0.0, sin(9.0, 3.0), 0.0]}
+    for l, r in ARM_PAIRS:
+        idle[l] = {"rotation": [sin(12.0, 5.0), 0.0, f"6.0 + {sin(10.0, 4.0)}"]}
+        idle[r] = {"rotation": [sin(12.0, 5.0, 60), 0.0, f"-6.0 - {sin(10.0, 4.0)}"]}
+    for n in ("cloak_a", "cloak_b", "cloak_c", "dress", "veil", "tail"):
+        idle[n] = {"rotation": [sin(10.0, 7.0), 0.0, 0.0]}
+    for n in ("crown_a", "crown_b", "crown_c", "horn_l", "horn_r"):
+        idle[n] = {"rotation": [0.0, 0.0, sin(13.0, 2.0)]}
+    idle["wing_l"] = {"rotation": [0.0, 0.0, sin(34.0, 16.0)]}
+    idle["wing_r"] = {"rotation": [0.0, 0.0, f"-{sin(34.0, 16.0)}"]}
+    idle["spider_arm_l"] = {"rotation": [sin(20.0, 10.0), 0.0, 0.0]}
+    idle["spider_arm_r"] = {"rotation": [sin(20.0, 10.0, 90), 0.0, 0.0]}
+    anims["animation.hv.boss.idle"] = {"loop": True, "bones": idle}
+    move = {}
+    for l, r in ARM_PAIRS:
+        move[l] = {"rotation": [sin(24.0, -26.0), 0.0, 0.0]}
+        move[r] = {"rotation": [sin(24.0, 26.0), 0.0, 0.0]}
+    for l, r in LEG_PAIRS:
+        move[l] = {"rotation": [sin(24.0, 30.0), 0.0, 0.0]}
+        move[r] = {"rotation": [sin(24.0, -30.0), 0.0, 0.0]}
+    for r in ROOTS:
+        move[r] = {"position": [0.0, f"math.abs({sin(48.0, 1.6)})", 0.0]}
+    anims["animation.hv.boss.move"] = {
+        "loop": True, "anim_time_update": "query.modified_distance_moved", "bones": move}
+
+    return anims
+
+
+def write_animation_file(anims):
+    data = {"format_version": "1.10.0", "animations": anims}
     p = os.path.join(RP, "animations", "hv_generic.animation.json")
     os.makedirs(os.path.dirname(p), exist_ok=True)
     with open(p, "w") as f:
         json.dump(data, f, indent=2)
-    print("wrote", p)
+    print(f"wrote {len(anims)} animations across {len(set(ARCHETYPE.values()))} archetypes")
 
 
 def wire_entities():
@@ -139,22 +215,26 @@ def wire_entities():
     for fname in sorted(os.listdir(entity_dir)):
         if not fname.endswith(".entity.json"):
             continue
-        identifier = fname[: -len(".entity.json")]
-        if identifier in SKIP_ENTITIES:
+        ident = fname[: -len(".entity.json")]
+        if ident in SKIP:
             continue
+        arch = ARCHETYPE.get(ident, DEFAULT_ARCHETYPE)
         p = os.path.join(entity_dir, fname)
         with open(p) as f:
             data = json.load(f)
         desc = data["minecraft:client_entity"]["description"]
-        desc["animations"] = {"idle": "animation.hv.idle", "walk": "animation.hv.walk"}
+        desc["animations"] = {
+            "idle": f"animation.hv.{arch}.idle",
+            "move": f"animation.hv.{arch}.move",
+        }
         scripts = desc.setdefault("scripts", {})
-        scripts["animate"] = ["idle", {"walk": "query.modified_move_speed > 0.05"}]
+        scripts["animate"] = ["idle", {"move": "query.modified_move_speed > 0.05"}]
         with open(p, "w") as f:
             json.dump(data, f, indent=2)
         count += 1
-    print(f"wired idle/walk animations into {count} entities")
+    print(f"wired archetype animations into {count} entities")
 
 
 if __name__ == "__main__":
-    gen_animation_file()
+    write_animation_file(build())
     wire_entities()

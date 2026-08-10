@@ -9,45 +9,47 @@ import { HOLLOW_VEIL, isWithinIsland, regionAt } from "../world/build.js";
 // Tables are keyed per region (see world/build.js regionAt) so each
 // quadrant actually feels distinct, not just re-painted ground.
 const REGION_TABLES = {
-  misty: [
-    { id: "hollowveil:wraith", weight: 18 },
-    { id: "hollowveil:banshee", weight: 8 },
+  // One roster per biome (see world/biomes.js). Every biome has mobs that
+  // are only common there, so which territory you are standing in is
+  // readable from what is hunting you.
+  hub: [
+    { id: "hollowveil:soul_wisp", weight: 20 },
+    { id: "hollowveil:wraith", weight: 6 },
+  ],
+  moors: [
+    { id: "hollowveil:wraith", weight: 20 },
+    { id: "hollowveil:banshee", weight: 14 },
+    { id: "hollowveil:shade", weight: 12 },
     { id: "hollowveil:poltergeist", weight: 12 },
-    { id: "hollowveil:shade", weight: 10 },
-    { id: "hollowveil:fallen_knight", weight: 3 },
-    { id: "hollowveil:soul_wisp", weight: 16 },
+    { id: "hollowveil:fallen_knight", weight: 5 },
+    { id: "hollowveil:soul_wisp", weight: 8 },
   ],
   ashlands: [
-    { id: "hollowveil:hellhound", weight: 14 },
-    { id: "hollowveil:imp", weight: 14 },
-    { id: "hollowveil:ashen_whelp", weight: 12 },
-    { id: "hollowveil:soul_wisp", weight: 4 },
-  ],
-  bastion: [
-    { id: "hollowveil:hellhound", weight: 10 },
-    { id: "hollowveil:imp", weight: 10 },
-    { id: "hollowveil:ashen_whelp", weight: 8 },
+    { id: "hollowveil:hellhound", weight: 18 },
+    { id: "hollowveil:imp", weight: 16 },
+    { id: "hollowveil:ashen_whelp", weight: 14 },
+    { id: "hollowveil:bastion_sentinel", weight: 6 },
   ],
   marsh: [
-    { id: "hollowveil:bonehide_elk", weight: 16 },
+    { id: "hollowveil:bonehide_elk", weight: 18 },
     { id: "hollowveil:glimmershroom_toad", weight: 18 },
-    { id: "hollowveil:poltergeist", weight: 5 },
+    { id: "hollowveil:marrow_crawler", weight: 14 },
+    { id: "hollowveil:ashwing_bat", weight: 10 },
   ],
   ruins: [
-    { id: "hollowveil:ashwing_bat", weight: 16 },
-    { id: "hollowveil:marrow_crawler", weight: 12 },
-    { id: "hollowveil:shade", weight: 10 },
-    { id: "hollowveil:wraith", weight: 8 },
+    { id: "hollowveil:city_wraithguard", weight: 16 },
+    { id: "hollowveil:ashwing_bat", weight: 14 },
+    { id: "hollowveil:shade", weight: 12 },
+    { id: "hollowveil:fallen_knight", weight: 8 },
   ],
-};
-const NEARBY_CAP = 10;
+};const NEARBY_CAP = 14;
 const NEARBY_RADIUS = 32;
 const MIN_SPAWN_DIST = 16;
 const MAX_SPAWN_DIST = 28;
 const VILLAGE_SAFE_RADIUS = 24;
 
 function pickMob(region) {
-  const table = REGION_TABLES[region] ?? REGION_TABLES.misty;
+  const table = REGION_TABLES[region] ?? REGION_TABLES.hub;
   const total = table.reduce((s, m) => s + m.weight, 0);
   let roll = Math.random() * total;
   for (const m of table) {

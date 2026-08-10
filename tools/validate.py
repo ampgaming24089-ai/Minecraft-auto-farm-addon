@@ -266,6 +266,51 @@ def check_references():
                     err(f"{rel(f)}: references undefined {ident}")
 
 
+# --- 9b. geometry is box-UV safe and matches its texture size ------------
+def check_geometry():
+    from PIL import Image  # only needed here; keep the rest import-light
+    for f in sorted(glob.glob(f"{RP}/models/entity/*.geo.json")):
+        for g in json.load(open(f))["minecraft:geometry"]:
+            ident = g["description"]["identifier"]
+            tw = g["description"].get("texture_width")
+            th = g["description"].get("texture_height")
+            for b in g["bones"]:
+                for c in b.get("cubes", []):
+                    size = c["size"]
+                    # Box UV paints whole pixels but Minecraft maps UVs from
+                    # the cube's real size, so a fractional size samples a
+                    # region that was never painted -> smeared texture.
+                    if any(abs(v - round(v)) > 1e-6 for v in size):
+                        err(f"{ident}: bone {b['name']} has non-integer cube size {size} (box-UV texture drift)")
+                    if min(size) <= 0:
+                        err(f"{ident}: bone {b['name']} has degenerate cube size {size}")
+            name = os.path.basename(f).replace(".geo.json", "")
+            png = os.path.join(RP, "textures", "entity", f"{name}.png")
+            if os.path.isfile(png) and tw and th:
+                im = Image.open(png)
+                if (im.width, im.height) != (tw, th):
+                    err(f"{ident}: geometry declares {tw}x{th} but {name}.png is {im.width}x{im.height}")
+
+
+# --- 9c. the asset generators still run --------------------------------
+# gen_entities.py silently crashed for a while after a refactor (a missing
+# import), so "regenerating the art" quietly became a no-op and fixes to the
+# generators never reached the pack. Importing each one catches that class
+# of breakage.
+def check_generators():
+    # Importing is not enough: the crash that broke gen_entities.py was a
+    # NameError inside a function, so the module imported fine and only blew
+    # up when actually run. These have to be executed. They are deterministic
+    # (see stable_seed) and idempotent, so re-running them here rewrites the
+    # same bytes rather than churning the tree.
+    tools_dir = os.path.join(ROOT, "tools")
+    for mod in ("gen_assets.py", "gen_entities.py", "gen_animations.py", "gen_sounds.py"):
+        p = subprocess.run([sys.executable, mod], cwd=tools_dir, capture_output=True, text=True)
+        if p.returncode != 0:
+            last = p.stderr.strip().splitlines()[-1] if p.stderr.strip() else "?"
+            err(f"tools/{mod} fails to run: {last}")
+
+
 # --- 9. the two manifests agree with each other --------------------------
 def check_manifests():
     bp = json.load(open(os.path.join(BP, "manifest.json")))
@@ -295,6 +340,8 @@ def main():
     check_rp_refs()
     check_sounds_particles()
     check_references()
+    check_geometry()
+    check_generators()
     check_manifests()
 
     print(f"checked {n_json} JSON files, {n_js} scripts")

@@ -42,20 +42,71 @@ function tickBoss(boss) {
     boss.setDynamicProperty("hollowveil:phase", 2);
     safeTrigger(boss, "hollowveil:to_phase2");
     announce(boss, `§d${displayName(boss)} shudders with renewed fury!`);
+    phaseShockwave(boss, 1.0);
     summonAdds(boss, shortId, 2);
   }
   if (ratio <= 0.3 && phase < 3) {
     boss.setDynamicProperty("hollowveil:phase", 3);
     safeTrigger(boss, "hollowveil:to_phase3");
     announce(boss, `§4${displayName(boss)} enters a desperate rage!`);
-    if (shortId === "malacoda") summonAdds(boss, shortId, 3);
+    phaseShockwave(boss, 1.6);
+    summonAdds(boss, shortId, 3);
+    enrage(boss);
   }
 
   const now = system.currentTick;
   const nextAbility = boss.getDynamicProperty("hollowveil:next_ability") ?? 0;
   if (now >= nextAbility) {
     doAbility(boss, shortId);
-    boss.setDynamicProperty("hollowveil:next_ability", now + (ABILITY_INTERVAL_TICKS[shortId] ?? 100));
+    // each phase tightens the cadence, so the fight visibly escalates
+    const base = ABILITY_INTERVAL_TICKS[shortId] ?? 100;
+    const cur = boss.getDynamicProperty("hollowveil:phase") ?? 1;
+    const scaled = Math.max(28, Math.round(base * (cur === 3 ? 0.45 : cur === 2 ? 0.7 : 1)));
+    boss.setDynamicProperty("hollowveil:next_ability", now + scaled);
+  }
+}
+
+/** A ring of force + light on every phase change: knocks the arena back,
+ * telegraphs that the fight just changed gear, and gives the player a
+ * reason to reposition instead of standing still trading hits. */
+function phaseShockwave(boss, power) {
+  const dim = boss.dimension;
+  for (const p of getNearbyPlayers(dim, boss.location, 14)) {
+    knockback(p, p.location.x - boss.location.x, p.location.z - boss.location.z, 1.4 * power, 0.55 * power);
+    try {
+      p.addEffect("slowness", 60, { amplifier: 1, showParticles: true });
+    } catch {
+      /* effect ids vary by version - the knockback still lands */
+    }
+  }
+  for (let i = 0; i < 12; i++) {
+    const a = (i / 12) * Math.PI * 2;
+    const r = 5 * power;
+    try {
+      dim.spawnParticle("hollowveil:hollow_king_pulse_particle", {
+        x: boss.location.x + Math.cos(a) * r,
+        y: boss.location.y + 1,
+        z: boss.location.z + Math.sin(a) * r,
+      });
+    } catch {
+      /* cosmetic */
+    }
+  }
+  try {
+    dim.playSound("hollowveil.hollow_king.pulse", boss.location);
+  } catch {
+    /* cosmetic */
+  }
+}
+
+/** Final phase: the boss itself gets faster and hits harder. */
+function enrage(boss) {
+  try {
+    boss.addEffect("speed", 20 * 600, { amplifier: 1, showParticles: false });
+    boss.addEffect("strength", 20 * 600, { amplifier: 1, showParticles: false });
+    boss.addEffect("resistance", 20 * 600, { amplifier: 0, showParticles: false });
+  } catch {
+    /* if any effect id is unavailable the phase still escalates via cadence */
   }
 }
 
@@ -152,8 +203,10 @@ function summonAdds(boss, shortId, phase) {
   const cfg = ADD_TABLE[shortId];
   if (!cfg) return;
   const dim = boss.dimension;
-  for (let i = 0; i < cfg.count; i++) {
-    const angle = (Math.PI * 2 * i) / cfg.count;
+  // later phases summon a bigger ring, not just the same wave again
+  const count = cfg.count + (phase >= 3 ? 3 : phase >= 2 ? 1 : 0);
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 * i) / count;
     const pos = {
       x: boss.location.x + Math.cos(angle) * 3,
       y: boss.location.y,

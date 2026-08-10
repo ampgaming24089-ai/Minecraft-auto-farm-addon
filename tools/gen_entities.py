@@ -13,7 +13,7 @@ import os
 from PIL import ImageDraw
 
 import boxuv
-from gen_assets import PAL, RP, EYE_GLOW, save
+from gen_assets import PAL, RP, EYE_GLOW, save, stable_seed
 
 CUBE = tuple  # (origin(x,y,z), size(dx,dy,dz))
 
@@ -146,6 +146,14 @@ def write_shared_render_controller():
 # Cube helper shorthands
 # ---------------------------------------------------------------------------
 def cube(name, origin, size, part="side"):
+    # Box UV allocates and paints atlas cells in whole pixels (it has to -
+    # they're pixels), but Minecraft maps a cube's UVs from its ACTUAL size.
+    # A fractional size like 1.5 therefore samples a different region than
+    # the one that got painted, and the texture visibly smears/misaligns on
+    # that cube. Snapping sizes to integers here - the single place every
+    # cube is built - keeps geometry and atlas exactly in agreement and is
+    # why vanilla box-UV models use whole-pixel cubes too.
+    size = [max(1, int(round(v))) for v in size]
     return {"name": name, "origin": origin, "size": size, "part": part}
 
 

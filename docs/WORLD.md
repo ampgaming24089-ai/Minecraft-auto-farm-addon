@@ -1,61 +1,82 @@
-# The island: regions, structures, spawners
+# The world of the Hollow Veil
 
-Expands on `docs/DIMENSION.md` — since the Hollow Veil is a script-registered
-void dimension with no real world generator, "biomes" and "structures" here
-are entirely script-built. This file covers the layer added on top of the
-base island (terrain + Hollow Hamlet + the 3 boss altars from the original
-build): four themed regions, two landmark structures, and the spawner
-blocks that guard them.
+A dimension registered through the Script API has no world generator, so
+every block here is placed by this addon. That constraint shapes the whole
+design.
 
-## Regions (`BP/scripts/world/build.js` → `regionAt`)
+## Streaming terrain
 
-The island is split by quadrant around a neutral core:
+The world is a disc of radius **512** (~130x the area of the old 90-block
+island). It is not built up front - that would be tens of thousands of
+commands in a single tick and a hung client. Instead
+`BP/scripts/world/terrain.js` builds it one **32x32 sector** at a time,
+only within 3 sectors of a player, at most one sector per pass. Which
+sectors are finished is persisted, so terrain survives relogs, never
+rebuilds, and never overwrites anything a player has changed.
 
-| Region | Where | Ground | Ambient mobs |
+Within a sector, columns of equal height and biome are merged into strips
+before being filled, which turns ~1024 potential commands into a few dozen.
+
+## Biomes
+
+`BP/scripts/world/biomes.js` decides which biome owns a position from two
+independent value-noise fields, so territories are large irregular blobs
+that interleave at the edges rather than four fixed pie slices. Measured
+coverage is roughly even:
+
+| Biome | Share | Ground | Signature mobs |
 |---|---|---|---|
-| Misty Reach | center, radius 26 | bonestone (default) | wraith, banshee, poltergeist, shade, fallen knight, soul wisp |
-| Bastion | +x, −z | blackstone | hellhound, imp, ashen whelp (roaming, not the Sentinel guards) |
-| Ashlands | +x, +z | blackstone + magma accents | hellhound, imp, ashen whelp |
-| Boneyard Marsh | −x, +z | veil mud + glimmershroom light | bonehide elk, glimmershroom toad, poltergeist |
-| Sunken Ruins | −x, −z | deepslate tiles | ashwing bat, marrow crawler, shade, wraith |
+| The Grave Moors | ~24% | podzol, headstones, dead trees | Wraith, Banshee, Shade, Poltergeist |
+| The Ashlands | ~25% | blackstone, magma, ember vents | Hellhound, Imp, Ashen Whelp, Bastion Sentinel |
+| The Boneyard Marsh | ~22% | veil mud, pools, glimmershrooms | Bonehide Elk, Glimmershroom Toad, Marrow Crawler, Ashwing Bat |
+| The Sunken Ruins | ~29% | deepslate tile, rubble | City Wraithguard, Ashwing Bat, Shade, Fallen Knight |
 
-This is a script-side classification only — there's no Bedrock biome under
-any of it (see `docs/DIMENSION.md` for why) — but it drives both the ground
-palette laid down in `paintRegions()` and which mobs
-`BP/scripts/mobs/spawner.js` picks from near each player, so it reads as
-distinct territory in practice.
+A neutral hub (**The Misty Reach**) covers the first 40 blocks around
+spawn, where Hollow Hamlet and the three Warden altars sit.
 
-## Structures
+Height varies over roughly a 28-block range and flattens toward the hub so
+the village is always buildable; the rim falls away into the void.
 
-Built once, during the same `ensureWorldBuilt()` pass as the rest of the
-island (see `docs/STRUCTURES.md` for why everything here is code, not a
-shipped `.mcstructure`):
+**Graveyard read**: the moors are the heartland of it, but every biome also
+gets a thin scatter of headstones, grave mounds and bone litter, so the
+whole dimension keeps a burial-ground feel rather than confining it to one
+quarter of the map.
 
-- **Ember Bastion** (bastion quadrant) — a walled blackstone/bastion-brick
-  fortress with four corner towers, a molten-floor courtyard, a loot chest
-  (sentinel cores, ember coal, veilsteel scrap), and two Sentinel Spawners.
-- **Sunken City** (ruins quadrant) — a five-tower ruined skyline around a
-  plaza, a vault chest (veilsteel plating, spectral dust, a small chance of
-  a dragon egg) under the tallest tower, two Wraithguard Spawners, and a
-  Crawler Spawner in the undercroft.
+## Landmarks
 
-## Spawner blocks (`BP/scripts/world/spawners.js`)
+`BP/scripts/world/sites.js` rolls a catalogue of **76 sites** across the
+map, each filtered to the biomes it belongs in and spaced at least 46
+blocks apart. They range from ~120 to ~470 blocks from spawn, so there is
+always something further out. Each is built the first time a player comes
+within 48 blocks of it.
 
-`hollowveil:wraith_spawner` / `hellhound_spawner` / `sentinel_spawner` /
-`wraithguard_spawner` / `crawler_spawner` are placed directly by the
-structure builders above at known coordinates (recorded in a world dynamic
-property, not discovered by scanning). A lightweight interval script checks
-each one every ~3s: if a player is within 20 blocks and fewer than 4 of
-that spawner's mob are already nearby, it spawns one and goes on a ~10s
-cooldown — the same shape as a vanilla monster spawner, without needing one.
-Per-spawner cooldowns live in memory only; a world restart just makes every
-spawner immediately available again, which is a cheaper problem than
-keeping a growing position→cooldown map in sync on every fire.
+| Site | Biome | Count |
+|---|---|---|
+| Graveyard (fenced plot, headstone rows) | Moors | 14 |
+| Mausoleum | Moors | 6 |
+| Ruined watchtower | Moors, Ruins | 8 |
+| Ember bastion | Ashlands | 5 |
+| Smouldering camp | Ashlands | 8 |
+| Bone nest | Marsh | 9 |
+| Abandoned hut | Marsh | 5 |
+| Drowned city | Ruins | 4 |
+| Broken arch | Ruins | 10 |
+| Crypt (stairs down to a buried loot room) | Moors, Ruins | 7 |
 
-## Extending this
+Placement comes from the same deterministic hash as the terrain, so the
+site list is stable: leave and come back and the crypt is still there.
 
-Both structure builders and `paintRegions()` are ordinary `/fill`/`setblock`
-sequences — adding a third landmark structure or a fifth region is a matter
-of writing another builder function and (for a new spawner-guarded
-structure) pushing entries onto the `spawnerPositions` array before it's
-saved.
+## Darkness and fog
+
+Each biome has its own fog definition in `RP/fogs/`, pushed onto the player
+with the `/fog` command as they cross a border
+(`BP/scripts/world/atmosphere.js`). All of them are dark and close - the
+marsh closes to 34 blocks, the moors to 42 - which is what actually sells
+the darkness. Natural light sources are deliberately rare: soul lanterns
+scatter at well under 2% of feature rolls.
+
+## Ore
+
+Ore is scattered **per sector** rather than once per world, so every
+territory you explore is minable. Hollowforged stays genuinely rare via an
+extra roll on top of its already-low per-sector count.

@@ -4,8 +4,8 @@
     {
       "description": {
         "identifier": "geometry.hv_bonehide_elk",
-        "texture_width": 57,
-        "texture_height": 52,
+        "texture_width": 65,
+        "texture_height": 53,
         "visible_bounds_width": 2.2,
         "visible_bounds_height": 2.2,
         "visible_bounds_offset": [
@@ -75,7 +75,7 @@
               "size": [
                 4,
                 3,
-                2.5
+                2
               ],
               "uv": [
                 24,
@@ -105,7 +105,7 @@
                 1
               ],
               "uv": [
-                38,
+                36,
                 26
               ]
             }
@@ -132,7 +132,7 @@
                 1
               ],
               "uv": [
-                42,
+                40,
                 26
               ]
             }
@@ -159,7 +159,7 @@
                 2
               ],
               "uv": [
-                46,
+                44,
                 26
               ]
             }
@@ -186,8 +186,8 @@
                 3
               ],
               "uv": [
-                0,
-                38
+                52,
+                26
               ]
             }
           ]
@@ -213,8 +213,8 @@
                 3
               ],
               "uv": [
-                12,
-                38
+                0,
+                39
               ]
             }
           ]
@@ -240,8 +240,8 @@
                 3
               ],
               "uv": [
-                24,
-                38
+                12,
+                39
               ]
             }
           ]
@@ -267,8 +267,8 @@
                 3
               ],
               "uv": [
-                36,
-                38
+                24,
+                39
               ]
             }
           ]

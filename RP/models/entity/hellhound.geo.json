@@ -4,7 +4,7 @@
     {
       "description": {
         "identifier": "geometry.hv_hellhound",
-        "texture_width": 65,
+        "texture_width": 63,
         "texture_height": 43,
         "visible_bounds_width": 2.2,
         "visible_bounds_height": 1.4,
@@ -75,7 +75,7 @@
               "size": [
                 3,
                 3,
-                2.5
+                2
               ],
               "uv": [
                 24,
@@ -105,7 +105,7 @@
                 1
               ],
               "uv": [
-                36,
+                34,
                 21
               ]
             }
@@ -132,7 +132,7 @@
                 1
               ],
               "uv": [
-                40,
+                38,
                 21
               ]
             }
@@ -159,7 +159,7 @@
                 8
               ],
               "uv": [
-                44,
+                42,
                 21
               ]
             }

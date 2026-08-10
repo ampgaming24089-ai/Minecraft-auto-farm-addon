@@ -1,0 +1,22 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:fog_settings": {
+    "description": {
+      "identifier": "hollowveil:fog_moors"
+    },
+    "distance": {
+      "air": {
+        "fog_start": 6.0,
+        "fog_end": 42.0,
+        "fog_color": "#21212b",
+        "render_distance_type": "fixed"
+      },
+      "water": {
+        "fog_start": 0.0,
+        "fog_end": 9.0,
+        "fog_color": "#21212b",
+        "render_distance_type": "fixed"
+      }
+    }
+  }
+}

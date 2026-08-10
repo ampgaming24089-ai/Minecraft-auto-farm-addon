@@ -20,13 +20,13 @@
         "animate": [
           "idle",
           {
-            "walk": "query.modified_move_speed > 0.05"
+            "move": "query.modified_move_speed > 0.05"
           }
         ]
       },
       "animations": {
-        "idle": "animation.hv.idle",
-        "walk": "animation.hv.walk"
+        "idle": "animation.hv.biped.idle",
+        "move": "animation.hv.biped.move"
       }
     }
   }
