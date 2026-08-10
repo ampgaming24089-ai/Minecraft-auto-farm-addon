@@ -58,10 +58,6 @@
       "minecraft:behavior.random_look_around": {
         "priority": 8
       },
-      "minecraft:trade_table": {
-        "table": "trading/occultist_trades.json",
-        "display_name": "entity.hollowveil:occultist.name"
-      },
       "minecraft:nameable": {}
     },
     "events": {

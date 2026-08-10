@@ -66,6 +66,7 @@ SOUND_SPECS = {
     "malacoda_buffet": dict(duration=0.8, f_start=90, f_end=45, wave_shape="square", noise=0.4, vol=0.6),
     "hollow_king_pulse": dict(duration=1.0, f_start=110, f_end=55, wave_shape="sine", noise=0.2, vol=0.55),
     "village_restore": dict(duration=1.6, f_start=440, f_end=880, wave_shape="sine", noise=0.02, vol=0.4),
+    "knight_shield": dict(duration=0.5, f_start=200, f_end=500, wave_shape="square", noise=0.1, vol=0.5),
 }
 
 EVENT_NAME = {
@@ -79,6 +80,7 @@ EVENT_NAME = {
     "malacoda_buffet": "hollowveil.malacoda.buffet",
     "hollow_king_pulse": "hollowveil.hollow_king.pulse",
     "village_restore": "hollowveil.village.restore",
+    "knight_shield": "hollowveil.knight.shield",
 }
 
 

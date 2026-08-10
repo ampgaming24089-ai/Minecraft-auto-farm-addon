@@ -1,0 +1,46 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:item": {
+    "description": {
+      "identifier": "hollowveil:hollowforged_leggings",
+      "menu_category": {
+        "category": "equipment",
+        "group": "itemGroup.name.leggings"
+      }
+    },
+    "components": {
+      "minecraft:max_stack_size": 1,
+      "minecraft:icon": "hollowforged_leggings",
+      "minecraft:display_name": {
+        "value": "item.hollowveil:hollowforged_leggings.name"
+      },
+      "minecraft:wearable": {
+        "slot": "slot.armor.legs",
+        "protection": 9
+      },
+      "minecraft:glint": true,
+      "minecraft:durability": {
+        "max_durability": 960
+      },
+      "minecraft:enchantable": {
+        "slot": "armor_legs",
+        "value": 24
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": [
+              "hollowveil:hollowforged_ingot"
+            ],
+            "repair_amount": "query.max_durability * 0.25"
+          }
+        ]
+      },
+      "minecraft:tags": {
+        "tags": [
+          "hollowveil:hollowforged_armor"
+        ]
+      }
+    }
+  }
+}

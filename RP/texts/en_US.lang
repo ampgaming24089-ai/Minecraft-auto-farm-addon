@@ -21,7 +21,7 @@ item.hollowveil:ghost_ward_charm.name=Ghost Ward Charm
 item.hollowveil:spirit_lantern.name=Spirit Lantern
 item.hollowveil:soul_compass.name=Soul Compass
 item.hollowveil:journal.name=Hollow Veil Journal
-item.hollowveil:wraithfire_igniter.name=Wraithfire Igniter
+item.hollowveil:soulfire_igniter.name=Soulfire Igniter
 item.hollowveil:wraithsteel_sword.name=Wraithsteel Sword
 item.hollowveil:wraithsteel_pickaxe.name=Wraithsteel Pickaxe
 item.hollowveil:wraithsteel_axe.name=Wraithsteel Axe
@@ -51,6 +51,15 @@ item.hollowveil:veilsteel_pickaxe.name=Veilsteel Pickaxe
 item.hollowveil:veilsteel_axe.name=Veilsteel Axe
 item.hollowveil:featherfall_charm.name=Featherfall Charm
 item.hollowveil:dragon_egg.name=Veil Dragon Egg
+item.hollowveil:hollowforged_scrap.name=Hollowforged Scrap
+item.hollowveil:hollowforged_ingot.name=Hollowforged Ingot
+item.hollowveil:hollowforged_sword.name=Hollowforged Sword
+item.hollowveil:hollowforged_pickaxe.name=Hollowforged Pickaxe
+item.hollowveil:hollowforged_axe.name=Hollowforged Axe
+item.hollowveil:hollowforged_helmet.name=Hollowforged Helm
+item.hollowveil:hollowforged_chestplate.name=Hollowforged Chestplate
+item.hollowveil:hollowforged_leggings.name=Hollowforged Leggings
+item.hollowveil:hollowforged_boots.name=Hollowforged Boots
 
 item.hollowveil:spectral_regalia_helmet.name=Spectral Regalia Helm
 item.hollowveil:spectral_regalia_chestplate.name=Spectral Regalia Chestplate
@@ -85,6 +94,7 @@ tile.hollowveil:hellhound_spawner.name=Hellhound Spawner
 tile.hollowveil:sentinel_spawner.name=Sentinel Spawner
 tile.hollowveil:wraithguard_spawner.name=Wraithguard Spawner
 tile.hollowveil:crawler_spawner.name=Crawler Spawner
+tile.hollowveil:hollowforged_ore.name=Hollowforged Ore
 
 ## Entities
 entity.hollowveil:wraith.name=Wraith

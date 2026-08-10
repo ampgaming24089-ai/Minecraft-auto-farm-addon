@@ -1,5 +1,5 @@
 {
-  "format_version": "1.20.0",
+  "format_version": "1.26.30",
   "minecraft:entity": {
     "description": {
       "identifier": "hollowveil:veil_dragon",
@@ -12,10 +12,14 @@
         "minecraft:rideable": {
           "seat_count": 1,
           "family_types": ["player"],
+          "dismount_mode": "on_top_center",
           "interact_text": "action.interact.mount",
           "seats": { "position": [0.0, 2.3, -0.3] }
         },
-        "minecraft:nameable": {}
+        "minecraft:nameable": {},
+        "minecraft:free_camera_controlled": { "strafe_speed_modifier": 1.0, "backwards_movement_modifier": 0.6 },
+        "minecraft:vertical_movement_action": { "vertical_velocity": 0.6 },
+        "minecraft:behavior.player_ride_tamed": { "priority": 4 }
       },
       "hollowveil:cg_color_0": { "minecraft:variant": { "value": 0 } },
       "hollowveil:cg_color_1": { "minecraft:variant": { "value": 1 } },
@@ -34,8 +38,8 @@
       "minecraft:pushable": { "is_pushable": false },
       "minecraft:navigation.fly": { "can_path_over_water": true, "can_pass_doors": false, "can_path_from_air": true, "avoid_water": false },
       "minecraft:movement.fly": {},
-      "minecraft:movement": { "value": 0.3 },
-      "minecraft:flying_speed": 0.12,
+      "minecraft:movement": { "value": 0.5 },
+      "minecraft:flying_speed": 0.22,
       "minecraft:can_fly": {},
       "minecraft:jump.static": {},
       "minecraft:despawn": { "despawn_from_distance": {} },
@@ -63,7 +67,6 @@
         ],
         "tame_event": { "event": "hollowveil:on_dragon_tame", "target": "self" }
       },
-      "minecraft:behavior.mount_pathing": { "priority": 4, "speed_multiplier": 1.6, "target_dist": 0.0, "track_target": true },
       "minecraft:behavior.random_fly": { "priority": 6, "xz_dist": 12, "y_dist": 8, "y_offset": 3 },
       "minecraft:behavior.look_at_player": { "priority": 7 },
       "minecraft:loot": { "table": "loot_tables/mobs/veil_dragon.json" },

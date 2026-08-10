@@ -21,7 +21,17 @@
         "controller.render.hv_dragon"
       ],
       "scripts": {
-        "scale": "1.0"
+        "scale": "1.0",
+        "animate": [
+          "idle",
+          {
+            "walk": "query.modified_move_speed > 0.05"
+          }
+        ]
+      },
+      "animations": {
+        "idle": "animation.hv.idle",
+        "walk": "animation.hv.walk"
       }
     }
   }

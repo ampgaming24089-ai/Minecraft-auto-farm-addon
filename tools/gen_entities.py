@@ -13,9 +13,28 @@ import os
 from PIL import ImageDraw
 
 import boxuv
-from gen_assets import PAL, RP, save
+from gen_assets import PAL, RP, EYE_GLOW, save
 
 CUBE = tuple  # (origin(x,y,z), size(dx,dy,dz))
+
+
+def paint_eyes(draw, head_bone, glow_color):
+    """Paints two small glowing dots onto the head bone's front face so
+    every creature reads as *looking at something* instead of a flat
+    silhouette - the single biggest cheap win for a low-poly mob."""
+    if not head_bone or not head_bone["cubes"]:
+        return
+    cube = head_bone["cubes"][0]
+    u, v = cube["_uv"]
+    dx, dy, dz = cube["size"]
+    rects = boxuv.face_rects(u, v, dx, dy, dz)
+    fx, fy, fw, fh = rects["front"]
+    if fw < 3 or fh < 3:
+        return
+    ey = fy + max(1, fh // 3)
+    eye_w = max(1, fw // 5)
+    for ex in (fx + fw // 4 - eye_w // 2, fx + (3 * fw) // 4 - eye_w // 2):
+        draw.rectangle([ex, ey, ex + eye_w, ey + eye_w], fill=glow_color)
 
 
 def entity_geo(identifier, tex_name, bones, palette, atlas_width=64, visible_bounds=(2, 2.5, 1)):
@@ -38,6 +57,11 @@ def entity_geo(identifier, tex_name, bones, palette, atlas_width=64, visible_bou
             c.uv = cube["_uv"]
             pal = cube.get("palette", palette)
             boxuv.paint_cube(draw, c, pal, seed=seed + i)
+
+    glow = EYE_GLOW.get(identifier)
+    if glow:
+        head_bone = next((b for b in bones if b["name"] == "head"), None)
+        paint_eyes(draw, head_bone, glow)
 
     save(img, RP, "textures", "entity", f"{tex_name}.png")
 
@@ -519,6 +543,10 @@ def build_dragon():
                 c = boxuv.Cube(cube_def["name"], cube_def["origin"], cube_def["size"])
                 c.uv = cube_def["_uv"]
                 boxuv.paint_cube(draw, c, pal, seed=i * 100 + bi * 10 + ci)
+        glow = EYE_GLOW.get("veil_dragon")
+        if glow:
+            head_bone = next((b for b in DRAGON_BONES if b["name"] == "head"), None)
+            paint_eyes(draw, head_bone, glow)
         save(img, RP, "textures", "entity", f"veil_dragon_{i}.png")
 
     geo_bones = []

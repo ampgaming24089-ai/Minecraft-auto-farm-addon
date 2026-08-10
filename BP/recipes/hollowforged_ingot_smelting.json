@@ -1,0 +1,17 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_furnace": {
+    "description": {
+      "identifier": "hollowveil:hollowforged_ingot_smelting"
+    },
+    "tags": [
+      "furnace",
+      "blast_furnace"
+    ],
+    "input": "hollowveil:hollowforged_scrap",
+    "output": "hollowveil:hollowforged_ingot",
+    "unlock": {
+      "context": "AlwaysUnlocked"
+    }
+  }
+}

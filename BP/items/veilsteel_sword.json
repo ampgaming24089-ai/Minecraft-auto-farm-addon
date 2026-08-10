@@ -7,11 +7,11 @@
       "minecraft:icon": "veilsteel_sword",
       "minecraft:display_name": { "value": "item.hollowveil:veilsteel_sword.name" },
       "minecraft:hand_equipped": true,
-      "minecraft:damage": 8,
-      "minecraft:durability": { "max_durability": 1000 },
-      "minecraft:enchantable": { "slot": "sword", "value": 18 },
+      "minecraft:damage": 9,
+      "minecraft:durability": { "max_durability": 1500 },
+      "minecraft:enchantable": { "slot": "sword", "value": 19 },
       "minecraft:repairable": { "repair_items": [ { "items": [ "hollowveil:veilsteel_ingot" ], "repair_amount": "query.max_durability * 0.25" } ] },
-      "minecraft:tags": { "tags": [ "minecraft:is_sword", "minecraft:sword" ] }
+      "minecraft:tags": { "tags": [ "minecraft:is_sword", "minecraft:sword", "minecraft:netherite_tier" ] }
     }
   }
 }

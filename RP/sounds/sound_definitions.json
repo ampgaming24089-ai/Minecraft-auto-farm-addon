@@ -60,6 +60,12 @@
       "sounds": [
         "sounds/hollowveil/village_restore"
       ]
+    },
+    "hollowveil.knight.shield": {
+      "category": "hostile",
+      "sounds": [
+        "sounds/hollowveil/knight_shield"
+      ]
     }
   }
 }

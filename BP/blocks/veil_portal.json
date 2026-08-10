@@ -10,7 +10,7 @@
       "minecraft:destructible_by_mining": false,
       "minecraft:destructible_by_explosion": false,
       "minecraft:light_emission": 11,
-      "minecraft:map_color": "#5a2a7a"
+      "minecraft:map_color": "#0c0c10"
     }
   }
 }

@@ -5,7 +5,7 @@
     "description": "A ghost & demon dimension: new mobs, 3 bosses, custom armor, trading, quests, and a portal ritual.",
     "uuid": "885991b9-2285-453c-88d9-b9caa859c2fc",
     "version": [1, 0, 0],
-    "min_engine_version": [1, 26, 10]
+    "min_engine_version": [1, 26, 30]
   },
   "modules": [
     {

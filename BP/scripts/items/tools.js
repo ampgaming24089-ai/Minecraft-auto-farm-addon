@@ -1,6 +1,6 @@
 import { world, system } from "@minecraft/server";
 import { openJournal } from "../ui/journal.js";
-import { tryIgnitePortal } from "../portal/portal.js";
+import { tryIgnitePortal, FRAME_BLOCK } from "../portal/portal.js";
 import { useSigilOnAltar } from "../bosses/chambers.js";
 import { getWorldJson, KEYS } from "../lib/state.js";
 
@@ -17,7 +17,7 @@ export function registerItemHandlers() {
   world.afterEvents.itemUseOn.subscribe((ev) => {
     const { source, itemStack, block } = ev;
     if (!itemStack || !source) return;
-    if (itemStack.typeId === "hollowveil:wraithfire_igniter" && block?.typeId === "hollowveil:soulforged_obsidian") {
+    if (itemStack.typeId === "hollowveil:soulfire_igniter" && block?.typeId === FRAME_BLOCK) {
       tryIgnitePortal(block.dimension, block.location, source);
     } else if (itemStack.typeId?.startsWith("hollowveil:sigil_") && block?.typeId === "hollowveil:ritual_altar") {
       const consumed = useSigilOnAltar(source, block.dimension, block.location, itemStack.typeId, system.currentTick);

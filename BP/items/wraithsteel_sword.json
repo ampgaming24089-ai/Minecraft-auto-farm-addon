@@ -15,13 +15,13 @@
         "value": "item.hollowveil:wraithsteel_sword.name"
       },
       "minecraft:hand_equipped": true,
-      "minecraft:damage": 6,
+      "minecraft:damage": 7,
       "minecraft:durability": {
-        "max_durability": 600
+        "max_durability": 900
       },
       "minecraft:enchantable": {
         "slot": "sword",
-        "value": 14
+        "value": 16
       },
       "minecraft:repairable": {
         "repair_items": [

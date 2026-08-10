@@ -15,13 +15,13 @@
         "value": "item.hollowveil:wraithsteel_axe.name"
       },
       "minecraft:hand_equipped": true,
-      "minecraft:damage": 8,
+      "minecraft:damage": 9,
       "minecraft:durability": {
-        "max_durability": 700
+        "max_durability": 900
       },
       "minecraft:enchantable": {
         "slot": "axe",
-        "value": 14
+        "value": 16
       },
       "minecraft:repairable": {
         "repair_items": [

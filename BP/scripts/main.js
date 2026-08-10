@@ -9,6 +9,8 @@ import { registerItemHandlers, startPassiveItemEffects } from "./items/tools.js"
 import { registerBossWeapons } from "./items/weapons.js";
 import { registerDragonEgg } from "./items/dragon.js";
 import { startArmorSetBonuses } from "./armor/setBonuses.js";
+import { registerShop } from "./ui/shop.js";
+import { startAmbience } from "./mobs/ambience.js";
 
 // Custom dimensions must be registered during the restricted "startup"
 // phase - see docs/DIMENSION.md for why this replaced the old static
@@ -21,6 +23,7 @@ registerMobAbilities();
 registerItemHandlers();
 registerBossWeapons();
 registerDragonEgg();
+registerShop();
 
 // --- one-time subsystem start -------------------------------------------
 startPortalTicking();
@@ -28,6 +31,7 @@ startBossAI();
 startWraithPhasing();
 startMobSpawner();
 startStructureSpawners();
+startAmbience();
 startPassiveItemEffects();
 startArmorSetBonuses();
 

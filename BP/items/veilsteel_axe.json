@@ -7,15 +7,15 @@
       "minecraft:icon": "veilsteel_axe",
       "minecraft:display_name": { "value": "item.hollowveil:veilsteel_axe.name" },
       "minecraft:hand_equipped": true,
-      "minecraft:damage": 10,
-      "minecraft:durability": { "max_durability": 1100 },
-      "minecraft:enchantable": { "slot": "axe", "value": 18 },
+      "minecraft:damage": 11,
+      "minecraft:durability": { "max_durability": 1500 },
+      "minecraft:enchantable": { "slot": "axe", "value": 19 },
       "minecraft:repairable": { "repair_items": [ { "items": [ "hollowveil:veilsteel_ingot" ], "repair_amount": "query.max_durability * 0.25" } ] },
       "minecraft:digger": {
         "use_efficiency": true,
-        "destroy_speeds": [ { "block": { "tags": "q.any_tag('wood', 'diamond_pick_diggable')" }, "speed": 11 } ]
+        "destroy_speeds": [ { "block": { "tags": "q.any_tag('wood', 'diamond_pick_diggable')" }, "speed": 13 } ]
       },
-      "minecraft:tags": { "tags": [ "minecraft:is_axe", "minecraft:diamond_tier" ] }
+      "minecraft:tags": { "tags": [ "minecraft:is_axe", "minecraft:netherite_tier" ] }
     }
   }
 }

@@ -67,6 +67,7 @@ export function registerMobAbilities() {
       case "hollowveil:shield_up":
         ev.entity.setDynamicProperty("hollowveil:shielding", true);
         scheduleShieldDrop(ev.entity);
+        flashShield(ev.entity);
         break;
       case "hollowveil:shield_down":
         ev.entity.setDynamicProperty("hollowveil:shielding", false);
@@ -94,6 +95,19 @@ function scheduleShieldDrop(knight) {
       /* knight may have died in the meantime */
     }
   }, SHIELD_DURATION_TICKS);
+}
+
+function flashShield(knight) {
+  try {
+    knight.dimension.spawnParticle("hollowveil:hollow_king_pulse_particle", {
+      x: knight.location.x,
+      y: knight.location.y + 1,
+      z: knight.location.z,
+    });
+    knight.dimension.playSound("hollowveil.knight.shield", knight.location);
+  } catch {
+    /* cosmetic only */
+  }
 }
 
 function togglePoltergeistVisibility(poltergeist) {

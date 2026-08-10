@@ -2,7 +2,7 @@ import { world, system } from "@minecraft/server";
 import { KEYS, getWorldFlag, setWorldFlag, getPlayerJson, setPlayerJson } from "../lib/state.js";
 import { ensureWorldBuilt, HOLLOW_VEIL, ISLAND_CENTER } from "../world/build.js";
 
-const FRAME_BLOCK = "hollowveil:soulforged_obsidian";
+export const FRAME_BLOCK = "minecraft:iron_block";
 const PORTAL_BLOCK = "hollowveil:veil_portal";
 const ARRIVAL_POS = { x: ISLAND_CENTER.x, y: ISLAND_CENTER.y, z: ISLAND_CENTER.z + 20 };
 const PORTAL_COOLDOWN_TICKS = 100; // 5s, long enough to clear the block
@@ -130,13 +130,44 @@ function buildReturnPortalFrame(dim) {
   dim.runCommandAsync(`fill ${x} ${y + 1} ${z + 2} ${x + 1} ${y + 3} ${z + 2} ${PORTAL_BLOCK}`);
 }
 
+// A "custom transition" within what the stable Script API actually exposes:
+// no 3D logo overlay or reskinned inventory screen is possible (see
+// README's Known limitations), but a held black-then-violet camera fade
+// timed around the teleport, paired with a themed title card, reads as a
+// real cinematic beat instead of an instant cut.
+function crossingFade(player) {
+  try {
+    player.camera.fade({
+      fadeColor: { red: 0.02, green: 0.0, blue: 0.04 },
+      fadeTime: { fadeInTime: 0.5, holdTime: 0.6, fadeOutTime: 1.1 },
+    });
+  } catch {
+    /* purely cosmetic */
+  }
+}
+
+function showCrossingTitle(player, title, subtitle) {
+  try {
+    player.onScreenDisplay.setTitle(title, {
+      subtitle,
+      fadeInDuration: 10,
+      stayDuration: 40,
+      fadeOutDuration: 20,
+    });
+  } catch {
+    /* purely cosmetic */
+  }
+}
+
 async function sendPlayerToHollowVeil(player, pos) {
   setPlayerJson(player, KEYS.RETURN_POS, { dimension: player.dimension.id, pos: { x: pos.x, y: pos.y, z: pos.z } });
+  crossingFade(player);
   player.sendMessage("§5You step through into the Hollow Veil...");
   await ensureWorldBuilt();
   const dim = world.getDimension(HOLLOW_VEIL);
   buildReturnPortalFrame(dim);
   player.teleport({ x: ARRIVAL_POS.x + 0.5, y: ARRIVAL_POS.y, z: ARRIVAL_POS.z + 0.5 }, { dimension: dim });
+  showCrossingTitle(player, "§l§5THE HOLLOW VEIL", "§7A grey country stitched between worlds");
 }
 
 export function startPortalTicking() {
@@ -159,8 +190,10 @@ export function startPortalTicking() {
         const ret = getPlayerJson(player, KEYS.RETURN_POS, null);
         const targetDim = world.getDimension(ret?.dimension ?? "minecraft:overworld");
         const dest = ret?.pos ?? world.getDefaultSpawnLocation();
+        crossingFade(player);
         player.sendMessage("§7The veil releases you back to the world you know.");
         player.teleport(dest, { dimension: targetDim });
+        showCrossingTitle(player, "§l§7Back to the Living World", "");
       } else {
         sendPlayerToHollowVeil(player, pos);
       }

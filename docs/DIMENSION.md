@@ -19,9 +19,11 @@ system.beforeEvents.startup.subscribe((ev) => {
 
 See `BP/scripts/main.js`. This is confirmed present in the **stable**
 `@minecraft/server` 2.8.0/2.9.0 bindings (not just beta), which is why the
-manifest now depends on `@minecraft/server` 2.8.0 / `@minecraft/server-ui`
-2.0.0 and `min_engine_version` 1.26.10 — matching the official sample.
-No experimental world toggle is required for this API.
+manifest depends on `@minecraft/server` 2.8.0 / `@minecraft/server-ui`
+2.0.0, matching the official sample. `min_engine_version` is `1.26.30`,
+one patch above what the dimension API alone needs, because the Veil
+Dragon's rideable-flight components (see README's "Known limitations")
+ship at that version. No experimental world toggle is required for either.
 
 ## The big consequence: it's a void, not a generated world
 

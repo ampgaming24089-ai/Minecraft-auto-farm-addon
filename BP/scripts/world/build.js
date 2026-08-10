@@ -119,6 +119,17 @@ function scatterOre(run, cx, cz, r) {
     run(`setblock ${x} ${y} ${z} hollowveil:veilsteel_ore`);
     if (veilRnd() > 0.4) run(`setblock ${x + 1} ${y} ${z} hollowveil:veilsteel_ore`);
   }
+  // hollowforged: the rarest material in the Veil - a handful of single
+  // blocks on the bedrock floor, scattered without regard to region so
+  // finding one means actually digging, not just visiting the right quadrant
+  const hfRnd = mulberry32(70071);
+  for (let i = 0; i < 5; i++) {
+    const angle = hfRnd() * Math.PI * 2;
+    const dist = hfRnd() * (r - 12);
+    const x = Math.round(cx + Math.cos(angle) * dist);
+    const z = Math.round(cz + Math.sin(angle) * dist);
+    run(`setblock ${x} ${BEDROCK_Y + 1} ${z} hollowveil:hollowforged_ore`);
+  }
 }
 
 function paintRegions(run, cx, cz, r) {
@@ -241,6 +252,7 @@ function cityLoot() {
     new ItemStack("hollowveil:spectral_dust", 5),
   ];
   if (Math.random() < 0.15) picks.push(new ItemStack("hollowveil:dragon_egg", 1));
+  if (Math.random() < 0.1) picks.push(new ItemStack("hollowveil:hollowforged_scrap", 1));
   return picks;
 }
 

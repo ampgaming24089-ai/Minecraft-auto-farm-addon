@@ -1,0 +1,26 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "hollowveil:hollowforged_boots"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "I I",
+      "I I"
+    ],
+    "key": {
+      "I": {
+        "item": "hollowveil:hollowforged_ingot"
+      }
+    },
+    "result": {
+      "item": "hollowveil:hollowforged_boots"
+    },
+    "unlock": {
+      "context": "AlwaysUnlocked"
+    }
+  }
+}

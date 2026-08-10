@@ -1,0 +1,30 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "hollowveil:hollowforged_ore",
+      "menu_category": {
+        "category": "construction"
+      },
+      "traits": {}
+    },
+    "components": {
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "hollowforged_ore",
+          "render_method": "opaque"
+        }
+      },
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 9
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 16
+      },
+      "minecraft:map_color": "#c94b3c",
+      "minecraft:light_emission": 4,
+      "minecraft:loot": "loot_tables/blocks/hollowforged_ore.json"
+    }
+  }
+}

@@ -62,6 +62,33 @@
     "hollow_kings_reaper": {
       "textures": "textures/items/hollow_kings_reaper"
     },
+    "hollowforged_axe": {
+      "textures": "textures/items/hollowforged_axe"
+    },
+    "hollowforged_boots": {
+      "textures": "textures/items/hollowforged_boots"
+    },
+    "hollowforged_chestplate": {
+      "textures": "textures/items/hollowforged_chestplate"
+    },
+    "hollowforged_helmet": {
+      "textures": "textures/items/hollowforged_helmet"
+    },
+    "hollowforged_ingot": {
+      "textures": "textures/items/hollowforged_ingot"
+    },
+    "hollowforged_leggings": {
+      "textures": "textures/items/hollowforged_leggings"
+    },
+    "hollowforged_pickaxe": {
+      "textures": "textures/items/hollowforged_pickaxe"
+    },
+    "hollowforged_scrap": {
+      "textures": "textures/items/hollowforged_scrap"
+    },
+    "hollowforged_sword": {
+      "textures": "textures/items/hollowforged_sword"
+    },
     "journal": {
       "textures": "textures/items/journal"
     },
@@ -97,6 +124,9 @@
     },
     "soul_shard": {
       "textures": "textures/items/soul_shard"
+    },
+    "soulfire_igniter": {
+      "textures": "textures/items/soulfire_igniter"
     },
     "spectral_dust": {
       "textures": "textures/items/spectral_dust"
@@ -142,9 +172,6 @@
     },
     "wailing_edge": {
       "textures": "textures/items/wailing_edge"
-    },
-    "wraithfire_igniter": {
-      "textures": "textures/items/wraithfire_igniter"
     },
     "wraithsteel_axe": {
       "textures": "textures/items/wraithsteel_axe"

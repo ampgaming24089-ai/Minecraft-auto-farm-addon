@@ -25,6 +25,9 @@
     "glimmershroom": {
       "textures": "textures/blocks/glimmershroom"
     },
+    "hollowforged_ore": {
+      "textures": "textures/blocks/hollowforged_ore"
+    },
     "ritual_altar_side": {
       "textures": "textures/blocks/ritual_altar_side"
     },

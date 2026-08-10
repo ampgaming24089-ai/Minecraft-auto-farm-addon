@@ -25,9 +25,10 @@ of the story they're built to tell.
    No experimental toggles are required — the custom dimension registers
    itself via the (stable) Script API on world load. This requires a
    fairly recent game version (the manifest targets `min_engine_version`
-   1.26.10, matching `@minecraft/server` 2.8.0); see `docs/DIMENSION.md`
-   if anything about the dimension itself needs adjusting for your
-   specific version.
+   1.26.30, matching `@minecraft/server` 2.8.0 and the Veil Dragon's
+   Happy-Ghast-style flight components); see `docs/DIMENSION.md` if
+   anything about the dimension itself needs adjusting for your specific
+   version.
 
 ## What's in it
 
@@ -35,11 +36,12 @@ of the story they're built to tell.
   dimension registered via the Script API, with a hand-built island
   (terrain, ore veins, altars, village) raised the first time anyone
   arrives, since custom dimensions start as an empty void. `docs/DIMENSION.md`.
-- **Getting there** — craft `Soulforged Obsidian`, build a 4-wide-by-5-tall
-  frame (or bigger, up to nether-portal-sized), light it with a
-  `Wraithfire Igniter`. The frame detector is a from-scratch
-  reimplementation of the vanilla nether portal algorithm — any valid
-  rectangle, not just one fixed size. `BP/scripts/portal/portal.js`.
+- **Getting there** — build a 4-wide-by-5-tall frame (or bigger, up to
+  nether-portal-sized) out of `Iron Blocks`, light it with a
+  `Soulfire Igniter` (soul sand + iron ingot instead of flint's flint +
+  iron ingot; same tool, blue-black flame). The frame detector is a
+  from-scratch reimplementation of the vanilla nether portal algorithm —
+  any valid rectangle, not just one fixed size. `BP/scripts/portal/portal.js`.
 - **8 mobs**, each with a distinct mechanic, not just a reskinned vanilla
   behavior tree: Wraith (blinks through thin walls when it can't path
   around them, drains hunger on hit), Banshee (AoE scream — knockback +
@@ -57,13 +59,21 @@ of the story they're built to tell.
 - **Boss chambers are built procedurally**, not shipped as static
   structures — see `docs/STRUCTURES.md` for why, and how to swap in a
   hand-built structure later if you want a bespoke room.
-- **Village + trading**: Hollow Hamlet is raised procedurally the first
-  time a player arrives, with an Occultist NPC offering a 3-tier trade
-  table (currency → tools/enchants → high-tier). `BP/scripts/village/`,
-  `BP/trading/occultist_trades.json`.
-- **Quest journal**: a real UI (`@minecraft/server-ui` forms), not a book
-  item with static text — chapters unlock as you defeat bosses.
-  `BP/scripts/ui/journal.js`.
+- **Village + a genuinely custom shop UI**: Hollow Hamlet is raised
+  procedurally the first time a player arrives, with an Occultist NPC.
+  Interacting with it does **not** open the vanilla trade screen — it opens
+  a bespoke `ActionFormData` menu (5 categories, icon buttons, flavor text,
+  a real purchase flow with inventory checks) built entirely in script.
+  `BP/scripts/village/`, `BP/scripts/ui/shop.js`.
+- **Quest journal**: a second bespoke UI, not a book item with static
+  text — chapters unlock as you defeat bosses. `BP/scripts/ui/journal.js`.
+- **Dimension-crossing transition**: stepping through the portal (either
+  direction) holds a black-to-violet `camera.fade` timed around the
+  teleport plus a themed title card ("THE HOLLOW VEIL" / "Back to the
+  Living World"), instead of an instant cut. `BP/scripts/portal/portal.js`.
+  See "Known limitations" below for what a *true* custom logo overlay or
+  reskinned inventory/crafting screen would need, and why this pack
+  doesn't attempt either.
 - **Custom armor with set bonuses**, checked live each tick: Spectral
   Regalia (low-HP invisibility + water breathing), Mourner's Shroud
   (fall-damage reduction, low-HP speed), Ashen Demonplate (fire
@@ -101,9 +111,10 @@ so the whole pack is reproducible and easy to re-theme:
 
 ```
 pip install pillow
-python3 tools/gen_assets.py     # pack icons, item icons, block textures, particles, atlases
-python3 tools/gen_entities.py   # entity geometry + matching textures (shared UV atlas system)
-python3 tools/gen_sounds.py     # placeholder SFX + sound_definitions.json
+python3 tools/gen_assets.py      # pack icons, item icons, block textures, particles, atlases, worn armor
+python3 tools/gen_entities.py    # entity geometry + matching textures (shared UV atlas system)
+python3 tools/gen_animations.py  # shared idle/walk bone animations, wired into every entity file
+python3 tools/gen_sounds.py      # placeholder SFX + sound_definitions.json
 ./build_addon.sh
 ```
 
@@ -121,25 +132,48 @@ mechanics) do not depend on the art and work identically either way.
 
 ## Known limitations / good next steps
 
+- **Two things were asked for that Bedrock's stable, add-on-facing APIs do
+  not expose a way to build, at all, for anyone:**
+  - A reskinned player inventory / crafting-table / furnace screen. There
+    is no resource-pack or Script API hook that touches that screen's
+    chrome — item icons, block textures and the custom `ActionFormData`
+    menus (shop, journal) are the actual surface area add-ons can restyle.
+    Reskinning the inventory grid itself would need a modded client, which
+    isn't something an add-on can be.
+  - A positioned, transparent 3D logo image overlaid on the world during
+    the dimension crossing. What's shipped instead
+    (`BP/scripts/portal/portal.js`) is a `camera.fade` + title-card
+    sequence using verified `@minecraft/server` 2.8.0 APIs. A flat 2D icon
+    *can* be shown as HUD text via a custom Private-Use-Area font glyph
+    (a real, documented Bedrock technique), but it wasn't used here
+    because it couldn't be checked against a real device or a matching
+    example in Mojang's `bedrock-samples` this session, and shipping an
+    unverified rendering trick is exactly the mistake this pack's earlier
+    rounds were built to stop making. If you want to try it, `docs/` is
+    the place to add write-up once it's been tested in-game.
 - No hand-authored `.mcstructure` boss rooms yet — procedural rooms work
   but a decorator's pass would look much better (`docs/STRUCTURES.md`).
-- No bone animations (idle bob / walk cycles) — models are static but
-  fully rigged; adding `.animation.json` files per entity is the natural
-  next step.
+- Bone animation is a shared generic idle-sway/walk-cycle pair
+  (`RP/animations/hv_generic.animation.json`, `tools/gen_animations.py`)
+  applied to every entity's bones by name, not bespoke per-creature
+  animation. It reads as alive at a glance instead of a static "blank
+  outline"; a hand-keyframed pass per entity would still look better.
 - Per-mob ambient/hurt/death sound hookups aren't wired individually;
   only the scripted ability SFX (scream, portal, buffet, etc.) play.
 - The dimension's default biome guess (`minecraft:the_void` in
   `RP/biomes_client.json`) is a best-effort atmosphere hook — see
   `docs/SHADER.md`. It doesn't affect anything functional if it's wrong,
   only the fog/water color polish.
-- The Veil Dragon's flight steering (`minecraft:rideable` +
-  `minecraft:tamemount` + `minecraft:behavior.mount_pathing`, the same
-  components vanilla horses use, combined with flying navigation the way
-  our ghost mobs already use it) is the single least-verified mechanic in
-  this pack — it's a plausible composition of two separately-proven
-  patterns, not something confirmed by a matching vanilla flying+
-  player-steered mount. If it doesn't feel controllable in-game, that's
-  the first place to look.
+- The Veil Dragon's flight steering was rebuilt on the same components the
+  vanilla Happy Ghast uses for player-directed flight
+  (`minecraft:free_camera_controlled` + `minecraft:vertical_movement_action`
+  + `minecraft:behavior.player_ride_tamed`, verified against
+  `behavior_pack/entities/happy_ghast.json` in Mojang's `bedrock-samples`)
+  instead of the horse-style `minecraft:behavior.mount_pathing`, which is
+  built for ground pathing and was the least-verified mechanic in the
+  previous pass. This raised `min_engine_version` to `1.26.30` to match
+  where those components ship; taming itself still uses the horse-style
+  `minecraft:tamemount` temper system, which is unrelated and unchanged.
 
 ## Corrected against a real device test
 

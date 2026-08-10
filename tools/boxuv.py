@@ -97,11 +97,15 @@ def paint_cube(draw: ImageDraw.ImageDraw, cube: Cube, palette, seed=0):
         base = face_color[face]
         for px in range(w):
             for py in range(h):
-                jitter = rnd.randint(-10, 10)
-                col = tuple(max(0, min(255, c + jitter)) if i < 3 else c for i, c in enumerate(base))
+                jitter = rnd.randint(-12, 12)
+                # a light diagonal sheen so flat faces don't read as a
+                # single flat color from a distance
+                sheen = 10 if (px + py) % 5 == 0 else 0
+                col = tuple(max(0, min(255, c + jitter + sheen)) if i < 3 else c for i, c in enumerate(base))
                 draw.point((x + px, y + py), fill=col)
-        # outline
-        outline = tuple(max(0, c - 60) if i < 3 else 255 for i, c in enumerate(base))
+        # a softer outline than before - a hard -60 read as near-black on
+        # already-dark palettes and made mobs look like flat silhouettes
+        outline = tuple(max(0, c - 35) if i < 3 else 255 for i, c in enumerate(base))
         draw.rectangle([x, y, x + w - 1, y + h - 1], outline=outline)
 
 
