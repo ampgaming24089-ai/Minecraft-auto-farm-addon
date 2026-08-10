@@ -7,14 +7,29 @@
       "is_summonable": true
     },
     "components": {
-      "minecraft:type_family": { "family": ["hollow_veil_projectile"] },
-      "minecraft:collision_box": { "width": 0.3, "height": 0.3 },
+      "minecraft:type_family": {
+        "family": [
+          "hollow_veil_projectile"
+        ]
+      },
+      "minecraft:collision_box": {
+        "width": 0.3,
+        "height": 0.3
+      },
       "minecraft:physics": {},
       "minecraft:projectile": {
         "on_hit": {
-          "impact_damage": { "damage": 4, "knockback": true },
-          "catch_fire": { "duration": 3 },
-          "particle_on_hit": { "particle_type": "hollowveil:ember_particle", "num_particles": 6 }
+          "impact_damage": {
+            "damage": 4,
+            "knockback": true
+          },
+          "catch_fire": {
+            "duration": 3
+          },
+          "particle_on_hit": {
+            "particle_type": "largeexplode",
+            "num_particles": 6
+          }
         },
         "power": 1.1,
         "gravity": 0.0,
@@ -24,8 +39,12 @@
         "hit_sound": "hollowveil.imp.hit",
         "shoot_sound": "hollowveil.imp.throw"
       },
-      "minecraft:despawn": { "despawn_from_distance": {} }
+      "minecraft:despawn": {
+        "despawn_from_distance": {}
+      }
     },
-    "events": { "minecraft:entity_spawned": {} }
+    "events": {
+      "minecraft:entity_spawned": {}
+    }
   }
 }

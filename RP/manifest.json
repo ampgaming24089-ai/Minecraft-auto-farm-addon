@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Veil §7- Resource Pack",
-    "description": "Textures, models, sounds and atmosphere for the Hallowed Veil dimension.",
-    "uuid": "e7541459-702e-46a0-abc1-2a4b66b29eaf",
+    "name": "Hallowed Reaches §7- Resource Pack",
+    "description": "Textures, models, sounds and atmosphere for the Hallowed Reaches.",
+    "uuid": "b5759d66-90c1-4161-a552-66a8226eb61f",
     "version": [
-      3,
+      4,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "ec0289ad-f988-490b-b4c7-c14baa0c632e",
+      "uuid": "c351775c-40e4-4758-9d3c-d6e2dba24311",
       "version": [
-        3,
+        4,
         0,
         0
       ]
@@ -28,9 +28,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "7c86d2fc-67c1-4aa1-b552-93e58e3c7dfb",
+      "uuid": "4e86adc1-3bd9-4b84-9399-c5f0b391c6bf",
       "version": [
-        3,
+        4,
         0,
         0
       ]
@@ -38,7 +38,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Veil Team"
+      "Hallowed Reaches Team"
     ],
     "product_type": "addon"
   }

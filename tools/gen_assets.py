@@ -861,6 +861,27 @@ for _tier, _tpls in {
     for _kind, _tpl in (("sword", SWORD_TPL), ("pickaxe", PICKAXE_TPL), ("axe", AXE_TPL)):
         VANILLA_ICONS[f"{_tier}_{_kind}"] = tiered_vanilla_tool(_tpl, _tier, _vein, seed=stable_seed((_tier, _kind)) % 999, kind=_kind)
 
+# The three boss sets get the real vanilla armour silhouettes too. They used
+# to be drawn with PIL primitives, which is why they showed up in the
+# Equipment tab as plain coloured shapes next to properly-drawn vanilla gear.
+BOSS_ARMOR_TINTS = {
+    "spectral_regalia": (0.52, 0.22, (170, 235, 255, 255)),
+    "mourners_shroud": (0.78, 0.32, (235, 180, 235, 255)),
+    "ashen_demonplate": (0.02, 0.62, (255, 140, 60, 255)),
+}
+for _set, (_h, _s, _accent) in BOSS_ARMOR_TINTS.items():
+    for _k, _t in (("helmet", HELMET_TPL), ("chestplate", CHESTPLATE_TPL),
+                   ("leggings", LEGGINGS_TPL), ("boots", BOOTS_TPL)):
+        def _mkboss(tpl=_t, kind=_k, hh=_h, ss=_s, accent=_accent, name=_set):
+            def render():
+                img = render_vanilla_icon(tpl, hh, ss)
+                d = ImageDraw.Draw(img)
+                span = tuple((c[0] / 2, c[1] / 2) for c in VEIN_SPANS[kind])
+                draw_glow_veins(d, accent, span, seed=stable_seed((name, kind)) % 999, n=1, spread=1.0)
+                return img
+            return render
+        VANILLA_ICONS[f"{_set}_{_k}"] = _mkboss()
+
 VANILLA_ICONS["soulfire_igniter"] = render_soulfire_igniter
 
 # armour icons for the two mid tiers, same vanilla shapes as Hollowforged
@@ -938,15 +959,8 @@ ITEM_ICONS = {
     "dragon_egg": lambda d: draw_dragon_egg(d, (110, 60, 150, 255)),
 }
 
-for setname, hcol, ccol, lcol, bcol in [
-    ("spectral_regalia", (225, 225, 235, 255), (200, 200, 220, 255), (190, 190, 215, 255), (180, 180, 205, 255)),
-    ("mourners_shroud", (210, 195, 225, 255), (185, 165, 205, 255), (170, 150, 195, 255), (160, 140, 185, 255)),
-    ("ashen_demonplate", (120, 40, 30, 255), (100, 30, 22, 255), (90, 25, 18, 255), (80, 20, 15, 255)),
-]:
-    ITEM_ICONS[f"{setname}_helmet"] = (lambda c: (lambda d: draw_helmet(d, c)))(hcol)
-    ITEM_ICONS[f"{setname}_chestplate"] = (lambda c: (lambda d: draw_chestplate(d, c)))(ccol)
-    ITEM_ICONS[f"{setname}_leggings"] = (lambda c: (lambda d: draw_leggings(d, c)))(lcol)
-    ITEM_ICONS[f"{setname}_boots"] = (lambda c: (lambda d: draw_boots(d, c)))(bcol)
+# boss armour icons are built from the vanilla armour silhouettes below,
+# alongside the ore-tier sets - see BOSS_ARMOR_TINTS.
 
 
 # icons whose shapes are fine-grained single-pixel speckle (dust/powder) -

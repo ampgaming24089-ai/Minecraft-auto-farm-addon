@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Veil §7- Behavior Pack",
-    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Veil dimension.",
-    "uuid": "7c86d2fc-67c1-4aa1-b552-93e58e3c7dfb",
+    "name": "Hallowed Reaches §7- Behavior Pack",
+    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Reaches.",
+    "uuid": "4e86adc1-3bd9-4b84-9399-c5f0b391c6bf",
     "version": [
-      3,
+      4,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "cefe0049-30d2-40ef-b2ce-08d0e44c481c",
+      "uuid": "1335f7ba-d26c-4ed9-bc17-f29b193e18da",
       "version": [
-        3,
+        4,
         0,
         0
       ]
@@ -28,10 +28,10 @@
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "a63f5256-bccb-46d7-843b-853bd45956db",
+      "uuid": "46e6c8fa-b01e-4082-bc0d-8dc073d60e35",
       "entry": "scripts/main.js",
       "version": [
-        3,
+        4,
         0,
         0
       ]
@@ -39,9 +39,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "e7541459-702e-46a0-abc1-2a4b66b29eaf",
+      "uuid": "b5759d66-90c1-4161-a552-66a8226eb61f",
       "version": [
-        3,
+        4,
         0,
         0
       ]
@@ -57,7 +57,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Veil Team"
+      "Hallowed Reaches Team"
     ],
     "product_type": "addon"
   }

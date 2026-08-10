@@ -28,12 +28,19 @@ system.beforeEvents.startup.subscribe((ev) => {
 // sigils, dragon egg, shop and boss AI all went dead at once with no
 // in-game clue why. Now a broken subsystem reports itself and the rest
 // still run.
+const failed = [];
+
 function startSubsystem(name, fn) {
   try {
     fn();
   } catch (err) {
+    // NOTE: no world.sendMessage here. Script modules run during "early
+    // execution", where native world calls are not permitted - calling one
+    // throws and aborts the whole module, taking every subsystem after it
+    // down. Report to the content log now, and defer the in-game notice to
+    // a normal tick.
     console.error(`[Hollow Veil] subsystem "${name}" failed to start: ${err}`);
-    world.sendMessage(`§c[Hollow Veil] "${name}" failed to start - see content log.`);
+    failed.push(name);
   }
 }
 
@@ -73,4 +80,9 @@ world.afterEvents.playerSpawn.subscribe((ev) => {
   }
 });
 
-world.sendMessage("§5[Hollow Veil] §7Addon loaded.");
+// Deferred to a real tick for the same early-execution reason.
+system.run(() => {
+  for (const name of failed) {
+    world.sendMessage(`§c[Hollow Veil] "${name}" failed to start - see content log.`);
+  }
+});

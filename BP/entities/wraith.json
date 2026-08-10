@@ -108,8 +108,7 @@
         "priority": 6,
         "speed_multiplier": 1,
         "xz_dist": 10,
-        "y_dist": 7,
-        "y_offset": 2
+        "y_dist": 7
       },
       "minecraft:behavior.look_at_player": {
         "priority": 7,

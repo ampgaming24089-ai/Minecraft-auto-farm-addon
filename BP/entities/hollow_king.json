@@ -108,8 +108,7 @@
       "minecraft:behavior.random_fly": {
         "priority": 6,
         "xz_dist": 6,
-        "y_dist": 4,
-        "y_offset": 3
+        "y_dist": 4
       },
       "minecraft:behavior.look_at_player": {
         "priority": 7

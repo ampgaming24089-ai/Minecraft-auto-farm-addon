@@ -357,6 +357,70 @@ def check_generators():
             err(f"tools/{mod} fails to run: {last}")
 
 
+# --- 10. early-execution safety -------------------------------------------
+# Script modules run during "early execution", where native world calls are
+# forbidden. A top-level world.sendMessage throws and aborts the ENTIRE
+# module, killing every subsystem - which is exactly how the portal, shop and
+# item handlers all went dead while the log showed only one error.
+EARLY_FORBIDDEN = ("world.sendMessage", "world.getDimension", "world.getAllPlayers", "world.playSound")
+
+
+def check_early_execution():
+    for f in glob.glob(f"{BP}/scripts/**/*.js", recursive=True):
+        depth = 0
+        for i, line in enumerate(open(f), 1):
+            code = line.split("//")[0]
+            if depth == 0:
+                for bad in EARLY_FORBIDDEN:
+                    if bad + "(" in code:
+                        err(f"{rel(f)}:{i}: {bad}() at module top level - "
+                            f"native world calls are not allowed during early execution "
+                            f"and will abort the whole module")
+            depth += code.count("{") - code.count("}")
+            depth = max(0, depth)
+
+
+# --- 11. component fields that are not in the schema ----------------------
+# An unknown member does not warn harmlessly - for entities it fails the
+# whole definition to load (the Veil Dragon vanished this way).
+BAD_FIELDS = [
+    ("minecraft:use_modifiers", "start_using", "item"),
+    ("minecraft:behavior.random_fly", "y_offset", "entity"),
+]
+
+
+def check_unknown_fields():
+    for kind, pattern, root in (("item", f"{BP}/items/*.json", "minecraft:item"),
+                                ("entity", f"{BP}/entities/*.json", "minecraft:entity")):
+        for f in glob.glob(pattern):
+            d = json.load(open(f))
+            ident = d[root]["description"]["identifier"]
+            text = json.dumps(d)
+            for comp, field, which in BAD_FIELDS:
+                if which != kind:
+                    continue
+                if comp in text:
+                    comps = d[root].get("components", {})
+                    node = comps.get(comp)
+                    if isinstance(node, dict) and field in node:
+                        err(f"{ident}: {comp}.{field} is not in the schema")
+
+
+# --- 12. entity particle references --------------------------------------
+# particle_on_hit and friends only accept built-in legacy particle names.
+# A custom RP particle identifier logs "Invalid particle type" and is
+# silently dropped.
+def check_entity_particles():
+    for f in glob.glob(f"{BP}/entities/*.json"):
+        d = json.load(open(f))
+        ident = d["minecraft:entity"]["description"]["identifier"]
+        for m in re.finditer(r'"particle_type"\s*:\s*"([^"]+)"', json.dumps(d)):
+            p = m.group(1)
+            if ":" in p:
+                err(f"{ident}: particle_type {p!r} - entity components only accept "
+                    f"built-in legacy particle names, not custom identifiers")
+
+
 # --- 9. the two manifests agree with each other --------------------------
 def check_manifests():
     bp = json.load(open(os.path.join(BP, "manifest.json")))
@@ -394,10 +458,15 @@ def check_manifests():
         "583094e0-638f-4560-8015-ff61a552ec14",
         "64e7a8dd-cef4-42e5-a82e-9b9ccd145a19",
         "72f17a26-4315-4da5-bd56-726b955baae4",
+        "7c86d2fc-67c1-4aa1-b552-93e58e3c7dfb",
         "885991b9-2285-453c-88d9-b9caa859c2fc",
         "915cf596-e3c7-4014-978e-df04a7f46861",
+        "a63f5256-bccb-46d7-843b-853bd45956db",
         "ae6e6ecc-4012-4967-b18f-602b77319602",
+        "cefe0049-30d2-40ef-b2ce-08d0e44c481c",
         "da0cf01f-a51c-4d87-b44b-34823328adf8",
+        "e7541459-702e-46a0-abc1-2a4b66b29eaf",
+        "ec0289ad-f988-490b-b4c7-c14baa0c632e",
         "f0806793-e96d-4a61-a128-07ea3e3ed81b",
     }
     for u, label in seen.items():
@@ -418,6 +487,9 @@ def main():
     check_particles()
     check_geometry()
     check_generators()
+    check_early_execution()
+    check_unknown_fields()
+    check_entity_particles()
     check_manifests()
 
     print(f"checked {n_json} JSON files, {n_js} scripts")

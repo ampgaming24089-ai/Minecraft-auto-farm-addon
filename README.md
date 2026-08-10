@@ -1,4 +1,4 @@
-# Hallowed Veil — a Minecraft Bedrock dimension add-on
+# Hallowed Reaches — a Minecraft Bedrock dimension add-on
 
 (packaged/pack-facing name; the dimension is still called "the Hollow Veil"
 in-fiction throughout the story and UI — see `docs/STORY.md`)
@@ -17,7 +17,7 @@ of the story they're built to tell.
 
 ## Install
 
-1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowedVeil.mcaddon`.
+1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowedReaches.mcaddon`.
 2. Send that file to a device with Minecraft Bedrock and open it, or copy
    `BP/` and `RP/` directly into your world's
    `com.mojang/development_behavior_packs` / `development_resource_packs`.
@@ -35,7 +35,7 @@ of the story they're built to tell.
 - **The Hollow Veil dimension** (`hollowveil:hollow_veil`) — a custom
   dimension registered via the Script API. It starts as an empty void, so
   every block is placed by this addon: the hub (village + altars) is raised
-  on first arrival and the rest of the 512-radius world streams in around
+  on first arrival and the rest of the 10,000-radius world streams in around
   players as they explore. `docs/DIMENSION.md`, `docs/WORLD.md`.
 - **Getting there** — build a nether-portal-shaped frame out of **Gold
   Blocks** and light it with **Soulfire and Steel** (soul sand + iron
