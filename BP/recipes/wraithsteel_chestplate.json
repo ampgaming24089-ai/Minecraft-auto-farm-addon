@@ -1,0 +1,27 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "hollowveil:wraithsteel_chestplate"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "I I",
+      "III",
+      "III"
+    ],
+    "key": {
+      "I": {
+        "item": "hollowveil:wraithsteel_ingot"
+      }
+    },
+    "result": {
+      "item": "hollowveil:wraithsteel_chestplate"
+    },
+    "unlock": {
+      "context": "AlwaysUnlocked"
+    }
+  }
+}

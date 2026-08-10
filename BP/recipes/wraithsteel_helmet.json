@@ -1,0 +1,26 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "hollowveil:wraithsteel_helmet"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "III",
+      "I I"
+    ],
+    "key": {
+      "I": {
+        "item": "hollowveil:wraithsteel_ingot"
+      }
+    },
+    "result": {
+      "item": "hollowveil:wraithsteel_helmet"
+    },
+    "unlock": {
+      "context": "AlwaysUnlocked"
+    }
+  }
+}

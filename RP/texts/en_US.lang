@@ -137,3 +137,13 @@ item.spawn_egg.entity.hollowveil:poltergeist.name=Spawn Poltergeist
 item.spawn_egg.entity.hollowveil:shade.name=Spawn Shade
 item.spawn_egg.entity.hollowveil:soul_wisp.name=Spawn Soul Wisp
 item.spawn_egg.entity.hollowveil:wraith.name=Spawn Wraith
+
+## Tier armor
+item.hollowveil:wraithsteel_helmet.name=Wraithsteel Helm
+item.hollowveil:wraithsteel_chestplate.name=Wraithsteel Chestplate
+item.hollowveil:wraithsteel_leggings.name=Wraithsteel Leggings
+item.hollowveil:wraithsteel_boots.name=Wraithsteel Boots
+item.hollowveil:veilsteel_helmet.name=Veilsteel Helm
+item.hollowveil:veilsteel_chestplate.name=Veilsteel Chestplate
+item.hollowveil:veilsteel_leggings.name=Veilsteel Leggings
+item.hollowveil:veilsteel_boots.name=Veilsteel Boots

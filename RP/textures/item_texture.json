@@ -155,8 +155,20 @@
     "veilsteel_axe": {
       "textures": "textures/items/veilsteel_axe"
     },
+    "veilsteel_boots": {
+      "textures": "textures/items/veilsteel_boots"
+    },
+    "veilsteel_chestplate": {
+      "textures": "textures/items/veilsteel_chestplate"
+    },
+    "veilsteel_helmet": {
+      "textures": "textures/items/veilsteel_helmet"
+    },
     "veilsteel_ingot": {
       "textures": "textures/items/veilsteel_ingot"
+    },
+    "veilsteel_leggings": {
+      "textures": "textures/items/veilsteel_leggings"
     },
     "veilsteel_pickaxe": {
       "textures": "textures/items/veilsteel_pickaxe"
@@ -176,8 +188,20 @@
     "wraithsteel_axe": {
       "textures": "textures/items/wraithsteel_axe"
     },
+    "wraithsteel_boots": {
+      "textures": "textures/items/wraithsteel_boots"
+    },
+    "wraithsteel_chestplate": {
+      "textures": "textures/items/wraithsteel_chestplate"
+    },
+    "wraithsteel_helmet": {
+      "textures": "textures/items/wraithsteel_helmet"
+    },
     "wraithsteel_ingot": {
       "textures": "textures/items/wraithsteel_ingot"
+    },
+    "wraithsteel_leggings": {
+      "textures": "textures/items/wraithsteel_leggings"
     },
     "wraithsteel_pickaxe": {
       "textures": "textures/items/wraithsteel_pickaxe"

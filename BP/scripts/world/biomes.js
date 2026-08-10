@@ -8,7 +8,7 @@
 // so exploring actually turns up something new instead of the same four
 // pie slices in the same four places.
 
-export const WORLD_RADIUS = 1024; // 90 -> 512 -> 1024; ~4x the area again
+export const WORLD_RADIUS = 10000; // 90 -> 512 -> 1024 -> 10000
 export const SECTOR = 32; // terrain is built one sector at a time, near players
 export const SURFACE_Y = 64;
 export const BEDROCK_Y = SURFACE_Y - 12;
@@ -148,7 +148,7 @@ export function heightAt(x, z) {
   const hubFlatten = Math.min(1, Math.max(0, (dist - 18) / 34));
   let y = SURFACE_Y + rolling * hubFlatten;
   const edge = WORLD_RADIUS - dist;
-  if (edge < 24) y -= (24 - edge) * 0.9; // rim drops into the void
+  if (edge < 48) y -= (48 - edge) * 0.6; // rim drops into the void
   return Math.round(y);
 }
 

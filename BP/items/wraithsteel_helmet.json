@@ -1,0 +1,45 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:item": {
+    "description": {
+      "identifier": "hollowveil:wraithsteel_helmet",
+      "menu_category": {
+        "category": "equipment",
+        "group": "itemGroup.name.helmet"
+      }
+    },
+    "components": {
+      "minecraft:max_stack_size": 1,
+      "minecraft:icon": "wraithsteel_helmet",
+      "minecraft:display_name": {
+        "value": "item.hollowveil:wraithsteel_helmet.name"
+      },
+      "minecraft:wearable": {
+        "slot": "slot.armor.head",
+        "protection": 3
+      },
+      "minecraft:durability": {
+        "max_durability": 400
+      },
+      "minecraft:enchantable": {
+        "slot": "armor_head",
+        "value": 14
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": [
+              "hollowveil:wraithsteel_ingot"
+            ],
+            "repair_amount": "query.max_durability * 0.25"
+          }
+        ]
+      },
+      "minecraft:tags": {
+        "tags": [
+          "hollowveil:wraithsteel_armor"
+        ]
+      }
+    }
+  }
+}

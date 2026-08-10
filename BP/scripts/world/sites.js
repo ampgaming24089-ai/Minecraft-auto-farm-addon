@@ -1,6 +1,6 @@
 import { world, system, ItemStack } from "@minecraft/server";
 import { HOLLOW_VEIL } from "./build.js";
-import { BIOMES, WORLD_RADIUS, biomeAt, heightAt, featureRoll, isWithinWorld } from "./biomes.js";
+import { BIOMES, BEDROCK_Y, WORLD_RADIUS, biomeAt, heightAt, featureRoll, isWithinWorld } from "./biomes.js";
 import { KEYS, getWorldJson, setWorldJson } from "../lib/state.js";
 
 // Landmarks.
@@ -13,59 +13,57 @@ import { KEYS, getWorldJson, setWorldJson } from "../lib/state.js";
 // featureRoll() rather than Math.random(), the site list is stable - you can
 // leave and come back and the crypt is still where it was.
 
-const SITE_BUILD_RADIUS = 48;
+const SITE_BUILD_RADIUS = 56;
 const TICK_INTERVAL = 40;
 
-let sites = null;
-let builtSites = null;
+// Landmarks are placed by a deterministic grid, not a stored list.
+//
+// A pre-rolled array of every site in the world worked at radius 512, but a
+// radius-10000 world has ~340,000 candidate cells; persisting that list (or
+// the set of built ones) would run to megabytes of dynamic property. Instead
+// each SITE_CELL-sized cell hashes to "is there a site here, what type, and
+// where in the cell", so a site's existence and position are recomputed
+// identically every time from its coordinates alone, with zero storage.
+//
+// Whether a site is already built is answered by the world itself: building
+// one stamps a marker block deep under its centre, so the check is a single
+// block read rather than bookkeeping.
+const SITE_CELL = 176;
+const SITE_CHANCE = 0.62;
+const MARKER = "hollowveil:bonestone";
 
-/** Rolls the world's site list once, then reuses it forever. */
-export function getSites() {
-  if (sites) return sites;
-  const stored = getWorldJson(KEYS.SITES, null);
-  if (stored) {
-    sites = stored;
-    return sites;
-  }
-  sites = rollSites();
-  setWorldJson(KEYS.SITES, sites);
-  return sites;
+// which site types can appear in which biome
+const BY_BIOME = {
+  moors: ["graveyard", "graveyard", "mausoleum", "watchtower", "crypt", "ruin_arch"],
+  ashlands: ["bastion", "ember_camp", "ember_camp", "watchtower"],
+  marsh: ["bone_nest", "bone_nest", "witch_hut", "ruin_arch"],
+  ruins: ["sunken_city", "ruin_arch", "ruin_arch", "watchtower", "crypt"],
+  hub: [],
+};
+
+/** The site in this cell, or null. Pure function of the cell coordinates. */
+export function siteForCell(cx, cz) {
+  if (featureRoll(cx, cz, 401) > SITE_CHANCE) return null;
+  const x = Math.round(cx * SITE_CELL + featureRoll(cx, cz, 403) * SITE_CELL);
+  const z = Math.round(cz * SITE_CELL + featureRoll(cx, cz, 405) * SITE_CELL);
+  if (!isWithinWorld({ x, z })) return null;
+  if (Math.hypot(x, z) < 90) return null; // keep the hub clear
+  const pool = BY_BIOME[biomeAt(x, z).id] || [];
+  if (!pool.length) return null;
+  const type = pool[Math.floor(featureRoll(cx, cz, 407) * pool.length) % pool.length];
+  return { type, x, z };
 }
 
-const CATALOGUE = [
-  // type,             biomes,                     count
-  { type: "graveyard", biomes: ["moors"], count: 34 },
-  { type: "mausoleum", biomes: ["moors"], count: 16 },
-  { type: "watchtower", biomes: ["moors", "ruins"], count: 22 },
-  { type: "bastion", biomes: ["ashlands"], count: 14 },
-  { type: "ember_camp", biomes: ["ashlands"], count: 22 },
-  { type: "bone_nest", biomes: ["marsh"], count: 24 },
-  { type: "witch_hut", biomes: ["marsh"], count: 14 },
-  { type: "sunken_city", biomes: ["ruins"], count: 12 },
-  { type: "ruin_arch", biomes: ["ruins"], count: 28 },
-  { type: "crypt", biomes: ["moors", "ruins"], count: 20 },
-];
-
-function rollSites() {
-  const out = [];
-  let salt = 300;
-  for (const entry of CATALOGUE) {
-    let placed = 0;
-    for (let attempt = 0; attempt < entry.count * 40 && placed < entry.count; attempt++) {
-      salt++;
-      const a = featureRoll(attempt * 13, salt, 5) * Math.PI * 2;
-      // sqrt keeps sites evenly spread by area instead of clumping at the hub
-      const d = 70 + Math.sqrt(featureRoll(salt, attempt * 7, 9)) * (WORLD_RADIUS - 110);
-      const x = Math.round(Math.cos(a) * d);
-      const z = Math.round(Math.sin(a) * d);
-      if (!isWithinWorld({ x, z })) continue;
-      if (!entry.biomes.includes(biomeAt(x, z).id)) continue;
-      if (out.some((s) => Math.hypot(s.x - x, s.z - z) < 46)) continue;
-      out.push({ type: entry.type, x, z });
-      placed++;
-    }
+function alreadyBuilt(dim, site) {
+  try {
+    return dim.getBlock({ x: site.x, y: BEDROCK_Y + 1, z: site.z })?.typeId === MARKER;
+  } catch {
+    return true; // unloaded - do not build blind
   }
-  return out;
+}
+
+function stampMarker(run, site) {
+  run(`setblock ${site.x} ${BEDROCK_Y + 1} ${site.z} ${MARKER}`);
 }
 
 export function startSiteBuilding() {
@@ -76,23 +74,24 @@ export function startSiteBuilding() {
     } catch {
       return;
     }
-    if (!builtSites) builtSites = new Set(getWorldJson(KEYS.BUILT_SITES, []));
-    const all = getSites();
     for (const p of world.getAllPlayers()) {
       if (p.dimension.id !== HOLLOW_VEIL) continue;
-      for (const s of all) {
-        const key = `${s.type}@${s.x},${s.z}`;
-        if (builtSites.has(key)) continue;
-        if (Math.hypot(p.location.x - s.x, p.location.z - s.z) > SITE_BUILD_RADIUS) continue;
-        try {
-          buildSite(dim, s);
-          builtSites.add(key);
-          setWorldJson(KEYS.BUILT_SITES, [...builtSites]);
-          p.sendMessage(`§8You come upon §7${LABEL[s.type] ?? s.type}§8...`);
-        } catch {
-          /* chunk not ready - retry next pass */
+      const pcx = Math.floor(p.location.x / SITE_CELL);
+      const pcz = Math.floor(p.location.z / SITE_CELL);
+      for (let dx = -1; dx <= 1; dx++) {
+        for (let dz = -1; dz <= 1; dz++) {
+          const site = siteForCell(pcx + dx, pcz + dz);
+          if (!site) continue;
+          if (Math.hypot(p.location.x - site.x, p.location.z - site.z) > SITE_BUILD_RADIUS) continue;
+          if (alreadyBuilt(dim, site)) continue;
+          try {
+            buildSite(dim, site);
+            p.sendMessage(`§8You come upon §7${LABEL[site.type] ?? site.type}§8...`);
+          } catch {
+            /* chunk not ready - retry next pass */
+          }
+          return; // one site per pass, keeps the command budget flat
         }
-        return; // one site per pass, keeps the command budget flat
       }
     }
   }, TICK_INTERVAL);
@@ -115,6 +114,7 @@ function buildSite(dim, site) {
   const run = (cmd) => dim.runCommandAsync(cmd);
   const y = heightAt(site.x, site.z);
   const ctx = { dim, run, x: site.x, y, z: site.z };
+  stampMarker(run, site);
   switch (site.type) {
     case "graveyard": return buildGraveyard(ctx);
     case "mausoleum": return buildMausoleum(ctx);

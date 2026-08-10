@@ -82,3 +82,13 @@ entity.hollowveil:imp_fireball.name=Imp Fireball
 
 ## Biome
 biome.hollowveil:hollow_veil=Hollow Veil
+
+## Tier armor
+item.hollowveil:wraithsteel_helmet.name=Wraithsteel Helm
+item.hollowveil:wraithsteel_chestplate.name=Wraithsteel Chestplate
+item.hollowveil:wraithsteel_leggings.name=Wraithsteel Leggings
+item.hollowveil:wraithsteel_boots.name=Wraithsteel Boots
+item.hollowveil:veilsteel_helmet.name=Veilsteel Helm
+item.hollowveil:veilsteel_chestplate.name=Veilsteel Chestplate
+item.hollowveil:veilsteel_leggings.name=Veilsteel Leggings
+item.hollowveil:veilsteel_boots.name=Veilsteel Boots

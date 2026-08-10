@@ -86,11 +86,12 @@ of the story they're built to tell.
   resistance + damage resistance). `BP/scripts/armor/setBonuses.js`.
 - **World atmosphere** ("the shader ask"): what Bedrock add-ons can
   actually ship instead of a real shader pack, and why. `docs/SHADER.md`.
-- **A 512-radius streaming world** — the old fixed 90-block island is gone.
-  Terrain is generated one 32x32 sector at a time around players and
-  persisted, so the world is ~130x bigger without the load spike that
-  building it up front would cause. `docs/WORLD.md`,
-  `BP/scripts/world/terrain.js`.
+- **A 10,000-radius streaming world** — the old fixed 90-block island is gone.
+  ~314 million blocks of surface, generated one 32x32 sector at a time
+  around players. Nothing is persisted: layout is deterministic and
+  "already built?" is answered by reading the world itself (bedrock under a
+  sector, a marker block under a landmark), so the save never grows with
+  exploration. `docs/WORLD.md`, `BP/scripts/world/terrain.js`.
 - **4 noise-shaped biomes**, each with its own ground, features, fog and
   mob roster: the Grave Moors (headstones, dead trees, wraiths), the
   Ashlands (blackstone, magma vents, hellhounds), the Boneyard Marsh
@@ -98,11 +99,12 @@ of the story they're built to tell.
   stonework, wraithguards). Coverage is roughly even and borders are
   irregular, so exploring crosses territory instead of quadrants.
   `BP/scripts/world/biomes.js`.
-- **76 randomly-placed landmarks** across 10 types — graveyards,
+- **~4,900 landmarks** across 10 types — graveyards,
   mausoleums, watchtowers, ember bastions, camps, bone nests, huts,
   drowned cities, arches, and crypts with stairs down to a buried loot
-  room. Each is filtered to its biome, spaced apart, and built when you
-  get near it. `BP/scripts/world/sites.js`.
+  room. Placement comes from a deterministic 176-block grid filtered by
+  biome, so they are everywhere and always in the same place, with no
+  stored list. `BP/scripts/world/sites.js`.
 - **Per-biome fog and a dark palette** — each biome pushes its own fog
   definition via the `/fog` command as you cross into it, all of them dark
   and close, with natural light kept deliberately scarce.

@@ -863,6 +863,22 @@ for _tier, _tpls in {
 
 VANILLA_ICONS["soulfire_igniter"] = render_soulfire_igniter
 
+# armour icons for the two mid tiers, same vanilla shapes as Hollowforged
+for _tier in ("wraithsteel", "veilsteel"):
+    for _k, _t in (("helmet", HELMET_TPL), ("chestplate", CHESTPLATE_TPL),
+                   ("leggings", LEGGINGS_TPL), ("boots", BOOTS_TPL)):
+        def _mk(tpl=_t, kind=_k, tier=_tier):
+            th, ts = TIER_TINTS[tier]
+            vein = VEIN_COLORS[tier]
+            def render():
+                img = render_vanilla_icon(tpl, th, ts)
+                d = ImageDraw.Draw(img)
+                span = tuple((c[0] / 2, c[1] / 2) for c in VEIN_SPANS[kind])
+                draw_glow_veins(d, vein, span, seed=stable_seed((tier, kind)) % 999, n=1, spread=1.0)
+                return img
+            return render
+        VANILLA_ICONS[f"{_tier}_{_k}"] = _mk()
+
 for _kind, _tpl in (
     ("helmet", HELMET_TPL), ("chestplate", CHESTPLATE_TPL),
     ("leggings", LEGGINGS_TPL), ("boots", BOOTS_TPL),
@@ -1307,43 +1323,107 @@ ARMOR_LAYER_2_TPL = """
 """
 
 
-def render_armor_layer(tpl, tint_h, tint_s, accent=None, accent_cells=(), lscale=1.0, lbias=0.0):
-    """Recolors a vanilla armor-layer map into one set's palette, keeping the
-    original per-pixel lightness (so the plate shading/edges survive) and the
-    original transparency (so nothing bleeds outside the armor shape)."""
+def render_armor_layer(tpl, spec, layer):
+    """Renders one worn-armour layer for a set.
+
+    This used to be a flat hue swap of the vanilla map, so all four sets were
+    the same armour in different colours. Each set now gets its own surface
+    treatment painted on top of the vanilla shape: the shape and shading come
+    from the vanilla layer (so it fits the player model exactly and keeps its
+    transparency), everything else is the set's own."""
     rows = [r for r in tpl.strip("\n").split("\n")]
     h, w = len(rows), len(rows[0])
     img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     px = img.load()
-    accent_set = set(accent_cells)
+    tint_h, tint_s = spec["tint"]
+    lscale = spec.get("lscale", 1.0)
+    lbias = spec.get("lbias", 0.0)
+    style = spec["style"]
+    accent = spec["accent"]
+    rnd = random.Random(stable_seed((spec["name"], layer)))
+
+    def solid(x, y):
+        return 0 <= x < w and 0 <= y < h and rows[y][x] != "."
+
     for y, row in enumerate(rows):
         for x, ch in enumerate(row):
             if ch == ".":
                 continue
             l = max(0.04, min(0.97, (int(ch) / 10 + 0.05) * lscale + lbias))
-            if accent and (x, y) in accent_set:
-                r, g, b = accent[0] / 255, accent[1] / 255, accent[2] / 255
-                # keep the source shading on the accent stripe too
-                hh, _, ss = colorsys.rgb_to_hls(r, g, b)
-                r, g, b = colorsys.hls_to_rgb(hh, l, ss)
-            else:
-                r, g, b = colorsys.hls_to_rgb(tint_h, l, tint_s)
+            hue, sat = tint_h, tint_s
+            edge = not (solid(x - 1, y) and solid(x + 1, y) and solid(x, y - 1) and solid(x, y + 1))
+
+            if style == "plate":
+                # riveted banding: darker seams every few rows, bright rivets
+                if y % 4 == 0:
+                    l *= 0.74
+                if y % 4 == 2 and x % 5 == 1:
+                    l = min(0.98, l * 1.5)
+            elif style == "cloth":
+                # vertical folds, softer and less reflective
+                if x % 3 == 0:
+                    l *= 0.82
+                elif x % 3 == 1:
+                    l = min(0.98, l * 1.10)
+                sat = min(1.0, sat * 1.15)
+            elif style == "charred":
+                # scorched blotches with ember flecks in the cracks
+                if rnd.random() < 0.16:
+                    l *= 0.6
+                if rnd.random() < 0.05:
+                    hue, sat, l = 0.06, 0.95, min(0.95, l * 1.9)
+            elif style == "forged":
+                # hammered facets plus hairline glowing cracks
+                if (x + y) % 5 == 0:
+                    l = min(0.98, l * 1.18)
+                if (x * 3 + y * 5) % 23 == 0:
+                    hue, sat, l = 0.0, 0.9, min(0.95, l * 1.6)
+
+            # every set gets a dark outline so it reads against skin
+            if edge:
+                l *= 0.55
+
+            r, g, b = colorsys.hls_to_rgb(hue, l, sat)
             px[x, y] = (int(r * 255), int(g * 255), int(b * 255), 255)
+
+    # a trim band across the chest (layer 1) / thigh (layer 2) in the set's
+    # accent colour, so each suit has an identifiable marking
+    d = ImageDraw.Draw(img)
+    for (cx, cy) in ACCENT_CELLS[layer]:
+        if 0 <= cx < w and 0 <= cy < h and rows[cy][cx] != ".":
+            d.point((cx, cy), fill=accent)
     return img
 
 
-# per-set (hue, saturation); lightness comes from the vanilla map, scaled so
-# a dark set (demonplate) stays charred instead of washing out to salmon and
-# a pale set (regalia) stays ghostly
+# Each set is a distinct suit, not a recolour: its own hue, brightness range,
+# surface treatment and trim.
 ARMOR_SETS = {
-    "spectral_regalia": {"tint": (0.52, 0.22), "accent": (170, 235, 255, 255), "lscale": 1.08, "lbias": 0.06},
-    "mourners_shroud": {"tint": (0.78, 0.30), "accent": (235, 180, 235, 255), "lscale": 0.90, "lbias": 0.0},
-    "ashen_demonplate": {"tint": (0.02, 0.60), "accent": (255, 140, 60, 255), "lscale": 0.52, "lbias": -0.04},
-    "hollowforged": {"tint": (0.0, 0.06), "accent": (255, 60, 50, 255), "lscale": 1.12, "lbias": 0.05},
+    "spectral_regalia": {
+        "name": "spectral_regalia", "tint": (0.52, 0.22), "accent": (170, 235, 255, 255),
+        "lscale": 1.08, "lbias": 0.06, "style": "cloth",
+    },
+    "mourners_shroud": {
+        "name": "mourners_shroud", "tint": (0.78, 0.30), "accent": (235, 180, 235, 255),
+        "lscale": 0.90, "lbias": 0.0, "style": "cloth",
+    },
+    "ashen_demonplate": {
+        "name": "ashen_demonplate", "tint": (0.02, 0.60), "accent": (255, 140, 60, 255),
+        "lscale": 0.52, "lbias": -0.04, "style": "charred",
+    },
+    "hollowforged": {
+        "name": "hollowforged", "tint": (0.0, 0.06), "accent": (255, 60, 50, 255),
+        "lscale": 1.12, "lbias": 0.05, "style": "forged",
+    },
+    "veilsteel": {
+        "name": "veilsteel", "tint": (0.60, 0.55), "accent": (120, 200, 255, 255),
+        "lscale": 0.55, "lbias": -0.02, "style": "plate",
+    },
+    "wraithsteel": {
+        "name": "wraithsteel", "tint": (0.055, 0.85), "accent": (255, 200, 110, 255),
+        "lscale": 0.95, "lbias": 0.0, "style": "plate",
+    },
 }
-# A short engraved band on the chest plate (layer 1) and thigh plate
-# (layer 2) only - confined to the torso's own UV columns so it reads as
-# trim on the breastplate rather than a stripe painted across the arms too.
+
 ACCENT_CELLS = {
     1: [(x, 22) for x in range(21, 27)],
     2: [(x, 23) for x in range(4, 12)],
@@ -1352,12 +1432,8 @@ ACCENT_CELLS = {
 
 def gen_armor_layer_textures():
     for name, spec in ARMOR_SETS.items():
-        tint_h, tint_s = spec["tint"]
         for layer, tpl in ((1, ARMOR_LAYER_1_TPL), (2, ARMOR_LAYER_2_TPL)):
-            img = render_armor_layer(
-                tpl, tint_h, tint_s, spec["accent"], ACCENT_CELLS[layer],
-                lscale=spec.get("lscale", 1.0), lbias=spec.get("lbias", 0.0),
-            )
+            img = render_armor_layer(tpl, spec, layer)
             save(img, RP, "textures", "models", "armor", f"{name}_{layer}.png")
     print(f"wrote {len(ARMOR_SETS) * 2} armor layer textures")
 

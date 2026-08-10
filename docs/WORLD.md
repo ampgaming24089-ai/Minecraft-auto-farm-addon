@@ -6,13 +6,23 @@ design.
 
 ## Streaming terrain
 
-The world is a disc of radius **1024** (~130x the old 90-block island at
-512, and 4x that again at 1024). It is not built up front - that would be tens of thousands of
+The world is a disc of radius **10,000** - about 314 million blocks of
+surface area. It is not built up front - that would be tens of thousands of
 commands in a single tick and a hung client. Instead
 `BP/scripts/world/terrain.js` builds it one **32x32 sector** at a time,
-only within 3 sectors of a player, at most one sector per pass. Which
-sectors are finished is persisted, so terrain survives relogs, never
-rebuilds, and never overwrites anything a player has changed.
+only within 3 sectors of a player, at most one sector per pass.
+
+**Nothing about the world is persisted.** At this radius there are ~307,000
+sectors and ~4,900 landmarks; storing which had been visited would run to
+megabytes of dynamic property. Because layout is fully deterministic, the
+world itself is the record instead:
+
+* a sector is "already built" if its centre already has bedrock at
+  `BEDROCK_Y` - one block read, no storage, survives relogs for free
+* a landmark is "already built" if a marker block sits under its centre
+
+Both checks mean terrain never rebuilds over anything a player has changed,
+and the save file does not grow with exploration.
 
 Within a sector, columns of equal height and biome are merged into strips
 before being filled, which turns ~1024 potential commands into a few dozen.
@@ -44,11 +54,11 @@ quarter of the map.
 
 ## Landmarks
 
-`BP/scripts/world/sites.js` rolls a catalogue of **206 sites** across the
-map, each filtered to the biomes it belongs in and spaced at least 46
-blocks apart. They range from ~170 to ~985 blocks from spawn, so there is
-always something further out. Each is built the first time a player comes
-within 48 blocks of it.
+Landmarks are placed by a deterministic grid rather than a stored list.
+Every 176-block cell hashes to "is there a site here, what type, and where
+in the cell", filtered by the biome it lands in. That works out to roughly
+**4,900 landmarks** across the world, generated on demand and never stored.
+Each is built the first time a player comes within 56 blocks of it.
 
 | Site | Biome | Count |
 |---|---|---|

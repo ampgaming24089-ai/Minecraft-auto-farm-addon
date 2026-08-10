@@ -4,7 +4,6 @@ import {
   BIOMES, SECTOR, WORLD_RADIUS, BEDROCK_Y, STONE_TOP_Y,
   biomeAt, heightAt, featureRoll, isWithinWorld,
 } from "./biomes.js";
-import { KEYS, getWorldJson, setWorldJson } from "../lib/state.js";
 
 // Streaming terrain.
 //
@@ -22,21 +21,31 @@ const BUILD_RADIUS = 3;      // sectors around a player kept generated
 const SECTORS_PER_TICK = 1;  // hard cap on work per pass
 const TICK_INTERVAL = 10;
 
-let built = null;   // Set of "sx,sz"
+// Which sectors are already built is NOT persisted. At radius 10000 there
+// are ~307,000 sectors, and a list of the visited ones would grow into
+// megabytes of dynamic property - far past the budget - for a world that is
+// otherwise entirely deterministic. Instead a sector is probed: terrain lays
+// a bedrock floor at BEDROCK_Y, so if that block is already bedrock the
+// sector has been built before. That is O(1), needs no storage, survives
+// relogs for free, and still never rebuilds over a player's changes.
+const sessionBuilt = new Set(); // in-memory only, avoids re-probing each pass
 let queue = [];
-let queued = new Set();
+const queued = new Set();
 
-function loadBuilt() {
-  if (built) return built;
-  built = new Set(getWorldJson(KEYS.BUILT_SECTORS, []));
-  return built;
-}
-
-function markBuilt(key) {
-  loadBuilt().add(key);
-  // persisted as an array; a full 512-radius world is ~1000 sectors, which
-  // stays well inside the dynamic-property budget
-  setWorldJson(KEYS.BUILT_SECTORS, [...built]);
+function sectorIsBuilt(dim, sx, sz) {
+  const key = `${sx},${sz}`;
+  if (sessionBuilt.has(key)) return true;
+  const x = sx * SECTOR + (SECTOR >> 1);
+  const z = sz * SECTOR + (SECTOR >> 1);
+  try {
+    if (dim.getBlock({ x, y: BEDROCK_Y, z })?.typeId === "minecraft:bedrock") {
+      sessionBuilt.add(key);
+      return true;
+    }
+  } catch {
+    // chunk not loaded - treat as unbuilt; the build itself will no-op safely
+  }
+  return false;
 }
 
 export function startTerrainStreaming() {
@@ -57,7 +66,6 @@ function veil() {
 }
 
 function enqueueNearPlayers(dim) {
-  const done = loadBuilt();
   for (const p of world.getAllPlayers()) {
     if (p.dimension.id !== HOLLOW_VEIL) continue;
     const psx = Math.floor(p.location.x / SECTOR);
@@ -67,8 +75,7 @@ function enqueueNearPlayers(dim) {
         const sx = psx + dx;
         const sz = psz + dz;
         const key = `${sx},${sz}`;
-        if (done.has(key) || queued.has(key)) continue;
-        // skip sectors entirely outside the world disc
+        if (queued.has(key) || sessionBuilt.has(key)) continue;
         const cx = sx * SECTOR + SECTOR / 2;
         const cz = sz * SECTOR + SECTOR / 2;
         if (Math.hypot(cx, cz) > WORLD_RADIUS + SECTOR) continue;
@@ -79,15 +86,21 @@ function enqueueNearPlayers(dim) {
   }
   // nearest first, so ground appears under the player before the horizon
   queue.sort((a, b) => a.d - b.d);
+  // a player sprinting across the world can outrun the builder; cap the
+  // backlog so it never grows without bound
+  if (queue.length > 256) {
+    for (const job of queue.splice(256)) queued.delete(job.key);
+  }
 }
 
 function drainQueue(dim) {
   for (let i = 0; i < SECTORS_PER_TICK && queue.length; i++) {
     const job = queue.shift();
     queued.delete(job.key);
+    if (sectorIsBuilt(dim, job.sx, job.sz)) continue;
     try {
       buildSector(dim, job.sx, job.sz);
-      markBuilt(job.key);
+      sessionBuilt.add(job.key);
     } catch {
       // chunk not loaded yet: drop it, the next pass re-queues it
     }

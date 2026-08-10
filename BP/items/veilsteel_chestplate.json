@@ -1,0 +1,45 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:item": {
+    "description": {
+      "identifier": "hollowveil:veilsteel_chestplate",
+      "menu_category": {
+        "category": "equipment",
+        "group": "itemGroup.name.chestplate"
+      }
+    },
+    "components": {
+      "minecraft:max_stack_size": 1,
+      "minecraft:icon": "veilsteel_chestplate",
+      "minecraft:display_name": {
+        "value": "item.hollowveil:veilsteel_chestplate.name"
+      },
+      "minecraft:wearable": {
+        "slot": "slot.armor.chest",
+        "protection": 9
+      },
+      "minecraft:durability": {
+        "max_durability": 800
+      },
+      "minecraft:enchantable": {
+        "slot": "armor_torso",
+        "value": 18
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": [
+              "hollowveil:veilsteel_ingot"
+            ],
+            "repair_amount": "query.max_durability * 0.25"
+          }
+        ]
+      },
+      "minecraft:tags": {
+        "tags": [
+          "hollowveil:veilsteel_armor"
+        ]
+      }
+    }
+  }
+}
