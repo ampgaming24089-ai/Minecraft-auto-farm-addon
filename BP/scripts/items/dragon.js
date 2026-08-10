@@ -3,9 +3,12 @@ import { world } from "@minecraft/server";
 const HATCH_ITEM = "hollowveil:dragon_egg";
 
 export function registerDragonEgg() {
-  world.afterEvents.itemUseOn.subscribe((ev) => {
-    const { source, itemStack, block } = ev;
-    if (!source || !itemStack || itemStack.typeId !== HATCH_ITEM) return;
+  // see the note in items/tools.js - `itemUseOn` does not exist in
+  // @minecraft/server 2.x; `playerInteractWithBlock` is the real event.
+  world.afterEvents.playerInteractWithBlock.subscribe((ev) => {
+    const { player: source, itemStack, block, isFirstEvent } = ev;
+    if (!source || !itemStack || !block || itemStack.typeId !== HATCH_ITEM) return;
+    if (isFirstEvent === false) return;
     const dim = block.dimension;
     const spot = { x: block.location.x + 0.5, y: block.location.y + 1, z: block.location.z + 0.5 };
     try {

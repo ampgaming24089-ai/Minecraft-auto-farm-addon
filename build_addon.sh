@@ -7,6 +7,19 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OUT="${1:-$ROOT/dist}"
 NAME="HallowedDepths"
 
+# Gate the build on the validator. Several rounds of this addon shipped with
+# bugs a static check would have caught (a script event name that does not
+# exist, a food component shape that silently voided the whole item), so a
+# pack that fails validation must not get packaged. Set SKIP_VALIDATE=1 to
+# bypass deliberately.
+if [ "${SKIP_VALIDATE:-0}" != "1" ]; then
+  echo "Validating..."
+  python3 "$ROOT/tools/validate.py" || {
+    echo "Validation failed - refusing to build. (SKIP_VALIDATE=1 to override.)" >&2
+    exit 1
+  }
+fi
+
 rm -rf "$OUT"
 mkdir -p "$OUT"
 

@@ -122,3 +122,18 @@ entity.hollowveil:veil_dragon.name=Veil Dragon
 
 ## Biome
 biome.hollowveil:hollow_veil=Hollow Veil
+
+## Spawn eggs
+item.spawn_egg.entity.hollowveil:ashen_whelp.name=Spawn Ashen Whelp
+item.spawn_egg.entity.hollowveil:ashwing_bat.name=Spawn Ashwing Bat
+item.spawn_egg.entity.hollowveil:banshee.name=Spawn Banshee
+item.spawn_egg.entity.hollowveil:bonehide_elk.name=Spawn Bonehide Elk
+item.spawn_egg.entity.hollowveil:fallen_knight.name=Spawn Fallen Knight
+item.spawn_egg.entity.hollowveil:glimmershroom_toad.name=Spawn Glimmershroom Toad
+item.spawn_egg.entity.hollowveil:hellhound.name=Spawn Hellhound
+item.spawn_egg.entity.hollowveil:imp.name=Spawn Imp
+item.spawn_egg.entity.hollowveil:marrow_crawler.name=Spawn Marrow Crawler
+item.spawn_egg.entity.hollowveil:poltergeist.name=Spawn Poltergeist
+item.spawn_egg.entity.hollowveil:shade.name=Spawn Shade
+item.spawn_egg.entity.hollowveil:soul_wisp.name=Spawn Soul Wisp
+item.spawn_egg.entity.hollowveil:wraith.name=Spawn Wraith

@@ -87,14 +87,6 @@
           }
         ]
       },
-      "minecraft:behavior.hover": {
-        "priority": 4,
-        "hover_height": [
-          5,
-          9
-        ],
-        "duration": 3
-      },
       "minecraft:behavior.melee_attack": {
         "priority": 5,
         "speed_multiplier": 1.0,
@@ -132,7 +124,18 @@
       "minecraft:experience_reward": {
         "on_death": "query.last_hit_by_player ? 110 : 0"
       },
-      "minecraft:nameable": {}
+      "minecraft:nameable": {},
+      "minecraft:behavior.random_hover": {
+        "priority": 4,
+        "xz_dist": 8,
+        "y_dist": 6,
+        "y_offset": 0,
+        "interval": 1,
+        "hover_height": {
+          "min": 5,
+          "max": 9
+        }
+      }
     },
     "events": {
       "minecraft:entity_spawned": {},

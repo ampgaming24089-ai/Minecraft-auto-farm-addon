@@ -1,4 +1,4 @@
-import { world, system } from "@minecraft/server";
+import { world, system, ItemStack } from "@minecraft/server";
 import { openJournal } from "../ui/journal.js";
 import { tryIgnitePortal, FRAME_BLOCK } from "../portal/portal.js";
 import { useSigilOnAltar } from "../bosses/chambers.js";
@@ -14,14 +14,20 @@ export function registerItemHandlers() {
     }
   });
 
-  world.afterEvents.itemUseOn.subscribe((ev) => {
-    const { source, itemStack, block } = ev;
-    if (!itemStack || !source) return;
-    if (itemStack.typeId === "hollowveil:soulfire_igniter" && block?.typeId === FRAME_BLOCK) {
-      tryIgnitePortal(block.dimension, block.location, source);
-    } else if (itemStack.typeId?.startsWith("hollowveil:sigil_") && block?.typeId === "hollowveil:ritual_altar") {
-      const consumed = useSigilOnAltar(source, block.dimension, block.location, itemStack.typeId, system.currentTick);
-      if (consumed) consumeOneItem(source, itemStack);
+  // NOTE: there is no `itemUseOn` event in @minecraft/server 2.x - the
+  // right-click-a-block event is `playerInteractWithBlock` (verified against
+  // the 2.8.0 bindings). Subscribing to the non-existent one threw on load
+  // and took every subsystem registered after this one down with it, which
+  // is why the igniter, sigils, dragon egg and shop all did nothing in-game.
+  world.afterEvents.playerInteractWithBlock.subscribe((ev) => {
+    const { player, itemStack, block, isFirstEvent } = ev;
+    if (!itemStack || !player || !block) return;
+    if (isFirstEvent === false) return; // fires twice per interaction otherwise
+    if (itemStack.typeId === "hollowveil:soulfire_igniter" && block.typeId === FRAME_BLOCK) {
+      tryIgnitePortal(block.dimension, block.location, player);
+    } else if (itemStack.typeId?.startsWith("hollowveil:sigil_") && block.typeId === "hollowveil:ritual_altar") {
+      const consumed = useSigilOnAltar(player, block.dimension, block.location, itemStack.typeId, system.currentTick);
+      if (consumed) consumeOneItem(player, itemStack);
     }
   });
 }
@@ -125,4 +131,28 @@ function applyLanternEffects(player) {
 
 export function hasGhostWard(player) {
   return heldItems(player).some((i) => i.typeId === "hollowveil:ghost_ward_charm");
+}
+
+// The stew's "give the bowl back" behaviour. It used to be a
+// `using_converts_to` field on minecraft:food, but no vanilla item uses that
+// field at a modern format_version - only legacy 1.10-format ones do - so
+// rather than ship an unverified field (the exact class of guess that broke
+// these food items in the first place) it's done here on the verified
+// itemCompleteUse event instead.
+const CONVERTS_TO = {
+  "hollowveil:veil_marrow_stew": "minecraft:bowl",
+};
+
+export function registerFoodConversions() {
+  world.afterEvents.itemCompleteUse.subscribe((ev) => {
+    const give = CONVERTS_TO[ev.itemStack?.typeId];
+    if (!give || !ev.source) return;
+    try {
+      const inv = ev.source.getComponent("minecraft:inventory")?.container;
+      const leftover = inv?.addItem(new ItemStack(give, 1));
+      if (leftover) ev.source.dimension.spawnItem(leftover, ev.source.location);
+    } catch {
+      /* inventory full and no room to drop; the bowl is simply lost */
+    }
+  });
 }
