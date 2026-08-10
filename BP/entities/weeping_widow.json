@@ -135,7 +135,8 @@
           "min": 5,
           "max": 9
         }
-      }
+      },
+      "minecraft:can_fly": {}
     },
     "events": {
       "minecraft:entity_spawned": {},

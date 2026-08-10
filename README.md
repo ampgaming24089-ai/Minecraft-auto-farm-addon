@@ -37,12 +37,14 @@ of the story they're built to tell.
   every block is placed by this addon: the hub (village + altars) is raised
   on first arrival and the rest of the 512-radius world streams in around
   players as they explore. `docs/DIMENSION.md`, `docs/WORLD.md`.
-- **Getting there** — build a 4-wide-by-5-tall frame (or bigger, up to
-  nether-portal-sized) out of `Iron Blocks`, light it with a
-  `Soulfire Igniter` (soul sand + iron ingot instead of flint's flint +
-  iron ingot; same tool, blue-black flame). The frame detector is a
+- **Getting there** — build a nether-portal-shaped frame out of **Gold
+  Blocks** and light it with **Soulfire and Steel** (soul sand + iron
+  ingot: the same recipe shape as flint and steel with soul sand swapped
+  for flint, and it behaves the same way). The portal burns **red**, with
+  ember and smoke particles drifting off it. The frame detector is a
   from-scratch reimplementation of the vanilla nether portal algorithm —
-  any valid rectangle, not just one fixed size. `BP/scripts/portal/portal.js`.
+  any valid rectangle from 2x3 up to 21x21, not one fixed size.
+  `BP/scripts/portal/portal.js`.
 - **8 mobs**, each with a distinct mechanic, not just a reskinned vanilla
   behavior tree: Wraith (blinks through thin walls when it can't path
   around them, drains hunger on hit), Banshee (AoE scream — knockback +

@@ -58,7 +58,10 @@
       "minecraft:behavior.random_look_around": {
         "priority": 8
       },
-      "minecraft:nameable": {}
+      "minecraft:nameable": {},
+      "minecraft:knockback_resistance": {
+        "value": 0.35
+      }
     },
     "events": {
       "minecraft:entity_spawned": {}

@@ -121,7 +121,8 @@
         "on_death": "query.last_hit_by_player ? 120 : 0"
       },
       "minecraft:nameable": {},
-      "minecraft:conditional_bandwidth_optimization": {}
+      "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:can_fly": {}
     },
     "events": {
       "minecraft:entity_spawned": {},

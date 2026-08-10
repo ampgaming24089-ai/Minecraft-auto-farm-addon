@@ -906,7 +906,7 @@ def gen_block_textures():
         "ritual_altar_side": (95, 40, 90, 255),
         "ritual_altar_top": (130, 60, 120, 255),
         "soul_lantern": (244, 230, 184, 255),
-        "veil_portal": (10, 10, 14, 255),
+        "veil_portal": (58, 6, 6, 255),
         "ember_coal_ore": (70, 45, 35, 255),
         "sunken_bricks": (55, 80, 75, 255),
         "bastion_brick": (70, 42, 40, 255),
@@ -926,11 +926,17 @@ def gen_block_textures():
             d.rectangle([3, 3, 12, 12], fill=(255, 250, 220, 255))
             d.rectangle([0, 0, 15, 15], outline=(120, 100, 60, 255))
         if name == "veil_portal":
+            # red rift with hot flecks and darker smoke motes
             rnd = random.Random(9)
-            for _ in range(45):
+            for _ in range(55):
                 x, y = rnd.randint(0, 15), rnd.randint(0, 15)
                 t = rnd.random()
-                col = (255, 255, 255, 235) if t < 0.6 else (180, 190, 220, 200)
+                if t < 0.45:
+                    col = (255, 90, 60, 240)
+                elif t < 0.75:
+                    col = (200, 30, 25, 220)
+                else:
+                    col = (70, 55, 55, 200)
                 d.point((x, y), fill=col)
         if name.startswith("ritual_altar") or name == "soulforged_obsidian":
             for i in range(0, 16, 4):
@@ -972,6 +978,15 @@ def gen_block_textures():
 # ---------------------------------------------------------------------------
 # Particle textures — small glow sprites
 # ---------------------------------------------------------------------------
+# New effects reuse an existing sprite where the shape is the same and only
+# the colour ramp differs - the tinting component recolours them at runtime.
+PARTICLE_TEXTURE = {
+    "portal_smoke": "smoke_puff",
+    "boss_rage_particle": "hollow_king_pulse_particle",
+    "soul_burst_particle": "soul_wisp_particle",
+}
+
+
 def gen_particle_textures():
     particles = {
         "soul_wisp_particle": (220, 250, 220, 255),
@@ -979,7 +994,8 @@ def gen_particle_textures():
         "ember_particle": (255, 140, 40, 255),
         "hollow_king_pulse_particle": (200, 200, 230, 255),
         "shade_teleport_particle": (90, 90, 140, 255),
-        "portal_particle": (235, 235, 245, 255),
+        "portal_particle": (255, 120, 90, 255),
+        "smoke_puff": (120, 110, 110, 255),
     }
     for name, color in particles.items():
         img = Image.new("RGBA", (8, 8), (0, 0, 0, 0))
@@ -1040,15 +1056,48 @@ def gen_texture_atlases():
 def gen_particle_definitions():
     import json as _json
 
+    # NOTE ON SCHEMA: `minecraft:emitter_shape_point` takes `direction` as an
+    # ARRAY of three Molang expressions. The string "outwards" is only valid
+    # on the box/sphere emitters. Passing the string here made every one of
+    # these effects fail to load with
+    #   EmitterShapePointComponent | direction | error reading array
+    # which is why nothing in the pack appeared to emit particles at all.
+    # These now use a sphere emitter with "outwards", verified against
+    # vanilla cherry_leaves_particle (outwards) and basic_flame (sphere).
     specs = {
-        "soul_wisp_particle": {"speed": 0.8, "life": 0.8, "size": 0.12, "count": 8},
-        "banshee_scream_particle": {"speed": 1.6, "life": 0.5, "size": 0.2, "count": 14},
-        "ember_particle": {"speed": 1.0, "life": 0.6, "size": 0.15, "count": 10},
-        "hollow_king_pulse_particle": {"speed": 1.8, "life": 0.7, "size": 0.25, "count": 20},
-        "shade_teleport_particle": {"speed": 0.6, "life": 0.5, "size": 0.18, "count": 12},
-        "portal_particle": {"speed": 0.5, "life": 1.0, "size": 0.15, "count": 6},
+        "soul_wisp_particle": dict(count=14, life="Math.random(0.7, 1.4)", speed=1.1, radius=0.35,
+                                   size=0.14, drag=1.2, accel=[0, 1.4, 0],
+                                   tint=[(0.0, "#c8ffe6"), (1.0, "#2f7f66")]),
+        "banshee_scream_particle": dict(count=44, life="Math.random(0.35, 0.7)", speed=4.2, radius=0.2,
+                                        size=0.22, drag=2.4, accel=[0, 0.4, 0],
+                                        tint=[(0.0, "#ffffff"), (0.35, "#e2c8ff"), (1.0, "#6a3f8f")]),
+        "ember_particle": dict(count=20, life="Math.random(0.5, 1.1)", speed=1.6, radius=0.3,
+                               size=0.13, drag=0.9, accel=[0, 2.2, 0],
+                               tint=[(0.0, "#fff2b0"), (0.3, "#ff9430"), (1.0, "#7a1c05")]),
+        "hollow_king_pulse_particle": dict(count=60, life="Math.random(0.5, 0.9)", speed=5.5, radius=0.5,
+                                           size=0.26, drag=2.8, accel=[0, 0.2, 0],
+                                           tint=[(0.0, "#ffffff"), (0.4, "#b9c6ff"), (1.0, "#2a2f6b")]),
+        "shade_teleport_particle": dict(count=26, life="Math.random(0.4, 0.8)", speed=1.8, radius=0.25,
+                                        size=0.19, drag=1.6, accel=[0, -1.2, 0],
+                                        tint=[(0.0, "#8f8fd6"), (1.0, "#12122b")]),
+        "portal_particle": dict(count=18, life="Math.random(0.9, 1.8)", speed=0.9, radius=0.6,
+                                size=0.15, drag=0.6, accel=[0, 0.9, 0],
+                                tint=[(0.0, "#ffffff"), (0.5, "#ff5a4a"), (1.0, "#3d0505")]),
+        # the new red portal's lazy smoke column
+        "portal_smoke": dict(count=10, life="Math.random(1.4, 2.6)", speed=0.5, radius=0.55,
+                             size=0.3, drag=0.4, accel=[0, 1.1, 0],
+                             tint=[(0.0, "#4a3a3a"), (0.5, "#2a1e1e"), (1.0, "#100b0b")]),
+        # boss telegraphs
+        "boss_rage_particle": dict(count=70, life="Math.random(0.6, 1.2)", speed=6.5, radius=0.6,
+                                   size=0.3, drag=2.2, accel=[0, 1.6, 0],
+                                   tint=[(0.0, "#ffffff"), (0.25, "#ff4040"), (1.0, "#3a0000")]),
+        "soul_burst_particle": dict(count=50, life="Math.random(0.5, 1.0)", speed=4.0, radius=0.4,
+                                    size=0.2, drag=2.0, accel=[0, 2.4, 0],
+                                    tint=[(0.0, "#eafff6"), (0.4, "#63e6bf"), (1.0, "#0d3b2e")]),
     }
+
     for name, s in specs.items():
+        gradient = {str(stop): color for stop, color in s["tint"]}
         data = {
             "format_version": "1.10.0",
             "particle_effect": {
@@ -1056,20 +1105,40 @@ def gen_particle_definitions():
                     "identifier": f"hollowveil:{name}",
                     "basic_render_parameters": {
                         "material": "particles_alpha",
-                        "texture": f"textures/particle/{name}",
+                        "texture": f"textures/particle/{PARTICLE_TEXTURE.get(name, name)}",
                     },
                 },
                 "components": {
                     "minecraft:emitter_rate_instant": {"num_particles": s["count"]},
-                    "minecraft:emitter_lifetime_once": {"active_time": 0.2},
-                    "minecraft:emitter_shape_point": {"offset": [0, 0.5, 0], "direction": "outwards"},
+                    "minecraft:emitter_lifetime_once": {"active_time": 0.25},
+                    "minecraft:emitter_shape_sphere": {
+                        "offset": [0, 0.2, 0],
+                        "radius": s["radius"],
+                        "direction": "outwards",
+                    },
                     "minecraft:particle_lifetime_expression": {"max_lifetime": s["life"]},
                     "minecraft:particle_initial_speed": s["speed"],
-                    "minecraft:particle_motion_dynamic": {"linear_drag_coefficient": 1.1},
+                    "minecraft:particle_motion_dynamic": {
+                        "linear_drag_coefficient": s["drag"],
+                        "linear_acceleration": s["accel"],
+                    },
+                    # shrink over life so bursts dissipate instead of popping out
                     "minecraft:particle_appearance_billboard": {
-                        "size": [s["size"], s["size"]],
+                        "size": [
+                            f"{s['size']} * (1.0 - variable.particle_age / variable.particle_lifetime)",
+                            f"{s['size']} * (1.0 - variable.particle_age / variable.particle_lifetime)",
+                        ],
                         "facing_camera_mode": "lookat_xyz",
                         "uv": {"texture_width": 8, "texture_height": 8, "uv": [0, 0], "uv_size": [8, 8]},
+                    },
+                    # colour ramp across the particle's life - this is what
+                    # makes a burst read as fire/soul/void rather than a
+                    # cloud of identical dots
+                    "minecraft:particle_appearance_tinting": {
+                        "color": {
+                            "interpolant": "variable.particle_age / variable.particle_lifetime",
+                            "gradient": gradient,
+                        }
                     },
                 },
             },

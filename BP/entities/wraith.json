@@ -141,7 +141,10 @@
         "on_death": "query.last_hit_by_player ? 6 : 0"
       },
       "minecraft:nameable": {},
-      "minecraft:conditional_bandwidth_optimization": {}
+      "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:knockback_resistance": {
+        "value": 0.8
+      }
     },
     "events": {
       "hollowveil:noop": {},

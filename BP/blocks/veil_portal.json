@@ -1,16 +1,29 @@
 {
   "format_version": "1.21.0",
   "minecraft:block": {
-    "description": { "identifier": "hollowveil:veil_portal", "menu_category": { "category": "none" }, "traits": {} },
+    "description": {
+      "identifier": "hollowveil:veil_portal",
+      "menu_category": {
+        "category": "none"
+      },
+      "traits": {}
+    },
     "components": {
-      "minecraft:material_instances": { "*": { "texture": "veil_portal", "render_method": "blend", "ambient_occlusion": false, "face_dimming": false } },
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "veil_portal",
+          "render_method": "blend",
+          "ambient_occlusion": false,
+          "face_dimming": false
+        }
+      },
       "minecraft:geometry": "minecraft:geometry.full_block",
       "minecraft:collision_box": false,
       "minecraft:selection_box": false,
       "minecraft:destructible_by_mining": false,
       "minecraft:destructible_by_explosion": false,
       "minecraft:light_emission": 11,
-      "minecraft:map_color": "#0c0c10"
+      "minecraft:map_color": "#8c1410"
     }
   }
 }

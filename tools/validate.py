@@ -165,6 +165,23 @@ def check_entities_blocks(lang):
     for i in rp_ents - bp_ents:
         err(f"{i}: RP client entity has no matching BP entity")
 
+    # A no-gravity entity with no minecraft:can_fly is not treated as a flier
+    # by the movement system, so knockback sends it upward and nothing ever
+    # brings it back down - mobs literally fly off into the sky when hit.
+    # Every vanilla no-gravity flier (allay, bat) declares can_fly.
+    PROJECTILES = {"hollowveil:debris_projectile", "hollowveil:imp_fireball"}
+    for f in sorted(glob.glob(f"{BP}/entities/*.json")):
+        e = json.load(open(f))["minecraft:entity"]
+        ident = e["description"]["identifier"]
+        if ident in PROJECTILES:
+            continue
+        c = e["components"]
+        nograv = c.get("minecraft:physics", {}).get("has_gravity", True) is False
+        if nograv and "minecraft:can_fly" not in c:
+            err(f"{ident}: has_gravity false but no minecraft:can_fly - knockback will launch it into the sky")
+        if "minecraft:knockback_resistance" not in c:
+            warnings.append(f"{ident}: no knockback_resistance")
+
     blocks = {f[:-4] for f in os.listdir(os.path.join(RP, "textures", "blocks")) if f.endswith(".png")}
     for f in sorted(glob.glob(f"{BP}/blocks/*.json")):
         b = json.load(open(f))["minecraft:block"]
@@ -266,6 +283,35 @@ def check_references():
                     err(f"{rel(f)}: references undefined {ident}")
 
 
+# --- 9a. particle emitter schema -----------------------------------------
+# A point emitter's `direction` must be an array of three Molang
+# expressions; the string "outwards" is only legal on box/sphere emitters.
+# Getting this wrong makes the effect fail to load entirely with
+# "EmitterShapePointComponent | direction | error reading array" - so the
+# pack looks like it has no particles at all, with no in-game clue why.
+def check_particles():
+    for f in sorted(glob.glob(f"{RP}/particles/*.json")):
+        fx = json.load(open(f))["particle_effect"]
+        comps = fx["components"]
+        shapes = [k for k in comps if k.startswith("minecraft:emitter_shape_")]
+        if not shapes:
+            err(f"{rel(f)}: no emitter shape component")
+            continue
+        for shape in shapes:
+            d = comps[shape].get("direction")
+            if d is None:
+                continue
+            if shape.endswith("_point"):
+                if not isinstance(d, list) or len(d) != 3:
+                    err(f"{rel(f)}: {shape}.direction must be a 3-element array "
+                        f"(got {d!r}) - \"outwards\" is box/sphere only")
+            elif isinstance(d, str) and d not in ("outwards", "inwards"):
+                err(f"{rel(f)}: {shape}.direction string must be 'outwards' or 'inwards' (got {d!r})")
+        tex = fx["description"]["basic_render_parameters"]["texture"]
+        if not os.path.isfile(os.path.join(RP, tex + ".png")):
+            err(f"{rel(f)}: particle texture {tex!r} missing")
+
+
 # --- 9b. geometry is box-UV safe and matches its texture size ------------
 def check_geometry():
     from PIL import Image  # only needed here; keep the rest import-light
@@ -362,6 +408,7 @@ def main():
     check_rp_refs()
     check_sounds_particles()
     check_references()
+    check_particles()
     check_geometry()
     check_generators()
     check_manifests()

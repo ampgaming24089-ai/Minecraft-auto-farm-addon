@@ -2,7 +2,7 @@ import { world, system } from "@minecraft/server";
 import { KEYS, getWorldFlag, setWorldFlag, getPlayerJson, setPlayerJson } from "../lib/state.js";
 import { ensureWorldBuilt, HOLLOW_VEIL, ISLAND_CENTER } from "../world/build.js";
 
-export const FRAME_BLOCK = "minecraft:iron_block";
+export const FRAME_BLOCK = "minecraft:gold_block";
 const PORTAL_BLOCK = "hollowveil:veil_portal";
 const ARRIVAL_POS = { x: ISLAND_CENTER.x, y: ISLAND_CENTER.y, z: ISLAND_CENTER.z + 20 };
 const PORTAL_COOLDOWN_TICKS = 100; // 5s, long enough to clear the block
@@ -102,7 +102,7 @@ export function tryIgnitePortal(dimension, clickedPos, player) {
       if (frame) {
         fillPortal(dimension, frame);
         dimension.playSound("hollowveil.portal.ignite", clickedPos);
-        player?.sendMessage("§5The veil tears open before you...");
+        player?.sendMessage("§cThe veil splits — red light pours through...");
         return true;
       }
     }
@@ -138,7 +138,7 @@ function buildReturnPortalFrame(dim) {
 function crossingFade(player) {
   try {
     player.camera.fade({
-      fadeColor: { red: 0.02, green: 0.0, blue: 0.04 },
+      fadeColor: { red: 0.10, green: 0.01, blue: 0.01 },
       fadeTime: { fadeInTime: 0.5, holdTime: 0.6, fadeOutTime: 1.1 },
     });
   } catch {
@@ -162,12 +162,12 @@ function showCrossingTitle(player, title, subtitle) {
 async function sendPlayerToHollowVeil(player, pos) {
   setPlayerJson(player, KEYS.RETURN_POS, { dimension: player.dimension.id, pos: { x: pos.x, y: pos.y, z: pos.z } });
   crossingFade(player);
-  player.sendMessage("§5You step through into the Hollow Veil...");
+  player.sendMessage("§cYou step through into the Hollow Veil...");
   await ensureWorldBuilt();
   const dim = world.getDimension(HOLLOW_VEIL);
   buildReturnPortalFrame(dim);
   player.teleport({ x: ARRIVAL_POS.x + 0.5, y: ARRIVAL_POS.y, z: ARRIVAL_POS.z + 0.5 }, { dimension: dim });
-  showCrossingTitle(player, "§l§5THE HOLLOW VEIL", "§7A grey country stitched between worlds");
+  showCrossingTitle(player, "§l§4THE HOLLOW VEIL", "§7A grey country stitched between worlds");
 }
 
 export function startPortalTicking() {

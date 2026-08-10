@@ -16,7 +16,39 @@ import { setPlayerJson, getPlayerJson, KEYS } from "../lib/state.js";
 const FOG_TAG = "hollowveil_biome"; // the /fog "user id" we own and reuse
 const CHECK_INTERVAL = 40;
 
+/** Live portals breathe red embers and a lazy smoke column. Bedrock has no
+ * block-attached particle emitter for custom blocks, so the effect is driven
+ * from script off the portal blocks near each player. */
+function portalFx() {
+  for (const player of world.getAllPlayers()) {
+    const dim = player.dimension;
+    const o = player.location;
+    for (let i = 0; i < 3; i++) {
+      const x = Math.floor(o.x) + Math.round((Math.random() - 0.5) * 12);
+      const y = Math.floor(o.y) + Math.round((Math.random() - 0.5) * 6);
+      const z = Math.floor(o.z) + Math.round((Math.random() - 0.5) * 12);
+      let block;
+      try {
+        block = dim.getBlock({ x, y, z });
+      } catch {
+        continue;
+      }
+      if (block?.typeId !== "hollowveil:veil_portal") continue;
+      const at = { x: x + 0.5, y: y + 0.5, z: z + 0.5 };
+      try {
+        dim.spawnParticle("hollowveil:portal_particle", at);
+        if (Math.random() < 0.4) {
+          dim.spawnParticle("hollowveil:portal_smoke", { x: at.x, y: at.y + 0.6, z: at.z });
+        }
+      } catch {
+        /* unloaded chunk */
+      }
+    }
+  }
+}
+
 export function startAtmosphere() {
+  system.runInterval(portalFx, 12);
   system.runInterval(() => {
     for (const player of world.getAllPlayers()) {
       try {

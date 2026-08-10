@@ -76,6 +76,10 @@
       },
       "minecraft:experience_reward": {
         "on_death": "query.last_hit_by_player ? 2 : 0"
+      },
+      "minecraft:can_fly": {},
+      "minecraft:knockback_resistance": {
+        "value": 0.8
       }
     },
     "events": {

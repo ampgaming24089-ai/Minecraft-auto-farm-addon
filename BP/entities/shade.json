@@ -93,7 +93,10 @@
       "minecraft:experience_reward": {
         "on_death": "query.last_hit_by_player ? 6 : 0"
       },
-      "minecraft:nameable": {}
+      "minecraft:nameable": {},
+      "minecraft:knockback_resistance": {
+        "value": 0.35
+      }
     },
     "events": {
       "minecraft:entity_spawned": {},
