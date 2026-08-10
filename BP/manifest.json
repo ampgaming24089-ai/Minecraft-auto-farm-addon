@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallow Dimension v2 §7- Behavior Pack",
-    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallow Dimension.",
-    "uuid": "f0806793-e96d-4a61-a128-07ea3e3ed81b",
+    "name": "Hallowed Veil §7- Behavior Pack",
+    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Veil dimension.",
+    "uuid": "7c86d2fc-67c1-4aa1-b552-93e58e3c7dfb",
     "version": [
-      2,
+      3,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "72f17a26-4315-4da5-bd56-726b955baae4",
+      "uuid": "cefe0049-30d2-40ef-b2ce-08d0e44c481c",
       "version": [
-        2,
+        3,
         0,
         0
       ]
@@ -28,10 +28,10 @@
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "36d910e6-19c8-4464-8aaa-e878ad5775bc",
+      "uuid": "a63f5256-bccb-46d7-843b-853bd45956db",
       "entry": "scripts/main.js",
       "version": [
-        2,
+        3,
         0,
         0
       ]
@@ -39,9 +39,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "da0cf01f-a51c-4d87-b44b-34823328adf8",
+      "uuid": "e7541459-702e-46a0-abc1-2a4b66b29eaf",
       "version": [
-        2,
+        3,
         0,
         0
       ]
@@ -57,7 +57,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallow Dimension v2 Team"
+      "Hallowed Veil Team"
     ],
     "product_type": "addon"
   }

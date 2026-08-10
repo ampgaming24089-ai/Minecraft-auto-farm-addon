@@ -101,6 +101,21 @@ def entity_geo(identifier, tex_name, bones, palette, atlas_width=64, visible_bou
     return geo_path
 
 
+def egg_colors(palette_key):
+    """Spawn-egg base/overlay derived from the creature's own palette.
+    Without a spawn_egg block Bedrock renders the egg solid black, which is
+    why every one of these eggs was an unreadable black blob in the
+    creative inventory."""
+    pal = PAL.get(palette_key) or {}
+    def hexof(c):
+        return "#%02x%02x%02x" % (c[0], c[1], c[2])
+    base = pal.get("side") or (140, 140, 150, 255)
+    over = pal.get("top") or pal.get("front") or base
+    # push the overlay away from the base so the speckles actually read
+    over = tuple(min(255, int(v * 1.35)) for v in over[:3])
+    return hexof(base), hexof(over)
+
+
 def write_client_entity(identifier, tex_name, geo_id, spawn_egg_colors=None, scale=1.0):
     data = {
         "format_version": "1.16.0",
@@ -142,6 +157,76 @@ def write_shared_render_controller():
     os.makedirs(os.path.dirname(p), exist_ok=True)
     with open(p, "w") as f:
         json.dump(data, f, indent=2)
+
+
+
+def _bbox(c):
+    ox, oy, oz = c["origin"]
+    dx, dy, dz = c["size"]
+    return ox, oy, oz, dx, dy, dz
+
+
+def add_detail(identifier, bones):
+    """Appends small detail cubes so creatures have a readable silhouette
+    instead of a stack of plain boxes. Everything is positioned relative to
+    the bone's existing primary cube, so it works for any rig: a brow ridge
+    and jaw on the head, hands at the ends of arms, feet under legs,
+    shoulder pads on the torso, a tip on the tail.
+
+    This is what turns a six-box mob into something that reads as a
+    creature at a glance - the "soulless blob" problem was as much missing
+    silhouette as it was flat texture."""
+    by_name = {b["name"]: b for b in bones}
+
+    def primary(name):
+        b = by_name.get(name)
+        if not b or not b["cubes"]:
+            return None, None
+        return b, b["cubes"][0]
+
+    # --- head: brow ridge + jaw ------------------------------------------
+    b, c = primary("head")
+    if b and c:
+        ox, oy, oz, dx, dy, dz = _bbox(c)
+        if dx >= 4 and dy >= 4:
+            b["cubes"].append(cube("brow", [ox, oy + dy - 2, oz - 1], [dx, 2, 1]))
+            b["cubes"].append(cube("jaw", [ox + 1, oy, oz - 1], [max(1, dx - 2), 2, 1]))
+
+    # --- arms: hands ------------------------------------------------------
+    for name in ("left_arm", "right_arm", "arm_l", "arm_r"):
+        b, c = primary(name)
+        if not (b and c):
+            continue
+        ox, oy, oz, dx, dy, dz = _bbox(c)
+        b["cubes"].append(cube("hand", [ox - 1, oy - 2, oz - 1], [dx + 2, 2, dz + 2]))
+
+    # --- legs: feet -------------------------------------------------------
+    for name in ("leg_l", "leg_r", "leg_fl", "leg_fr", "leg_bl", "leg_br"):
+        b, c = primary(name)
+        if not (b and c):
+            continue
+        ox, oy, oz, dx, dy, dz = _bbox(c)
+        b["cubes"].append(cube("foot", [ox, oy, oz - 2], [dx, 2, dz + 2]))
+
+    # --- torso: shoulder ridge -------------------------------------------
+    for name in ("torso", "body"):
+        b, c = primary(name)
+        if not (b and c):
+            continue
+        ox, oy, oz, dx, dy, dz = _bbox(c)
+        if dx >= 6 and dy >= 6:
+            b["cubes"].append(cube("collar", [ox - 1, oy + dy - 3, oz], [dx + 2, 3, dz]))
+        break
+
+    # --- tails / trailing pieces: a narrower tip --------------------------
+    for name in ("tail", "tail2"):
+        b, c = primary(name)
+        if not (b and c):
+            continue
+        ox, oy, oz, dx, dy, dz = _bbox(c)
+        b["cubes"].append(cube("tail_tip", [ox + 1, oy - 2, oz + dz], [max(1, dx - 2), max(2, dy - 2), 2]))
+
+    return bones
 
 
 # ---------------------------------------------------------------------------
@@ -618,6 +703,10 @@ def build_dragon():
             }
         },
     }
+    b, o = egg_colors("dragon_1")
+    client_entity["minecraft:client_entity"]["description"]["spawn_egg"] = {
+        "base_color": b, "overlay_color": o,
+    }
     ce_path = os.path.join(RP, "entity", "veil_dragon.entity.json")
     with open(ce_path, "w") as f:
         json.dump(client_entity, f, indent=2)
@@ -630,6 +719,9 @@ def run():
     build_dragon()
     for identifier, palette_key, bones, scale, vb in ENTITIES:
         palette = PAL[palette_key]
+        # projectiles stay as bare shapes; everything else gets silhouette detail
+        if identifier not in ("debris_projectile", "imp_fireball"):
+            bones = add_detail(identifier, bones)
         resolved_bones = []
         for b in bones:
             cubes = []
@@ -639,7 +731,10 @@ def run():
                 cubes.append({"name": c["name"], "origin": c["origin"], "size": c["size"], "palette": pal})
             resolved_bones.append({"name": b["name"], "parent": b.get("parent"), "pivot": b["pivot"], "cubes": cubes})
         entity_geo(identifier, identifier, resolved_bones, palette, visible_bounds=vb)
-        write_client_entity(identifier, identifier, f"geometry.hv_{identifier}", scale=scale)
+        # projectiles are not spawnable, so they get no egg
+        eggs = None if identifier in ("debris_projectile", "imp_fireball") else egg_colors(palette_key)
+        write_client_entity(identifier, identifier, f"geometry.hv_{identifier}",
+                            spawn_egg_colors=eggs, scale=scale)
         print("built entity", identifier)
 
 

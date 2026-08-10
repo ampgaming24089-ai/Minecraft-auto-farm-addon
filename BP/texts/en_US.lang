@@ -1,7 +1,7 @@
 ## Hollow Veil - display strings
 
-pack.name=Hallow Dimension v2 - Behavior Pack
-pack.description=Mobs, bosses, items, loot, trading and scripts for the Hallow Dimension.
+pack.name=Hallowed Veil - Behavior Pack
+pack.description=Hallowed Veil - a dark dimension of graves, demons and wardens.
 
 itemGroup.name.hollowveil.currency=Hollow Veil Materials
 itemGroup.name.hollowveil.trinkets=Hollow Veil Trinkets

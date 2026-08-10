@@ -19,6 +19,7 @@ import zlib
 from PIL import Image, ImageDraw, ImageFilter
 
 import boxuv
+import icons
 
 
 def stable_seed(value):
@@ -804,6 +805,49 @@ VEIN_COLORS = {
 # (rendered at native vanilla resolution, not run through the icon
 # supersampling pipeline - these should look exactly as crisp/blocky as a
 # real item texture)
+
+# The Soulfire and Steel is meant to be a reskin of flint and steel, so its
+# icon is derived from the real vanilla flint_and_steel silhouette (shape and
+# per-pixel lightness only) rather than drawn from scratch. The steel keeps a
+# cold blue cast and the flint half burns soul-blue.
+FLINT_STEEL_TPL = """................................
+........S2S2....................
+......S2S7S7S2..................
+....S2S7S6S1S4S1................
+....S2S7S1..S1S1................
+....S2S6S2......................
+....S2S6S2......................
+....S2S4S2..S2S1......S0........
+....S1S4S6S2S6S1....S0S3S0......
+......S1S4S6S1....S0S1S2S0......
+........S1S1....S0S2S3S4S1S0....
+..............S0S1S2S6S1S0S0....
+..............S0S3S4S1S0S0S1S0..
+..............S0S3S2S0S1S2S3S0..
+................S0S1S0S0S0S0....
+..................S0S0.........."""
+
+
+def render_soulfire_igniter():
+    grid = _parse_template(FLINT_STEEL_TPL)
+    h, w = len(grid), len(grid[0])
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    px = img.load()
+    for y, row in enumerate(grid):
+        for x, cell in enumerate(row):
+            if cell == "..":
+                continue
+            bucket = int(cell[1])
+            l = bucket / 10 + 0.06
+            # the striker body stays steel-blue; the lower-right flint mass
+            # is where the soul flame lives
+            if y >= 7 and x >= 7:
+                r, g, b = colorsys.hls_to_rgb(0.58, min(0.95, l * 1.25 + 0.10), 0.85)
+            else:
+                r, g, b = colorsys.hls_to_rgb(0.60, l, 0.16)
+            px[x, y] = (int(r * 255), int(g * 255), int(b * 255), 255)
+    return img
+
 VANILLA_ICONS = {}
 for _tier, _tpls in {
     "wraithsteel": (RAW_ORE_TPL, IRON_INGOT_TPL),
@@ -816,6 +860,8 @@ for _tier, _tpls in {
     VANILLA_ICONS[f"{_tier}_ingot"] = tiered_vanilla_nugget(_ingot_tpl, _tier, _vein, seed=stable_seed(_tier) % 999 + 2)
     for _kind, _tpl in (("sword", SWORD_TPL), ("pickaxe", PICKAXE_TPL), ("axe", AXE_TPL)):
         VANILLA_ICONS[f"{_tier}_{_kind}"] = tiered_vanilla_tool(_tpl, _tier, _vein, seed=stable_seed((_tier, _kind)) % 999, kind=_kind)
+
+VANILLA_ICONS["soulfire_igniter"] = render_soulfire_igniter
 
 for _kind, _tpl in (
     ("helmet", HELMET_TPL), ("chestplate", CHESTPLATE_TPL),
@@ -894,17 +940,32 @@ RAW_ICONS = {"ember_dust", "spectral_dust", "toad_mucus"}
 
 
 def gen_item_icons():
+    # Hand-authored 16x16 pixel-art sprites for every bespoke item (see
+    # tools/icons.py). These replaced PIL-primitive drawings, which is why
+    # the icons used to read as soft blobs instead of item art.
+    written = set()
+    for name in icons.all_names():
+        save(icons.render(name), RP, "textures", "items", f"{name}.png")
+        written.add(name)
+
+    # anything still using the old procedural path (none expected) plus the
+    # dust icons, which stay native-resolution speckle
     for name, fn in ITEM_ICONS.items():
-        if name in RAW_ICONS:
-            img = icon_canvas()
+        if name in written:
+            continue
+        img = icon_canvas() if name in RAW_ICONS else None
+        if img is not None:
             fn(ImageDraw.Draw(img))
         else:
             img = render_icon(fn)
         save(img, RP, "textures", "items", f"{name}.png")
-    # vanilla-derived icons render at native 16x16 already - no supersampling
+        written.add(name)
+
+    # vanilla-derived gear (ingots, tools, armor) renders at native 16x16
     for name, render in VANILLA_ICONS.items():
         save(render(), RP, "textures", "items", f"{name}.png")
-    print(f"wrote {len(ITEM_ICONS) + len(VANILLA_ICONS)} item icons")
+        written.add(name)
+    print(f"wrote {len(written)} item icons")
 
 
 # ---------------------------------------------------------------------------

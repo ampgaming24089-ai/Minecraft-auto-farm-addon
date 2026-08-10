@@ -24,6 +24,10 @@
           }
         ]
       },
+      "spawn_egg": {
+        "base_color": "#c85537",
+        "overlay_color": "#ff8d65"
+      },
       "animations": {
         "idle": "animation.hv.winged.idle",
         "move": "animation.hv.winged.move"

@@ -1,4 +1,4 @@
-# Hallow Dimension v2 — a Minecraft Bedrock dimension add-on
+# Hallowed Veil — a Minecraft Bedrock dimension add-on
 
 (packaged/pack-facing name; the dimension is still called "the Hollow Veil"
 in-fiction throughout the story and UI — see `docs/STORY.md`)
@@ -17,7 +17,7 @@ of the story they're built to tell.
 
 ## Install
 
-1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowDimensionV2.mcaddon`.
+1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowedVeil.mcaddon`.
 2. Send that file to a device with Minecraft Bedrock and open it, or copy
    `BP/` and `RP/` directly into your world's
    `com.mojang/development_behavior_packs` / `development_resource_packs`.
@@ -158,17 +158,17 @@ Minecraft's "Box UV" cube-to-texture-atlas mapping, so a creature's
 `geometry.json` and its texture PNG are always derived from the *same*
 cube list and can never drift out of sync with each other.
 
-**Art honesty note**: entity/mob textures are flat-shaded procedural
-silhouettes (palette + noise) — fully correct and functional in-game
+**Art note**: entity/mob textures are procedurally surfaced (palette +
+per-material pattern + directional shading) — fully correct and functional in-game
 (right UVs, right sizes, no missing-texture checkerboards) but a
 shop-quality pack would replace them with bespoke Blockbench models. Item
-icons split in two: base gear (raw ore, ingots, tools, the Hollowforged
-armor set) is generated from the *shape* of real vanilla icons — see
-"Vanilla-derived icons" in `tools/gen_assets.py` — recolored per material
-so it looks like Minecraft could have shipped it, while unique mob/boss
-drops (soul shards, sigils, boss weapons, the three boss-exclusive armor
-sets, etc.) are original silhouettes designed to fit the same visual
-conventions. The gameplay systems (entities, loot, scripts, mechanics) do
+icons split in two: base gear (raw ore, ingots, tools, armor, and the
+Soulfire and Steel) is generated from the *shape* of real vanilla icons —
+see "Vanilla-derived icons" in `tools/gen_assets.py` — recolored per
+material. Every bespoke item (soul shards, sigils, boss weapons, charms,
+food, the dragon egg, etc.) is a hand-authored 16x16 pixel sprite in
+`tools/icons.py`, shaded the way a real item texture is: a hard 1px dark
+border, light from the top left, and only four tones per material. The gameplay systems (entities, loot, scripts, mechanics) do
 not depend on the art and work identically either way.
 
 ## Known limitations / good next steps

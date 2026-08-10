@@ -389,9 +389,16 @@ def check_manifests():
     # These shipped in earlier builds. Reusing one is what produced the
     # "Duplicate pack detected" error on import, so they are now banned.
     RETIRED = {
-        "885991b9-2285-453c-88d9-b9caa859c2fc", "64e7a8dd-cef4-42e5-a82e-9b9ccd145a19",
-        "915cf596-e3c7-4014-978e-df04a7f46861", "ae6e6ecc-4012-4967-b18f-602b77319602",
+        "0f251285-1535-4d56-89e7-41c4a1143e5e",
+        "36d910e6-19c8-4464-8aaa-e878ad5775bc",
         "583094e0-638f-4560-8015-ff61a552ec14",
+        "64e7a8dd-cef4-42e5-a82e-9b9ccd145a19",
+        "72f17a26-4315-4da5-bd56-726b955baae4",
+        "885991b9-2285-453c-88d9-b9caa859c2fc",
+        "915cf596-e3c7-4014-978e-df04a7f46861",
+        "ae6e6ecc-4012-4967-b18f-602b77319602",
+        "da0cf01f-a51c-4d87-b44b-34823328adf8",
+        "f0806793-e96d-4a61-a128-07ea3e3ed81b",
     }
     for u, label in seen.items():
         if u in RETIRED:
