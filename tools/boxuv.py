@@ -93,20 +93,54 @@ def paint_cube(draw: ImageDraw.ImageDraw, cube: Cube, palette, seed=0):
         "front": palette.get("front", palette.get("side")),
         "back": palette.get("back", palette.get("side")),
     }
+    pattern = getattr(cube, "pattern", None) or palette.get("pattern")
     for face, (x, y, w, h) in rects.items():
         base = face_color[face]
         for px in range(w):
             for py in range(h):
-                jitter = rnd.randint(-12, 12)
-                # a light diagonal sheen so flat faces don't read as a
-                # single flat color from a distance
-                sheen = 10 if (px + py) % 5 == 0 else 0
-                col = tuple(max(0, min(255, c + jitter + sheen)) if i < 3 else c for i, c in enumerate(base))
+                jitter = rnd.randint(-9, 9)
+
+                # Vertical falloff: top of a face catches light, bottom sits
+                # in shadow. Flat single-value faces are the main reason the
+                # old models read as featureless blobs at any distance.
+                t = py / max(1, h - 1)
+                shade = int(round((0.5 - t) * 34))
+
+                # Per-material surface pattern, so cloth, plate and bone do
+                # not all look like the same painted box.
+                detail = 0
+                if pattern == "cloth":          # vertical folds
+                    detail = -14 if px % 4 == 0 else (7 if px % 4 == 2 else 0)
+                elif pattern == "plate":        # banded armour with a rivet line
+                    detail = -18 if py % 5 == 0 else 0
+                    if py % 5 == 2 and px % 4 == 1:
+                        detail = 22
+                elif pattern == "bone":         # rib striping
+                    detail = 20 if py % 3 == 0 else -8 if py % 3 == 1 else 0
+                elif pattern == "scale":        # offset scale rows
+                    detail = 16 if ((px + (py // 2) * 2) % 4 == 0) else -6
+                elif pattern == "fur":          # broken vertical strands
+                    detail = -16 if (px * 7 + py * 3) % 5 == 0 else 0
+                elif pattern == "stone":        # blocky mottling
+                    detail = 14 if ((px // 2 + py // 2) % 3 == 0) else 0
+                else:
+                    detail = 8 if (px + py) % 5 == 0 else 0
+
+                col = tuple(
+                    max(0, min(255, c + jitter + shade + detail)) if i < 3 else c
+                    for i, c in enumerate(base)
+                )
                 draw.point((x + px, y + py), fill=col)
+
         # a softer outline than before - a hard -60 read as near-black on
         # already-dark palettes and made mobs look like flat silhouettes
         outline = tuple(max(0, c - 35) if i < 3 else 255 for i, c in enumerate(base))
         draw.rectangle([x, y, x + w - 1, y + h - 1], outline=outline)
+        # a one-pixel rim highlight along the top edge, which is what gives
+        # each cube a readable silhouette against a dark background
+        rim = tuple(min(255, c + 34) if i < 3 else 255 for i, c in enumerate(base))
+        if h > 2:
+            draw.line([(x + 1, y), (x + w - 2, y)], fill=rim)
 
 
 def new_canvas(w, h):

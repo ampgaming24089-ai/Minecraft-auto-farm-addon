@@ -13,7 +13,7 @@ import os
 from PIL import ImageDraw
 
 import boxuv
-from gen_assets import PAL, RP, EYE_GLOW, save, stable_seed
+from gen_assets import PAL, RP, EYE_GLOW, ENTITY_PATTERN, save, stable_seed
 
 CUBE = tuple  # (origin(x,y,z), size(dx,dy,dz))
 
@@ -44,6 +44,7 @@ def entity_geo(identifier, tex_name, bones, palette, atlas_width=64, visible_bou
     for bone in bones:
         for cube in bone["cubes"]:
             c = boxuv.Cube(cube["name"], cube["origin"], cube["size"])
+            c.pattern = ENTITY_PATTERN.get(identifier)
             atlas.place(c)
             cube["_uv"] = c.uv
 
@@ -54,6 +55,7 @@ def entity_geo(identifier, tex_name, bones, palette, atlas_width=64, visible_bou
     for bone in bones:
         for i, cube in enumerate(bone["cubes"]):
             c = boxuv.Cube(cube["name"], cube["origin"], cube["size"])
+            c.pattern = ENTITY_PATTERN.get(identifier)
             c.uv = cube["_uv"]
             pal = cube.get("palette", palette)
             boxuv.paint_cube(draw, c, pal, seed=seed + i)
@@ -536,6 +538,7 @@ def build_dragon():
     for b in DRAGON_BONES:
         for cube_def in b["cubes"]:
             c = boxuv.Cube(cube_def["name"], cube_def["origin"], cube_def["size"])
+            c.pattern = ENTITY_PATTERN.get("veil_dragon")
             atlas.place(c)
             cube_def["_uv"] = c.uv
     w, h = atlas.finalize_size()
@@ -549,6 +552,7 @@ def build_dragon():
                 part = cube_def.get("part", "side")
                 pal = palette if part == "side" else {**palette, "side": palette.get(part, palette.get("side"))}
                 c = boxuv.Cube(cube_def["name"], cube_def["origin"], cube_def["size"])
+                c.pattern = ENTITY_PATTERN.get("veil_dragon")
                 c.uv = cube_def["_uv"]
                 boxuv.paint_cube(draw, c, pal, seed=i * 100 + bi * 10 + ci)
         glow = EYE_GLOW.get("veil_dragon")

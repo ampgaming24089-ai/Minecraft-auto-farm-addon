@@ -112,6 +112,22 @@ EYE_GLOW = {
 }
 
 
+# Surface pattern per creature, consumed by boxuv.paint_cube. This is what
+# stops every mob reading as the same painted box: a wraith's robe gets
+# cloth folds, a knight gets banded plate with rivets, an elk gets bone
+# striping, a dragon gets scale rows.
+ENTITY_PATTERN = {
+    "wraith": "cloth", "banshee": "cloth", "weeping_widow": "cloth",
+    "occultist": "cloth", "shade": "cloth", "poltergeist": "cloth",
+    "hollow_king": "plate", "fallen_knight": "plate",
+    "bastion_sentinel": "plate", "city_wraithguard": "plate",
+    "bonehide_elk": "bone", "marrow_crawler": "bone", "soul_wisp": "bone",
+    "veil_dragon": "scale", "ashen_whelp": "scale", "malacoda": "scale",
+    "imp": "scale", "glimmershroom_toad": "scale",
+    "hellhound": "fur", "ashwing_bat": "fur",
+}
+
+
 def noise_fill(size, base, variance=14, seed=0):
     w, h = size
     img = Image.new("RGBA", (w, h), base)

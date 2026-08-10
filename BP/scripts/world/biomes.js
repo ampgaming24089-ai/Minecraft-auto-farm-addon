@@ -8,7 +8,7 @@
 // so exploring actually turns up something new instead of the same four
 // pie slices in the same four places.
 
-export const WORLD_RADIUS = 512; // was 90 - the island is now a continent
+export const WORLD_RADIUS = 1024; // 90 -> 512 -> 1024; ~4x the area again
 export const SECTOR = 32; // terrain is built one sector at a time, near players
 export const SURFACE_Y = 64;
 export const BEDROCK_Y = SURFACE_Y - 12;

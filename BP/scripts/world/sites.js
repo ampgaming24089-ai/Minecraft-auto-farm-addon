@@ -33,17 +33,17 @@ export function getSites() {
 }
 
 const CATALOGUE = [
-  // type,        biomes,                    count, minDist between same type
-  { type: "graveyard", biomes: ["moors"], count: 14 },
-  { type: "mausoleum", biomes: ["moors"], count: 6 },
-  { type: "watchtower", biomes: ["moors", "ruins"], count: 8 },
-  { type: "bastion", biomes: ["ashlands"], count: 5 },
-  { type: "ember_camp", biomes: ["ashlands"], count: 8 },
-  { type: "bone_nest", biomes: ["marsh"], count: 9 },
-  { type: "witch_hut", biomes: ["marsh"], count: 5 },
-  { type: "sunken_city", biomes: ["ruins"], count: 4 },
-  { type: "ruin_arch", biomes: ["ruins"], count: 10 },
-  { type: "crypt", biomes: ["moors", "ruins"], count: 7 },
+  // type,             biomes,                     count
+  { type: "graveyard", biomes: ["moors"], count: 34 },
+  { type: "mausoleum", biomes: ["moors"], count: 16 },
+  { type: "watchtower", biomes: ["moors", "ruins"], count: 22 },
+  { type: "bastion", biomes: ["ashlands"], count: 14 },
+  { type: "ember_camp", biomes: ["ashlands"], count: 22 },
+  { type: "bone_nest", biomes: ["marsh"], count: 24 },
+  { type: "witch_hut", biomes: ["marsh"], count: 14 },
+  { type: "sunken_city", biomes: ["ruins"], count: 12 },
+  { type: "ruin_arch", biomes: ["ruins"], count: 28 },
+  { type: "crypt", biomes: ["moors", "ruins"], count: 20 },
 ];
 
 function rollSites() {

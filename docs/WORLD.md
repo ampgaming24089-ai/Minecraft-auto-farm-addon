@@ -6,8 +6,8 @@ design.
 
 ## Streaming terrain
 
-The world is a disc of radius **512** (~130x the area of the old 90-block
-island). It is not built up front - that would be tens of thousands of
+The world is a disc of radius **1024** (~130x the old 90-block island at
+512, and 4x that again at 1024). It is not built up front - that would be tens of thousands of
 commands in a single tick and a hung client. Instead
 `BP/scripts/world/terrain.js` builds it one **32x32 sector** at a time,
 only within 3 sectors of a player, at most one sector per pass. Which
@@ -44,24 +44,24 @@ quarter of the map.
 
 ## Landmarks
 
-`BP/scripts/world/sites.js` rolls a catalogue of **76 sites** across the
+`BP/scripts/world/sites.js` rolls a catalogue of **206 sites** across the
 map, each filtered to the biomes it belongs in and spaced at least 46
-blocks apart. They range from ~120 to ~470 blocks from spawn, so there is
+blocks apart. They range from ~170 to ~985 blocks from spawn, so there is
 always something further out. Each is built the first time a player comes
 within 48 blocks of it.
 
 | Site | Biome | Count |
 |---|---|---|
-| Graveyard (fenced plot, headstone rows) | Moors | 14 |
-| Mausoleum | Moors | 6 |
-| Ruined watchtower | Moors, Ruins | 8 |
-| Ember bastion | Ashlands | 5 |
-| Smouldering camp | Ashlands | 8 |
-| Bone nest | Marsh | 9 |
-| Abandoned hut | Marsh | 5 |
-| Drowned city | Ruins | 4 |
-| Broken arch | Ruins | 10 |
-| Crypt (stairs down to a buried loot room) | Moors, Ruins | 7 |
+| Graveyard (fenced plot, headstone rows) | Moors | 34 |
+| Mausoleum | Moors | 16 |
+| Ruined watchtower | Moors, Ruins | 22 |
+| Ember bastion | Ashlands | 14 |
+| Smouldering camp | Ashlands | 22 |
+| Bone nest | Marsh | 24 |
+| Abandoned hut | Marsh | 14 |
+| Drowned city | Ruins | 12 |
+| Broken arch | Ruins | 28 |
+| Crypt (stairs down to a buried loot room) | Moors, Ruins | 20 |
 
 Placement comes from the same deterministic hash as the terrain, so the
 site list is stable: leave and come back and the crypt is still there.
@@ -80,3 +80,14 @@ scatter at well under 2% of feature rolls.
 Ore is scattered **per sector** rather than once per world, so every
 territory you explore is minable. Hollowforged stays genuinely rare via an
 extra roll on top of its already-low per-sector count.
+
+## Creature surfacing
+
+Every mob is assigned a surface material in `ENTITY_PATTERN`
+(`tools/gen_assets.py`) which `boxuv.paint_cube` renders into its texture:
+cloth folds for robed spirits, banded plate with rivets for armoured
+mobs, rib striping for bone creatures, offset scale rows for dragons and
+reptiles, broken strands for fur. Each face also gets a top-lit/bottom-
+shadowed vertical gradient and a one-pixel rim highlight along its top
+edge. Flat single-value faces were the main reason the old models read as
+featureless blobs at any distance.
