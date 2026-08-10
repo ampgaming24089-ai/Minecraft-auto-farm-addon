@@ -10,13 +10,24 @@ hand-painted art. They are fully functional in-game (correct UVs, correct
 sizes, no missing-texture pink/black checkerboards) but a professional pack
 would replace them with bespoke Blockbench models / hand-painted textures.
 """
+import colorsys
 import math
 import random
 import os
+import zlib
 
 from PIL import Image, ImageDraw, ImageFilter
 
 import boxuv
+
+
+def stable_seed(value):
+    """A random seed derived from `value` that's the same on every run.
+    Python's built-in hash() is salted per-process for str/tuples-of-str
+    (hash randomization), so using it to seed noise made textures that
+    depend on a name (block/item/tier names) come out different on every
+    regeneration - the opposite of this pipeline's whole point."""
+    return zlib.crc32(repr(value).encode())
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BP = os.path.join(ROOT, "BP")
@@ -234,7 +245,7 @@ def draw_dust_pile(draw, color):
     # isolated 1px features get almost entirely blended away by the LANCZOS
     # downsample used for supersampled icons - so this one is rendered raw,
     # see RAW_ICONS below.
-    rnd = random.Random(hash(color) % 1000)
+    rnd = random.Random(stable_seed(color) % 1000)
     for _ in range(70):
         x = 16 + rnd.randint(-11, 11)
         y = 22 + rnd.randint(-6, 4)
@@ -285,37 +296,6 @@ def draw_glow_veins(draw, color, span, seed=1, n=2, spread=2.2):
             pts.append((bx + perp[0] * j, by + perp[1] * j))
         for k in range(len(pts) - 1):
             draw.line([pts[k], pts[k + 1]], fill=color, width=1)
-
-
-def tiered_tool_icon(kind, blade, hilt, vein_color=None, seed=1):
-    """Factory for the wraithsteel/veilsteel/hollowforged tool icons: same
-    base shapes as draw_sword/draw_pickaxe/draw_axe, optionally with a
-    glowing vein accent for the new-ore-tier materials."""
-    def render(d):
-        if kind == "sword":
-            draw_sword(d, blade, hilt)
-        elif kind == "pickaxe":
-            draw_pickaxe(d, blade, hilt)
-        elif kind == "axe":
-            draw_axe(d, blade, hilt)
-        if vein_color:
-            draw_glow_veins(d, vein_color, VEIN_SPANS[kind], seed=seed, n=2)
-    return render
-
-
-def tiered_nugget_icon(color, vein_color=None, seed=1):
-    def render(d):
-        draw_nugget(d, color)
-        if vein_color:
-            draw_glow_veins(d, vein_color, VEIN_SPANS["nugget"], seed=seed, n=1)
-    return render
-
-
-def with_veins(fn, vein_color, kind, seed=1, n=2):
-    def render(d):
-        fn(d)
-        draw_glow_veins(d, vein_color, VEIN_SPANS[kind], seed=seed, n=n)
-    return render
 
 
 def draw_horn(draw, color):
@@ -397,7 +377,7 @@ def draw_book(draw, cover):
 
 def draw_rune_paper(draw, accent):
     draw.polygon([(7, 5), (25, 5), (23, 27), (9, 27)], fill=(210, 195, 160, 255), outline=(90, 75, 50, 255))
-    rnd = random.Random(hash(accent))
+    rnd = random.Random(stable_seed(accent))
     for _ in range(5):
         y = rnd.randint(9, 22)
         x0, x1 = 11, 21
@@ -458,7 +438,7 @@ def draw_stew_bowl(draw, fill_color):
 
 def draw_dragon_egg(draw, color):
     draw.ellipse([10, 6, 22, 27], fill=color, outline=shade(color, -80))
-    rnd = random.Random(hash(color))
+    rnd = random.Random(stable_seed(color))
     for _ in range(8):
         x = rnd.randint(11, 21)
         y = rnd.randint(9, 24)
@@ -472,33 +452,398 @@ def draw_charm(draw, accent):
     draw.ellipse([12, 15, 20, 23], fill=accent, outline=shade(accent, -70))
 
 
+# ---------------------------------------------------------------------------
+# Vanilla-derived icons: base gear (raw ore, ingots, tools, armor) should
+# look like Minecraft could have shipped it, not like a custom invention -
+# so these are generated from the *shape* of the real vanilla icons rather
+# than hand-drawn. Each grid below encodes, per pixel, its role (C = cool
+# "material" pixel, H = warm wood-handle pixel, "." = transparent) and its
+# relative brightness (0-9), extracted from Mojang's own bedrock-samples
+# resource pack (items/iron_ingot, raw_iron, diamond_sword, diamond_pickaxe,
+# diamond_axe, diamond_helmet/chestplate/leggings/boots - all 16x16). No
+# actual color values or pixels from those files are reproduced here, only
+# this derived brightness/role map, which render_vanilla_icon() recolors
+# into this pack's own materials at native 16x16, un-antialiased, the same
+# resolution and hard-edged style real item textures use.
+IRON_INGOT_TPL = """
+................................
+................................
+....................C3C3........
+..............C3C3C3C6C6C4......
+........C3C3C3C6C8C8C8C8C6C4....
+..C3C3C3C6C8C8C8C8C8C8C8C8C6C4..
+C3C9C8C8C8C8C8C8C8C8C8C8C9C9C8C4
+C3C6C9C8C8C8C8C8C8C9C9C9C8C4C6C2
+C3C6C6C9C8C8C9C9C9C8C5C4C4C5C6C2
+C3C6C6C6C9C9C8C5C4C4C4C4C6C6C6C2
+C3C5C6C6C8C5C4C4C4C4C6C6C5C2C2..
+..C3C5C6C8C5C4C4C5C5C2C2C2......
+....C3C5C6C5C3C2C2C2............
+......C3C3C2C2..................
+................................
+................................
+"""
+
+RAW_ORE_TPL = """
+................................
+....H3H3H3H3H3..................
+..H3H7H8H8H8H7H3H3H3............
+..H3H8H9H8H9H8H8H8H7H3H3H3......
+H3H8H9H9H9H8H9H8H9H8H8H8H7H3....
+H3H8H7H8H9H9H8H8H8H8H8H7H8H7H3..
+H2H8H5H5H8H7H5H5H4H4H5H7H5H7H3..
+H2H7H4H5H7H5H5H5H4H3H3H4H5H5H3..
+H2H7H4H4H7H5H5H4H3H3H3H3H3H4H2..
+H2H5H4H4H4H3H3H3H3H8H9H8H5H5H2..
+H2H5H5H4H4H3H3H3H8H8H8H8H7H5H4H2
+..H2H5H4H4H4H2H2H5H8H8H7H4H3H3H2
+....H2H2H2H2....H2H5H5H5H4H3H3H2
+..................H2H5H5H3H3H2..
+....................H2H2H2H2....
+................................
+"""
+
+SWORD_TPL = """
+..........................C1C1C1
+........................C1C8C8C1
+......................C1C8C5C8C1
+....................C1C8C5C8C1..
+..................C1C8C5C6C1....
+................C1C8C5C6C1......
+....C1C1......C1C6C5C6C1........
+....C1C2C1..C1C6C5C6C1..........
+......C1C4C1C6C4C6C1............
+......C1C4C4C2C6C1..............
+........C1C2C1C1................
+......H2H3C1C1C1C1..............
+....H2H4H1..C1C1C1C1............
+C1C1H3H1........C1C1............
+C1C2C1..........................
+C1C1C1..........................
+"""
+
+PICKAXE_TPL = """
+................................
+................................
+............C1C1C1C1C1..........
+..........C1C6C5C5C5C5C1H2H3....
+............C1C1C1C1C5C5H4H1....
+....................H2C5C5C1....
+..................H2H3H1C5C5C1..
+................H2H4H1..C1C5C1..
+..............H2H3H1....C1C5C1..
+............H2H4H1......C1C5C1..
+..........H2H3H1........C1C6C1..
+........H2H4H1............C1....
+......H2H3H1....................
+....H2H4H1......................
+....H1H1........................
+................................
+"""
+
+AXE_TPL = """
+................................
+..................C1C1..........
+................C1C6C6C1........
+..............C1C6C5C5C1........
+............C1C6C5C5C5H2H3......
+............C1C6C5C5C4C5H1......
+..............C1C1H2C5C4C5C1....
+................H2H3H1C5C5C1....
+..............H2H4H1..C1C1......
+............H2H3H1..............
+..........H2H3H1................
+........H2H4H1..................
+......H2H3H1....................
+....H2H4H1......................
+....H1H1........................
+................................
+"""
+
+HELMET_TPL = """
+................................
+................................
+................................
+..........C1C1C1C1C1C1..........
+........C1C5C7C7C7C7C4C1........
+......C1C5C8C9C8C7C7C5C4C1......
+......C1C7C8C8C7C7C5C5C5C1......
+......C1C7C7C1C1C1C1C4C5C1......
+......C1C7C1C1C1C1C1C1C5C1......
+......C1C7C1C1C1C1C1C1C4C1......
+......C1C5C1C1C1C1C1C1C4C1......
+........C1C1........C1C1........
+................................
+................................
+................................
+................................
+"""
+
+CHESTPLATE_TPL = """
+................................
+................................
+..C1C1C1C1C1........C1C1C1C1C1..
+..C1C9C8C7C1........C1C9C8C7C1..
+..C1C8C7C7C5C1....C1C5C8C7C7C1..
+..C1C7C7C7C8C5C1C1C5C7C7C7C7C1..
+..C1C4C5C7C9C8C8C8C7C7C7C5C4C1..
+..C1C1C4C8C8C8C7C7C7C7C7C4C1C1..
+......C1C8C8C7C7C7C7C7C7C1......
+......C1C7C8C7C7C7C7C7C5C1......
+......C1C7C7C7C7C7C7C7C5C1......
+......C1C5C7C7C7C7C7C5C5C1......
+......C1C4C5C5C5C5C5C5C4C1......
+........C1C4C5C5C5C5C4C1........
+..........C1C1C1C1C1C1..........
+................................
+"""
+
+LEGGINGS_TPL = """
+................................
+................................
+........C1C1C1C1C1C1C1C1........
+......C1C8C9C9C8C8C7C7C4C1......
+......C1C8C8C7C7C7C7C7C5C1......
+......C1C8C7C7C5C5C7C7C5C1......
+......C1C8C7C5C1C1C4C7C5C1......
+......C1C7C7C1....C1C7C5C1......
+......C1C7C5C1....C1C7C5C1......
+......C1C7C5C1....C1C7C5C1......
+......C1C5C5C1....C1C5C5C1......
+......C1C5C4C1....C1C5C4C1......
+......C1C4C4C1....C1C4C4C1......
+......C1C1C1C1....C1C1C1C1......
+................................
+................................
+"""
+
+BOOTS_TPL = """
+................................
+................................
+................................
+........C1C1C1....C1C1C1........
+......C1C9C8C1....C1C9C8C1......
+......C1C8C8C1....C1C8C7C1......
+......C1C8C7C1....C1C7C7C1......
+......C1C7C7C1....C1C7C7C1......
+......C1C7C5C1....C1C7C7C1......
+....C1C7C7C5C1....C1C5C7C5C1....
+..C1C7C7C5C4C1....C1C4C5C7C5C1..
+..C1C5C5C4C1C1....C1C1C5C5C4C1..
+..C1C1C1C1............C1C1C1C1..
+................................
+................................
+................................
+"""
+
+HANDLE_H = 0.08  # warm brown, shared wood-grip hue for every tool tier
+HANDLE_S = 0.55
+
+
+def _parse_template(tpl):
+    rows = [r for r in tpl.strip("\n").split("\n")]
+    grid = []
+    for row in rows:
+        cells = [row[i : i + 2] for i in range(0, len(row), 2)]
+        grid.append(cells)
+    return grid
+
+
+def render_vanilla_icon(tpl, tint_h, tint_s, handle_h=HANDLE_H, handle_s=HANDLE_S):
+    """Recolors a vanilla-shape template (see *_TPL above) into this pack's
+    material, preserving the original per-pixel lightness so the shading
+    reads exactly like the source icon. 'C' cells take the material tint;
+    'H' cells (tool handles) always take the shared wood-brown tint,
+    matching how vanilla tool grips stay the same wood color across every
+    material tier."""
+    grid = _parse_template(tpl)
+    h, w = len(grid), len(grid[0])
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    px = img.load()
+    for y, row in enumerate(grid):
+        for x, cell in enumerate(row):
+            if cell == "..":
+                continue
+            role, bucket = cell[0], int(cell[1])
+            l = bucket / 10 + 0.05
+            if role == "H":
+                r, g, b = colorsys.hls_to_rgb(handle_h, l, handle_s)
+            else:
+                r, g, b = colorsys.hls_to_rgb(tint_h, l, tint_s)
+            px[x, y] = (int(r * 255), int(g * 255), int(b * 255), 255)
+    return img
+
+
+ORE_BLOCK_TPL = """
+S5S4S4S4S4S4S4S4S4S4S4S4S4S4S5S5
+S4S4S4S4S4S4S4S5S5S4F3F4F4F3S4S4
+S4S4F4F5F4S4S4S4S4S4S4F4F5S4S4S4
+S4F4F5F7S5S4S4S4S4S4S4S4S4S4S4S4
+S4S5S5S5S4S4S4F4F4F5F5F4S4S4S4S4
+S4S5S4S4F4F5F7F7F7F7F5S4S4F4F5S5
+S4S4S4S5S5S5F5F7F7S5S4S4S4S5S5S4
+S4S4S4S4S4S4S5S5S5S4S4S4S4S4S4S4
+S5S5S4F4F5S4S4S4S4F3F4F5F3S4S4S4
+S4S5F3F5F5F7F7S5S4S5F5F7S5S5S5S4
+S4S4S5S5F7F7S5S4S4S4S5S5S4S4S4S4
+S4S4S4S4S5S5S4S5S4S4S4F3F4S5S4S5
+S4S4S4S4F4F5S5S4F3F4F5F7F7F5F4S4
+S5F4F5S4S4S5S4S4S5F5F7F7F5S5S5S4
+S4S5F4F3S4S4S4S4S4S5S5S5S5S4S4S4
+S4S4S5S5S4S4S4S4S4S4S5S5S4S4S4S4
+"""
+
+DENSE_ORE_BLOCK_TPL = """
+S5S4S4S5S4S4S4S4S4S4S4S4S4S5S5S5
+S4S4S4S4S4S5S5S5S5S4S4S4S4S4S4S4
+S4S4S4S4F4S5S4S4S4S4S4S4F6F3S4S4
+S5S5S5S4F6S5S4F6F3F6S5S4F6S5S4S4
+S4S4S4S4S4S4S4S5F6S4S4S4S5S4S4S4
+S4S5S4S4S4F9F6S4S4S4F9F6S4S4S4S5
+S4S4S5F9F6F4F4F3F6S4F4F3S4S4S4S4
+S5S4S4S5F6S6F6F6S4S4S5F6S4S5S6S6
+S4F6F4F6S5S4S4S4F9F6S4S4S4S4S5S4
+S4F6F6S4S4S4S4F6F4F3F3F6S5S6S6S4
+S4S4S4S4F4S4S4S5F6F6S5S4S4S4S4S4
+S4S4S4S4S4S5S5S5S5S4S4F6F3S5S5S4
+S4S4S5S4S4S4S5S4F6F9F6F4F4F3S5S4
+S5S5F6F6F3S4S4S4S6F3F4F6F6S5S4S4
+S4S4S4F6S5S5S5S4S4S5F6S4S4S4S4S4
+S4S4S4S4S4S4S4S5S4S4S4S4S4S4S5S5
+"""
+
+
+def render_vanilla_ore_block(tpl, fleck_h, fleck_s, stone_h=0.09, stone_s=0.12):
+    """Same idea as render_vanilla_icon but for ore blocks: 'S' (stone)
+    cells take this dimension's pale bonestone hue, 'F' (fleck) cells take
+    the ore's own color - the same "colored flecks in a stone matrix"
+    convention vanilla iron/gold/diamond ore all use."""
+    grid = _parse_template(tpl)
+    h, w = len(grid), len(grid[0])
+    img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    px = img.load()
+    for y, row in enumerate(grid):
+        for x, cell in enumerate(row):
+            role, bucket = cell[0], int(cell[1])
+            l = bucket / 10 + 0.05
+            if role == "F":
+                r, g, b = colorsys.hls_to_rgb(fleck_h, l, fleck_s)
+            else:
+                r, g, b = colorsys.hls_to_rgb(stone_h, l, stone_s)
+            px[x, y] = (int(r * 255), int(g * 255), int(b * 255), 255)
+    return img
+
+
+# per-tier tint (H, S in 0..1) - L always comes from the source template so
+# the shading always matches the vanilla original
+TIER_TINTS = {
+    "wraithsteel": (0.055, 0.85),  # lava orange-red - "as good as diamond"
+    "veilsteel": (0.60, 0.55),  # black metal with a blue sheen - "netherite-equivalent"
+    "hollowforged": (0.0, 0.06),  # near-white/silver; the red comes from the glow-vein overlay
+}
+ORE_FLECK_TINTS = {
+    "wraithsteel_ore": (0.055, 0.9),
+    "veilsteel_ore": (0.60, 0.65),
+    "hollowforged_ore": (0.0, 0.8),
+}
+# this dimension's stone (bonestone) is a pale warm grey, not vanilla's blue-grey
+BONESTONE_STONE_TINT = (0.09, 0.12)
+
+
+def tiered_vanilla_tool(tpl, tier, vein_color=None, seed=1, kind=None):
+    tint_h, tint_s = TIER_TINTS[tier]
+
+    def render():
+        img = render_vanilla_icon(tpl, tint_h, tint_s)
+        if vein_color and kind:
+            d = ImageDraw.Draw(img)
+            span = tuple((c[0] / 2, c[1] / 2) for c in VEIN_SPANS[kind])
+            draw_glow_veins(d, vein_color, span, seed=seed, n=1, spread=1.1)
+        return img
+
+    return render
+
+
+def tiered_vanilla_nugget(tpl, tier, vein_color=None, seed=1):
+    tint_h, tint_s = TIER_TINTS[tier]
+
+    def render():
+        img = render_vanilla_icon(tpl, tint_h, tint_s)
+        if vein_color:
+            d = ImageDraw.Draw(img)
+            span = ((5.5, 7.5), (10.5, 10))
+            draw_glow_veins(d, vein_color, span, seed=seed, n=1, spread=1.0)
+        return img
+
+    return render
+
+
+VEIN_COLORS = {
+    "wraithsteel": (255, 190, 90, 255),
+    "veilsteel": (90, 175, 255, 255),
+    "hollowforged": (255, 60, 50, 255),
+}
+
+# name -> zero-argument function returning a finished 16x16 RGBA image
+# (rendered at native vanilla resolution, not run through the icon
+# supersampling pipeline - these should look exactly as crisp/blocky as a
+# real item texture)
+VANILLA_ICONS = {}
+for _tier, _tpls in {
+    "wraithsteel": (RAW_ORE_TPL, IRON_INGOT_TPL),
+    "veilsteel": (RAW_ORE_TPL, IRON_INGOT_TPL),
+    "hollowforged": (RAW_ORE_TPL, IRON_INGOT_TPL),
+}.items():
+    _scrap_tpl, _ingot_tpl = _tpls
+    _vein = VEIN_COLORS[_tier]
+    VANILLA_ICONS[f"{_tier}_scrap"] = tiered_vanilla_nugget(_scrap_tpl, _tier, _vein, seed=stable_seed(_tier) % 999 + 1)
+    VANILLA_ICONS[f"{_tier}_ingot"] = tiered_vanilla_nugget(_ingot_tpl, _tier, _vein, seed=stable_seed(_tier) % 999 + 2)
+    for _kind, _tpl in (("sword", SWORD_TPL), ("pickaxe", PICKAXE_TPL), ("axe", AXE_TPL)):
+        VANILLA_ICONS[f"{_tier}_{_kind}"] = tiered_vanilla_tool(_tpl, _tier, _vein, seed=stable_seed((_tier, _kind)) % 999, kind=_kind)
+
+for _kind, _tpl in (
+    ("helmet", HELMET_TPL), ("chestplate", CHESTPLATE_TPL),
+    ("leggings", LEGGINGS_TPL), ("boots", BOOTS_TPL),
+):
+    _tint_h, _tint_s = TIER_TINTS["hollowforged"]
+    _vein = VEIN_COLORS["hollowforged"]
+
+    def _make(tpl=_tpl, kind=_kind, tint_h=_tint_h, tint_s=_tint_s, vein=_vein):
+        def render():
+            img = render_vanilla_icon(tpl, tint_h, tint_s)
+            d = ImageDraw.Draw(img)
+            span = tuple((c[0] / 2, c[1] / 2) for c in VEIN_SPANS[kind])
+            draw_glow_veins(d, vein, span, seed=stable_seed(kind) % 999, n=1, spread=1.0)
+            return img
+        return render
+
+    VANILLA_ICONS[f"hollowforged_{_kind}"] = _make()
+
+
+# Everything in VANILLA_ICONS (ore-tier scrap/ingots/tools/armor) is
+# rendered separately at native 16x16 - see gen_item_icons(). Everything
+# below is the "custom stuff dropped by mobs and bosses" the user
+# explicitly said should stay unique: still researched against vanilla
+# icon conventions (bold flat-shaded silhouette, single dark outline,
+# top-left highlight), just not tied to one specific vanilla item's shape.
 ITEM_ICONS = {
     "soul_shard": lambda d: draw_shard(d, (140, 220, 210, 255)),
     "ember_dust": lambda d: draw_dust_pile(d, (230, 120, 40, 255)),
     "spectral_dust": lambda d: draw_dust_pile(d, (200, 180, 230, 255)),
     "demon_horn": lambda d: draw_horn(d, (60, 25, 25, 255)),
     "banshee_vocal_cord": lambda d: draw_shard(d, (215, 190, 225, 255)),
-    # lava-look, glowing orange/red cracks - the "diamond-equivalent" tier
-    "wraithsteel_scrap": tiered_nugget_icon((190, 80, 30, 255), (255, 170, 70, 255), seed=201),
-    "wraithsteel_ingot": tiered_nugget_icon((225, 105, 40, 255), (255, 190, 90, 255), seed=202),
     "ember_core": lambda d: draw_gem(d, (255, 130, 40, 255)),
     "ghost_ward_charm": lambda d: draw_charm(d, (150, 230, 210, 255)),
     "spirit_lantern": lambda d: draw_lantern(d),
     "soul_compass": lambda d: draw_compass(d, (150, 230, 210, 255)),
     "journal": lambda d: draw_book(d, (90, 40, 100, 255)),
     "soulfire_igniter": lambda d: draw_igniter(d),
-    "wraithsteel_sword": tiered_tool_icon("sword", (225, 105, 40, 255), (45, 32, 28, 255), (255, 190, 90, 255), seed=203),
-    "wraithsteel_pickaxe": tiered_tool_icon("pickaxe", (225, 105, 40, 255), (45, 32, 28, 255), (255, 190, 90, 255), seed=204),
-    "wraithsteel_axe": tiered_tool_icon("axe", (225, 105, 40, 255), (45, 32, 28, 255), (255, 190, 90, 255), seed=205),
     "hollow_kings_reaper": lambda d: draw_sword(d, (225, 225, 240, 255), (100, 60, 130, 255)),
     "wailing_edge": lambda d: draw_sword(d, (215, 195, 230, 255), (70, 50, 90, 255)),
     "malacodas_fang": lambda d: draw_sword(d, (230, 100, 60, 255), (60, 20, 15, 255)),
     "sigil_hollow_king": lambda d: draw_rune_paper(d, (140, 100, 210, 255)),
     "sigil_weeping_widow": lambda d: draw_rune_paper(d, (200, 140, 220, 255)),
     "sigil_malacoda": lambda d: draw_rune_paper(d, (230, 90, 40, 255)),
-    # solid black, glowing blue cracks + blue edge - the "netherite-equivalent" tier
-    "veilsteel_scrap": tiered_nugget_icon((28, 30, 42, 255), (80, 165, 255, 255), seed=211),
-    "veilsteel_ingot": tiered_nugget_icon((22, 24, 34, 255), (100, 180, 255, 255), seed=212),
     "ember_coal": lambda d: draw_nugget(d, (50, 35, 30, 255)),
     "sentinel_core": lambda d: draw_gem(d, (230, 170, 60, 255)),
     "veilsteel_plating": lambda d: draw_plate(d, (150, 160, 200, 255)),
@@ -511,21 +856,8 @@ ITEM_ICONS = {
     "glimmershroom_item": lambda d: draw_mushroom_icon(d, (130, 220, 200, 255), (220, 225, 210, 255)),
     "ember_fruit": lambda d: draw_fruit(d, (230, 90, 50, 255)),
     "veil_marrow_stew": lambda d: draw_stew_bowl(d, (190, 170, 140, 255)),
-    "veilsteel_sword": tiered_tool_icon("sword", (26, 28, 38, 255), (60, 62, 74, 255), (90, 175, 255, 255), seed=213),
-    "veilsteel_pickaxe": tiered_tool_icon("pickaxe", (26, 28, 38, 255), (60, 62, 74, 255), (90, 175, 255, 255), seed=214),
-    "veilsteel_axe": tiered_tool_icon("axe", (26, 28, 38, 255), (60, 62, 74, 255), (90, 175, 255, 255), seed=215),
     "featherfall_charm": lambda d: draw_charm(d, (200, 190, 230, 255)),
     "dragon_egg": lambda d: draw_dragon_egg(d, (110, 60, 150, 255)),
-    # white, glowing red cracks + red edge - exceeds the netherite-equivalent tier
-    "hollowforged_scrap": tiered_nugget_icon((225, 220, 210, 255), (255, 70, 60, 255), seed=221),
-    "hollowforged_ingot": tiered_nugget_icon((240, 237, 230, 255), (255, 60, 50, 255), seed=222),
-    "hollowforged_sword": tiered_tool_icon("sword", (235, 232, 224, 255), (70, 30, 28, 255), (255, 60, 50, 255), seed=223),
-    "hollowforged_pickaxe": tiered_tool_icon("pickaxe", (235, 232, 224, 255), (70, 30, 28, 255), (255, 60, 50, 255), seed=224),
-    "hollowforged_axe": tiered_tool_icon("axe", (235, 232, 224, 255), (70, 30, 28, 255), (255, 60, 50, 255), seed=225),
-    "hollowforged_helmet": with_veins(lambda d: draw_helmet(d, (235, 232, 224, 255)), (255, 60, 50, 255), "helmet", seed=226, n=1),
-    "hollowforged_chestplate": with_veins(lambda d: draw_chestplate(d, (235, 232, 224, 255)), (255, 60, 50, 255), "chestplate", seed=227),
-    "hollowforged_leggings": with_veins(lambda d: draw_leggings(d, (235, 232, 224, 255)), (255, 60, 50, 255), "leggings", seed=228, n=1),
-    "hollowforged_boots": with_veins(lambda d: draw_boots(d, (235, 232, 224, 255)), (255, 60, 50, 255), "boots", seed=229, n=1),
 }
 
 for setname, hcol, ccol, lcol, bcol in [
@@ -553,30 +885,15 @@ def gen_item_icons():
         else:
             img = render_icon(fn)
         save(img, RP, "textures", "items", f"{name}.png")
-    print(f"wrote {len(ITEM_ICONS)} item icons")
+    # vanilla-derived icons render at native 16x16 already - no supersampling
+    for name, render in VANILLA_ICONS.items():
+        save(render(), RP, "textures", "items", f"{name}.png")
+    print(f"wrote {len(ITEM_ICONS) + len(VANILLA_ICONS)} item icons")
 
 
 # ---------------------------------------------------------------------------
 # Block textures — 16x16 tileable-ish noise textures
 # ---------------------------------------------------------------------------
-def draw_ore_cracks(d, seed, crack_color, edge_glow=None):
-    """A branching crack line with a dim halo + bright glowing core, plus an
-    optional glowing border - used for the three named-ore-tier looks
-    (lava/orange, black+blue, white+red)."""
-    rnd = random.Random(seed)
-    for _ in range(rnd.randint(2, 3)):
-        x, y = rnd.randint(2, 13), rnd.randint(2, 13)
-        pts = [(x, y)]
-        for _ in range(rnd.randint(3, 5)):
-            x = max(0, min(15, x + rnd.randint(-3, 3)))
-            y = max(0, min(15, y + rnd.randint(-3, 3)))
-            pts.append((x, y))
-        for i in range(len(pts) - 1):
-            d.line([pts[i], pts[i + 1]], fill=shade(crack_color, -50), width=2)
-        for i in range(len(pts) - 1):
-            d.line([pts[i], pts[i + 1]], fill=crack_color, width=1)
-    if edge_glow:
-        d.rectangle([0, 0, 15, 15], outline=edge_glow)
 
 
 def gen_block_textures():
@@ -586,17 +903,11 @@ def gen_block_textures():
         "ashwood_log_side": (58, 42, 38, 255),
         "ashwood_log_top": (90, 68, 58, 255),
         "bonestone": (201, 195, 173, 255),
-        # lava-rock base; glowing orange/red cracks painted in below
-        "wraithsteel_ore": (55, 32, 24, 255),
         "ritual_altar_side": (95, 40, 90, 255),
         "ritual_altar_top": (130, 60, 120, 255),
         "soul_lantern": (244, 230, 184, 255),
         "veil_portal": (10, 10, 14, 255),
-        # solid black base; glowing blue cracks + blue edge glow painted in below
-        "veilsteel_ore": (20, 20, 26, 255),
         "ember_coal_ore": (70, 45, 35, 255),
-        # off-white/bone base; glowing red cracks + red edge glow painted in below
-        "hollowforged_ore": (222, 218, 210, 255),
         "sunken_bricks": (55, 80, 75, 255),
         "bastion_brick": (70, 42, 40, 255),
         "veil_mud": (55, 58, 42, 255),
@@ -604,14 +915,8 @@ def gen_block_textures():
         "spawner_cage": (30, 40, 35, 160),
     }
     for name, color in blocks.items():
-        img = noise_fill((16, 16), color, variance=16, seed=hash(name) % 999)
+        img = noise_fill((16, 16), color, variance=16, seed=stable_seed(name) % 999)
         d = ImageDraw.Draw(img)
-        if name == "wraithsteel_ore":
-            draw_ore_cracks(d, 11, (255, 130, 40, 255))
-        if name == "veilsteel_ore":
-            draw_ore_cracks(d, 22, (70, 150, 255, 255), edge_glow=(60, 140, 255, 255))
-        if name == "hollowforged_ore":
-            draw_ore_cracks(d, 33, (255, 60, 50, 255), edge_glow=(230, 40, 35, 255))
         if name == "ember_coal_ore":
             rnd = random.Random(3)
             for _ in range(10):
@@ -646,7 +951,22 @@ def gen_block_textures():
             for y in range(0, 16, 3):
                 d.line([(0, y), (15, y)], fill=(15, 20, 18, 200), width=1)
         save(img, RP, "textures", "blocks", f"{name}.png")
-    print(f"wrote {len(blocks)} block textures")
+
+    # ore-tier blocks: vanilla ore-block style (colored flecks in a stone
+    # matrix, like iron_ore/diamond_ore) rather than a custom crack motif,
+    # so they read as "an ore block" at a glance.
+    ore_tpls = {
+        "wraithsteel_ore": ORE_BLOCK_TPL,
+        "veilsteel_ore": DENSE_ORE_BLOCK_TPL,
+        "hollowforged_ore": DENSE_ORE_BLOCK_TPL,
+    }
+    for name, tpl in ore_tpls.items():
+        fleck_h, fleck_s = ORE_FLECK_TINTS[name]
+        stone_h, stone_s = BONESTONE_STONE_TINT
+        img = render_vanilla_ore_block(tpl, fleck_h, fleck_s, stone_h, stone_s)
+        save(img, RP, "textures", "blocks", f"{name}.png")
+
+    print(f"wrote {len(blocks) + len(ore_tpls)} block textures")
 
 
 # ---------------------------------------------------------------------------
@@ -796,7 +1116,7 @@ def gen_armor_layer_textures():
         for layer in (1, 2):
             img = Image.new("RGBA", (64, 32), (0, 0, 0, 0))
             d = ImageDraw.Draw(img)
-            rnd = random.Random(hash((name, layer)) % 999)
+            rnd = random.Random(stable_seed((name, layer)) % 999)
             for (u, v, dx, dy, dz) in ARMOR_PART_BOXES:
                 rects = boxuv.face_rects(u, v, dx, dy, dz)
                 for x, y, w, h in rects.values():

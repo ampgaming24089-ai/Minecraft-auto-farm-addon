@@ -94,9 +94,13 @@ of the story they're built to tell.
   equivalent of vanilla monster spawners, since a script-registered void
   dimension has no world-gen pass to place real ones in.
   `BP/scripts/world/spawners.js`.
-- **A new ore/food/fuel chain**: Veilsteel (a harder tier than Wraithsteel)
-  and Ember Coal (a longer-burning fuel) as mineable ores, plus Ember
-  Fruit and Veil Marrow Stew as dimension-native food.
+- **A three-tier ore chain plus food/fuel**: Wraithsteel (diamond-equivalent,
+  lava-orange), Veilsteel (netherite-equivalent, black with a blue sheen),
+  and Hollowforged Steel (exceeds netherite, white with glowing red
+  cracks — the rarest material in the Veil, five single-block deposits on
+  the bedrock floor per world) as mineable ore tiers, Ember Coal as a
+  longer-burning fuel, plus Ember Fruit and Veil Marrow Stew as
+  dimension-native food.
 - **Tameable, rideable Veil Dragons** in 6 colors — hatch a `Dragon Egg`
   (structure loot, a rare Wraithguard drop, or an expensive Occultist
   trade), feed it Ember Fruit/Veil Marrow Stew to tame it (the same
@@ -123,12 +127,18 @@ Minecraft's "Box UV" cube-to-texture-atlas mapping, so a creature's
 `geometry.json` and its texture PNG are always derived from the *same*
 cube list and can never drift out of sync with each other.
 
-**Art honesty note**: the generated textures are flat-shaded procedural
-silhouettes (palette + noise), not hand-painted art — they're fully
-correct and functional in-game (right UVs, right sizes, no missing-texture
-checkerboards) but a shop-quality pack would replace them with bespoke
-Blockbench models. The gameplay systems (entities, loot, scripts,
-mechanics) do not depend on the art and work identically either way.
+**Art honesty note**: entity/mob textures are flat-shaded procedural
+silhouettes (palette + noise) — fully correct and functional in-game
+(right UVs, right sizes, no missing-texture checkerboards) but a
+shop-quality pack would replace them with bespoke Blockbench models. Item
+icons split in two: base gear (raw ore, ingots, tools, the Hollowforged
+armor set) is generated from the *shape* of real vanilla icons — see
+"Vanilla-derived icons" in `tools/gen_assets.py` — recolored per material
+so it looks like Minecraft could have shipped it, while unique mob/boss
+drops (soul shards, sigils, boss weapons, the three boss-exclusive armor
+sets, etc.) are original silhouettes designed to fit the same visual
+conventions. The gameplay systems (entities, loot, scripts, mechanics) do
+not depend on the art and work identically either way.
 
 ## Known limitations / good next steps
 

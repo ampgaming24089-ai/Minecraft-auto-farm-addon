@@ -50,7 +50,7 @@ def entity_geo(identifier, tex_name, bones, palette, atlas_width=64, visible_bou
     w, h = atlas.finalize_size()
     img = boxuv.new_canvas(w, h)
     draw = ImageDraw.Draw(img)
-    seed = abs(hash(identifier)) % 10000
+    seed = stable_seed(identifier) % 10000
     for bone in bones:
         for i, cube in enumerate(bone["cubes"]):
             c = boxuv.Cube(cube["name"], cube["origin"], cube["size"])
