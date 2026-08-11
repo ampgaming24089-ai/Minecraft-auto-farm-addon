@@ -25,8 +25,27 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BP = os.path.join(ROOT, "BP")
 RP = os.path.join(ROOT, "RP")
-SAMPLES = "/workspace/mojang/bedrock-samples"
-BINDINGS = os.path.join(SAMPLES, "metadata/script_modules/@minecraft/server-bindings_2.8.0.json")
+SAMPLES = os.environ.get("BEDROCK_SAMPLES", "/workspace/mojang/bedrock-samples")
+SCRIPT_MODULES = os.path.join(SAMPLES, "metadata/script_modules/@minecraft")
+VANILLA_DATA = os.path.join(SAMPLES, "metadata/vanilladata_modules")
+
+
+def script_module_version(name):
+    """The version of a @minecraft/* module this pack's BP manifest asks for.
+
+    Read from the manifest rather than hardcoded, so bumping the dependency
+    automatically re-points every API check at the matching bindings instead
+    of quietly validating against a stale version.
+    """
+    manifest = json.load(open(os.path.join(BP, "manifest.json")))
+    for dep in manifest.get("dependencies", []):
+        if dep.get("module_name") == name:
+            return dep.get("version")
+    return None
+
+
+SERVER_VERSION = script_module_version("@minecraft/server") or "2.8.0"
+BINDINGS = os.path.join(SCRIPT_MODULES, f"server-bindings_{SERVER_VERSION}.json")
 
 errors = []
 warnings = []
@@ -39,6 +58,51 @@ def err(msg):
 
 def rel(p):
     return os.path.relpath(p, ROOT)
+
+
+def js_source(path):
+    """File contents with comments blanked out, line numbers preserved.
+
+    The checks below scan source with regexes, and a comment that *describes*
+    a bug reads exactly like the bug. Blanking comment bodies (rather than
+    deleting them) keeps every offset intact so reported line numbers still
+    point at the real line.
+    """
+    text = open(path).read()
+    out = list(text)
+    i, n = 0, len(text)
+    in_str = quote = None
+    while i < n:
+        c = text[i]
+        if in_str:
+            if c == "\\":
+                i += 2
+                continue
+            if c == quote:
+                in_str = None
+            i += 1
+            continue
+        if c in "\"'`":
+            in_str, quote = True, c
+            i += 1
+            continue
+        if c == "/" and i + 1 < n and text[i + 1] == "/":
+            while i < n and text[i] not in "\r\n":
+                out[i] = " "
+                i += 1
+            continue
+        if c == "/" and i + 1 < n and text[i + 1] == "*":
+            while i < n and not (text[i] == "*" and i + 1 < n and text[i + 1] == "/"):
+                if text[i] not in "\r\n":
+                    out[i] = " "
+                i += 1
+            for _ in range(2):
+                if i < n:
+                    out[i] = " "
+                    i += 1
+            continue
+        i += 1
+    return "".join(out)
 
 
 def load_lang():
@@ -94,12 +158,13 @@ def check_events():
             valid[c["name"]] = {p["name"] for p in c.get("properties", [])}
     kinds = {"afterEvents": "WorldAfterEvents", "beforeEvents": "WorldBeforeEvents"}
     for f in glob.glob(f"{BP}/scripts/**/*.js", recursive=True):
-        src = open(f).read()
+        src = js_source(f)
         for m in re.finditer(r"world\.(afterEvents|beforeEvents)\.(\w+)", src):
             kind, ev = m.group(1), m.group(2)
             if ev not in valid[kinds[kind]]:
                 line = src[:m.start()].count("\n") + 1
-                err(f"{rel(f)}:{line}: world.{kind}.{ev} does not exist in @minecraft/server 2.8.0")
+                err(f"{rel(f)}:{line}: world.{kind}.{ev} does not exist in "
+                    f"@minecraft/server {SERVER_VERSION}")
 
 
 # --- 3b. every event property we destructure actually exists --------------
@@ -134,7 +199,7 @@ def check_event_properties():
     destructure = re.compile(r"const\s*\{([^}]*)\}\s*=\s*(\w+)\s*;")
 
     for f in glob.glob(f"{BP}/scripts/**/*.js", recursive=True):
-        src = open(f).read()
+        src = js_source(f)
         for m in pattern.finditer(src):
             kind, name, inline, param = m.group(1), m.group(2), m.group(3), m.group(4)
             cls = event_class(kind, name)
@@ -155,6 +220,32 @@ def check_event_properties():
                     line = src[:m.start()].count("\n") + 1
                     err(f"{rel(f)}:{line}: {cls} has no property {key!r} - it will "
                         f"silently be undefined")
+
+
+# --- 3c. every status effect a script applies actually exists -------------
+# addEffect() with an unknown id throws, and every call site here wraps that
+# in a try/catch, so an imaginary effect is completely silent - the ability
+# just never happens. The Spirit Lantern's "reveal hidden poltergeists" was
+# dead in every released build because it used "glowing", which is a Java
+# effect; Bedrock ships 37 and that is not one of them.
+def check_script_effects():
+    path = os.path.join(VANILLA_DATA, "mojang-effects.json")
+    if not os.path.isfile(path):
+        skipped.append("status effect ids (bedrock-samples not cloned)")
+        return
+    valid = set()
+    for e in json.load(open(path))["data_items"]:
+        name = e.get("name", "")
+        valid.add(name)
+        valid.add(name.split(":", 1)[-1])
+    for f in glob.glob(f"{BP}/scripts/**/*.js", recursive=True):
+        src = js_source(f)
+        for m in re.finditer(r'(?:add|remove)Effect\(\s*"([\w:]+)"', src):
+            if m.group(1) not in valid:
+                line = src[:m.start()].count("\n") + 1
+                err(f"{rel(f)}:{line}: {m.group(1)!r} is not a Minecraft Bedrock "
+                    f"status effect - the call throws and the ability silently "
+                    f"never happens")
 
 
 # --- 4. item schema ------------------------------------------------------
@@ -433,6 +524,119 @@ def check_official_schemas():
                 err(f"schema: {line.strip()}")
 
 
+# --- 9c. every item and block is reachable in survival --------------------
+# An item with no recipe, no loot entry, no shop trade and no world placement
+# exists only in the creative menu. `hollowveil:ember_core` shipped that way
+# for several releases: a fuel nothing dropped and nothing crafted.
+def check_reachability():
+    def ids_in(node, out):
+        if isinstance(node, str):
+            out.add(node.split("<")[0].strip())
+        elif isinstance(node, dict):
+            if isinstance(node.get("item"), str):
+                out.add(node["item"].split("<")[0].strip())
+            for v in node.values():
+                ids_in(v, out)
+        elif isinstance(node, list):
+            for v in node:
+                ids_in(v, out)
+
+    reachable = set()
+    for f in glob.glob(f"{BP}/recipes/*.json"):
+        for key, recipe in json.load(open(f)).items():
+            if key.startswith("minecraft:recipe"):
+                ids_in(recipe.get("result"), reachable)
+                ids_in(recipe.get("output"), reachable)
+    for f in glob.glob(f"{BP}/loot_tables/**/*.json", recursive=True):
+        reachable |= set(re.findall(r'"name"\s*:\s*"(hollowveil:[\w]+)"', open(f).read()))
+    # Shop stock, plus anything the builders place - a block a structure puts
+    # in the world is obtainable by walking up and mining it. Placement is
+    # indirect (ore ids live in a vein table, spawner ids are passed to a
+    # helper), so rather than trace it, treat any identifier named by a
+    # builder script as placed, and additionally read /fill and /setblock
+    # command templates anywhere. Deliberately generous: the point is to
+    # catch content nothing anywhere references, not to prove a spawn rate.
+    BUILDERS = ("/world/", "/village/", "/bosses/", "/ui/shop.js")
+    for f in glob.glob(f"{BP}/scripts/**/*.js", recursive=True):
+        src = js_source(f)
+        unix = f.replace("\\", "/")
+        if any(part in unix for part in BUILDERS):
+            reachable |= set(re.findall(r'(hollowveil:[\w]+)', src))
+        for cmd in re.findall(r'`(?:fill|setblock)[^`]*`', src):
+            reachable |= set(re.findall(r'(hollowveil:[\w]+)', cmd))
+
+    for kind, pattern, root in (("item", f"{BP}/items/*.json", "minecraft:item"),
+                                ("block", f"{BP}/blocks/*.json", "minecraft:block")):
+        for f in sorted(glob.glob(pattern)):
+            ident = json.load(open(f))[root]["description"]["identifier"]
+            if ident not in reachable:
+                err(f"{ident}: no survival source - not a recipe result, not in "
+                    f"any loot table, not sold, not placed by world generation")
+
+
+# --- 9d. every wearable item has the attachable that renders it -----------
+# A custom armour piece with no matching attachable equips fine and renders
+# as nothing at all on the player - the stat bonus applies but the model is
+# invisible, which reads in-game as "the armour is broken".
+def check_attachables():
+    worn = {}
+    for f in sorted(glob.glob(f"{BP}/items/*.json")):
+        d = json.load(open(f))["minecraft:item"]
+        if "minecraft:wearable" in d["components"]:
+            worn[d["description"]["identifier"]] = d["components"]["minecraft:wearable"]
+
+    bound = {}
+    for f in glob.glob(f"{RP}/attachables/*.json"):
+        desc = json.load(open(f))["minecraft:attachable"]["description"]
+        for item_id in (desc.get("item") or {}):
+            bound[item_id] = os.path.basename(f)
+        for tex in (desc.get("textures") or {}).values():
+            # Vanilla textures (the enchanted glint) live in the game's own
+            # pack, so only ours need to exist on disk here.
+            if tex.startswith("textures/models/armor/") and \
+                    not os.path.exists(os.path.join(RP, tex + ".png")):
+                err(f"{os.path.basename(f)}: texture {tex}.png is missing")
+
+    for ident in worn:
+        if ident not in bound:
+            err(f"{ident}: wearable but no attachable binds it - it will equip "
+                f"and render as nothing on the player")
+    for ident in bound:
+        if ident not in worn:
+            err(f"{bound[ident]}: binds {ident}, which is not a wearable item")
+
+
+# --- 9e. tool digger tags match tags blocks actually carry ----------------
+# minecraft:digger speeds are matched by block tag. Every tool in this pack
+# queried tags like 'stone' and 'diamond_pick_diggable' while not one custom
+# block carried any tag at all, so no custom tool was ever faster than a bare
+# hand on any custom block - the whole tool tier was cosmetic.
+def check_tool_tags():
+    block_tags = set()
+    for f in glob.glob(f"{BP}/blocks/*.json"):
+        tags = json.load(open(f))["minecraft:block"]["components"].get("minecraft:tags")
+        if isinstance(tags, list):
+            block_tags |= set(tags)
+    for f in sorted(glob.glob(f"{BP}/items/*.json")):
+        d = json.load(open(f))["minecraft:item"]
+        digger = d["components"].get("minecraft:digger")
+        if not digger:
+            continue
+        queried = set()
+        for entry in digger.get("destroy_speeds", []):
+            block = entry.get("block")
+            if isinstance(block, dict) and isinstance(block.get("tags"), str):
+                queried |= set(re.findall(r"'([^']+)'", block["tags"]))
+        # Tags that only exist on vanilla blocks: a sword matching 'cobweb'
+        # is correct even though this pack ships no cobweb.
+        queried -= {"cobweb", "web", "leaves", "wool", "plant"}
+        if queried and not (queried & block_tags):
+            warnings.append(
+                f"{d['description']['identifier']}: digger matches "
+                f"{sorted(queried)} but no block in this pack carries any of "
+                f"them - the tool is no faster than a bare hand here")
+
+
 # --- 9b. the portal can actually be lit -----------------------------------
 # "Portal tool doesn't light the gold blocks" was reported twice. The second
 # time, frame detection required gold at the four corners - a frame built the
@@ -687,12 +891,17 @@ def check_manifests():
         "46e6c8fa-b01e-4082-bc0d-8dc073d60e35",
         "4e86adc1-3bd9-4b84-9399-c5f0b391c6bf",
         "583094e0-638f-4560-8015-ff61a552ec14",
+        "6022b7d6-f4db-4c7e-8437-5a463313d2c6",
         "64e7a8dd-cef4-42e5-a82e-9b9ccd145a19",
         "72f17a26-4315-4da5-bd56-726b955baae4",
+        "7c58c9a1-0068-429a-9f2c-472760a3fefb",
         "7c86d2fc-67c1-4aa1-b552-93e58e3c7dfb",
+        "873bb57b-2eec-4c8f-810a-380f2c9fbe4b",
         "885991b9-2285-453c-88d9-b9caa859c2fc",
+        "8b83720f-c727-40bf-b60b-fd9670e9f17d",
         "915cf596-e3c7-4014-978e-df04a7f46861",
         "a63f5256-bccb-46d7-843b-853bd45956db",
+        "a7f48924-5a1a-493f-b2cd-87735ab3b128",
         "ae6e6ecc-4012-4967-b18f-602b77319602",
         "b5759d66-90c1-4161-a552-66a8226eb61f",
         "c351775c-40e4-4758-9d3c-d6e2dba24311",
@@ -713,6 +922,7 @@ def main():
     n_js = check_scripts()
     check_events()
     check_event_properties()
+    check_script_effects()
     check_items(lang)
     check_entities_blocks(lang)
     check_rp_refs()
@@ -721,6 +931,9 @@ def main():
     check_particles()
     check_geometry()
     check_generators()
+    check_reachability()
+    check_attachables()
+    check_tool_tags()
     check_portal()
     check_early_execution()
     check_component_schema()

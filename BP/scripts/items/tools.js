@@ -180,20 +180,56 @@ function applyLanternEffects(player) {
     } catch {
       /* ignore */
     }
-    const hidden = player.dimension.getEntities({ location: player.location, maxDistance: 10, type: "hollowveil:poltergeist" });
-    for (const p of hidden) {
-      try {
-        p.addEffect("glowing", LANTERN_INTERVAL + 5, { amplifier: 0, showParticles: false });
-      } catch {
-        /* ignore */
-      }
-    }
+    revealPoltergeists(player);
   }
   if (items.some((i) => i.typeId === "hollowveil:featherfall_charm")) {
     try {
       player.addEffect("slow_falling", LANTERN_INTERVAL + 5, { amplifier: 0, showParticles: false });
     } catch {
       /* ignore */
+    }
+  }
+}
+
+/**
+ * The Spirit Lantern's whole point: poltergeists cycle in and out of
+ * invisibility, and holding the lantern drags them back into view.
+ *
+ * This used to call `addEffect("glowing")`, which does nothing at all -
+ * Glowing is a Java effect. Bedrock ships 37 effects and Glowing is not among
+ * them (checked against mojang-effects.json), so the call threw every time
+ * and the catch block swallowed it. The lantern's headline ability had never
+ * worked in any released version of this pack.
+ *
+ * Stripping the poltergeist's invisibility outright is better anyway: it is
+ * the actual thing the player wants, it is visible immediately, and it uses
+ * the same dynamic property the mob's own visibility cycle reads, so the two
+ * do not fight each other.
+ */
+const LANTERN_REVEAL_RANGE = 12;
+
+function revealPoltergeists(player) {
+  let ghosts;
+  try {
+    ghosts = player.dimension.getEntities({
+      location: player.location,
+      maxDistance: LANTERN_REVEAL_RANGE,
+      type: "hollowveil:poltergeist",
+    });
+  } catch {
+    return;
+  }
+  for (const ghost of ghosts) {
+    try {
+      ghost.removeEffect("invisibility");
+      ghost.setDynamicProperty("hollowveil:hidden", false);
+      ghost.dimension.spawnParticle("hollowveil:soul_burst_particle", {
+        x: ghost.location.x,
+        y: ghost.location.y + 1,
+        z: ghost.location.z,
+      });
+    } catch {
+      /* the ghost may have died or unloaded mid-sweep */
     }
   }
 }

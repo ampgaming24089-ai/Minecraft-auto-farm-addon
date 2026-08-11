@@ -1,15 +1,35 @@
 {
   "format_version": "1.21.0",
   "minecraft:block": {
-    "description": { "identifier": "hollowveil:veilsteel_ore", "menu_category": { "category": "construction" }, "traits": {} },
+    "description": {
+      "identifier": "hollowveil:veilsteel_ore",
+      "menu_category": {
+        "category": "construction"
+      },
+      "traits": {}
+    },
     "components": {
-      "minecraft:material_instances": { "*": { "texture": "veilsteel_ore", "render_method": "opaque" } },
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "veilsteel_ore",
+          "render_method": "opaque"
+        }
+      },
       "minecraft:geometry": "minecraft:geometry.full_block",
-      "minecraft:destructible_by_mining": { "seconds_to_destroy": 7 },
-      "minecraft:destructible_by_explosion": { "explosion_resistance": 12 },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 9
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 12
+      },
       "minecraft:map_color": "#5a4f7a",
       "minecraft:light_emission": 1,
-      "minecraft:loot": "loot_tables/blocks/veilsteel_ore.json"
+      "minecraft:loot": "loot_tables/blocks/veilsteel_ore.json",
+      "minecraft:tags": [
+        "stone",
+        "iron_pick_diggable",
+        "diamond_pick_diggable"
+      ]
     }
   }
 }

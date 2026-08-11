@@ -1,26 +1,26 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Requiem \u00a77- Resource Pack",
-    "description": "Textures, models, sounds and atmosphere for the Hallowed Requiem.",
-    "uuid": "a7f48924-5a1a-493f-b2cd-87735ab3b128",
+    "name": "Hallowed Covenant \u00a77- Resource Pack",
+    "description": "Textures, models, sounds and atmosphere for the Hallowed Covenant.",
+    "uuid": "2d6693e3-30ef-4ab5-af8d-903e5fa06e3f",
     "version": [
-      5,
+      6,
       0,
       0
     ],
     "min_engine_version": [
       1,
       26,
-      30
+      40
     ]
   },
   "modules": [
     {
       "type": "resources",
-      "uuid": "8b83720f-c727-40bf-b60b-fd9670e9f17d",
+      "uuid": "75d3b110-bcbd-4b4c-9b87-6e21508ad7c0",
       "version": [
-        5,
+        6,
         0,
         0
       ]
@@ -28,9 +28,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "873bb57b-2eec-4c8f-810a-380f2c9fbe4b",
+      "uuid": "b059cd3b-38ec-408e-b1bd-9862c445c434",
       "version": [
-        5,
+        6,
         0,
         0
       ]
@@ -38,7 +38,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Requiem Team"
+      "Hallowed Covenant Team"
     ],
     "product_type": "addon"
   }

@@ -15,7 +15,7 @@
         "value": "item.hollowveil:ember_core.name"
       },
       "minecraft:fuel": {
-        "duration": 800
+        "duration": 28800
       }
     }
   }

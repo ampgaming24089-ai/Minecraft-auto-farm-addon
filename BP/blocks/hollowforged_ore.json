@@ -17,14 +17,19 @@
       },
       "minecraft:geometry": "minecraft:geometry.full_block",
       "minecraft:destructible_by_mining": {
-        "seconds_to_destroy": 9
+        "seconds_to_destroy": 12
       },
       "minecraft:destructible_by_explosion": {
         "explosion_resistance": 16
       },
       "minecraft:map_color": "#c94b3c",
       "minecraft:light_emission": 4,
-      "minecraft:loot": "loot_tables/blocks/hollowforged_ore.json"
+      "minecraft:loot": "loot_tables/blocks/hollowforged_ore.json",
+      "minecraft:tags": [
+        "stone",
+        "iron_pick_diggable",
+        "diamond_pick_diggable"
+      ]
     }
   }
 }

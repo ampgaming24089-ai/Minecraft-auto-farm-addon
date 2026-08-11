@@ -40,6 +40,12 @@ export function registerMobAbilities() {
         break;
     }
 
+    // A wounded wraith gets faster and larger. The entity has carried the
+    // `hollowveil:enrage` event and its `cg_enraged` group since the first
+    // release, but nothing ever fired it, so the group was dead weight and
+    // wraiths fought identically from full health to death.
+    if (victim.typeId === "hollowveil:wraith") enrageWraithIfWounded(victim);
+
     if (victim.typeId === "hollowveil:fallen_knight") {
       const shielding = victim.getDynamicProperty("hollowveil:shielding");
       if (shielding) {
@@ -83,6 +89,25 @@ export function registerMobAbilities() {
         break;
     }
   });
+}
+
+const WRAITH_ENRAGE_AT = 0.4; // fraction of max health
+
+function enrageWraithIfWounded(wraith) {
+  try {
+    if (wraith.getDynamicProperty("hollowveil:enraged")) return;
+    const health = wraith.getComponent("minecraft:health");
+    if (!health || health.currentValue / health.effectiveMax > WRAITH_ENRAGE_AT) return;
+    wraith.setDynamicProperty("hollowveil:enraged", true);
+    wraith.triggerEvent("hollowveil:enrage");
+    wraith.dimension.spawnParticle("hollowveil:boss_rage_particle", {
+      x: wraith.location.x,
+      y: wraith.location.y + 1,
+      z: wraith.location.z,
+    });
+  } catch {
+    /* the wraith may have died from the same hit */
+  }
 }
 
 const SHIELD_DURATION_TICKS = 60; // ~3s, matches the knight's shield-up telegraph

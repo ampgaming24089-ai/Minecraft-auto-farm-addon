@@ -78,15 +78,23 @@ export function buildChamberAndSpawn(dimension, origin, bossId, currentTick) {
   ];
   for (const { cx, cz } of corners) {
     run(`fill ${cx} ${y} ${cz} ${cx} ${y + 4} ${cz} ${cfg.pillar}`);
-    if (cfg.accent === "minecraft:cobweb") {
-      run(`setblock ${cx} ${y + 5} ${cz} ${cfg.accent}`);
-    } else {
-      run(`setblock ${cx} ${y + 5} ${cz} ${cfg.accent}`);
-    }
+    run(`setblock ${cx} ${y + 5} ${cz} ${cfg.accent}`);
   }
 
+  // A doorway. The chamber used to be a sealed box: four walls, a ceiling and
+  // no opening anywhere, so winning the fight left the player walled inside a
+  // 17x17 room with nothing to do but mine out. Two blocks of the north wall
+  // come back out, lit on both sides so it reads as a door rather than damage.
+  run(`fill ${x - 1} ${y} ${z - r} ${x + 1} ${y + 2} ${z - r} air`);
+  run(`setblock ${x - 2} ${y + 2} ${z - r} ${cfg.accent}`);
+  run(`setblock ${x + 2} ${y + 2} ${z - r} ${cfg.accent}`);
+
+  // The boss goes at the far side of the arena, not on top of the altar the
+  // player is standing at - spawning it in their face gave away the opening
+  // seconds of every fight.
+  const spawnAt = { x, y, z: z + r - 3 };
   try {
-    const boss = dimension.spawnEntity(cfg.entity, { x, y, z });
+    const boss = dimension.spawnEntity(cfg.entity, spawnAt);
     boss.nameTag = cfg.label;
   } catch {
     /* if the spawn point is somehow obstructed, the chamber is still built

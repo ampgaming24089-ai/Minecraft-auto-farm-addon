@@ -56,6 +56,16 @@ export function startArmorSetBonuses() {
         grant(player, "fire_resistance");
         grant(player, "resistance");
       }
+      // Hollowforged is the craftable top tier - better raw protection than
+      // any boss set - yet it was the only full set in the pack with no set
+      // bonus at all, which made the three boss sets feel like a downgrade
+      // for no reason. Haste and fire resistance suit what it is: the armour
+      // you wear to go mining the deepest ore in the dimension.
+      if (wornSet(player, "hollowforged")) {
+        grant(player, "haste");
+        grant(player, "fire_resistance");
+        if (healthRatio(player) < 0.3) grant(player, "absorption", 1);
+      }
     }
   }, INTERVAL);
 

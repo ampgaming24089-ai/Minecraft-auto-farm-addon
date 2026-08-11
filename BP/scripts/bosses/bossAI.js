@@ -108,6 +108,20 @@ function enrage(boss) {
   } catch {
     /* if any effect id is unavailable the phase still escalates via cadence */
   }
+  // A column of rage particles so the buff is visible, not just felt. This
+  // effect had been authored and shipped in the resource pack since the
+  // particle pass but was never spawned by anything.
+  for (let i = 0; i < 6; i++) {
+    try {
+      boss.dimension.spawnParticle("hollowveil:boss_rage_particle", {
+        x: boss.location.x,
+        y: boss.location.y + i * 0.6,
+        z: boss.location.z,
+      });
+    } catch {
+      /* cosmetic */
+    }
+  }
 }
 
 function safeTrigger(entity, event) {

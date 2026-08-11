@@ -1,17 +1,38 @@
 {
   "format_version": "1.21.0",
   "minecraft:block": {
-    "description": { "identifier": "hollowveil:ritual_altar", "menu_category": { "category": "construction" }, "traits": {} },
+    "description": {
+      "identifier": "hollowveil:ritual_altar",
+      "menu_category": {
+        "category": "construction"
+      },
+      "traits": {}
+    },
     "components": {
       "minecraft:material_instances": {
-        "up": { "texture": "ritual_altar_top", "render_method": "opaque" },
-        "*": { "texture": "ritual_altar_side", "render_method": "opaque" }
+        "up": {
+          "texture": "ritual_altar_top",
+          "render_method": "opaque"
+        },
+        "*": {
+          "texture": "ritual_altar_side",
+          "render_method": "opaque"
+        }
       },
       "minecraft:geometry": "minecraft:geometry.full_block",
-      "minecraft:destructible_by_mining": { "seconds_to_destroy": 50 },
-      "minecraft:destructible_by_explosion": { "explosion_resistance": 1200 },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 10
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 1200
+      },
       "minecraft:map_color": "#7a2f6a",
-      "minecraft:light_emission": 7
+      "minecraft:light_emission": 7,
+      "minecraft:tags": [
+        "stone",
+        "iron_pick_diggable",
+        "diamond_pick_diggable"
+      ]
     }
   }
 }

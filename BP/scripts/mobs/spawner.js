@@ -29,6 +29,11 @@ const REGION_TABLES = {
     { id: "hollowveil:imp", weight: 16 },
     { id: "hollowveil:ashen_whelp", weight: 14 },
     { id: "hollowveil:bastion_sentinel", weight: 6 },
+    // Wild adult dragons. Without this the Veil Dragon existed only inside an
+    // egg: six colour variants, a full taming and flight kit, and no way to
+    // ever meet one in the world. Deliberately rare - finding one is meant to
+    // be the moment of the trip, not a routine encounter.
+    { id: "hollowveil:veil_dragon", weight: 1 },
   ],
   marsh: [
     { id: "hollowveil:bonehide_elk", weight: 18 },

@@ -1,0 +1,23 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "hollowveil:ember_coal_from_core"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "hollowveil:ember_core"
+      }
+    ],
+    "result": {
+      "item": "hollowveil:ember_coal",
+      "count": 9
+    },
+    "unlock": {
+      "context": "AlwaysUnlocked"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "hollowveil:ember_core"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "CCC",
+      "CCC",
+      "CCC"
+    ],
+    "key": {
+      "C": {
+        "item": "hollowveil:ember_coal"
+      }
+    },
+    "result": {
+      "item": "hollowveil:ember_core"
+    },
+    "unlock": {
+      "context": "AlwaysUnlocked"
+    }
+  }
+}

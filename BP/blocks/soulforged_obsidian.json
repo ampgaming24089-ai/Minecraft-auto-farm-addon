@@ -3,20 +3,34 @@
   "minecraft:block": {
     "description": {
       "identifier": "hollowveil:soulforged_obsidian",
-      "menu_category": { "category": "construction" },
+      "menu_category": {
+        "category": "construction"
+      },
       "traits": {}
     },
     "components": {
       "minecraft:material_instances": {
-        "*": { "texture": "soulforged_obsidian", "render_method": "opaque" }
+        "*": {
+          "texture": "soulforged_obsidian",
+          "render_method": "opaque"
+        }
       },
       "minecraft:geometry": "minecraft:geometry.full_block",
-      "minecraft:destructible_by_mining": { "seconds_to_destroy": 35 },
-      "minecraft:destructible_by_explosion": { "explosion_resistance": 3600 },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 18
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 3600
+      },
       "minecraft:map_color": "#2a1338",
       "minecraft:light_emission": 3,
       "minecraft:friction": 0.6,
-      "tag:hollowveil:portal_frame": {}
+      "tag:hollowveil:portal_frame": {},
+      "minecraft:tags": [
+        "stone",
+        "iron_pick_diggable",
+        "diamond_pick_diggable"
+      ]
     }
   }
 }

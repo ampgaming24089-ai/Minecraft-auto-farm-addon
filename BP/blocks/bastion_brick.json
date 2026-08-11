@@ -1,13 +1,32 @@
 {
   "format_version": "1.21.0",
   "minecraft:block": {
-    "description": { "identifier": "hollowveil:bastion_brick", "menu_category": { "category": "construction" }, "traits": {} },
+    "description": {
+      "identifier": "hollowveil:bastion_brick",
+      "menu_category": {
+        "category": "construction"
+      },
+      "traits": {}
+    },
     "components": {
-      "minecraft:material_instances": { "*": { "texture": "bastion_brick", "render_method": "opaque" } },
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "bastion_brick",
+          "render_method": "opaque"
+        }
+      },
       "minecraft:geometry": "minecraft:geometry.full_block",
-      "minecraft:destructible_by_mining": { "seconds_to_destroy": 3 },
-      "minecraft:destructible_by_explosion": { "explosion_resistance": 10 },
-      "minecraft:map_color": "#4a2a28"
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 3
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 10
+      },
+      "minecraft:map_color": "#4a2a28",
+      "minecraft:tags": [
+        "stone",
+        "iron_pick_diggable"
+      ]
     }
   }
 }

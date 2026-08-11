@@ -36,7 +36,8 @@
       "minecraft:tags": {
         "tags": [
           "minecraft:is_sword",
-          "minecraft:sword"
+          "minecraft:sword",
+          "minecraft:netherite_tier"
         ]
       },
       "minecraft:digger": {

@@ -29,7 +29,7 @@ const CATEGORIES = [
       { label: "Emerald x5 -> Soul Compass", costs: [{ item: "minecraft:emerald", count: 5 }], gives: [{ item: "hollowveil:soul_compass", count: 1 }] },
       { label: "Emerald x10 -> Spirit Lantern", costs: [{ item: "minecraft:emerald", count: 10 }], gives: [{ item: "hollowveil:spirit_lantern", count: 1 }] },
       { label: "Emerald x14 -> Ghost Ward Charm", costs: [{ item: "minecraft:emerald", count: 14 }], gives: [{ item: "hollowveil:ghost_ward_charm", count: 1 }] },
-      { label: "Emerald x4 -> 8 Ashwood Logs", costs: [{ item: "minecraft:emerald", count: 4 }], gives: [{ item: "hollowveil:ashwood_log", count: 8 }] },
+      { label: "Emerald x4 -> 8 Ashwood Logs", icon: "textures/blocks/ashwood_log_side", costs: [{ item: "minecraft:emerald", count: 4 }], gives: [{ item: "hollowveil:ashwood_log", count: 8 }] },
       { label: "Emerald x2 -> 3 Ember Fruit", costs: [{ item: "minecraft:emerald", count: 2 }], gives: [{ item: "hollowveil:ember_fruit", count: 3 }] },
     ],
   },
@@ -47,8 +47,8 @@ const CATEGORIES = [
     title: "§5Warded Knowledge",
     icon: ICON + "spectral_dust",
     items: [
-      { label: "Demon Horn x4 + Emerald x6 -> Enchanted Book", costs: [{ item: "hollowveil:demon_horn", count: 4 }, { item: "minecraft:emerald", count: 6 }], gives: [{ item: "minecraft:enchanted_book", count: 1 }] },
-      { label: "Banshee Vocal Cord x3 + Emerald x10 -> Enchanted Book", costs: [{ item: "hollowveil:banshee_vocal_cord", count: 3 }, { item: "minecraft:emerald", count: 10 }], gives: [{ item: "minecraft:enchanted_book", count: 1 }] },
+      { label: "Demon Horn x4 + Emerald x6 -> Enchanted Book", icon: "textures/items/book_enchanted", costs: [{ item: "hollowveil:demon_horn", count: 4 }, { item: "minecraft:emerald", count: 6 }], gives: [{ item: "minecraft:enchanted_book", count: 1 }] },
+      { label: "Banshee Vocal Cord x3 + Emerald x10 -> Enchanted Book", icon: "textures/items/book_enchanted", costs: [{ item: "hollowveil:banshee_vocal_cord", count: 3 }, { item: "minecraft:emerald", count: 10 }], gives: [{ item: "minecraft:enchanted_book", count: 1 }] },
     ],
   },
   {
@@ -85,7 +85,7 @@ function openCategory(player, category) {
   const form = new ActionFormData().title(category.title).body("§7Choose a trade:");
   for (const item of category.items) {
     const costText = item.costs.map((c) => `${itemName(c.item)} x${c.count}`).join(" + ");
-    form.button(`${item.label}\n§8${costText}`, ICON + item.gives[0].item.split(":")[1]);
+    form.button(`${item.label}\n§8${costText}`, buttonIcon(item));
   }
   form.show(player).then((res) => {
     if (res.canceled || res.selection === undefined) {
@@ -94,6 +94,13 @@ function openCategory(player, category) {
     }
     attemptPurchase(player, category.items[res.selection], category);
   });
+}
+
+/** An entry's own icon if it declares one, else the reward item's texture.
+ * The fallback only holds for items whose texture file is named after their
+ * id, which is why block rewards and enchanted books carry an explicit path. */
+function buttonIcon(entry) {
+  return entry.icon ?? ICON + entry.gives[0].item.split(":")[1];
 }
 
 function itemName(typeId) {

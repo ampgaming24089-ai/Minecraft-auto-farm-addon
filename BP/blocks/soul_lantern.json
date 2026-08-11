@@ -1,14 +1,33 @@
 {
   "format_version": "1.21.0",
   "minecraft:block": {
-    "description": { "identifier": "hollowveil:soul_lantern", "menu_category": { "category": "construction" }, "traits": {} },
+    "description": {
+      "identifier": "hollowveil:soul_lantern",
+      "menu_category": {
+        "category": "construction"
+      },
+      "traits": {}
+    },
     "components": {
-      "minecraft:material_instances": { "*": { "texture": "soul_lantern", "render_method": "opaque" } },
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "soul_lantern",
+          "render_method": "opaque"
+        }
+      },
       "minecraft:geometry": "minecraft:geometry.full_block",
-      "minecraft:destructible_by_mining": { "seconds_to_destroy": 1 },
-      "minecraft:destructible_by_explosion": { "explosion_resistance": 1 },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 1
+      },
       "minecraft:map_color": "#f4e6b8",
-      "minecraft:light_emission": 14
+      "minecraft:light_emission": 14,
+      "minecraft:tags": [
+        "stone",
+        "iron_pick_diggable"
+      ]
     }
   }
 }

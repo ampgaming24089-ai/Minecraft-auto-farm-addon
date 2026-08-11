@@ -105,7 +105,10 @@
       },
       "minecraft:behavior.ranged_attack": {
         "priority": 4,
-        "attack_interval": { "min": 3, "max": 5 },
+        "attack_interval": {
+          "min": 3,
+          "max": 5
+        },
         "attack_radius": 14
       },
       "minecraft:shooter": {
@@ -141,9 +144,7 @@
             "hollowveil:cg_phase3"
           ]
         }
-      },
-      "hollowveil:wing_buffet": {},
-      "hollowveil:summon_adds": {}
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-# Hallowed Requiem — a Minecraft Bedrock dimension add-on
+# Hallowed Covenant — a Minecraft Bedrock dimension add-on
 
 (packaged/pack-facing name; the dimension is still called "the Hollow Veil"
 in-fiction throughout the story and UI — see `docs/STORY.md`)
@@ -17,7 +17,7 @@ of the story they're built to tell.
 
 ## Install
 
-1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowedRequiem.mcaddon`.
+1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowedCovenant.mcaddon`.
 2. Send that file to a device with Minecraft Bedrock and open it, or copy
    `BP/` and `RP/` directly into your world's
    `com.mojang/development_behavior_packs` / `development_resource_packs`.
@@ -312,6 +312,63 @@ Three things changed:
    clicking from inside the doorway, and the failure cases;
    `tools/validate.py` runs it, so `build_addon.sh` will not package a
    pack whose portal cannot be lit.
+
+### The functionality audit
+
+A separate pass went item by item, block by block and script by script,
+cross-referencing every identifier against Mojang's shipped data. What it
+turned up, all now fixed:
+
+- **No custom tool was faster than a bare hand on any custom block.** All
+  eight tools' `minecraft:digger` components match block *tags* — `stone`,
+  `wood`, `iron_pick_diggable`, `diamond_pick_diggable` — and not one of the
+  twenty blocks in this pack carried a single tag. Every tag query matched
+  nothing, so the Hollowforged Pickaxe mined Hollowforged Ore at exactly the
+  speed of punching it. The blocks are now tagged by tier.
+  (`item_specific_speeds`, the other lever, is gated behind the
+  UpcomingFeatures experiment, so it is not usable here.)
+- **The Spirit Lantern's reveal ability had never worked.** It called
+  `addEffect("glowing")`; Glowing is a Java effect. Bedrock ships 37 and that
+  is not one of them, so the call threw on every tick and the `catch` around
+  it swallowed the error. It now strips the poltergeist's invisibility
+  directly, which is what the player wanted anyway.
+- **The Veil Dragon could not be found in the world.** Six colour variants, a
+  full taming and flight kit, and the only way to meet one was to hatch an
+  egg. Wild adults now spawn (rarely) in the Ashlands.
+- **The boss chamber sealed the player in.** Four walls, a ceiling, no
+  opening: winning the fight left you inside a 17x17 stone box. It has a
+  doorway now, and the boss spawns across the arena instead of on top of you.
+- **Ember Core was unobtainable** — no recipe, no loot, no trade — and its
+  burn time (800) was a quarter of the Ember Coal it was supposed to
+  condense. It is now nine Ember Coal, burns for nine Ember Coal's worth,
+  and uncrafts.
+- **Glimmer Mucus had no use at all.** Two of them now make a slime ball,
+  which is worth something in a dimension with no slimes.
+- **Two shop buttons rendered blank.** The button icon was derived from the
+  reward's id, which fails for a block reward (block textures are not under
+  `textures/items`) and for `enchanted_book` (its texture is named
+  `book_enchanted`). Both carry an explicit path now.
+- **Hollowforged, the craftable top tier, was the only full set with no set
+  bonus**, which made the three boss sets feel like a downgrade.
+- Dead content removed or wired up: the wraith's `enrage` event and its
+  `cg_enraged` group existed but nothing ever fired them; three bosses
+  carried event stubs with empty bodies; two authored particle effects were
+  never spawned by anything.
+
+Four checks in `tools/validate.py` now cover these: every item and block must
+have a survival source, every wearable must have the attachable that renders
+it, every tool's tag query must match a tag some block carries, and every
+status effect a script applies must be one Bedrock actually has.
+
+### Latest-version alignment
+
+`@minecraft/server` 2.9.0 and `@minecraft/server-ui` 2.1.0 — the newest
+stable modules, not the betas — with `min_engine_version` 1.26.40 to match.
+Diffing the 2.8.0 and 2.9.0 bindings shows the upgrade removes no class,
+property or method this pack uses. `validate.py` reads the module version
+out of the manifest now instead of hardcoding it, so the API checks follow
+the dependency automatically rather than silently validating against a stale
+version.
 
 ### One log line this pass did *not* chase
 
