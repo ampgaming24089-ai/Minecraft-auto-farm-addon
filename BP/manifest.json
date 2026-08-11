@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Covenant \u00a77- Behavior Pack",
-    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Covenant.",
-    "uuid": "b059cd3b-38ec-408e-b1bd-9862c445c434",
+    "name": "Hallowed Expanse \u00a77- Behavior Pack",
+    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Expanse.",
+    "uuid": "7d9c8b34-de57-4fa7-8fbb-e474b13b215c",
     "version": [
-      6,
+      7,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "464ebcd1-a74c-4109-94ae-8ff9a324e029",
+      "uuid": "36864a3d-4e54-465b-886c-66356c03db69",
       "version": [
-        6,
+        7,
         0,
         0
       ]
@@ -28,10 +28,10 @@
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "bf3fdb90-652d-40c2-acf9-2ee24737a2ad",
+      "uuid": "c83a852e-3f02-435e-a3ca-4eace3dae3a7",
       "entry": "scripts/main.js",
       "version": [
-        6,
+        7,
         0,
         0
       ]
@@ -39,9 +39,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "2d6693e3-30ef-4ab5-af8d-903e5fa06e3f",
+      "uuid": "8c65e54f-84fb-4532-9199-45ebad51dd37",
       "version": [
-        6,
+        7,
         0,
         0
       ]
@@ -57,7 +57,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Covenant Team"
+      "Hallowed Expanse Team"
     ],
     "product_type": "addon"
   }

@@ -10,6 +10,7 @@
       "minecraft:type_family": {
         "family": [
           "hollow_veil",
+          "monster",
           "undead",
           "fallen_knight",
           "mob"

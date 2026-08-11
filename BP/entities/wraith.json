@@ -21,6 +21,7 @@
       "minecraft:type_family": {
         "family": [
           "hollow_veil",
+          "monster",
           "undead",
           "wraith",
           "mob"
@@ -53,7 +54,9 @@
       "minecraft:movement": {
         "value": 0.28
       },
-      "minecraft:flying_speed": { "value": 0.09 },
+      "minecraft:flying_speed": {
+        "value": 0.09
+      },
       "minecraft:jump.static": {},
       "minecraft:can_fly": {},
       "minecraft:despawn": {

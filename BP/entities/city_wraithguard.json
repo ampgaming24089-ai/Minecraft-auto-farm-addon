@@ -3,13 +3,14 @@
   "minecraft:entity": {
     "description": {
       "identifier": "hollowveil:city_wraithguard",
-      "is_spawnable": false,
+      "is_spawnable": true,
       "is_summonable": true
     },
     "components": {
       "minecraft:type_family": {
         "family": [
           "hollow_veil",
+          "monster",
           "undead",
           "city_wraithguard",
           "mob"
@@ -41,7 +42,9 @@
       "minecraft:movement": {
         "value": 0.26
       },
-      "minecraft:flying_speed": { "value": 0.08 },
+      "minecraft:flying_speed": {
+        "value": 0.08
+      },
       "minecraft:despawn": {
         "despawn_from_distance": {}
       },
@@ -77,7 +80,10 @@
       },
       "minecraft:behavior.ranged_attack": {
         "priority": 4,
-        "attack_interval": { "min": 3, "max": 5 },
+        "attack_interval": {
+          "min": 3,
+          "max": 5
+        },
         "attack_radius": 12
       },
       "minecraft:shooter": {

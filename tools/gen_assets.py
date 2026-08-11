@@ -103,12 +103,12 @@ PAL = {
 # (poltergeist/soul_wisp are already ambient light sources; toad already
 # has hand-modeled eye cubes).
 EYE_GLOW = {
-    "wraith": (225, 255, 245, 255), "banshee": (255, 245, 255, 255), "shade": (150, 150, 220, 255),
-    "hollow_king": (225, 255, 245, 255), "weeping_widow": (255, 245, 255, 255), "city_wraithguard": (200, 230, 255, 255),
+    "wraith": (225, 255, 245, 255), "banshee": (255, 245, 255, 255), "shade": (190, 190, 255, 255),
+    "hollow_king": (120, 255, 225, 255), "weeping_widow": (255, 245, 255, 255), "city_wraithguard": (200, 230, 255, 255),
     "hellhound": (255, 170, 60, 255), "imp": (255, 170, 60, 255), "malacoda": (255, 190, 80, 255),
     "ashen_whelp": (255, 170, 60, 255), "bastion_sentinel": (255, 190, 100, 255),
     "occultist": (255, 210, 120, 255), "fallen_knight": (200, 60, 55, 255),
-    "ashwing_bat": (210, 130, 230, 255), "bonehide_elk": (40, 30, 25, 255), "marrow_crawler": (210, 60, 50, 255),
+    "ashwing_bat": (210, 130, 230, 255), "bonehide_elk": (255, 210, 140, 255), "marrow_crawler": (255, 90, 70, 255),
     "veil_dragon": (255, 230, 150, 255),
 }
 

@@ -3,7 +3,7 @@
   "minecraft:entity": {
     "description": {
       "identifier": "hollowveil:veil_dragon",
-      "is_spawnable": false,
+      "is_spawnable": true,
       "is_summonable": true
     },
     "component_groups": {
@@ -104,7 +104,9 @@
       "minecraft:movement": {
         "value": 0.5
       },
-      "minecraft:flying_speed": { "value": 0.22 },
+      "minecraft:flying_speed": {
+        "value": 0.22
+      },
       "minecraft:can_fly": {},
       "minecraft:jump.static": {},
       "minecraft:despawn": {

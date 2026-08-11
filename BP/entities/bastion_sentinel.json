@@ -3,13 +3,14 @@
   "minecraft:entity": {
     "description": {
       "identifier": "hollowveil:bastion_sentinel",
-      "is_spawnable": false,
+      "is_spawnable": true,
       "is_summonable": true
     },
     "components": {
       "minecraft:type_family": {
         "family": [
           "hollow_veil",
+          "monster",
           "demon",
           "bastion_sentinel",
           "mob"

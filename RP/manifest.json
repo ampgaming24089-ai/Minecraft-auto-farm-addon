@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Covenant \u00a77- Resource Pack",
-    "description": "Textures, models, sounds and atmosphere for the Hallowed Covenant.",
-    "uuid": "2d6693e3-30ef-4ab5-af8d-903e5fa06e3f",
+    "name": "Hallowed Expanse \u00a77- Resource Pack",
+    "description": "Textures, models, sounds and atmosphere for the Hallowed Expanse.",
+    "uuid": "8c65e54f-84fb-4532-9199-45ebad51dd37",
     "version": [
-      6,
+      7,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "75d3b110-bcbd-4b4c-9b87-6e21508ad7c0",
+      "uuid": "7356403b-01aa-4249-8c6e-f56aa98972db",
       "version": [
-        6,
+        7,
         0,
         0
       ]
@@ -28,9 +28,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "b059cd3b-38ec-408e-b1bd-9862c445c434",
+      "uuid": "7d9c8b34-de57-4fa7-8fbb-e474b13b215c",
       "version": [
-        6,
+        7,
         0,
         0
       ]
@@ -38,7 +38,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Covenant Team"
+      "Hallowed Expanse Team"
     ],
     "product_type": "addon"
   }

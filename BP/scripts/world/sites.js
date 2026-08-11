@@ -28,7 +28,7 @@ const TICK_INTERVAL = 40;
 // Whether a site is already built is answered by the world itself: building
 // one stamps a marker block deep under its centre, so the check is a single
 // block read rather than bookkeeping.
-const SITE_CELL = 176;
+export const SITE_CELL = 176;
 const SITE_CHANCE = 0.62;
 const MARKER = "hollowveil:bonestone";
 
@@ -40,6 +40,47 @@ const BY_BIOME = {
   ruins: ["sunken_city", "ruin_arch", "ruin_arch", "watchtower", "crypt"],
   hub: [],
 };
+
+/** Human-readable name for a site type, for the compass and the guide. */
+export const SITE_LABELS = {
+  sunken_city: "a sunken city",
+  ruin_arch: "a broken arch",
+  watchtower: "a watchtower",
+  crypt: "a crypt",
+  bastion: "an ember bastion",
+  graveyard: "a graveyard",
+  shrine: "a roadside shrine",
+  camp: "an abandoned camp",
+  mushroom_ring: "a glimmershroom ring",
+  obelisk: "an obelisk",
+};
+
+/**
+ * The nearest site to a position, searched outward through the cell grid.
+ *
+ * Pure maths on coordinates, like siteForCell itself - no world access and no
+ * stored state - so the Soul Compass can answer "what is near me" instantly
+ * anywhere in a 50,000-block world.
+ */
+export function nearestSite(x, z, maxRings = 3) {
+  const cx = Math.floor(x / SITE_CELL);
+  const cz = Math.floor(z / SITE_CELL);
+  let best = null;
+  for (let ring = 0; ring <= maxRings; ring++) {
+    for (let dx = -ring; dx <= ring; dx++) {
+      for (let dz = -ring; dz <= ring; dz++) {
+        // Only the newly added shell each ring, not the whole square again.
+        if (ring > 0 && Math.max(Math.abs(dx), Math.abs(dz)) !== ring) continue;
+        const site = siteForCell(cx + dx, cz + dz);
+        if (!site) continue;
+        const dist = Math.hypot(site.x - x, site.z - z);
+        if (!best || dist < best.dist) best = { ...site, dist };
+      }
+    }
+    if (best) break;              // the nearest ring with anything in it wins
+  }
+  return best;
+}
 
 /** The site in this cell, or null. Pure function of the cell coordinates. */
 export function siteForCell(cx, cz) {

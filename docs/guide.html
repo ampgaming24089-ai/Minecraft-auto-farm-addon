@@ -1,0 +1,708 @@
+<title>Hollow Veil Field Guide</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  color-scheme: light dark;
+
+  --ground:      #e9e5dd;
+  --ground-deep: #ded9cf;
+  --panel:       #f4f1ea;
+  --ink:         #1b1922;
+  --ink-soft:    #4a4654;
+  --ink-faint:   #736e80;
+  --rule:        #cbc5b8;
+  --soulfire:    #1f7f70;
+  --soulfire-dim:#7fb8ae;
+  --ember:       #b4482a;
+  --shadow:      rgba(27, 25, 34, .09);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #14131a;
+    --ground-deep: #0e0d13;
+    --panel:       #1c1a24;
+    --ink:         #ded9e6;
+    --ink-soft:    #a49eb2;
+    --ink-faint:   #746e82;
+    --rule:        #2e2b39;
+    --soulfire:    #61d8c2;
+    --soulfire-dim:#2f6f66;
+    --ember:       #e07a52;
+    --shadow:      rgba(0, 0, 0, .5);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground:      #14131a;
+  --ground-deep: #0e0d13;
+  --panel:       #1c1a24;
+  --ink:         #ded9e6;
+  --ink-soft:    #a49eb2;
+  --ink-faint:   #746e82;
+  --rule:        #2e2b39;
+  --soulfire:    #61d8c2;
+  --soulfire-dim:#2f6f66;
+  --ember:       #e07a52;
+  --shadow:      rgba(0, 0, 0, .5);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 400 16px/1.65 ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fog: a single soft pool of light behind the masthead, nothing more. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 60% at 50% -10%,
+              color-mix(in srgb, var(--soulfire) 9%, transparent), transparent 70%);
+  z-index: 0;
+}
+
+.wrap { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 0 24px 96px; }
+
+/* --- masthead --- */
+header.masthead { padding: 72px 0 40px; border-bottom: 1px solid var(--rule); }
+.eyebrow {
+  font: 500 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--soulfire);
+  margin: 0 0 18px;
+}
+h1 {
+  font: 400 clamp(38px, 7vw, 68px)/1.05 Georgia, "Iowan Old Style", "Times New Roman", serif;
+  font-variant-caps: small-caps;
+  letter-spacing: .04em;
+  text-wrap: balance;
+  margin: 0 0 18px;
+}
+.standfirst {
+  max-width: 58ch;
+  font-size: 18px;
+  color: var(--ink-soft);
+  margin: 0;
+}
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+  font: 500 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+.facts b { color: var(--ink); font-weight: 600; }
+
+/* --- layout --- */
+.columns { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 56px; padding-top: 44px; }
+@media (max-width: 860px) { .columns { grid-template-columns: 1fr; gap: 28px; } }
+
+nav.contents { position: sticky; top: 24px; align-self: start; }
+@media (max-width: 860px) {
+  nav.contents { position: static; overflow-x: auto; }
+  nav.contents ol { display: flex; gap: 18px; white-space: nowrap; }
+}
+nav.contents ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 11px; }
+nav.contents a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 14px;
+  border-left: 2px solid transparent;
+  padding-left: 12px;
+  display: block;
+}
+@media (max-width: 860px) { nav.contents a { border-left: 0; padding-left: 0; } }
+nav.contents a:hover, nav.contents a:focus-visible { color: var(--ink); border-left-color: var(--soulfire); }
+
+/* --- sections --- */
+section { padding: 0 0 56px; scroll-margin-top: 24px; }
+h2 {
+  font: 400 30px/1.15 Georgia, "Iowan Old Style", "Times New Roman", serif;
+  font-variant-caps: small-caps;
+  letter-spacing: .05em;
+  margin: 0 0 16px;
+  padding-left: 16px;
+  /* the crack of light: the ore in this pack glows through fissures in stone */
+  border-left: 2px solid var(--soulfire);
+  text-wrap: balance;
+}
+.lede { max-width: 66ch; color: var(--ink-soft); margin: 0 0 28px; }
+
+.entries { display: grid; gap: 2px; }
+article {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  padding: 20px 22px;
+}
+article + article { border-top: 0; }
+h3 {
+  font: 600 15px/1.3 ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: .01em;
+  margin: 0 0 10px;
+  color: var(--ink);
+}
+article p { margin: 0 0 10px; max-width: 66ch; color: var(--ink-soft); }
+article p:last-child { margin-bottom: 0; }
+h4 {
+  font: 600 14px/1.3 ui-sans-serif, system-ui, sans-serif;
+  margin: 18px 0 8px;
+  color: var(--ink);
+}
+.stat {
+  font: 400 13.5px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  margin: 0 0 4px;
+  overflow-x: auto;
+}
+.stat .k { color: var(--soulfire); }
+.stat.danger .k { color: var(--ember); }
+
+footer.end {
+  border-top: 1px solid var(--rule);
+  padding-top: 24px;
+  color: var(--ink-faint);
+  font-size: 14px;
+  max-width: 66ch;
+}
+
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+:focus-visible { outline: 2px solid var(--soulfire); outline-offset: 3px; }
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <p class="eyebrow">Minecraft Bedrock &middot; free dimension add-on</p>
+    <h1>The Hollow Veil</h1>
+    <p class="standfirst">A grey country stitched between the living world and
+      whatever comes after. Gold frame, blue flame, and everything past it is
+      new. Here is all of it, and how to use it.</p>
+    <ul class="facts">
+      <li><b>50,000</b> blocks in every direction</li>
+      <li><b>5</b> regions</li>
+      <li><b>17</b> creatures</li>
+      <li><b>3</b> bosses</li>
+      <li><b>61</b> entries below</li>
+    </ul>
+  </header>
+
+  <div class="columns">
+    <nav class="contents" aria-label="Contents">
+      <ol>
+      <li><a href="#start">Getting In</a></li>
+      <li><a href="#back">Getting Home</a></li>
+      <li><a href="#world">The Five Regions</a></li>
+      <li><a href="#mobs">Creatures</a></li>
+      <li><a href="#gear">Ore Tiers &amp; Gear</a></li>
+      <li><a href="#sets">Armour Set Bonuses</a></li>
+      <li><a href="#items">Items &amp; What They Do</a></li>
+      <li><a href="#bosses">The Three Wardens</a></li>
+      <li><a href="#dragon">The Veil Dragon</a></li>
+      <li><a href="#trade">The Occultist</a></li>
+      </ol>
+    </nav>
+
+    <main>
+    <section id="start">
+      <h2>Getting In</h2>
+      <p class="lede">Craft Soulfire and Steel from one Soul Sand and one Iron Ingot. Build a frame out of Gold Blocks exactly the way you would build a nether portal - the corners are optional - and strike the frame with the igniter. The portal burns red. Walk through.
+
+If it will not light, the igniter tells you why: which blocks are missing, or that the opening is the wrong shape or size. Any rectangle from 2x3 up to 21x21 works.</p>
+    </section>
+    <section id="back">
+      <h2>Getting Home</h2>
+      <p class="lede">Stand in the portal you arrived through, or in the pre-lit one beside Hollow Hamlet. You come out where you left.</p>
+    </section>
+    <section id="world">
+      <h2>The Five Regions</h2>
+      <p class="lede">The Veil is a disc 50,000 blocks in every direction from the hub. Terrain builds itself around you as you travel, so there is no edge to reach quickly and nothing to load in advance.</p>
+      <div class="entries">
+      <article>
+        <h3>The Misty Reach</h3>
+        <p>Where you arrive, and where Hollow Hamlet stands. Lit, and nothing hostile spawns within 32 blocks of the shrine.</p>
+        <p class="stat"><span class="k">Lives here</span>: Soul Wisp, Wraith.</p>
+      </article>
+      <article>
+        <h3>The Grave Moors</h3>
+        <p>Headstones to the horizon. The signature look of the dimension, and the ghosts' home ground.</p>
+        <p class="stat"><span class="k">Lives here</span>: Wraith, Banshee, Shade, Poltergeist, Fallen Knight, Soul Wisp.</p>
+      </article>
+      <article>
+        <h3>The Ashlands</h3>
+        <p>Burnt red country. Demons, the deepest ore, and the only place wild dragons fly.</p>
+        <p class="stat"><span class="k">Lives here</span>: Hellhound, Imp, Ashen Whelp, Bastion Sentinel, Veil Dragon.</p>
+      </article>
+      <article>
+        <h3>The Boneyard Marsh</h3>
+        <p>Wet, luminous, and the only place with anything worth eating.</p>
+        <p class="stat"><span class="k">Lives here</span>: Bonehide Elk, Glimmershroom Toad, Marrow Crawler, Ashwing Bat.</p>
+      </article>
+      <article>
+        <h3>The Sunken Ruins</h3>
+        <p>A drowned city under guard. Bring something that shoots back.</p>
+        <p class="stat"><span class="k">Lives here</span>: City Wraithguard, Ashwing Bat, Shade, Fallen Knight.</p>
+      </article>
+      </div>
+    </section>
+    <section id="mobs">
+      <h2>Creatures</h2>
+      <div class="entries">
+      <article>
+        <h3>Ashen Whelp</h3>
+        <p>A young dragon. Not tameable - it bites.</p>
+        <p class="stat"><span class="k">Health</span>: 8.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Embered Scale, Ember Dust, Ember Fruit.</p>
+      </article>
+      <article>
+        <h3>Ashwing Bat</h3>
+        <p>Flocks. Membranes for the Featherfall Charm.</p>
+        <p class="stat"><span class="k">Health</span>: 6.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Ashwing Membrane.</p>
+      </article>
+      <article>
+        <h3>Banshee</h3>
+        <p>Screams. Knockback plus nausea to everything nearby.</p>
+        <p class="stat"><span class="k">Health</span>: 26.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Soul Shard, Banshee Vocal Cord, Spectral Dust.</p>
+      </article>
+      <article>
+        <h3>Bastion Sentinel</h3>
+        <p>Slow, armoured, hits like a wall falling on you.</p>
+        <p class="stat"><span class="k">Health</span>: 46.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Sentinel Core, Ember Coal, Ember Dust.</p>
+      </article>
+      <article>
+        <h3>Bonehide Elk</h3>
+        <p>Grazes the marsh in herds. Drops hide and marrow.</p>
+        <p class="stat"><span class="k">Health</span>: 18.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Bonehide Elk Hide, Elk Marrow.</p>
+      </article>
+      <article>
+        <h3>City Wraithguard</h3>
+        <p>Ranged. Patrols the sunken ruins in pairs.</p>
+        <p class="stat"><span class="k">Health</span>: 38.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Veilsteel Plating, Veilsteel Scrap, Veil Dragon Egg.</p>
+      </article>
+      <article>
+        <h3>Fallen Knight</h3>
+        <p>Raises a shield periodically, refunding half the damage it takes while up.</p>
+        <p class="stat"><span class="k">Health</span>: 42.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Wraithsteel Scrap, Soul Shard.</p>
+      </article>
+      <article>
+        <h3>Glimmershroom Toad</h3>
+        <p>Glows faintly. Drops the mucus.</p>
+        <p class="stat"><span class="k">Health</span>: 8.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Glimmer Mucus, Glimmershroom.</p>
+      </article>
+      <article>
+        <h3>Hellhound</h3>
+        <p>Pack hunter. Sets what it bites on fire.</p>
+        <p class="stat"><span class="k">Health</span>: 24.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Ember Dust, Demon Horn.</p>
+      </article>
+      <article>
+        <h3>Imp</h3>
+        <p>Steals an item from your bag on a lucky hit, then flees with it.</p>
+        <p class="stat"><span class="k">Health</span>: 10.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Ember Dust, Demon Horn.</p>
+      </article>
+      <article>
+        <h3>Marrow Crawler</h3>
+        <p>Fast, low, and arrives with friends.</p>
+        <p class="stat"><span class="k">Health</span>: 14.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Crawler Chitin, Spectral Dust.</p>
+      </article>
+      <article>
+        <h3>Occultist</h3>
+        <p>The trader at Hollow Hamlet's shrine. Right-click to shop.</p>
+        <p class="stat"><span class="k">Health</span>: 30.</p>
+      </article>
+      <article>
+        <h3>Poltergeist</h3>
+        <p>Cycles in and out of invisibility and throws debris. A Spirit Lantern keeps it visible.</p>
+        <p class="stat"><span class="k">Health</span>: 16.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Soul Shard, Spectral Dust.</p>
+      </article>
+      <article>
+        <h3>Shade</h3>
+        <p>Teleports to flank you. Rarely where you last saw it.</p>
+        <p class="stat"><span class="k">Health</span>: 20.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Soul Shard, Spectral Dust.</p>
+      </article>
+      <article>
+        <h3>Soul Wisp</h3>
+        <p>Harmless, luminous, and full of Soul Shards. It will run.</p>
+        <p class="stat"><span class="k">Health</span>: 6.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Soul Shard, Spectral Dust.</p>
+      </article>
+      <article>
+        <h3>Veil Dragon</h3>
+        <p>Wild adults are rare in the Ashlands. Feed one Ember Fruit or Veil Marrow Stew until it accepts you, then ride it - it flies like a Happy Ghast, steered by where you look.</p>
+        <p class="stat"><span class="k">Health</span>: 40.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Ember Dust.</p>
+      </article>
+      <article>
+        <h3>Wraith</h3>
+        <p>Blinks through thin walls instead of walking around them, and drains hunger on contact. Below 40% health it enrages: faster and larger.</p>
+        <p class="stat"><span class="k">Health</span>: 22.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Soul Shard, Spectral Dust.</p>
+      </article>
+      </div>
+    </section>
+    <section id="gear">
+      <h2>Ore Tiers &amp; Gear</h2>
+      <div class="entries">
+      <article>
+        <h3>Wraithsteel</h3>
+        <p>Diamond-grade. Wraithsteel Ore is common below the moors; smelt the scrap.</p>
+        <h4>Wraithsteel Axe</h4>
+        <p class="stat"><span class="k">Attack damage</span>: +9.</p>
+        <p class="stat"><span class="k">Durability</span>: 900.</p>
+        <p class="stat"><span class="k">Craft</span>: 3x Wraithsteel Ingot, 2x Stick.</p>
+        <h4>Wraithsteel Boots</h4>
+        <p class="stat"><span class="k">Protection</span>: 3.</p>
+        <p class="stat"><span class="k">Durability</span>: 475.</p>
+        <p class="stat"><span class="k">Craft</span>: 4x Wraithsteel Ingot.</p>
+        <h4>Wraithsteel Chestplate</h4>
+        <p class="stat"><span class="k">Protection</span>: 8.</p>
+        <p class="stat"><span class="k">Durability</span>: 580.</p>
+        <p class="stat"><span class="k">Craft</span>: 8x Wraithsteel Ingot.</p>
+        <h4>Wraithsteel Helm</h4>
+        <p class="stat"><span class="k">Protection</span>: 3.</p>
+        <p class="stat"><span class="k">Durability</span>: 400.</p>
+        <p class="stat"><span class="k">Craft</span>: 5x Wraithsteel Ingot.</p>
+        <h4>Wraithsteel Ingot</h4>
+        <p class="stat"><span class="k">Smelt</span>: 1x Wraithsteel Scrap.</p>
+        <h4>Wraithsteel Leggings</h4>
+        <p class="stat"><span class="k">Protection</span>: 6.</p>
+        <p class="stat"><span class="k">Durability</span>: 545.</p>
+        <p class="stat"><span class="k">Craft</span>: 7x Wraithsteel Ingot.</p>
+        <h4>Wraithsteel Pickaxe</h4>
+        <p class="stat"><span class="k">Attack damage</span>: +4.</p>
+        <p class="stat"><span class="k">Durability</span>: 900.</p>
+        <p class="stat"><span class="k">Craft</span>: 3x Wraithsteel Ingot, 2x Stick.</p>
+        <h4>Wraithsteel Scrap</h4>
+        <h4>-</h4>
+        <h4>Wraithsteel Sword</h4>
+        <p class="stat"><span class="k">Attack damage</span>: +7.</p>
+        <p class="stat"><span class="k">Durability</span>: 900.</p>
+        <p class="stat"><span class="k">Craft</span>: 2x Wraithsteel Ingot, 1x Stick.</p>
+      </article>
+      <article>
+        <h3>Veilsteel</h3>
+        <p>Better than diamond. The ore sits deep and glows blue at the edges.</p>
+        <h4>Veilsteel Axe</h4>
+        <p class="stat"><span class="k">Attack damage</span>: +11.</p>
+        <p class="stat"><span class="k">Durability</span>: 1500.</p>
+        <p class="stat"><span class="k">Craft</span>: 3x Veilsteel Ingot, 2x Stick.</p>
+        <h4>Veilsteel Boots</h4>
+        <p class="stat"><span class="k">Protection</span>: 4.</p>
+        <p class="stat"><span class="k">Durability</span>: 650.</p>
+        <p class="stat"><span class="k">Craft</span>: 4x Veilsteel Ingot.</p>
+        <h4>Veilsteel Chestplate</h4>
+        <p class="stat"><span class="k">Protection</span>: 9.</p>
+        <p class="stat"><span class="k">Durability</span>: 800.</p>
+        <p class="stat"><span class="k">Craft</span>: 8x Veilsteel Ingot.</p>
+        <h4>Veilsteel Helm</h4>
+        <p class="stat"><span class="k">Protection</span>: 4.</p>
+        <p class="stat"><span class="k">Durability</span>: 560.</p>
+        <p class="stat"><span class="k">Craft</span>: 5x Veilsteel Ingot.</p>
+        <h4>Veilsteel Ingot</h4>
+        <p class="stat"><span class="k">Smelt</span>: 1x Veilsteel Scrap.</p>
+        <h4>Veilsteel Leggings</h4>
+        <p class="stat"><span class="k">Protection</span>: 7.</p>
+        <p class="stat"><span class="k">Durability</span>: 750.</p>
+        <p class="stat"><span class="k">Craft</span>: 7x Veilsteel Ingot.</p>
+        <h4>Veilsteel Pickaxe</h4>
+        <p class="stat"><span class="k">Attack damage</span>: +5.</p>
+        <p class="stat"><span class="k">Durability</span>: 1500.</p>
+        <p class="stat"><span class="k">Craft</span>: 3x Veilsteel Ingot, 2x Stick.</p>
+        <h4>Veilsteel Plating</h4>
+        <h4>-</h4>
+        <h4>Veilsteel Scrap</h4>
+        <h4>-</h4>
+        <h4>Veilsteel Sword</h4>
+        <p class="stat"><span class="k">Attack damage</span>: +9.</p>
+        <p class="stat"><span class="k">Durability</span>: 1500.</p>
+        <p class="stat"><span class="k">Craft</span>: 2x Veilsteel Ingot, 1x Stick.</p>
+      </article>
+      <article>
+        <h3>Hollowforged</h3>
+        <p>Better than netherite, and the best gear in the pack. The ore is white with red cracks and only appears in the lowest three layers.</p>
+        <h4>Hollowforged Axe</h4>
+        <p class="stat"><span class="k">Attack damage</span>: +12.</p>
+        <p class="stat"><span class="k">Durability</span>: 1900.</p>
+        <p class="stat"><span class="k">Craft</span>: 3x Hollowforged Ingot, 2x Stick.</p>
+        <h4>Hollowforged Boots</h4>
+        <p class="stat"><span class="k">Protection</span>: 5.</p>
+        <p class="stat"><span class="k">Durability</span>: 800.</p>
+        <p class="stat"><span class="k">Craft</span>: 4x Hollowforged Ingot.</p>
+        <h4>Hollowforged Chestplate</h4>
+        <p class="stat"><span class="k">Protection</span>: 10.</p>
+        <p class="stat"><span class="k">Durability</span>: 1040.</p>
+        <p class="stat"><span class="k">Craft</span>: 8x Hollowforged Ingot.</p>
+        <h4>Hollowforged Helm</h4>
+        <p class="stat"><span class="k">Protection</span>: 5.</p>
+        <p class="stat"><span class="k">Durability</span>: 720.</p>
+        <p class="stat"><span class="k">Craft</span>: 5x Hollowforged Ingot.</p>
+        <h4>Hollowforged Ingot</h4>
+        <p class="stat"><span class="k">Smelt</span>: 1x Hollowforged Scrap.</p>
+        <h4>Hollowforged Leggings</h4>
+        <p class="stat"><span class="k">Protection</span>: 9.</p>
+        <p class="stat"><span class="k">Durability</span>: 960.</p>
+        <p class="stat"><span class="k">Craft</span>: 7x Hollowforged Ingot.</p>
+        <h4>Hollowforged Pickaxe</h4>
+        <p class="stat"><span class="k">Attack damage</span>: +6.</p>
+        <p class="stat"><span class="k">Durability</span>: 1900.</p>
+        <p class="stat"><span class="k">Craft</span>: 3x Hollowforged Ingot, 2x Stick.</p>
+        <h4>Hollowforged Scrap</h4>
+        <h4>-</h4>
+        <h4>Hollowforged Sword</h4>
+        <p class="stat"><span class="k">Attack damage</span>: +10.</p>
+        <p class="stat"><span class="k">Durability</span>: 1900.</p>
+        <p class="stat"><span class="k">Craft</span>: 2x Hollowforged Ingot, 1x Stick.</p>
+      </article>
+      </div>
+    </section>
+    <section id="sets">
+      <h2>Armour Set Bonuses</h2>
+      <p class="lede">Wear all four pieces of a set to get its bonus.</p>
+      <div class="entries">
+      <article>
+        <h3>Spectral Regalia</h3>
+        <p>Below 30% health: invisibility and water breathing.</p>
+      </article>
+      <article>
+        <h3>Mourner's Shroud Wrap</h3>
+        <p>Below 30% health: extra speed. Fall damage refunds half of itself as health.</p>
+      </article>
+      <article>
+        <h3>Ashen Demonplate</h3>
+        <p>Permanent fire resistance and damage resistance.</p>
+      </article>
+      <article>
+        <h3>Hollowforged</h3>
+        <p>Haste and fire resistance at all times, plus absorption when you drop below 30% health.</p>
+      </article>
+      </div>
+    </section>
+    <section id="items">
+      <h2>Items &amp; What They Do</h2>
+      <div class="entries">
+      <article>
+        <h3>Veil Dragon Egg</h3>
+        <p>Right-click any block to hatch a wild Veil Dragon. Colour is random.</p>
+      </article>
+      <article>
+        <h3>Elk Marrow</h3>
+        <p>Light snack, and Veil Dragons like it.</p>
+      </article>
+      <article>
+        <h3>Ember Coal</h3>
+        <p>Burns for 160 seconds - twice as long as coal.</p>
+        <p class="stat"><span class="k">Craft</span>: 1x Ember Core (makes 9).</p>
+      </article>
+      <article>
+        <h3>Ember Core</h3>
+        <p>Nine Ember Coal in one block-sized lump. Uncrafts.</p>
+        <p class="stat"><span class="k">Craft</span>: 9x Ember Coal.</p>
+      </article>
+      <article>
+        <h3>Ember Dust</h3>
+        <p>Ashlands currency. Trades for emeralds.</p>
+      </article>
+      <article>
+        <h3>Ember Fruit</h3>
+        <p>Solid food, and the fastest way to a dragon's trust.</p>
+      </article>
+      <article>
+        <h3>Featherfall Charm</h3>
+        <p>Slow falling while held. Pairs well with a dragon.</p>
+        <p class="stat"><span class="k">Durability</span>: 250.</p>
+        <p class="stat"><span class="k">Craft</span>: 3x Ashwing Membrane, 1x Spectral Dust, 1x String.</p>
+      </article>
+      <article>
+        <h3>Ghost Ward Charm</h3>
+        <p>Hold it and a Wraith's touch no longer drains your hunger.</p>
+        <p class="stat"><span class="k">Durability</span>: 200.</p>
+        <p class="stat"><span class="k">Craft</span>: 1x Banshee Vocal Cord, 2x Spectral Dust, 1x Gold Ingot.</p>
+      </article>
+      <article>
+        <h3>Glimmershroom</h3>
+        <p>Marsh mushroom. Goes in the stew.</p>
+      </article>
+      <article>
+        <h3>Hollow King's Reaper</h3>
+        <p>Withers what it hits and heals you for a fifth of the damage dealt.</p>
+        <p class="stat"><span class="k">Attack damage</span>: +9.</p>
+        <p class="stat"><span class="k">Durability</span>: 1300.</p>
+      </article>
+      <article>
+        <h3>Hollow Veil Journal</h3>
+        <p>This guide. You are handed one the first time you join; the Occultist sells replacements.</p>
+      </article>
+      <article>
+        <h3>Malacoda's Fang</h3>
+        <p>Stacks burning on a target. At twelve stacks it detonates.</p>
+        <p class="stat"><span class="k">Attack damage</span>: +10.</p>
+        <p class="stat"><span class="k">Durability</span>: 1250.</p>
+      </article>
+      <article>
+        <h3>Sigil of the Hollow King</h3>
+        <p>Use on a Ritual Altar to summon the Hollow King.</p>
+        <p class="stat"><span class="k">Craft</span>: 5x Soul Shard, 3x Spectral Dust, 1x Paper.</p>
+      </article>
+      <article>
+        <h3>Sigil of Malacoda</h3>
+        <p>Use on a Ritual Altar to summon Malacoda.</p>
+        <p class="stat"><span class="k">Craft</span>: 3x Demon Horn, 5x Ember Dust, 1x Paper.</p>
+      </article>
+      <article>
+        <h3>Sigil of the Weeping Widow</h3>
+        <p>Use on a Ritual Altar to summon the Weeping Widow.</p>
+        <p class="stat"><span class="k">Craft</span>: 2x Banshee Vocal Cord, 5x Soul Shard, 1x Paper.</p>
+      </article>
+      <article>
+        <h3>Soul Compass</h3>
+        <p>Points at Hollow Hamlet and tells you how far. In a world this size that is not a luxury.</p>
+        <p class="stat"><span class="k">Craft</span>: 3x Spectral Dust, 1x Compass.</p>
+      </article>
+      <article>
+        <h3>Soul Shard</h3>
+        <p>The Veil's currency. Dropped by almost everything; the Occultist takes eight for an emerald.</p>
+      </article>
+      <article>
+        <h3>Soulfire and Steel</h3>
+        <p>Your way in. Works exactly like a flint and steel - and lights fires like one too - but its blue flame is what opens a gold-block frame.</p>
+        <p class="stat"><span class="k">Durability</span>: 64.</p>
+        <p class="stat"><span class="k">Craft</span>: 1x Iron Ingot, 1x Soul Sand.</p>
+      </article>
+      <article>
+        <h3>Spectral Dust</h3>
+        <p>Refines into Wraithsteel at the Occultist's table.</p>
+      </article>
+      <article>
+        <h3>Spirit Lantern</h3>
+        <p>Night vision while held, and it drags hidden Poltergeists back into view - they cannot stay invisible near one.</p>
+        <p class="stat"><span class="k">Durability</span>: 300.</p>
+        <p class="stat"><span class="k">Craft</span>: 2x Soul Shard, 1x Wraithsteel Ingot, 1x Glowstone Dust, 1x Soul Torch.</p>
+      </article>
+      <article>
+        <h3>Glimmer Mucus</h3>
+        <p>Two make a slime ball, which nothing else here does.</p>
+      </article>
+      <article>
+        <h3>Veil Marrow Stew</h3>
+        <p>The best meal in the Veil, and worth 15 dragon temper a bowl.</p>
+        <p class="stat"><span class="k">Craft</span>: 1x Elk Marrow, 1x Glimmershroom, 1x Bowl.</p>
+      </article>
+      <article>
+        <h3>Wailing Edge</h3>
+        <p>Sneak and swing: everything around your target is thrown back.</p>
+        <p class="stat"><span class="k">Attack damage</span>: +8.</p>
+        <p class="stat"><span class="k">Durability</span>: 1150.</p>
+      </article>
+      </div>
+    </section>
+    <section id="bosses">
+      <h2>The Three Wardens</h2>
+      <div class="entries">
+      <article>
+        <h3>The Hollow King</h3>
+        <p>Sunken Crypt. Health: 200.</p>
+        <p class="stat danger"><span class="k">Sigil</span>: 5x Soul Shard, 3x Spectral Dust, 1x Paper.</p>
+        <p>Use the sigil on a Ritual Altar. The altar clears an arena around itself, walls it in and leaves a doorway, then the boss walks out.</p>
+        <p>Three phases, at full health, 66% and 30%. Each phase knocks the arena back, summons adds and speeds the boss up.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Hollow King's Reaper + Spectral Regalia.</p>
+        <p>Re-fightable: craft another sigil once the altar has settled (20 minutes).</p>
+      </article>
+      <article>
+        <h3>The Weeping Widow</h3>
+        <p>Widow's Hollow. Health: 170.</p>
+        <p class="stat danger"><span class="k">Sigil</span>: 2x Banshee Vocal Cord, 5x Soul Shard, 1x Paper.</p>
+        <p>Use the sigil on a Ritual Altar. The altar clears an arena around itself, walls it in and leaves a doorway, then the boss walks out.</p>
+        <p>Three phases, at full health, 66% and 30%. Each phase knocks the arena back, summons adds and speeds the boss up.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Wailing Edge + Mourner's Shroud.</p>
+        <p>Re-fightable: craft another sigil once the altar has settled (20 minutes).</p>
+      </article>
+      <article>
+        <h3>Malacoda, the Ashen Demon</h3>
+        <p>Cinder Bastion. Health: 260.</p>
+        <p class="stat danger"><span class="k">Sigil</span>: 3x Demon Horn, 5x Ember Dust, 1x Paper.</p>
+        <p>Use the sigil on a Ritual Altar. The altar clears an arena around itself, walls it in and leaves a doorway, then the boss walks out.</p>
+        <p>Three phases, at full health, 66% and 30%. Each phase knocks the arena back, summons adds and speeds the boss up.</p>
+        <p class="stat danger"><span class="k">Drops</span>: Malacoda's Fang + Ashen Demonplate.</p>
+        <p>Re-fightable: craft another sigil once the altar has settled (20 minutes).</p>
+      </article>
+      </div>
+    </section>
+    <section id="dragon">
+      <h2>The Veil Dragon</h2>
+      <div class="entries">
+      <article>
+        <h3>Taming and flying</h3>
+        <p>Wild adults fly over the Ashlands, rarely. There is also a Veil Dragon Egg - boss loot, or buy one from the Occultist - which hatches a wild one wherever you use it.</p>
+        <p class="stat"><span class="k">Feed it</span>: Ember Fruit (+8 temper), Veil Marrow Stew (+15 temper). Temper runs to 100; keep feeding until it stops throwing you.</p>
+        <p>Once tamed it can be ridden and named. It flies the way a Happy Ghast does - you steer by looking, and it climbs when you hold jump. Six colours, decided when it spawns.</p>
+      </article>
+      </div>
+    </section>
+    <section id="trade">
+      <h2>The Occultist</h2>
+      <p class="lede">Right-click the Occultist at the Hollow Hamlet shrine. The shop is a menu, not a vanilla trade screen: pick a category, pick a trade, and it checks your bag.</p>
+      <div class="entries">
+      <article>
+        <h3>Currency Exchange</h3>
+        <h4>- Soul Shards x8 -&gt; Emerald</h4>
+        <h4>- Ember Dust x8 -&gt; Emerald</h4>
+        <h4>- Diamonds x3 -&gt; 32 Soul Shards</h4>
+        <h4>- Emeralds x20 -&gt; 6 Wraithsteel Ingots</h4>
+        <h4>- Emerald x3 -&gt; Journal</h4>
+        <h4>- Emerald x5 -&gt; Soul Compass</h4>
+      </article>
+      <article>
+        <h3>Supplies &amp; Trinkets</h3>
+        <h4>- Emerald x10 -&gt; Spirit Lantern</h4>
+        <h4>- Emerald x14 -&gt; Ghost Ward Charm</h4>
+        <h4>- Emerald x4 -&gt; 8 Ashwood Logs</h4>
+        <h4>- Emerald x2 -&gt; 3 Ember Fruit</h4>
+        <p>- Spectral Dust x6 -&gt; 2 Wraithsteel Ingots</p>
+        <p>- Sentinel Core + Plating x2 -&gt; 4 Veilsteel Ingots</p>
+      </article>
+      <article>
+        <h3>Refined Materials</h3>
+        <p>- Demon Horn x4 + Emerald x6 -&gt; Enchanted Book</p>
+        <p>- Banshee Vocal Cord x3 + Emerald x10 -&gt; Enchanted Book</p>
+        <p>- Diamond x6 + Embered Scale x4 -&gt; Veil Dragon Egg</p>
+      </article>
+      <article>
+        <h3>Warded Knowledge</h3>
+        
+      </article>
+      <article>
+        <h3>Rare Goods</h3>
+        
+      </article>
+      </div>
+    </section>
+      <footer class="end">
+        Every recipe, stat and drop on this page is read straight out of the
+        add-on by <code>tools/gen_guide.py</code>, so the guide cannot drift
+        away from what the pack actually does. Free to download, play and share.
+      </footer>
+    </main>
+  </div>
+</div>

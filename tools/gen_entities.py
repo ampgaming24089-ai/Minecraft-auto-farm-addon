@@ -13,28 +13,44 @@ import os
 from PIL import ImageDraw
 
 import boxuv
+import faces
 from gen_assets import PAL, RP, EYE_GLOW, ENTITY_PATTERN, save, stable_seed
 
 CUBE = tuple  # (origin(x,y,z), size(dx,dy,dz))
 
 
-def paint_eyes(draw, head_bone, glow_color):
-    """Paints two small glowing dots onto the head bone's front face so
-    every creature reads as *looking at something* instead of a flat
-    silhouette - the single biggest cheap win for a low-poly mob."""
-    if not head_bone or not head_bone["cubes"]:
-        return
-    cube = head_bone["cubes"][0]
+def _front_face_of(bone):
+    """The atlas rectangle covering a bone's primary cube's front face."""
+    if not bone or not bone.get("cubes"):
+        return None, None
+    cube = bone["cubes"][0]
+    if "_uv" not in cube:
+        return None, None
     u, v = cube["_uv"]
     dx, dy, dz = cube["size"]
-    rects = boxuv.face_rects(u, v, dx, dy, dz)
-    fx, fy, fw, fh = rects["front"]
-    if fw < 3 or fh < 3:
-        return
-    ey = fy + max(1, fh // 3)
-    eye_w = max(1, fw // 5)
-    for ex in (fx + fw // 4 - eye_w // 2, fx + (3 * fw) // 4 - eye_w // 2):
-        draw.rectangle([ex, ey, ex + eye_w, ey + eye_w], fill=glow_color)
+    return boxuv.face_rects(u, v, dx, dy, dz)["front"], cube
+
+
+def paint_features(draw, bones, identifier, palette, glow_color):
+    """Paints a real face on the head and a marking on the chest.
+
+    This replaced two flat dots. A pair of squares on a box is a domino, not
+    a face - it was the biggest single reason these mobs read as "soulless
+    blobs". Each creature now gets sockets with depth, a brow that sets an
+    expression, a jaw/snout/visor appropriate to what it is, and something on
+    the torso so the largest surface on the model is not a blank slab. See
+    tools/faces.py for the styles and which creature wears which.
+    """
+    head, head_cube = _front_face_of(next((b for b in bones if b["name"] == "head"), None))
+    if head:
+        base = (head_cube.get("palette") or palette).get("front") or palette.get("side")
+        faces.paint_face(draw, head, base, glow_color, faces.FACE_OF.get(identifier, "hollow"))
+
+    torso_bone = next((b for b in bones if b["name"] in ("torso", "body")), None)
+    chest, chest_cube = _front_face_of(torso_bone)
+    if chest:
+        base = (chest_cube.get("palette") or palette).get("front") or palette.get("side")
+        faces.paint_chest(draw, chest, base, glow_color, faces.CHEST_OF.get(identifier, "none"))
 
 
 def entity_geo(identifier, tex_name, bones, palette, atlas_width=64, visible_bounds=(2, 2.5, 1)):
@@ -60,10 +76,10 @@ def entity_geo(identifier, tex_name, bones, palette, atlas_width=64, visible_bou
             pal = cube.get("palette", palette)
             boxuv.paint_cube(draw, c, pal, seed=seed + i)
 
-    glow = EYE_GLOW.get(identifier)
-    if glow:
-        head_bone = next((b for b in bones if b["name"] == "head"), None)
-        paint_eyes(draw, head_bone, glow)
+    # Every creature gets features, not just the ones with a glow colour -
+    # a skull's sockets and a sentinel's visor read fine without one.
+    glow = EYE_GLOW.get(identifier) or (235, 235, 245, 255)
+    paint_features(draw, bones, identifier, palette, glow)
 
     save(img, RP, "textures", "entity", f"{tex_name}.png")
 
@@ -308,7 +324,7 @@ add(
     "hellhound",
     [
         bone("body", [0, 10, 0], [cube("body", [-4, 7, -7], [8, 7, 14])]),
-        bone("head", [0, 12, -9], [cube("head", [-3, 9.5, -12], [6, 5, 6]), cube("snout", [-1.5, 9.5, -14.5], [3, 3, 2.5])], parent="body"),
+        bone("head", [0, 12, -9], [cube("head", [-3.5, 9, -12.5], [7, 6, 7]), cube("snout", [-2, 9, -15], [4, 3, 3])], parent="body"),
         bone("ear_l", [2, 15, -11], [cube("ear_l", [1.5, 14.5, -12], [1, 2, 1])], parent="head"),
         bone("ear_r", [-2, 15, -11], [cube("ear_r", [-2.5, 14.5, -12], [1, 2, 1])], parent="head"),
         bone("tail", [0, 10, 7], [cube("tail", [-1, 8, 7], [2, 2, 8])], parent="body"),
@@ -326,7 +342,7 @@ add(
     "imp",
     [
         bone("body", [0, 10, 0], [cube("body", [-2.5, 7, -2], [5, 6, 4])]),
-        bone("head", [0, 16, 0], [cube("head", [-2.5, 16, -2.5], [5, 5, 5])], parent="body"),
+        bone("head", [0, 16, 0], [cube("head", [-3, 16, -3], [6, 6, 6])], parent="body"),
         bone("arm_l", [3, 13, 0], [cube("arm_l", [2, 8, -1], [2, 5, 2])], parent="body"),
         bone("arm_r", [-3, 13, 0], [cube("arm_r", [-4, 8, -1], [2, 5, 2])], parent="body"),
         bone("leg_l", [1.5, 7, 0], [cube("leg_l", [0.5, 2, -1], [2, 5, 2])], parent="body"),
@@ -465,7 +481,7 @@ add(
     "ashwing_bat",
     [
         bone("body", [0, 8, 0], [cube("body", [-2, 7, -2.5], [4, 3, 5])]),
-        bone("head", [0, 10, -3], [cube("head", [-1.5, 9, -5], [3, 3, 3])], parent="body"),
+        bone("head", [0, 10, -3], [cube("head", [-2.5, 8.5, -5.5], [5, 4, 4])], parent="body"),
         bone("ear_l", [1, 12, -3.5], [cube("ear_l", [0.5, 11.5, -4], [1, 1.5, 1])], parent="head"),
         bone("ear_r", [-1, 12, -3.5], [cube("ear_r", [-1.5, 11.5, -4], [1, 1.5, 1])], parent="head"),
         bone("wing_l", [2, 9, 0], [cube("wing_l", [2, 6, -2], [4, 4, 4])], parent="body"),
@@ -497,7 +513,7 @@ add(
     "glimmershroom_toad",
     [
         bone("body", [0, 4, 0], [cube("body", [-4, 2, -5], [8, 5, 10])]),
-        bone("head", [0, 6, -5], [cube("head", [-3, 3, -8], [6, 4, 3])], parent="body"),
+        bone("head", [0, 6, -5], [cube("head", [-3.5, 2.5, -8.5], [7, 5, 4])], parent="body"),
         bone("eye_l", [1.5, 8, -7.5], [cube("eye_l", [1, 6.5, -8.2], [1.5, 1.5, 1])], parent="head"),
         bone("eye_r", [-1.5, 8, -7.5], [cube("eye_r", [-2.5, 6.5, -8.2], [1.5, 1.5, 1])], parent="head"),
         bone("leg_fl", [3, 2, -3], [cube("leg_fl", [2, 0, -4], [2, 2, 2])], parent="body"),
@@ -546,7 +562,7 @@ add(
     "marrow_crawler",
     [
         bone("body", [0, 5, 0], [cube("body", [-5, 3, -7], [10, 5, 14])]),
-        bone("head", [0, 6, -8], [cube("head", [-2.5, 4, -11], [5, 4, 4])], parent="body"),
+        bone("head", [0, 6, -8], [cube("head", [-3, 3.5, -11.5], [6, 5, 5])], parent="body"),
         bone("fang_l", [1, 5, -11], [cube("fang_l", [0.5, 4, -12], [1, 2, 1])], parent="head"),
         bone("fang_r", [-1, 5, -11], [cube("fang_r", [-1.5, 4, -12], [1, 2, 1])], parent="head"),
         bone("leg1_l", [5, 4, -5], [cube("leg1_l", [4, 2, -6.5], [4, 2, 2])], parent="body"),
@@ -565,7 +581,7 @@ add(
     "ashen_whelp",
     [
         bone("body", [0, 6, 0], [cube("body", [-2, 4, -1.5], [4, 5, 3])]),
-        bone("head", [0, 11, 0], [cube("head", [-2, 11, -2], [4, 4, 4])], parent="body"),
+        bone("head", [0, 11, 0], [cube("head", [-3, 11, -3], [6, 6, 6])], parent="body"),
         bone("horn_l", [1, 15, 0], [cube("horn_l", [0.5, 15, -0.5], [1, 2, 1], "top")], parent="head"),
         bone("horn_r", [-1, 15, 0], [cube("horn_r", [-1.5, 15, -0.5], [1, 2, 1], "top")], parent="head"),
         bone("arm_l", [2.5, 9, 0], [cube("arm_l", [2, 5, -1], [1.5, 4, 2])], parent="body"),
@@ -598,7 +614,7 @@ add(
 DRAGON_BONES = [
     bone("body", [0, 14, 0], [cube("body", [-6, 11, -10], [12, 10, 20])]),
     bone("neck", [0, 20, -10], [cube("neck", [-3.5, 17, -15], [7, 7, 6])], parent="body"),
-    bone("head", [0, 21, -16], [cube("head", [-3, 18, -21], [6, 6, 6]), cube("snout", [-2, 19, -24], [4, 3, 3])], parent="neck"),
+    bone("head", [0, 21, -16], [cube("head", [-4, 17, -21], [8, 7, 8]), cube("snout", [-2.5, 18, -25], [5, 4, 4])], parent="neck"),
     bone("horn_l", [1.5, 25, -18], [cube("horn_l", [1, 24, -19], [1, 4, 1], "top")], parent="head"),
     bone("horn_r", [-1.5, 25, -18], [cube("horn_r", [-2, 24, -19], [1, 4, 1], "top")], parent="head"),
     bone("tail1", [0, 14, 10], [cube("tail1", [-3, 11, 10], [6, 6, 10])], parent="body"),
@@ -640,10 +656,8 @@ def build_dragon():
                 c.pattern = ENTITY_PATTERN.get("veil_dragon")
                 c.uv = cube_def["_uv"]
                 boxuv.paint_cube(draw, c, pal, seed=i * 100 + bi * 10 + ci)
-        glow = EYE_GLOW.get("veil_dragon")
-        if glow:
-            head_bone = next((b for b in DRAGON_BONES if b["name"] == "head"), None)
-            paint_eyes(draw, head_bone, glow)
+        glow = EYE_GLOW.get("veil_dragon") or (255, 230, 150, 255)
+        paint_features(draw, DRAGON_BONES, "veil_dragon", palette, glow)
         save(img, RP, "textures", "entity", f"veil_dragon_{i}.png")
 
     geo_bones = []

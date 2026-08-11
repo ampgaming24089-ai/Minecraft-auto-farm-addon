@@ -3,7 +3,7 @@
   "minecraft:entity": {
     "description": {
       "identifier": "hollowveil:malacoda",
-      "is_spawnable": false,
+      "is_spawnable": true,
       "is_summonable": true
     },
     "component_groups": {
@@ -38,6 +38,7 @@
       "minecraft:type_family": {
         "family": [
           "hollow_veil",
+          "monster",
           "hollow_veil_boss",
           "demon",
           "boss"

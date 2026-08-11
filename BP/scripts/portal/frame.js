@@ -167,8 +167,6 @@ export function explainFailure(result) {
       return `§7The frame is incomplete - ${result.gaps} gold block${result.gaps === 1 ? "" : "s"} missing from the ring.`;
     case "not_enclosed":
       return "§7The frame isn't sealed - the space inside leaks out through a gap in the ring.";
-    case "not_enclosed":
-      return "§7The frame isn't sealed - the space inside leaks out through a gap in the ring.";
     case "not_rectangular":
       return "§7The opening is not a clean rectangle - fill in the notches.";
     case "too_small":

@@ -1,7 +1,7 @@
 ## Hollow Veil - display strings
 
-pack.name=Hallowed Covenant - Behavior Pack
-pack.description=Hallowed Covenant - a dark dimension of graves, demons and wardens.
+pack.name=Hallowed Expanse - Behavior Pack
+pack.description=Hallowed Expanse - a dark dimension of graves, demons and wardens.
 
 itemGroup.name.hollowveil.currency=Hollow Veil Materials
 itemGroup.name.hollowveil.trinkets=Hollow Veil Trinkets
@@ -92,3 +92,12 @@ item.hollowveil:veilsteel_helmet.name=Veilsteel Helm
 item.hollowveil:veilsteel_chestplate.name=Veilsteel Chestplate
 item.hollowveil:veilsteel_leggings.name=Veilsteel Leggings
 item.hollowveil:veilsteel_boots.name=Veilsteel Boots
+
+## Spawn eggs
+item.spawn_egg.entity.hollowveil:bastion_sentinel.name=Spawn Bastion Sentinel
+item.spawn_egg.entity.hollowveil:city_wraithguard.name=Spawn City Wraithguard
+item.spawn_egg.entity.hollowveil:hollow_king.name=Spawn The Hollow King
+item.spawn_egg.entity.hollowveil:malacoda.name=Spawn Malacoda
+item.spawn_egg.entity.hollowveil:occultist.name=Spawn Occultist
+item.spawn_egg.entity.hollowveil:veil_dragon.name=Spawn Veil Dragon
+item.spawn_egg.entity.hollowveil:weeping_widow.name=Spawn The Weeping Widow

@@ -3,6 +3,9 @@ import { openJournal } from "../ui/journal.js";
 import { tryIgnitePortal } from "../portal/portal.js";
 import { useSigilOnAltar } from "../bosses/chambers.js";
 import { getWorldJson, KEYS } from "../lib/state.js";
+import { nearestSite, SITE_LABELS } from "../world/sites.js";
+import { regionAt, HOLLOW_VEIL } from "../world/build.js";
+import { BIOMES } from "../world/biomes.js";
 
 export function registerItemHandlers() {
   world.afterEvents.itemUse.subscribe((ev) => {
@@ -132,17 +135,44 @@ function consumeOneItem(player, stack) {
   }
 }
 
+/**
+ * The Soul Compass.
+ *
+ * It used to report one thing: how far Hollow Hamlet was. That was adequate
+ * when the world was 1,000 blocks across. At 50,000 in every direction, "the
+ * hub is 31,402m away" is not navigation - it is a number. So it now also
+ * names the region you are standing in and points at the nearest structure,
+ * which is what actually gets you somewhere out here.
+ *
+ * Both extra readings are pure functions of your coordinates (see
+ * world/biomes.js and world/sites.js), so this costs one hash lookup and a
+ * short grid search, not a world scan.
+ */
 function pointToShrine(player) {
-  const shrine = getWorldJson(KEYS.VILLAGE_SHRINE_POS, null);
-  if (!shrine) {
-    player.sendMessage("§7The compass needle spins - Hollow Hamlet hasn't been found yet.");
-    return;
+  const here = player.location;
+  const lines = [];
+
+  if (player.dimension.id === HOLLOW_VEIL) {
+    const biome = BIOMES[regionAt(here)];
+    if (biome) lines.push(`§d${biome.name ?? biome.id}`);
+
+    const site = nearestSite(here.x, here.z);
+    if (site) {
+      const label = SITE_LABELS[site.type] ?? site.type.replace(/_/g, " ");
+      lines.push(`§7${label} ${Math.round(site.dist)}m ` +
+                 `${compassDirection(site.x - here.x, site.z - here.z)}`);
+    }
   }
-  const dx = shrine.x - player.location.x;
-  const dz = shrine.z - player.location.z;
-  const dist = Math.round(Math.hypot(dx, dz));
-  const dir = compassDirection(dx, dz);
-  player.onScreenDisplay.setActionBar(`§5Hollow Hamlet: ${dist}m ${dir}`);
+
+  const shrine = getWorldJson(KEYS.VILLAGE_SHRINE_POS, null);
+  if (shrine) {
+    const dist = Math.round(Math.hypot(shrine.x - here.x, shrine.z - here.z));
+    lines.push(`§5Hamlet ${dist}m ${compassDirection(shrine.x - here.x, shrine.z - here.z)}`);
+  } else {
+    lines.push("§7The needle spins - Hollow Hamlet hasn't been found yet.");
+  }
+
+  player.onScreenDisplay.setActionBar(lines.join("  §8|  "));
 }
 
 function compassDirection(dx, dz) {

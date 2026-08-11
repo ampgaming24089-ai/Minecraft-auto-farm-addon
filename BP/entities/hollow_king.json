@@ -3,7 +3,7 @@
   "minecraft:entity": {
     "description": {
       "identifier": "hollowveil:hollow_king",
-      "is_spawnable": false,
+      "is_spawnable": true,
       "is_summonable": true
     },
     "component_groups": {
@@ -37,6 +37,7 @@
       "minecraft:type_family": {
         "family": [
           "hollow_veil",
+          "monster",
           "hollow_veil_boss",
           "undead",
           "boss"

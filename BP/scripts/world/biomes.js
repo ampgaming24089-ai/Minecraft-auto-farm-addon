@@ -8,7 +8,12 @@
 // so exploring actually turns up something new instead of the same four
 // pie slices in the same four places.
 
-export const WORLD_RADIUS = 10000; // 90 -> 512 -> 1024 -> 10000
+export const WORLD_RADIUS = 50000; // 90 -> 512 -> 1024 -> 10000 -> 50000
+// 50,000 blocks in every direction: a 100,000-block-wide disc, comfortably
+// inside Bedrock's +/-30,000,000 world limit. Nothing about this number is
+// stored anywhere - see world/terrain.js for why the generator holds no
+// per-sector state at all - so widening the world costs no memory and no
+// dynamic-property budget. It only changes where the rim is.
 export const SECTOR = 32; // terrain is built one sector at a time, near players
 export const SURFACE_Y = 64;
 export const BEDROCK_Y = SURFACE_Y - 12;
@@ -108,7 +113,6 @@ export const BIOMES = {
   },
 };
 
-const BIOME_ORDER = ["moors", "ashlands", "marsh", "ruins"];
 const HUB_RADIUS = 40;
 
 /** World layout seed. Fixed per pack (not per world) so a given coordinate
@@ -116,14 +120,25 @@ const HUB_RADIUS = 40;
  * the docs/maps honest - while still being irregular rather than gridded. */
 const LAYOUT_SEED = 20260810;
 
+// Territory size. Tuned by sampling the real distribution across the whole
+// 50,000-block radius rather than guessed - see tools/biome_stats.js.
+const BIOME_CELL = 900;
+const BIOME_WARP_CELL = 420;
+const BIOME_WARP = 520;
+
 /** Which biome owns this position. */
 export function biomeAt(x, z) {
   const dist = Math.hypot(x, z);
   if (dist < HUB_RADIUS) return BIOMES.hub;
   // A "which biome" field plus a warp field, so the four territories form
   // large irregular blobs instead of quadrants, and interleave at the edges.
-  const wx = x + (noise2(x, z, 90, LAYOUT_SEED + 7) - 0.5) * 120;
-  const wz = z + (noise2(x, z, 90, LAYOUT_SEED + 13) - 0.5) * 120;
+  // Biome scale grows with the world. At the old 190-block cell a 100,000
+  // wide map would be roughly 500 territories across - a patchwork you cross
+  // three of on a short walk. At ~900 the four territories read as continents
+  // you travel through for a thousand blocks at a time, which is the point of
+  // making the world this big.
+  const wx = x + (noise2(x, z, BIOME_WARP_CELL, LAYOUT_SEED + 7) - 0.5) * BIOME_WARP;
+  const wz = z + (noise2(x, z, BIOME_WARP_CELL, LAYOUT_SEED + 13) - 0.5) * BIOME_WARP;
   // Two independent fields rather than one bucketed field. fbm's output is
   // bell-shaped around 0.5, so slicing a single field into four equal
   // ranges hands the two middle slices most of the map (measured: 50%/37%
@@ -131,8 +146,8 @@ export function biomeAt(x, z) {
   // territories, and the thresholds below are tuned against the measured
   // distribution - MOORS_CUT is deliberately generous because the
   // graveyard moors are the dimension's signature look.
-  const a = fbm(wx, wz, 190, LAYOUT_SEED);
-  const b = fbm(wx + 4096, wz - 4096, 150, LAYOUT_SEED + 77);
+  const a = fbm(wx, wz, BIOME_CELL, LAYOUT_SEED);
+  const b = fbm(wx + 4096, wz - 4096, BIOME_CELL * 0.79, LAYOUT_SEED + 77);
   const MOORS_CUT = 0.54;
   const SPLIT = 0.5;
   if (a < MOORS_CUT) return b < SPLIT ? BIOMES.moors : BIOMES.ashlands;

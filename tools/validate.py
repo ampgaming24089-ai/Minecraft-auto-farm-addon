@@ -143,6 +143,56 @@ def check_scripts():
     return len(files)
 
 
+# --- 2b. dead and duplicated code ----------------------------------------
+# None of these stop the pack loading, which is exactly why they accumulate:
+# a duplicated switch case is unreachable, an unused constant is a fix that
+# was half-applied, and a duplicated JSON key silently keeps only the last
+# value. All three were present in this pack before this check existed.
+def check_dead_code():
+    for f in sorted(glob.glob(f"{BP}/scripts/**/*.js", recursive=True)):
+        src = js_source(f)
+
+        # Duplicate `case "x":` labels inside one switch block. Tracking brace
+        # depth is enough to keep separate switches apart.
+        depth, seen = 0, {}
+        for lineno, line in enumerate(src.splitlines(), 1):
+            if "switch" in line:
+                seen[depth + line.count("{")] = set()
+            m = re.match(r"\s*case\s+(\"[^\"]*\"|'[^']*'|[\w.]+)\s*:", line)
+            if m:
+                labels = seen.setdefault(depth, set())
+                if m.group(1) in labels:
+                    err(f"{rel(f)}:{lineno}: duplicate case {m.group(1)} - "
+                        f"the second one can never run")
+                labels.add(m.group(1))
+            depth += line.count("{") - line.count("}")
+
+        # Module-level constants nobody reads. `export`ed ones are part of the
+        # module's surface, so they are left alone.
+        for m in re.finditer(r"^const ([A-Z][A-Z0-9_]*)\s*=", src, re.M):
+            name = m.group(1)
+            uses = len(re.findall(rf"\b{name}\b", src))
+            if uses <= 1:
+                line = src[:m.start()].count("\n") + 1
+                warnings.append(f"{rel(f)}:{line}: {name} is never used")
+
+    # Duplicate keys in JSON. json.load keeps the last silently, so a file can
+    # look correct and behave as something else entirely.
+    def dup_keys(pairs, where):
+        seen = set()
+        for key, _ in pairs:
+            if key in seen:
+                err(f"{where}: duplicate key {key!r} - only the last one applies")
+            seen.add(key)
+        return dict(pairs)
+
+    for f in glob.glob(f"{BP}/**/*.json", recursive=True) + glob.glob(f"{RP}/**/*.json", recursive=True):
+        try:
+            json.load(open(f), object_pairs_hook=lambda p, w=rel(f): dup_keys(p, w))
+        except ValueError:
+            pass                        # check_json already reported the parse error
+
+
 # --- 3. every world event we subscribe to actually exists -----------------
 # Subscribing to a nonexistent event throws at module load and silently
 # disables every subsystem registered after it. This is exactly how the
@@ -496,7 +546,8 @@ def check_generators():
     # (see stable_seed) and idempotent, so re-running them here rewrites the
     # same bytes rather than churning the tree.
     tools_dir = os.path.join(ROOT, "tools")
-    for mod in ("gen_assets.py", "gen_entities.py", "gen_animations.py", "gen_sounds.py"):
+    for mod in ("gen_assets.py", "gen_entities.py", "gen_animations.py",
+                "gen_sounds.py", "gen_guide.py"):
         p = subprocess.run([sys.executable, mod], cwd=tools_dir, capture_output=True, text=True)
         if p.returncode != 0:
             last = p.stderr.strip().splitlines()[-1] if p.stderr.strip() else "?"
@@ -887,13 +938,16 @@ def check_manifests():
     RETIRED = {
         "0f251285-1535-4d56-89e7-41c4a1143e5e",
         "1335f7ba-d26c-4ed9-bc17-f29b193e18da",
+        "2d6693e3-30ef-4ab5-af8d-903e5fa06e3f",
         "36d910e6-19c8-4464-8aaa-e878ad5775bc",
+        "464ebcd1-a74c-4109-94ae-8ff9a324e029",
         "46e6c8fa-b01e-4082-bc0d-8dc073d60e35",
         "4e86adc1-3bd9-4b84-9399-c5f0b391c6bf",
         "583094e0-638f-4560-8015-ff61a552ec14",
         "6022b7d6-f4db-4c7e-8437-5a463313d2c6",
         "64e7a8dd-cef4-42e5-a82e-9b9ccd145a19",
         "72f17a26-4315-4da5-bd56-726b955baae4",
+        "75d3b110-bcbd-4b4c-9b87-6e21508ad7c0",
         "7c58c9a1-0068-429a-9f2c-472760a3fefb",
         "7c86d2fc-67c1-4aa1-b552-93e58e3c7dfb",
         "873bb57b-2eec-4c8f-810a-380f2c9fbe4b",
@@ -903,7 +957,9 @@ def check_manifests():
         "a63f5256-bccb-46d7-843b-853bd45956db",
         "a7f48924-5a1a-493f-b2cd-87735ab3b128",
         "ae6e6ecc-4012-4967-b18f-602b77319602",
+        "b059cd3b-38ec-408e-b1bd-9862c445c434",
         "b5759d66-90c1-4161-a552-66a8226eb61f",
+        "bf3fdb90-652d-40c2-acf9-2ee24737a2ad",
         "c351775c-40e4-4758-9d3c-d6e2dba24311",
         "cefe0049-30d2-40ef-b2ce-08d0e44c481c",
         "da0cf01f-a51c-4d87-b44b-34823328adf8",
@@ -920,6 +976,7 @@ def main():
     lang = load_lang()
     n_json = check_json()
     n_js = check_scripts()
+    check_dead_code()
     check_events()
     check_event_properties()
     check_script_effects()

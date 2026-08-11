@@ -10,6 +10,7 @@
       "minecraft:type_family": {
         "family": [
           "hollow_veil",
+          "monster",
           "undead",
           "banshee",
           "mob"
@@ -39,7 +40,9 @@
       "minecraft:movement": {
         "value": 0.22
       },
-      "minecraft:flying_speed": { "value": 0.07 },
+      "minecraft:flying_speed": {
+        "value": 0.07
+      },
       "minecraft:despawn": {
         "despawn_from_distance": {}
       },

@@ -1,7 +1,22 @@
 import { ActionFormData, MessageFormData } from "@minecraft/server-ui";
 import { bossesDefeated } from "../lib/state.js";
+import { GUIDE } from "./guidedata.js";
 
 const ICON = "textures/items/";
+
+/**
+ * The Field Guide.
+ *
+ * This used to be a story journal and nothing else - eight chapters of prose
+ * and no answer to "what does this item do" or "where do I find that ore".
+ * For a pack people download and open cold, that is the wrong first screen.
+ *
+ * It is now two halves. The reference half is generated: `guidedata.js` is
+ * built by tools/gen_guide.py from the pack's own items, recipes, loot tables
+ * and spawner rosters, so every number in it is true by construction and
+ * stays true when the pack changes. The story half is hand-written and lives
+ * here, gated on which Wardens the world has actually beaten.
+ */
 
 const CHAPTERS = [
   {
@@ -61,27 +76,15 @@ const CHAPTERS = [
     bossId: "malacoda",
   },
   {
-    id: "territories",
-    title: "The Four Territories",
-    icon: ICON + "veilsteel_ore",
-    body:
-      "Beyond the Hamlet: the Ashlands and Ember Bastion (Malacoda's heat, " +
-      "Bastion Sentinels guarding old waystation vaults), Boneyard Marsh " +
-      "(Bonehide Elk, Glimmershroom Toads - the one territory that still " +
-      "feels a little alive), and the Sunken Ruins and Sunken City " +
-      "(Wraithguards, Ashwing Bats roosting in drowned towers). Each has " +
-      "its own materials, its own dangers.",
-    always: true,
-  },
-  {
     id: "dragons",
     title: "Veil Dragons",
     icon: ICON + "dragon_egg",
     body:
-      "Not Wardens, not corrupted, not native to the crossing at all. An egg " +
-      "turns up sometimes where a Wraithguard falls. Feed a hatchling Ember " +
-      "Fruit or Veil Marrow Stew until it trusts you, then ride it anywhere " +
-      "in the Veil. They come in every color the Veil has ever worn.",
+      "Not Wardens, not corrupted, not native to the crossing at all. Wild " +
+      "adults ride the thermals over the Ashlands, and an egg turns up " +
+      "sometimes where a Wraithguard falls. Feed one until it trusts you, " +
+      "then ride it anywhere in the Veil. They come in every colour the Veil " +
+      "has ever worn.",
     always: true,
   },
   {
@@ -96,41 +99,109 @@ const CHAPTERS = [
   },
 ];
 
-export function openJournal(player) {
-  const defeated = bossesDefeated();
-  const form = new ActionFormData()
-    .title("§l§5Hollow Veil Journal")
-    .body(`§7A record of everything you've learned in the Veil.\n§7Wardens defeated: §e${defeated.length}§7/3`);
+// Bedrock's form bodies scroll, but a wall of text on a phone is unreadable.
+// Long entries are split into pages the player can step through.
+const PAGE_CHARS = 780;
 
-  const visible = CHAPTERS.filter((c) => {
-    if (c.always) return true;
-    if (c.bossId) return true; // always listed, but marked locked/complete below
-    if (c.requiresAll) return defeated.length >= 3;
-    return true;
-  });
-
-  for (const c of visible) {
-    const done = c.bossId ? defeated.includes(c.bossId) : false;
-    const prefix = c.bossId ? (done ? "§a[Defeated] " : "§c[Unclaimed] ") : "§e";
-    form.button(prefix + c.title, c.icon);
+function paginate(text) {
+  if (text.length <= PAGE_CHARS) return [text];
+  const pages = [];
+  let rest = text;
+  while (rest.length > PAGE_CHARS) {
+    // Break on a paragraph if there is one in range, otherwise a space, so a
+    // page never ends mid-word.
+    let cut = rest.lastIndexOf("\n\n", PAGE_CHARS);
+    if (cut < PAGE_CHARS * 0.5) cut = rest.lastIndexOf(" ", PAGE_CHARS);
+    if (cut < 1) cut = PAGE_CHARS;
+    pages.push(rest.slice(0, cut).trim());
+    rest = rest.slice(cut).trim();
   }
+  if (rest) pages.push(rest);
+  return pages;
+}
+
+export function openJournal(player) {
+  const form = new ActionFormData()
+    .title("§l§5Hollow Veil Field Guide")
+    .body("§7Everything in the Veil, and what to do with it.");
+
+  for (const section of GUIDE.sections) {
+    form.button(`§e${section.title}`, ICON + section.icon);
+  }
+  form.button("§dThe Story", ICON + "journal");
 
   form.show(player).then((res) => {
     if (res.canceled || res.selection === undefined) return;
-    const chapter = visible[res.selection];
-    if (!chapter) return;
-    showChapter(player, chapter);
+    if (res.selection === GUIDE.sections.length) {
+      openStory(player);
+      return;
+    }
+    openSection(player, GUIDE.sections[res.selection]);
   });
 }
 
-function showChapter(player, chapter) {
+function openSection(player, section) {
+  // A section with no sub-entries is a single page of prose - show it rather
+  // than making the player click through a menu of one.
+  if (!section.entries?.length) {
+    showPages(player, section.title, section.text ?? "", () => openJournal(player));
+    return;
+  }
+
+  const form = new ActionFormData()
+    .title(`§5${section.title}`)
+    .body(section.text ? `§7${section.text}` : "§7Pick an entry:");
+  for (const entry of section.entries) {
+    form.button(entry.name);
+  }
+  form.show(player).then((res) => {
+    if (res.canceled || res.selection === undefined) {
+      openJournal(player);
+      return;
+    }
+    const entry = section.entries[res.selection];
+    showPages(player, entry.name, entry.text, () => openSection(player, section));
+  });
+}
+
+/** Shows `text` a page at a time, then returns to `back`. */
+function showPages(player, title, text, back, page = 0) {
+  const pages = paginate(text || "-");
+  const last = page >= pages.length - 1;
+  const header = pages.length > 1 ? `§8Page ${page + 1}/${pages.length}\n\n` : "";
   new MessageFormData()
-    .title(chapter.title)
-    .body(chapter.body)
-    .button1("Back to Journal")
+    .title(`§5${title}`)
+    .body(header + "§7" + pages[page])
+    .button1(last ? "Back" : "Next page")
     .button2("Close")
     .show(player)
     .then((res) => {
-      if (!res.canceled && res.selection === 0) openJournal(player);
+      if (res.canceled || res.selection !== 0) return;
+      if (last) back();
+      else showPages(player, title, text, back, page + 1);
     });
+}
+
+function openStory(player) {
+  const defeated = bossesDefeated();
+  const form = new ActionFormData()
+    .title("§l§5The Story")
+    .body(`§7Wardens defeated: §e${defeated.length}§7/3`);
+
+  const visible = CHAPTERS.filter((c) => c.always || c.bossId ||
+                                         (c.requiresAll && defeated.length >= 3));
+  for (const chapter of visible) {
+    const done = chapter.bossId ? defeated.includes(chapter.bossId) : false;
+    const prefix = chapter.bossId ? (done ? "§a[Defeated] " : "§c[Unclaimed] ") : "§e";
+    form.button(prefix + chapter.title, chapter.icon);
+  }
+
+  form.show(player).then((res) => {
+    if (res.canceled || res.selection === undefined) {
+      openJournal(player);
+      return;
+    }
+    const chapter = visible[res.selection];
+    if (chapter) showPages(player, chapter.title, chapter.body, () => openStory(player));
+  });
 }
