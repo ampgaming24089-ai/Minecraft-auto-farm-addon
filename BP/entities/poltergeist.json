@@ -39,7 +39,7 @@
       "minecraft:movement": {
         "value": 0.2
       },
-      "minecraft:flying_speed": 0.06,
+      "minecraft:flying_speed": { "value": 0.06 },
       "minecraft:despawn": {
         "despawn_from_distance": {}
       },
@@ -66,8 +66,7 @@
       },
       "minecraft:behavior.ranged_attack": {
         "priority": 3,
-        "attack_interval_min": 2,
-        "attack_interval_max": 4,
+        "attack_interval": { "min": 2, "max": 4 },
         "attack_radius": 12
       },
       "minecraft:shooter": {

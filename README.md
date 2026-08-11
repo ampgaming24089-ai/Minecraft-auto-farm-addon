@@ -1,4 +1,4 @@
-# Hallowed Reaches — a Minecraft Bedrock dimension add-on
+# Hallowed Requiem — a Minecraft Bedrock dimension add-on
 
 (packaged/pack-facing name; the dimension is still called "the Hollow Veil"
 in-fiction throughout the story and UI — see `docs/STORY.md`)
@@ -17,7 +17,7 @@ of the story they're built to tell.
 
 ## Install
 
-1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowedReaches.mcaddon`.
+1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowedRequiem.mcaddon`.
 2. Send that file to a device with Minecraft Bedrock and open it, or copy
    `BP/` and `RP/` directly into your world's
    `com.mojang/development_behavior_packs` / `development_resource_packs`.
@@ -43,8 +43,13 @@ of the story they're built to tell.
   for flint, and it behaves the same way). The portal burns **red**, with
   ember and smoke particles drifting off it. The frame detector is a
   from-scratch reimplementation of the vanilla nether portal algorithm —
-  any valid rectangle from 2x3 up to 21x21, not one fixed size.
-  `BP/scripts/portal/portal.js`.
+  any valid rectangle from 2x3 up to 21x21, not one fixed size, and like a
+  nether portal it does **not** need the four corner blocks. If a frame
+  won't light, the igniter now says why (missing blocks, wrong shape,
+  wrong size) instead of doing nothing. Struck anywhere else it lights a
+  fire like a flint and steel — soul fire on soul sand or soul soil, plain
+  fire elsewhere. `BP/scripts/portal/frame.js` (pure geometry, unit-tested
+  by `tools/test_portal.js`) and `BP/scripts/portal/portal.js`.
 - **8 mobs**, each with a distinct mechanic, not just a reskinned vanilla
   behavior tree: Wraith (blinks through thin walls when it can't path
   around them, drains hunger on hit), Banshee (AoE scream — knockback +
@@ -155,6 +160,29 @@ missing lang keys, unresolved texture/geometry/particle/sound references,
 recipes pointing at items that don't exist. `build_addon.sh` refuses to
 package a pack that fails it.
 
+Two of those checks are worth calling out, because between them they close
+the two bug classes that actually shipped:
+
+- **Component shapes and field names, checked against Mojang's own
+  schemas.** `bedrock-samples` ships `metadata/json_schemas`, the draft-07
+  schemas the engine's parsers are generated from.
+  `tools/gen_vanilla_schema.py` distils them into
+  `tools/schema/vanilla_components.json` (committed, so the check needs
+  nothing but the stdlib), and `tools/schema_check.py` runs the full
+  draft-07 validation when the samples checkout and `jsonschema` are
+  available. The schemas are machine-generated and their `oneOf` branches
+  overlap, so plenty of *legal* content trips them — rather than
+  hand-maintain an ignore list, `schema_check.py` validates Mojang's own
+  127 shipped entities first and treats every rule they trip as a known
+  false positive. What survives is signal. This is what caught
+  `minecraft:fire_immune: true` on six entities and `flying_speed: 0.09`
+  on ten, each of which voids the *entire* entity definition.
+- **The portal can actually be lit.** `tools/test_portal.js` drives the
+  real frame-detection code against a stub world, including a frame built
+  exactly the way the game teaches you to build a nether portal. It fails
+  against the code that shipped and passes against the current code, which
+  is the only honest way to claim the fix works without a device in hand.
+
 `tools/boxuv.py` is the core trick: it's a from-scratch implementation of
 Minecraft's "Box UV" cube-to-texture-atlas mapping, so a creature's
 `geometry.json` and its texture PNG are always derived from the *same*
@@ -258,6 +286,42 @@ A later device test found three more, all now fixed and all now covered by
   slab on the player instead of armor. They're now derived from the real
   vanilla armor-layer maps (`textures/models/armor/diamond_1` + `_2`),
   keeping vanilla's plate shading and — critically — its transparency.
+
+### The portal, and why it took two tries
+
+"The portal tool doesn't light the gold blocks" was reported twice. The
+first fix was real but incomplete — a top-level `world.sendMessage` in
+`main.js` threw during early execution and aborted the module before the
+igniter was ever registered. With that out of the way the item ran and
+still did nothing, because there was a second, independent bug underneath:
+
+**Frame detection required gold blocks at the four corners.** A nether
+portal frame has no corners — it is ten obsidian, not fourteen — and the
+instructions were to build this one the same way. So every correctly built
+frame was rejected, and because ignition failed silently there was no way
+to tell a wrong-shaped frame from a broken addon.
+
+Three things changed:
+
+1. Corners are no longer required (they still work if you fill them in).
+2. Failure is explained in chat — which blocks are missing, or that the
+   opening is the wrong shape or size.
+3. The geometry moved to `BP/scripts/portal/frame.js`, which imports
+   nothing from `@minecraft/server` and can therefore be unit-tested.
+   `tools/test_portal.js` covers the corner-less frame, both orientations,
+   clicking from inside the doorway, and the failure cases;
+   `tools/validate.py` runs it, so `build_addon.sh` will not package a
+   pack whose portal cannot be lit.
+
+### One log line this pass did *not* chase
+
+`[Lighting][error] the input is outside of the accepted range [0, 5]` shows
+up in the content log, and it still is not attributable to this pack: there
+is no `lighting/` folder here, no deferred-rendering config, and no fog or
+block-light value that is out of range (`minecraft:light_emission` is 0–15
+and every value used is well inside it). Nothing in Mojang's
+`documentation/Lighting.html` has a `[0, 5]` range at all. It is reported
+here rather than "fixed" with a guess.
 
 Also fixed: `minecraft:behavior.hover` (used by the Banshee and Weeping
 Widow) isn't a real component; the vanilla one is

@@ -13,7 +13,7 @@
         "*": {
           "texture": "veil_portal",
           "render_method": "blend",
-          "ambient_occlusion": false,
+          "ambient_occlusion": 0,
           "face_dimming": false
         }
       },

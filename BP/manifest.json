@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Reaches §7- Behavior Pack",
-    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Reaches.",
-    "uuid": "4e86adc1-3bd9-4b84-9399-c5f0b391c6bf",
+    "name": "Hallowed Requiem \u00a77- Behavior Pack",
+    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Requiem.",
+    "uuid": "873bb57b-2eec-4c8f-810a-380f2c9fbe4b",
     "version": [
-      4,
+      5,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "1335f7ba-d26c-4ed9-bc17-f29b193e18da",
+      "uuid": "6022b7d6-f4db-4c7e-8437-5a463313d2c6",
       "version": [
-        4,
+        5,
         0,
         0
       ]
@@ -28,10 +28,10 @@
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "46e6c8fa-b01e-4082-bc0d-8dc073d60e35",
+      "uuid": "7c58c9a1-0068-429a-9f2c-472760a3fefb",
       "entry": "scripts/main.js",
       "version": [
-        4,
+        5,
         0,
         0
       ]
@@ -39,9 +39,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "b5759d66-90c1-4161-a552-66a8226eb61f",
+      "uuid": "a7f48924-5a1a-493f-b2cd-87735ab3b128",
       "version": [
-        4,
+        5,
         0,
         0
       ]
@@ -57,7 +57,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Reaches Team"
+      "Hallowed Requiem Team"
     ],
     "product_type": "addon"
   }

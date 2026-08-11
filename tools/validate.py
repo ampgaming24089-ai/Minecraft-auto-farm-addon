@@ -102,6 +102,61 @@ def check_events():
                 err(f"{rel(f)}:{line}: world.{kind}.{ev} does not exist in @minecraft/server 2.8.0")
 
 
+# --- 3b. every event property we destructure actually exists --------------
+# Same family of mistake as a wrong event name, and quieter: a misspelt or
+# imagined property is simply `undefined`, so the handler runs and does the
+# wrong thing forever without a single line in the log. The igniter reads
+# `blockFace` off the interact event; if that were wrong it would silently
+# light fires in the wrong place.
+def check_event_properties():
+    if not os.path.isfile(BINDINGS):
+        skipped.append("Script API event properties (bedrock-samples not cloned)")
+        return
+    d = json.load(open(BINDINGS))
+    classes = {c["name"]: c for c in d["classes"]}
+    props_of = {n: {p["name"] for p in c.get("properties", [])} for n, c in classes.items()}
+
+    def event_class(kind, name):
+        """world.afterEvents.<name> -> the class handed to its callback."""
+        holder = classes.get("WorldAfterEvents" if kind == "afterEvents" else "WorldBeforeEvents")
+        signal = next((p["type"].get("name") for p in (holder or {}).get("properties", [])
+                       if p["name"] == name), None)
+        subscribe = next((fn for fn in classes.get(signal, {}).get("functions", [])
+                          if fn["name"] == "subscribe"), None)
+        if not subscribe:
+            return None
+        args = subscribe["arguments"][0]["type"].get("closure_type", {}).get("argument_types", [])
+        return args[0]["name"] if args else None
+
+    pattern = re.compile(
+        r"world\.(afterEvents|beforeEvents)\.(\w+)\.subscribe\(\s*\(?\s*"
+        r"(?:\{([^}]*)\}|(\w+))\s*\)?\s*=>", re.S)
+    destructure = re.compile(r"const\s*\{([^}]*)\}\s*=\s*(\w+)\s*;")
+
+    for f in glob.glob(f"{BP}/scripts/**/*.js", recursive=True):
+        src = open(f).read()
+        for m in pattern.finditer(src):
+            kind, name, inline, param = m.group(1), m.group(2), m.group(3), m.group(4)
+            cls = event_class(kind, name)
+            known = props_of.get(cls)
+            if not known:
+                continue
+            # Either destructured in the parameter list, or on the first line
+            # of the body via `const { ... } = ev;`.
+            fields = inline or ""
+            if param:
+                body = src[m.end():m.end() + 400]
+                inner = destructure.search(body)
+                if inner and inner.group(2) == param:
+                    fields = inner.group(1)
+            for raw in fields.split(","):
+                key = raw.split(":")[0].split("=")[0].strip()
+                if key and key not in known:
+                    line = src[:m.start()].count("\n") + 1
+                    err(f"{rel(f)}:{line}: {cls} has no property {key!r} - it will "
+                        f"silently be undefined")
+
+
 # --- 4. item schema ------------------------------------------------------
 FOOD_FIELDS = {"nutrition", "saturation_modifier", "can_always_eat", "effects",
                "on_use_action", "on_use_range", "cooldown_type", "cooldown_time",
@@ -357,6 +412,47 @@ def check_generators():
             err(f"tools/{mod} fails to run: {last}")
 
 
+# --- 8b. full draft-07 validation against Mojang's official schemas --------
+# The snapshot check above is stdlib-only and covers component shapes and
+# field names. When the samples checkout and `jsonschema` are both present,
+# tools/schema_check.py validates every entity, item and block against the
+# real schemas - nested objects, enums, ranges, the lot - using vanilla's own
+# content as a control group for the schemas' overlapping oneOf branches.
+def check_official_schemas():
+    script = os.path.join(ROOT, "tools", "schema_check.py")
+    if not os.path.isfile(script):
+        return
+    p = subprocess.run([sys.executable, script], cwd=ROOT, capture_output=True, text=True)
+    out = p.stdout.strip()
+    if out.startswith("SKIP:"):
+        skipped.append(out.splitlines()[0][6:].strip())
+        return
+    if p.returncode != 0:
+        for line in out.splitlines():
+            if line.startswith("  ") and ": " in line:
+                err(f"schema: {line.strip()}")
+
+
+# --- 9b. the portal can actually be lit -----------------------------------
+# "Portal tool doesn't light the gold blocks" was reported twice. The second
+# time, frame detection required gold at the four corners - a frame built the
+# way the game teaches you to build a nether portal has none, so every
+# correct build was rejected. tools/test_portal.js runs the real detection
+# code against a stub world containing exactly that frame.
+def check_portal():
+    test = os.path.join(ROOT, "tools", "test_portal.js")
+    if not os.path.isfile(test):
+        skipped.append("portal frame tests (tools/test_portal.js missing)")
+        return
+    p = subprocess.run(["node", test], cwd=ROOT, capture_output=True, text=True)
+    if p.returncode != 0:
+        for line in p.stdout.splitlines():
+            if line.strip().startswith("FAIL"):
+                err(f"portal: {line.strip()[5:].strip()}")
+        if not any(l.strip().startswith("FAIL") for l in p.stdout.splitlines()):
+            err(f"tools/test_portal.js failed to run: {p.stderr.strip().splitlines()[-1:]}")
+
+
 # --- 10. early-execution safety -------------------------------------------
 # Script modules run during "early execution", where native world calls are
 # forbidden. A top-level world.sendMessage throws and aborts the ENTIRE
@@ -380,30 +476,162 @@ def check_early_execution():
             depth = max(0, depth)
 
 
-# --- 11. component fields that are not in the schema ----------------------
-# An unknown member does not warn harmlessly - for entities it fails the
-# whole definition to load (the Veil Dragon vanished this way).
-BAD_FIELDS = [
-    ("minecraft:use_modifiers", "start_using", "item"),
-    ("minecraft:behavior.random_fly", "y_offset", "entity"),
+# --- 11. component shapes and field names against the vanilla schema ------
+# The single most expensive bug class in this addon. A component whose value
+# has the wrong shape, or which contains a field the engine has never heard
+# of, does not warn harmlessly and does not disable just that component: it
+# voids the ENTIRE definition. The mob or item vanishes from the game and the
+# only trace is one line in the content log. It has happened four separate
+# times here - `minecraft:fire_immune: true`, `flying_speed: 0.09`,
+# `behavior.random_fly.y_offset`, `use_modifiers.start_using` - each time
+# after shipping, each time found by the user rather than by us.
+#
+# tools/schema/vanilla_components.json is generated from Mojang's own
+# metadata/json_schemas by tools/gen_vanilla_schema.py, so this check needs
+# nothing but the stdlib and the committed snapshot. tools/schema_check.py
+# does the deeper draft-07 validation when the samples checkout is present.
+SCHEMA_SNAPSHOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               "schema", "vanilla_components.json")
+
+JSON_TYPE_NAMES = {
+    bool: "boolean", dict: "object", list: "array",
+    int: "integer", float: "number", str: "string", type(None): "null",
+}
+
+
+def json_type(value):
+    return JSON_TYPE_NAMES.get(type(value), "null")
+
+
+def type_ok(value, allowed):
+    name = json_type(value)
+    if name in allowed:
+        return True
+    # JSON Schema treats every integer as a valid "number".
+    return name == "integer" and "number" in allowed
+
+
+# The mirror image of legacy_fields: members that exist in the current schema
+# but were added after the format_version a file declares, so writing them
+# there voids the components block. Only bedrock-samples' newest schema ships,
+# so these cannot be derived - each entry needs its own evidence.
+FORMAT_GATED = [
+    {
+        "domain": "item", "component": "minecraft:use_modifiers",
+        "field": "start_using", "since": (1, 21, 60),
+        # Device log, previous round: this voided the entire components block
+        # on elk_marrow, ember_fruit and veil_marrow_stew - all format 1.21.0 -
+        # so they lost their icons and their names along with it.
+        "why": "added after 1.21.60; at an older format_version it voids the "
+               "whole components block",
+    },
 ]
 
 
-def check_unknown_fields():
-    for kind, pattern, root in (("item", f"{BP}/items/*.json", "minecraft:item"),
-                                ("entity", f"{BP}/entities/*.json", "minecraft:entity")):
-        for f in glob.glob(pattern):
+def format_version_of(doc):
+    return tuple(int(x) for x in re.findall(r"\d+", str(doc.get("format_version", "")))[:3])
+
+
+def check_format_gated(domain, ident, fmt, comps):
+    for rule in FORMAT_GATED:
+        if rule["domain"] != domain or fmt >= rule["since"]:
+            continue
+        node = comps.get(rule["component"])
+        if isinstance(node, dict) and rule["field"] in node:
+            err(f"{ident}: {rule['component']}.{rule['field']} - {rule['why']}")
+
+
+def check_component_schema():
+    if not os.path.exists(SCHEMA_SNAPSHOT):
+        skipped.append(f"{rel(SCHEMA_SNAPSHOT)} missing - run tools/gen_vanilla_schema.py")
+        return
+    snapshot = json.load(open(SCHEMA_SNAPSHOT))
+
+    domains = [
+        ("entity", f"{BP}/entities/*.json", "minecraft:entity", ("component_groups",)),
+        ("item", f"{BP}/items/*.json", "minecraft:item", ()),
+        ("block", f"{BP}/blocks/*.json", "minecraft:block", ()),
+    ]
+
+    for domain, pattern, root, group_keys in domains:
+        known = snapshot.get(domain, {})
+        if not known:
+            continue
+        for f in sorted(glob.glob(pattern)):
             d = json.load(open(f))
-            ident = d[root]["description"]["identifier"]
-            text = json.dumps(d)
-            for comp, field, which in BAD_FIELDS:
-                if which != kind:
+            doc = d.get(root, {})
+            ident = doc.get("description", {}).get("identifier", rel(f))
+
+            blocks = [("components", doc.get("components"))]
+            for key in group_keys:
+                for name, group in (doc.get(key) or {}).items():
+                    blocks.append((f"{key}/{name}", group))
+            for perm in doc.get("permutations") or []:
+                blocks.append(("permutations", perm.get("components")))
+
+            if isinstance(doc.get("components"), dict):
+                check_format_gated(domain, ident, format_version_of(d), doc["components"])
+
+            for where, comps in blocks:
+                if not isinstance(comps, dict):
                     continue
-                if comp in text:
-                    comps = d[root].get("components", {})
-                    node = comps.get(comp)
-                    if isinstance(node, dict) and field in node:
-                        err(f"{ident}: {comp}.{field} is not in the schema")
+                for comp, value in comps.items():
+                    if not comp.startswith("minecraft:"):
+                        continue
+                    spec = known.get(comp)
+                    if spec is None:
+                        # patternProperties components (memory_behavior.*) carry
+                        # a user-chosen suffix, so match on the prefix too.
+                        if any(comp.startswith(k + ".") for k in known):
+                            continue
+                        err(f"{ident} ({where}): {comp} is not a component this "
+                            f"engine knows - the whole definition will fail to load")
+                        continue
+
+                    allowed = spec.get("types")
+                    if allowed and not type_ok(value, allowed):
+                        err(f"{ident} ({where}): {comp} is a {json_type(value)}, "
+                            f"the engine wants {' or '.join(allowed)} - the whole "
+                            f"definition will fail to load")
+                        continue
+
+                    fields = spec.get("fields")
+                    legacy = spec.get("legacy_fields") or []
+                    if fields and isinstance(value, dict):
+                        for key in value:
+                            if key in fields:
+                                continue
+                            if key in legacy:
+                                # Vanilla content still writes this field but
+                                # the current schema dropped it. Sometimes the
+                                # engine shrugs (skeleton's attack_interval_min)
+                                # and sometimes it voids the entity (parrot's
+                                # random_fly.y_offset, which did exactly that
+                                # here). Not worth the coin flip - use the
+                                # field the schema still lists.
+                                warnings.append(
+                                    f"{ident} ({where}): {comp}.{key} is a legacy "
+                                    f"field the current schema no longer lists")
+                                continue
+                            err(f"{ident} ({where}): {comp}.{key} is not in the "
+                                f"schema - the whole definition will fail to load")
+
+                    # Advisory tiers: the official schema declines to constrain
+                    # this component, so disagreeing with vanilla is suspicious
+                    # rather than provably fatal.
+                    seen = spec.get("seen")
+                    if not allowed and seen and not type_ok(value, seen):
+                        warnings.append(
+                            f"{ident} ({where}): {comp} is a {json_type(value)}; all "
+                            f"{spec.get('seen_count')} vanilla uses are "
+                            f"{' or '.join(seen)}")
+                    doc_fields = spec.get("doc_fields")
+                    if not fields and doc_fields and isinstance(value, dict):
+                        for key in value:
+                            if key not in doc_fields:
+                                warnings.append(
+                                    f"{ident} ({where}): {comp}.{key} is not in "
+                                    f"Mojang's component reference")
 
 
 # --- 12. entity particle references --------------------------------------
@@ -454,7 +682,10 @@ def check_manifests():
     # "Duplicate pack detected" error on import, so they are now banned.
     RETIRED = {
         "0f251285-1535-4d56-89e7-41c4a1143e5e",
+        "1335f7ba-d26c-4ed9-bc17-f29b193e18da",
         "36d910e6-19c8-4464-8aaa-e878ad5775bc",
+        "46e6c8fa-b01e-4082-bc0d-8dc073d60e35",
+        "4e86adc1-3bd9-4b84-9399-c5f0b391c6bf",
         "583094e0-638f-4560-8015-ff61a552ec14",
         "64e7a8dd-cef4-42e5-a82e-9b9ccd145a19",
         "72f17a26-4315-4da5-bd56-726b955baae4",
@@ -463,6 +694,8 @@ def check_manifests():
         "915cf596-e3c7-4014-978e-df04a7f46861",
         "a63f5256-bccb-46d7-843b-853bd45956db",
         "ae6e6ecc-4012-4967-b18f-602b77319602",
+        "b5759d66-90c1-4161-a552-66a8226eb61f",
+        "c351775c-40e4-4758-9d3c-d6e2dba24311",
         "cefe0049-30d2-40ef-b2ce-08d0e44c481c",
         "da0cf01f-a51c-4d87-b44b-34823328adf8",
         "e7541459-702e-46a0-abc1-2a4b66b29eaf",
@@ -479,6 +712,7 @@ def main():
     n_json = check_json()
     n_js = check_scripts()
     check_events()
+    check_event_properties()
     check_items(lang)
     check_entities_blocks(lang)
     check_rp_refs()
@@ -487,8 +721,10 @@ def main():
     check_particles()
     check_geometry()
     check_generators()
+    check_portal()
     check_early_execution()
-    check_unknown_fields()
+    check_component_schema()
+    check_official_schemas()
     check_entity_particles()
     check_manifests()
 

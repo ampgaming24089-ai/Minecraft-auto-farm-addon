@@ -5,7 +5,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OUT="${1:-$ROOT/dist}"
-NAME="HallowedReaches"
+NAME="HallowedRequiem"
 
 # Gate the build on the validator. Several rounds of this addon shipped with
 # bugs a static check would have caught (a script event name that does not

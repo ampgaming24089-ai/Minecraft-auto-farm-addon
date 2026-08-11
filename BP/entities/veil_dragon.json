@@ -87,7 +87,7 @@
       "minecraft:knockback_resistance": {
         "value": 0.5
       },
-      "minecraft:fire_immune": true,
+      "minecraft:fire_immune": {},
       "minecraft:physics": {
         "has_gravity": false
       },
@@ -104,7 +104,7 @@
       "minecraft:movement": {
         "value": 0.5
       },
-      "minecraft:flying_speed": 0.22,
+      "minecraft:flying_speed": { "value": 0.22 },
       "minecraft:can_fly": {},
       "minecraft:jump.static": {},
       "minecraft:despawn": {

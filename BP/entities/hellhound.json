@@ -23,7 +23,7 @@
         "value": 24,
         "max": 24
       },
-      "minecraft:fire_immune": true,
+      "minecraft:fire_immune": {},
       "minecraft:physics": {},
       "minecraft:navigation.walk": {
         "can_path_over_water": false,

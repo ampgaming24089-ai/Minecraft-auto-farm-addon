@@ -37,7 +37,7 @@
       "minecraft:movement": {
         "value": 0.14
       },
-      "minecraft:flying_speed": 0.045,
+      "minecraft:flying_speed": { "value": 0.045 },
       "minecraft:despawn": {
         "despawn_from_distance": {}
       },

@@ -3,7 +3,7 @@
   "minecraft:block": {
     "description": { "identifier": "hollowveil:sentinel_spawner", "menu_category": { "category": "none" }, "traits": {} },
     "components": {
-      "minecraft:material_instances": { "*": { "texture": "spawner_cage", "render_method": "alpha_test", "ambient_occlusion": false } },
+      "minecraft:material_instances": { "*": { "texture": "spawner_cage", "render_method": "alpha_test", "ambient_occlusion": 0 } },
       "minecraft:geometry": "minecraft:geometry.full_block",
       "minecraft:destructible_by_mining": { "seconds_to_destroy": 14 },
       "minecraft:destructible_by_explosion": { "explosion_resistance": 40 },

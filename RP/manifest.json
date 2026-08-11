@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Reaches §7- Resource Pack",
-    "description": "Textures, models, sounds and atmosphere for the Hallowed Reaches.",
-    "uuid": "b5759d66-90c1-4161-a552-66a8226eb61f",
+    "name": "Hallowed Requiem \u00a77- Resource Pack",
+    "description": "Textures, models, sounds and atmosphere for the Hallowed Requiem.",
+    "uuid": "a7f48924-5a1a-493f-b2cd-87735ab3b128",
     "version": [
-      4,
+      5,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "c351775c-40e4-4758-9d3c-d6e2dba24311",
+      "uuid": "8b83720f-c727-40bf-b60b-fd9670e9f17d",
       "version": [
-        4,
+        5,
         0,
         0
       ]
@@ -28,9 +28,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "4e86adc1-3bd9-4b84-9399-c5f0b391c6bf",
+      "uuid": "873bb57b-2eec-4c8f-810a-380f2c9fbe4b",
       "version": [
-        4,
+        5,
         0,
         0
       ]
@@ -38,7 +38,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Reaches Team"
+      "Hallowed Requiem Team"
     ],
     "product_type": "addon"
   }

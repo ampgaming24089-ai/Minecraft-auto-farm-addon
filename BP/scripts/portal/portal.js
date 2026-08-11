@@ -1,113 +1,72 @@
 import { world, system } from "@minecraft/server";
 import { KEYS, getWorldFlag, setWorldFlag, getPlayerJson, setPlayerJson } from "../lib/state.js";
 import { ensureWorldBuilt, HOLLOW_VEIL, ISLAND_CENTER } from "../world/build.js";
+import { FRAME_BLOCK, findAnyFrame, seedsForClick, explainFailure } from "./frame.js";
 
-export const FRAME_BLOCK = "minecraft:gold_block";
+export { FRAME_BLOCK };
 const PORTAL_BLOCK = "hollowveil:veil_portal";
 const ARRIVAL_POS = { x: ISLAND_CENTER.x, y: ISLAND_CENTER.y, z: ISLAND_CENTER.z + 20 };
 const PORTAL_COOLDOWN_TICKS = 100; // 5s, long enough to clear the block
 const RETURN_PORTAL_BUILT_FLAG = "hollowveil:return_portal_built";
 
-function isFrameBlock(dimension, pos) {
-  try {
-    return dimension.getBlock(pos)?.typeId === FRAME_BLOCK;
-  } catch {
+/** Adapts a live dimension to the plain { isAir, isFrame } interface that
+ * frame.js (and tools/test_portal.js) work against. */
+function probe(dimension) {
+  const get = (pos) => {
+    try {
+      return dimension.getBlock(pos);
+    } catch {
+      return undefined;      // unloaded chunk or outside the build height
+    }
+  };
+  return {
+    isAir: (pos) => {
+      const b = get(pos);
+      return !!b && b.isAir;
+    },
+    isFrame: (pos) => get(pos)?.typeId === FRAME_BLOCK,
+  };
+}
+
+const NEIGHBOUR_OFFSETS = [
+  { x: 1, y: 0, z: 0 }, { x: -1, y: 0, z: 0 },
+  { x: 0, y: 1, z: 0 }, { x: 0, y: -1, z: 0 },
+  { x: 0, y: 0, z: 1 }, { x: 0, y: 0, z: -1 },
+];
+
+/** Was the player plausibly trying to light a portal here? Only then is a
+ * "your frame is wrong" message wanted - otherwise every swing of the
+ * igniter at a torch would scold them about gold blocks. */
+function looksLikeAnAttempt(world, pos) {
+  if (world.isFrame(pos)) return true;
+  return NEIGHBOUR_OFFSETS.some((d) =>
+    world.isFrame({ x: pos.x + d.x, y: pos.y + d.y, z: pos.z + d.z }));
+}
+
+/**
+ * Lights a portal from a click on `clickedPos`.
+ *
+ * Returns true if a portal was lit. When the click was clearly aimed at a
+ * gold frame and still failed, the player is told what is wrong with it -
+ * the old version returned silently, so "the tool does nothing" was the
+ * entire symptom and there was no way to tell a broken frame from a broken
+ * addon.
+ */
+export function tryIgnitePortal(dimension, clickedPos, player, blockFace) {
+  const view = probe(dimension);
+  const result = findAnyFrame(view, seedsForClick(clickedPos, blockFace));
+  if (!result.ok) {
+    if (looksLikeAnAttempt(view, clickedPos)) player?.sendMessage(explainFailure(result));
     return false;
   }
-}
-
-function isAir(dimension, pos) {
+  fillPortal(dimension, result.frame);
   try {
-    const b = dimension.getBlock(pos);
-    return !!b && b.isAir;
+    dimension.playSound("hollowveil.portal.ignite", clickedPos);
   } catch {
-    return false;
+    /* cosmetic */
   }
-}
-
-/** Flood-fills an air pocket along `axis` (+y), keeping the perpendicular
- * horizontal axis fixed, mirroring vanilla nether-portal frame detection:
- * a filled rectangle of air, 2-21 wide, 3-21 tall, fully bordered by frame
- * blocks on all four sides (front/back stay open). */
-function tryOrientation(dimension, seed, axis) {
-  const fixedAxis = axis === "x" ? "z" : "x";
-  const fixedVal = seed[fixedAxis];
-  const visited = new Set();
-  const queue = [seed];
-  const cells = [];
-  const MAX_CELLS = 21 * 21;
-
-  while (queue.length) {
-    const cur = queue.pop();
-    const key = `${cur[axis]},${cur.y}`;
-    if (visited.has(key)) continue;
-    visited.add(key);
-    if (cur[fixedAxis] !== fixedVal) continue;
-    if (!isAir(dimension, cur)) continue;
-    cells.push(cur);
-    if (cells.length > MAX_CELLS) return null;
-
-    const neighbors = [
-      { ...cur, [axis]: cur[axis] + 1 },
-      { ...cur, [axis]: cur[axis] - 1 },
-      { ...cur, y: cur.y + 1 },
-      { ...cur, y: cur.y - 1 },
-    ];
-    for (const n of neighbors) {
-      const k = `${n[axis]},${n.y}`;
-      if (!visited.has(k)) queue.push(n);
-    }
-  }
-
-  if (cells.length === 0) return null;
-  let minA = Infinity, maxA = -Infinity, minY = Infinity, maxY = -Infinity;
-  for (const c of cells) {
-    minA = Math.min(minA, c[axis]);
-    maxA = Math.max(maxA, c[axis]);
-    minY = Math.min(minY, c.y);
-    maxY = Math.max(maxY, c.y);
-  }
-  const width = maxA - minA + 1;
-  const height = maxY - minY + 1;
-  if (width < 2 || width > 21 || height < 3 || height > 21) return null;
-  if (cells.length !== width * height) return null; // must be a solid rectangle, no notches
-
-  for (let a = minA - 1; a <= maxA + 1; a++) {
-    const top = { [axis]: a, y: maxY + 1, [fixedAxis]: fixedVal };
-    const bottom = { [axis]: a, y: minY - 1, [fixedAxis]: fixedVal };
-    if (!isFrameBlock(dimension, top) || !isFrameBlock(dimension, bottom)) return null;
-  }
-  for (let y = minY; y <= maxY; y++) {
-    const left = { [axis]: minA - 1, y, [fixedAxis]: fixedVal };
-    const right = { [axis]: maxA + 1, y, [fixedAxis]: fixedVal };
-    if (!isFrameBlock(dimension, left) || !isFrameBlock(dimension, right)) return null;
-  }
-
-  return { axis, fixedAxis, fixedVal, minA, maxA, minY, maxY };
-}
-
-export function tryIgnitePortal(dimension, clickedPos, player) {
-  const seedCandidates = [
-    clickedPos,
-    { ...clickedPos, y: clickedPos.y + 1 },
-    { ...clickedPos, x: clickedPos.x + 1 },
-    { ...clickedPos, x: clickedPos.x - 1 },
-    { ...clickedPos, z: clickedPos.z + 1 },
-    { ...clickedPos, z: clickedPos.z - 1 },
-  ];
-  for (const seed of seedCandidates) {
-    if (!isAir(dimension, seed)) continue;
-    for (const axis of ["x", "z"]) {
-      const frame = tryOrientation(dimension, seed, axis);
-      if (frame) {
-        fillPortal(dimension, frame);
-        dimension.playSound("hollowveil.portal.ignite", clickedPos);
-        player?.sendMessage("§cThe veil splits — red light pours through...");
-        return true;
-      }
-    }
-  }
-  return false;
+  player?.sendMessage("§cThe veil splits — red light pours through...");
+  return true;
 }
 
 function fillPortal(dimension, frame) {

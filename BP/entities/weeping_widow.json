@@ -66,7 +66,7 @@
       "minecraft:movement": {
         "value": 0.22
       },
-      "minecraft:flying_speed": 0.08,
+      "minecraft:flying_speed": { "value": 0.08 },
       "minecraft:persistent": {},
       "minecraft:despawn": {},
       "minecraft:behavior.hurt_by_target": {

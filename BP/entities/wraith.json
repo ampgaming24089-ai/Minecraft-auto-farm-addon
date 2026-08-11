@@ -53,13 +53,12 @@
       "minecraft:movement": {
         "value": 0.28
       },
-      "minecraft:flying_speed": 0.09,
+      "minecraft:flying_speed": { "value": 0.09 },
       "minecraft:jump.static": {},
       "minecraft:can_fly": {},
       "minecraft:despawn": {
         "despawn_from_distance": {}
       },
-      "minecraft:fire_immune": false,
       "minecraft:behavior.float": {
         "priority": 0
       },

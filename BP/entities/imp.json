@@ -55,7 +55,7 @@
         "value": 10,
         "max": 10
       },
-      "minecraft:fire_immune": true,
+      "minecraft:fire_immune": {},
       "minecraft:physics": {
         "has_gravity": false
       },
@@ -71,7 +71,7 @@
       "minecraft:movement": {
         "value": 0.26
       },
-      "minecraft:flying_speed": 0.08,
+      "minecraft:flying_speed": { "value": 0.08 },
       "minecraft:despawn": {
         "despawn_from_distance": {}
       },
@@ -98,8 +98,7 @@
       },
       "minecraft:behavior.ranged_attack": {
         "priority": 4,
-        "attack_interval_min": 2,
-        "attack_interval_max": 4,
+        "attack_interval": { "min": 2, "max": 4 },
         "attack_radius": 10
       },
       "minecraft:shooter": {

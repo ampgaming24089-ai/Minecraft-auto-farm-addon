@@ -1,6 +1,6 @@
 import { world, system, ItemStack } from "@minecraft/server";
 import { openJournal } from "../ui/journal.js";
-import { tryIgnitePortal, FRAME_BLOCK } from "../portal/portal.js";
+import { tryIgnitePortal } from "../portal/portal.js";
 import { useSigilOnAltar } from "../bosses/chambers.js";
 import { getWorldJson, KEYS } from "../lib/state.js";
 
@@ -20,16 +20,85 @@ export function registerItemHandlers() {
   // and took every subsystem registered after this one down with it, which
   // is why the igniter, sigils, dragon egg and shop all did nothing in-game.
   world.afterEvents.playerInteractWithBlock.subscribe((ev) => {
-    const { player, itemStack, block, isFirstEvent } = ev;
+    const { player, itemStack, block, isFirstEvent, blockFace } = ev;
     if (!itemStack || !player || !block) return;
     if (isFirstEvent === false) return; // fires twice per interaction otherwise
-    if (itemStack.typeId === "hollowveil:soulfire_igniter" && block.typeId === FRAME_BLOCK) {
-      tryIgnitePortal(block.dimension, block.location, player);
+    if (itemStack.typeId === "hollowveil:soulfire_igniter") {
+      useIgniter(player, block, blockFace, itemStack);
     } else if (itemStack.typeId?.startsWith("hollowveil:sigil_") && block.typeId === "hollowveil:ritual_altar") {
       const consumed = useSigilOnAltar(player, block.dimension, block.location, itemStack.typeId, system.currentTick);
       if (consumed) consumeOneItem(player, itemStack);
     }
   });
+}
+
+// Soul fire only survives on soul soil and soul sand; anywhere else it winks
+// out the instant it is placed. Everywhere else gets ordinary fire, which is
+// exactly how vanilla behaves.
+const SOUL_FIRE_BASES = new Set(["minecraft:soul_soil", "minecraft:soul_sand"]);
+
+const FACE_OFFSETS = {
+  Up: { x: 0, y: 1, z: 0 },
+  Down: { x: 0, y: -1, z: 0 },
+  North: { x: 0, y: 0, z: -1 },
+  South: { x: 0, y: 0, z: 1 },
+  West: { x: -1, y: 0, z: 0 },
+  East: { x: 1, y: 0, z: 0 },
+};
+
+/**
+ * Soulfire and Steel: a portal lighter first, a flint and steel second.
+ *
+ * The old handler only ran when the clicked block was gold, so clicking any
+ * other part of the build did nothing whatsoever. It now runs on every block
+ * - portal detection reads the surroundings, not the block under the cursor -
+ * and falls back to lighting a fire so the tool behaves the way its name and
+ * its recipe promise.
+ */
+function useIgniter(player, block, blockFace, itemStack) {
+  if (tryIgnitePortal(block.dimension, block.location, player, blockFace)) {
+    damageIgniter(player, itemStack, 1);
+    return;
+  }
+  if (lightFire(block, blockFace)) damageIgniter(player, itemStack, 1);
+}
+
+function lightFire(block, blockFace) {
+  const offset = FACE_OFFSETS[blockFace] ?? FACE_OFFSETS.Up;
+  const pos = {
+    x: block.location.x + offset.x,
+    y: block.location.y + offset.y,
+    z: block.location.z + offset.z,
+  };
+  try {
+    const target = block.dimension.getBlock(pos);
+    if (!target?.isAir) return false;
+    const base = block.dimension.getBlock({ ...pos, y: pos.y - 1 })?.typeId;
+    target.setType(SOUL_FIRE_BASES.has(base) ? "minecraft:soul_fire" : "minecraft:fire");
+    return true;
+  } catch {
+    return false;   // unloaded chunk, or the fire had nothing to burn on
+  }
+}
+
+/** Spends durability the way a real tool does, and breaks when spent. */
+function damageIgniter(player, itemStack, amount) {
+  try {
+    const equip = player.getComponent("minecraft:equippable");
+    const held = equip?.getEquipment("Mainhand");
+    if (!held || held.typeId !== itemStack.typeId) return;
+    const durability = held.getComponent("minecraft:durability");
+    if (!durability) return;
+    if (durability.damage + amount >= durability.maxDurability) {
+      equip.setEquipment("Mainhand", undefined);
+      player.dimension.playSound("random.break", player.location);
+      return;
+    }
+    durability.damage += amount;
+    equip.setEquipment("Mainhand", held);
+  } catch {
+    /* cosmetic - a tool that never wears out is better than a thrown error */
+  }
 }
 
 function consumeOneItem(player, stack) {
