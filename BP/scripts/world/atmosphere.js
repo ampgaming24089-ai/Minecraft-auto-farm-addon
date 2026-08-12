@@ -1,4 +1,4 @@
-import { world, system } from "@minecraft/server";
+import { world, system, BlockVolume } from "@minecraft/server";
 import { HOLLOW_VEIL } from "./build.js";
 import { biomeAt, BIOMES } from "./biomes.js";
 import { setPlayerJson, getPlayerJson, KEYS } from "../lib/state.js";
@@ -16,29 +16,74 @@ import { setPlayerJson, getPlayerJson, KEYS } from "../lib/state.js";
 const FOG_TAG = "hollowveil_biome"; // the /fog "user id" we own and reuse
 const CHECK_INTERVAL = 40;
 
-/** Live portals breathe red embers and a lazy smoke column. Bedrock has no
- * block-attached particle emitter for custom blocks, so the effect is driven
- * from script off the portal blocks near each player. */
+/**
+ * Live portals breathe embers and a lazy smoke column.
+ *
+ * The old version guessed: it picked three random offsets in a 12x6x12 box
+ * around each player and checked whether any of them happened to be a portal
+ * block. A 3-block sample of an 864-block box almost never hits a 12-block
+ * doorway, so in practice the effect never fired - which is exactly what the
+ * owner reported ("portal is still and has no particle effects").
+ *
+ * `Dimension.getBlocks` takes a volume and a block filter and does the search
+ * natively, so instead of guessing we ask for every portal block in range and
+ * then emit off the real list. The search is the expensive half, so it runs
+ * infrequently and the emission runs off the cached result.
+ */
+const PORTAL_BLOCK = "hollowveil:veil_portal";
+const portalCache = new Map();     // player id -> {tick, blocks:[{x,y,z}]}
+const SEARCH_INTERVAL = 60;
+const SEARCH_RADIUS = 14;
+
+function findPortals(player) {
+  const cached = portalCache.get(player.id);
+  if (cached && system.currentTick - cached.tick < SEARCH_INTERVAL) return cached.blocks;
+
+  const o = player.location;
+  const blocks = [];
+  try {
+    const volume = new BlockVolume(
+      { x: Math.floor(o.x) - SEARCH_RADIUS, y: Math.floor(o.y) - 8, z: Math.floor(o.z) - SEARCH_RADIUS },
+      { x: Math.floor(o.x) + SEARCH_RADIUS, y: Math.floor(o.y) + 12, z: Math.floor(o.z) + SEARCH_RADIUS },
+    );
+    const found = player.dimension.getBlocks(volume, { includeTypes: [PORTAL_BLOCK] }, false);
+    for (const loc of found.getBlockLocationIterator()) {
+      blocks.push({ x: loc.x, y: loc.y, z: loc.z });
+      if (blocks.length >= 64) break;      // a 21x21 portal is plenty of emitters
+    }
+  } catch {
+    // unloaded chunks, or the player moved out from under us - keep whatever
+    // the last search found rather than blanking the effect
+    return cached?.blocks ?? [];
+  }
+  portalCache.set(player.id, { tick: system.currentTick, blocks });
+  return blocks;
+}
+
 function portalFx() {
   for (const player of world.getAllPlayers()) {
+    let blocks;
+    try {
+      blocks = findPortals(player);
+    } catch {
+      continue;
+    }
+    if (!blocks.length) continue;
     const dim = player.dimension;
-    const o = player.location;
-    for (let i = 0; i < 3; i++) {
-      const x = Math.floor(o.x) + Math.round((Math.random() - 0.5) * 12);
-      const y = Math.floor(o.y) + Math.round((Math.random() - 0.5) * 6);
-      const z = Math.floor(o.z) + Math.round((Math.random() - 0.5) * 12);
-      let block;
-      try {
-        block = dim.getBlock({ x, y, z });
-      } catch {
-        continue;
-      }
-      if (block?.typeId !== "hollowveil:veil_portal") continue;
-      const at = { x: x + 0.5, y: y + 0.5, z: z + 0.5 };
+    // Emit from a rolling subset so a big portal is not spawning sixty
+    // particles a tick, but every block still gets its turn.
+    const start = system.currentTick % blocks.length;
+    const n = Math.min(blocks.length, 6);
+    for (let i = 0; i < n; i++) {
+      const b = blocks[(start + i) % blocks.length];
+      const at = { x: b.x + 0.5, y: b.y + 0.5, z: b.z + 0.5 };
       try {
         dim.spawnParticle("hollowveil:portal_particle", at);
-        if (Math.random() < 0.4) {
-          dim.spawnParticle("hollowveil:portal_smoke", { x: at.x, y: at.y + 0.6, z: at.z });
+        if ((system.currentTick + i) % 3 === 0) {
+          dim.spawnParticle("hollowveil:portal_smoke", { x: at.x, y: at.y + 0.8, z: at.z });
+        }
+        if ((system.currentTick + i) % 7 === 0) {
+          dim.spawnParticle("hollowveil:ember_particle", { x: at.x, y: at.y + 1.2, z: at.z });
         }
       } catch {
         /* unloaded chunk */
@@ -48,7 +93,7 @@ function portalFx() {
 }
 
 export function startAtmosphere() {
-  system.runInterval(portalFx, 12);
+  system.runInterval(portalFx, 4);
   system.runInterval(() => {
     for (const player of world.getAllPlayers()) {
       try {

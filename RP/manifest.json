@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Cairn \u00a77- Resource Pack",
-    "description": "Textures, models, sounds and atmosphere for the Hallowed Cairn.",
-    "uuid": "319f3cdd-55db-4cbc-8f60-bc187d6f6f22",
+    "name": "Hallowed Lantern \u00a77- Resource Pack",
+    "description": "Textures, models, sounds and atmosphere for the Hallowed Lantern.",
+    "uuid": "1a48727a-e4e9-491b-811d-9ee2b22bdd52",
     "version": [
-      13,
+      14,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "e9c992d5-82e8-445c-a758-ff62a885402a",
+      "uuid": "021b03f6-3e3b-4684-8d27-d5dd0e23d378",
       "version": [
-        13,
+        14,
         0,
         0
       ]
@@ -28,9 +28,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "af161cc9-2e6e-4f96-b2f6-298f3a9fba51",
+      "uuid": "cbf3d654-9700-4db5-82ee-a27dacbca39c",
       "version": [
-        13,
+        14,
         0,
         0
       ]
@@ -38,7 +38,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Cairn Team"
+      "Hallowed Lantern Team"
     ],
     "product_type": "addon"
   }

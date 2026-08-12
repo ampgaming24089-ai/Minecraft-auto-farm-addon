@@ -92,6 +92,9 @@ function fbm(x, z, cell, seed) {
 export const BIOMES = {
   hub: {
     id: "hub",
+    blend: ["hollowveil:bonestone"],
+    flora: [],
+    floraDensity: 0,
     base: 0, swell: 0, relief: 0, mountains: 0, cave: "minecraft:deepslate",
     name: "The Misty Reach",
     surface: "hollowveil:bonestone",
@@ -101,6 +104,9 @@ export const BIOMES = {
   },
   moors: {
     id: "moors",
+    blend: ["minecraft:coarse_dirt", "minecraft:rooted_dirt", "hollowveil:bonestone", "minecraft:gravel"],
+    flora: ["dead_grove", "grave_weeds", "bone_pile", "grave_weeds", "dead_grove"],
+    floraDensity: 0.55,
     base: 2, swell: 1.0, relief: 1.0, mountains: 0.15, cave: "minecraft:deepslate",
     name: "The Grave Moors",
     surface: "minecraft:podzol",
@@ -114,6 +120,9 @@ export const BIOMES = {
   },
   ashlands: {
     id: "ashlands",
+    blend: ["minecraft:basalt", "minecraft:polished_blackstone", "minecraft:magma_block", "minecraft:gravel"],
+    flora: ["ash_spire", "tar_pit", "ash_spire", "bone_pile"],
+    floraDensity: 0.5,
     base: 6, swell: 1.1, relief: 1.35, mountains: 1.0, cave: "minecraft:basalt",
     name: "The Ashlands",
     surface: "minecraft:blackstone",
@@ -125,6 +134,9 @@ export const BIOMES = {
   },
   marsh: {
     id: "marsh",
+    blend: ["minecraft:mud", "minecraft:moss_block", "minecraft:clay", "minecraft:muddy_mangrove_roots"],
+    flora: ["fungus", "shroom_patch", "roots", "fungus", "shroom_patch", "bone_pile"],
+    floraDensity: 0.7,
     base: -9, swell: 0.6, relief: 0.45, mountains: 0.0, cave: "hollowveil:veil_mud",
     name: "The Boneyard Marsh",
     surface: "hollowveil:veil_mud",
@@ -137,6 +149,9 @@ export const BIOMES = {
   },
   ruins: {
     id: "ruins",
+    blend: ["minecraft:cracked_deepslate_tiles", "hollowveil:sunken_bricks", "minecraft:deepslate_bricks", "minecraft:gravel"],
+    flora: ["broken_column", "ruined_wall", "crystal", "broken_column", "bone_pile"],
+    floraDensity: 0.5,
     base: 0, swell: 0.9, relief: 0.8, mountains: 0.45, cave: "minecraft:deepslate_tiles",
     name: "The Sunken Ruins",
     surface: "minecraft:deepslate_tiles",

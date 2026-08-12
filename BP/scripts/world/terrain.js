@@ -44,15 +44,15 @@ import { sectorCandidates, headingFrom } from "./frontier.js";
 const TICK_INTERVAL = 2;
 
 // Work is budgeted in block writes per pass, not in sectors. Sector cost is
-// not uniform - measured across the world it averages ~110 native fills but
-// runs to 200 where several biomes and a lot of height variation meet - so a
-// fixed "N sectors per pass" is either wasteful on easy ground or a visible
-// hitch on hard ground. A budget bounds the actual work either way.
+// not uniform - tools/bench_terrain.mjs measures ~208 native fills for an
+// average sector and 473 for the worst sampled - so a fixed "N sectors per
+// pass" is either wasteful on easy ground or a visible hitch on hard ground.
+// A budget bounds the actual work either way.
 //
 // A sector is only STARTED if budget remains, and once started it is always
 // finished: a half-built sector that got marked done is how the old builder
 // left permanent holes.
-const WRITE_BUDGET = 640;
+const WRITE_BUDGET = 900;
 let budget = 0;
 
 const sessionBuilt = new Set();   // in-memory only; the bedrock probe is the truth
@@ -298,8 +298,52 @@ function buildSector(dim, sx, sz) {
   }
 
   cavePillars(dim, x0, z0, height, floor, crust, biome);
+  caveMouths(dim, x0, z0, height, floor, crust, biome);
   decorateSector(dim, x0, z0);
   return true;
+}
+
+/**
+ * Sinkholes: shafts opened from the surface down into the cavern.
+ *
+ * The caves were there in the last build and the owner never saw one, which is
+ * the whole problem with a cave system that has no doors - the crust is solid
+ * everywhere, so the only way in was to already know it was there and dig. A
+ * cave you cannot find is not content.
+ *
+ * Roughly one sinkhole every few sectors, widening as it descends so it reads
+ * as collapsed ground rather than a drilled hole, with a lip of rubble around
+ * the mouth so it is visible from across the valley.
+ */
+function caveMouths(dim, x0, z0, height, floor, crust, biome) {
+  // Measured before tuning: at 0.34 this was one sinkhole every ~56 blocks,
+  // which is not a cave system, it is Swiss cheese. At 0.09 it is roughly one
+  // every 110 blocks - findable while exploring, rare enough to be a find.
+  if (featureRoll(x0, z0, 151) > 0.09) return;
+  const lx = 6 + Math.floor(featureRoll(x0, z0, 157) * (SECTOR - 12));
+  const lz = 6 + Math.floor(featureRoll(x0 + 1, z0 + 1, 163) * (SECTOR - 12));
+  const i = lz * SECTOR + lx;
+  if (height[i] < 0) return;
+
+  const x = x0 + lx;
+  const z = z0 + lz;
+  const top = height[i];
+  const bottom = Math.max(floor[i] + 1, top - crust[i]);
+  if (top - bottom < 8) return;                     // crust too thin to be a shaft
+
+  const b = biome[i];
+  // A rubble lip, so the hole announces itself instead of being a trap.
+  fill(dim, x - 4, top, z - 4, x + 4, top, z + 4, b.filler);
+  // The shaft, widening downward.
+  const steps = 4;
+  for (let s = 0; s < steps; s++) {
+    const ya = top - Math.round(((top - bottom) * s) / steps);
+    const yb = top - Math.round(((top - bottom) * (s + 1)) / steps) + 1;
+    const r = 2 + s;
+    fill(dim, x - r, yb, z - r, x + r, ya, z + r, "minecraft:air");
+  }
+  // A lantern on the rim: the one concession to being findable in the dark.
+  setBlock(dim, x + 5, top + 1, z, "hollowveil:soul_lantern");
 }
 
 /**
@@ -325,9 +369,154 @@ function cavePillars(dim, x0, z0, height, floor, crust, biome) {
   }
 }
 
+/**
+ * Surface variety.
+ *
+ * "Biomes have no leaves or structures or grass types" and "very little block
+ * variation" - and both were true: every column of a biome was the same single
+ * surface block, so a hillside was one flat colour to the horizon.
+ *
+ * Blending is done as patches rather than per column on purpose. Mixing the
+ * material into the column data would put it in the key the surface rectangles
+ * merge on, which is what shatters a sector into hundreds of fills; laying
+ * blobs on top afterwards costs a dozen fills and reads better anyway, because
+ * real ground varies in patches rather than per block.
+ */
+function blendSurface(dim, x0, z0) {
+  for (let i = 0; i < 10; i++) {
+    const x = x0 + Math.floor(featureRoll(x0 + i * 7, z0, 171) * SECTOR);
+    const z = z0 + Math.floor(featureRoll(x0, z0 + i * 7, 173) * SECTOR);
+    if (!isWithinWorld({ x, z })) continue;
+    const b = biomeAt(x, z);
+    const blends = b.blend;
+    if (!blends?.length) continue;
+    const pick = blends[Math.floor(featureRoll(x, z, 177) * blends.length)];
+    const r = 1 + Math.floor(featureRoll(x, z, 179) * 2);
+    // One fill per row rather than one write per block: a patch follows the
+    // slope along z (where it matters most, since that is the direction the
+    // rectangle merge runs) at a fifth of the cost. Filling every block
+    // individually would have cost more than the entire sector build.
+    for (let dz = -r; dz <= r; dz++) {
+      const bz = z + dz;
+      if (!isWithinWorld({ x, z: bz })) continue;
+      const y = heightAt(x, bz, biomeAt(x, bz));
+      fill(dim, x - r, y, bz, x + r, y, bz, pick);
+    }
+  }
+}
+
+/**
+ * Flora: the thing whose absence made every biome read as a car park.
+ *
+ * Each biome gets its own planting list and its own density, so the marsh is
+ * thick with fungus and roots, the moors carry dead groves and grave weeds,
+ * the Ashlands sprout charred spires, and the ruins push up through cracked
+ * paving. Everything is featureRoll-driven, so a place always grows the same
+ * way however many times you walk back to it.
+ */
+function plantFlora(dim, x0, z0) {
+  for (let i = 0; i < 34; i++) {
+    const x = x0 + Math.floor(featureRoll(x0 + i * 3, z0 + i, 181) * SECTOR);
+    const z = z0 + Math.floor(featureRoll(x0 + i, z0 + i * 3, 191) * SECTOR);
+    if (!isWithinWorld({ x, z })) continue;
+    if (Math.hypot(x, z) < HUB_CLEAR + 4) continue;
+    const b = biomeAt(x, z);
+    const flora = b.flora;
+    if (!flora?.length) continue;
+    const r = featureRoll(x, z, 193);
+    if (r > (b.floraDensity ?? 0.4)) continue;
+    const y = heightAt(x, z, b);
+    const kind = flora[Math.floor(featureRoll(x, z, 197) * flora.length)];
+    plant(dim, x, y, z, kind, featureRoll(x, z, 199));
+  }
+}
+
+function plant(dim, x, y, z, kind, r) {
+  switch (kind) {
+    case "dead_grove": {
+      // A cluster, not a lone trunk - single trees on an empty plain read as
+      // fence posts, which is exactly how the old scatter looked.
+      const n = 2 + Math.floor(r * 3);
+      for (let i = 0; i < n; i++) {
+        const ox = Math.round((featureRoll(x + i, z, 211) - 0.5) * 7);
+        const oz = Math.round((featureRoll(x, z + i, 223) - 0.5) * 7);
+        placeDeadTree(dim, x + ox, y, z + oz);
+      }
+      break;
+    }
+    case "fungus": {
+      const h = 2 + Math.floor(r * 3);
+      fill(dim, x, y + 1, z, x, y + h, z, "minecraft:mushroom_stem");
+      fill(dim, x - 1, y + h, z - 1, x + 1, y + h + 1, z + 1, "hollowveil:glimmershroom");
+      break;
+    }
+    case "shroom_patch":
+      for (let i = 0; i < 4; i++) {
+        const ox = Math.round((featureRoll(x + i, z, 227) - 0.5) * 5);
+        const oz = Math.round((featureRoll(x, z + i, 229) - 0.5) * 5);
+        setBlock(dim, x + ox, y + 1, z + oz, "hollowveil:glimmershroom");
+      }
+      break;
+    case "roots":
+      fill(dim, x, y + 1, z, x, y + 1 + Math.floor(r * 3), z, "minecraft:hanging_roots");
+      break;
+    case "ash_spire": {
+      const h = 4 + Math.floor(r * 7);
+      fill(dim, x, y + 1, z, x, y + h, z, "minecraft:basalt");
+      if (r > 0.6) fill(dim, x + 1, y + 1, z, x + 1, y + Math.max(1, h - 3), z, "minecraft:basalt");
+      setBlock(dim, x, y + h + 1, z, "minecraft:magma_block");
+      break;
+    }
+    case "bone_pile":
+      fill(dim, x - 1, y + 1, z - 1, x + 1, y + 1, z + 1, "minecraft:bone_block");
+      setBlock(dim, x, y + 2, z, "minecraft:bone_block");
+      break;
+    case "grave_weeds":
+      for (let i = 0; i < 5; i++) {
+        const ox = Math.round((featureRoll(x + i, z, 233) - 0.5) * 6);
+        const oz = Math.round((featureRoll(x, z + i, 239) - 0.5) * 6);
+        setBlock(dim, x + ox, y + 1, z + oz,
+                 featureRoll(x + i, z + i, 241) > 0.7 ? "minecraft:wither_rose" : "minecraft:deadbush");
+      }
+      break;
+    case "broken_column": {
+      const h = 3 + Math.floor(r * 5);
+      fill(dim, x, y + 1, z, x, y + h, z, "hollowveil:sunken_bricks");
+      setBlock(dim, x, y + h + 1, z, "minecraft:cracked_deepslate_bricks");
+      break;
+    }
+    case "ruined_wall": {
+      const len = 3 + Math.floor(r * 5);
+      const along = featureRoll(x, z, 243) > 0.5;
+      const h = 2 + Math.floor(r * 3);
+      if (along) fill(dim, x, y + 1, z, x + len, y + h, z, "hollowveil:sunken_bricks");
+      else fill(dim, x, y + 1, z, x, y + h, z + len, "hollowveil:sunken_bricks");
+      break;
+    }
+    case "tar_pit":
+      fill(dim, x - 2, y, z - 2, x + 2, y, z + 2, "minecraft:obsidian");
+      fill(dim, x - 1, y, z - 1, x + 1, y, z + 1, "minecraft:lava");
+      break;
+    case "crystal": {
+      // A dark spire with a single lit tip. An all-lantern column was the
+      // first version and there were 2,700 of them per square kilometre -
+      // enough to light the Veil like a car park, which is the opposite of
+      // the point.
+      const h = 2 + Math.floor(r * 4);
+      fill(dim, x, y + 1, z, x, y + h, z, "hollowveil:soulforged_obsidian");
+      setBlock(dim, x, y + h + 1, z, "hollowveil:soul_lantern");
+      break;
+    }
+    default:
+      break;
+  }
+}
+
 /** Scatters this biome's features across the sector. Everything is driven by
  * featureRoll(), so a sector always decorates the same way. */
 function decorateSector(dim, x0, z0) {
+  blendSurface(dim, x0, z0);
+  plantFlora(dim, x0, z0);
   for (let i = 0; i < 26; i++) {
     const x = x0 + Math.floor(featureRoll(x0 + i, z0, 11) * SECTOR);
     const z = z0 + Math.floor(featureRoll(x0, z0 + i, 23) * SECTOR);

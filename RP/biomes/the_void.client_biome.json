@@ -1,0 +1,24 @@
+{
+  "format_version": "1.21.40",
+  "minecraft:client_biome": {
+    "description": {
+      "identifier": "minecraft:the_void"
+    },
+    "components": {
+      "minecraft:sky_color": {
+        "sky_color": "#07070C"
+      },
+      "minecraft:fog_appearance": {
+        "fog_identifier": "hollowveil:hollow_veil_fog"
+      },
+      "minecraft:water_appearance": {
+        "surface_color": "#2A1438"
+      },
+      "minecraft:ambient_sounds": {
+        "loop": "ambient.cave",
+        "mood": "ambient.cave",
+        "addition": "ambient.cave"
+      }
+    }
+  }
+}

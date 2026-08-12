@@ -24,12 +24,14 @@ function ok(label, cond, detail = "") {
   if (!cond) failures += 1;
 }
 
-// Measured from the real generator: ~110 native fills for an average sector,
-// 200 for the worst sampled. The runtime budget is 360 writes per pass and a
-// pass runs every 2 ticks.
-const AVG_SECTOR_COST = 110;
-const WORST_SECTOR_COST = 200;
-const WRITE_BUDGET = 640;
+// Measured by tools/bench_terrain.mjs against the real generator, decoration
+// passes included: 208 native fills for an average sector, 473 for the worst
+// sampled - a mountain sector, where the surface changes height almost every
+// block so the rectangle merge has least to work with. The runtime budget is
+// 900 writes per pass and a pass runs every 2 ticks.
+const AVG_SECTOR_COST = 208;
+const WORST_SECTOR_COST = 473;
+const WRITE_BUDGET = 900;
 const TICK_INTERVAL = 2;
 
 const SPRINT_BPS = 5.6;      // Bedrock sprint speed, blocks per second

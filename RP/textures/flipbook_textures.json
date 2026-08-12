@@ -1,0 +1,7 @@
+[
+  {
+    "flipbook_texture": "textures/blocks/veil_portal",
+    "atlas_tile": "veil_portal",
+    "ticks_per_frame": 2
+  }
+]

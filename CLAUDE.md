@@ -20,7 +20,7 @@ word must be one that has not been used before. Used so far, oldest first:
     Hallowed Reaches, Hallowed Requiem, Hallowed Covenant, Hallowed Expanse,
     Hallowed Reliquary, Hallowed Sanctum, Hallowed Threshold,
     Hallowed Vigil, Hallowed Ossuary,
-    Hallowed Cairn
+    Hallowed Cairn, Hallowed Lantern
 
 The checklist for a rename (all five UUIDs are regenerated, never reused):
 

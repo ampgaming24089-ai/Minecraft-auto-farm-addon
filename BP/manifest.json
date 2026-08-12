@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Cairn \u00a77- Behavior Pack",
-    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Cairn.",
-    "uuid": "af161cc9-2e6e-4f96-b2f6-298f3a9fba51",
+    "name": "Hallowed Lantern \u00a77- Behavior Pack",
+    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Lantern.",
+    "uuid": "cbf3d654-9700-4db5-82ee-a27dacbca39c",
     "version": [
-      13,
+      14,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "91f57dfb-b5d1-49fd-940a-6d256f668287",
+      "uuid": "bce42228-1c32-478b-b3d3-0bce4133d5cc",
       "version": [
-        13,
+        14,
         0,
         0
       ]
@@ -28,10 +28,10 @@
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "71b944f2-27fe-450a-9139-51e1246cae11",
+      "uuid": "b2427520-3676-4168-9e60-3ebf4858c725",
       "entry": "scripts/main.js",
       "version": [
-        13,
+        14,
         0,
         0
       ]
@@ -39,9 +39,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "319f3cdd-55db-4cbc-8f60-bc187d6f6f22",
+      "uuid": "1a48727a-e4e9-491b-811d-9ee2b22bdd52",
       "version": [
-        13,
+        14,
         0,
         0
       ]
@@ -57,7 +57,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Cairn Team"
+      "Hallowed Lantern Team"
     ],
     "product_type": "addon"
   }

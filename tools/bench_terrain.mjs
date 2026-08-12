@@ -1,5 +1,6 @@
-import { SECTOR, BEDROCK_Y, SEA_LEVEL, biomeAt, heightAt, caveFloorAt, crustAt, isWithinWorld }
+import { SECTOR, BEDROCK_Y, SEA_LEVEL, biomeAt, heightAt, caveFloorAt, crustAt, featureRoll, isWithinWorld }
   from "/home/user/Minecraft-auto-farm-addon/BP/scripts/world/biomes.js";
+const HUB_CLEAR = 34;
 
 function rectangles(keyAt) {
   const used = new Uint8Array(SECTOR*SECTOR); const out = [];
@@ -36,7 +37,42 @@ function cost(x0, z0) {
     blocks += 1 + (cf-BEDROCK_Y) + Math.max(0, h-bottom+1);
     if (h < SEA_LEVEL) blocks += SEA_LEVEL-h;
   }
-  return { calls: A.length*3 + B.length*2 + C.length + 4 + 14, blocks, A:A.length, B:B.length, C:C.length };
+  return { calls: A.length*3 + B.length*2 + C.length + decorCost(x0, z0, height, floor, crust, biome),
+           blocks, A:A.length, B:B.length, C:C.length };
+}
+
+
+// Mirrors the decoration passes in terrain.js so their cost is measured, not
+// assumed - they were added after the first benchmark and are not free.
+const FLORA_CALLS = { dead_grove: 12, fungus: 2, shroom_patch: 4, roots: 1, ash_spire: 3,
+                      bone_pile: 2, grave_weeds: 5, broken_column: 2, ruined_wall: 1,
+                      tar_pit: 2, crystal: 1 };
+function decorCost(x0, z0, height, floor, crust, biome) {
+  let n = 0;
+  // blendSurface: 10 patches, one fill per row
+  for (let i = 0; i < 10; i++) {
+    const x = x0 + Math.floor(featureRoll(x0+i*7, z0, 171) * SECTOR);
+    const z = z0 + Math.floor(featureRoll(x0, z0+i*7, 173) * SECTOR);
+    if (!isWithinWorld({x,z})) continue;
+    const b = biomeAt(x,z); if (!b.blend?.length) continue;
+    n += 2 * (1 + Math.floor(featureRoll(x,z,179)*2)) + 1;
+  }
+  // plantFlora
+  for (let i = 0; i < 34; i++) {
+    const x = x0 + Math.floor(featureRoll(x0+i*3, z0+i, 181) * SECTOR);
+    const z = z0 + Math.floor(featureRoll(x0+i, z0+i*3, 191) * SECTOR);
+    if (!isWithinWorld({x,z})) continue;
+    if (Math.hypot(x,z) < HUB_CLEAR + 4) continue;
+    const b = biomeAt(x,z); if (!b.flora?.length) continue;
+    if (featureRoll(x,z,193) > (b.floraDensity ?? 0.4)) continue;
+    const kind = b.flora[Math.floor(featureRoll(x,z,197)*b.flora.length)];
+    n += FLORA_CALLS[kind] ?? 3;
+  }
+  // caveMouths
+  if (featureRoll(x0, z0, 151) <= 0.34) n += 6;
+  // the original scatter pass + ore
+  n += 14;
+  return n;
 }
 
 let calls=0, blocks=0, worst=0, worstB=0;

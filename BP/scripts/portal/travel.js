@@ -118,6 +118,15 @@ function report(player) {
   player.sendMessage("§7/scriptevent hollowveil:home §8- return");
   // If the world builders are failing, say so here rather than leaving the
   // owner to guess from an empty landscape.
+  // Which vanilla biome does a script-registered dimension report? The sky
+  // colour has to be set on a client biome, and that needs the real id - this
+  // is the only way to find out from inside a running world.
+  try {
+    const biome = player.dimension.getBiome(player.location);
+    player.sendMessage(`§7Biome reported here: §f${biome?.id ?? "unknown"}`);
+  } catch {
+    player.sendMessage("§7Biome reported here: §8(unavailable)");
+  }
   const cmdError = lastCommandError();
   if (cmdError) player.sendMessage(`§6World builder: §7${cmdError}`);
 }

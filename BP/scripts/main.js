@@ -17,6 +17,7 @@ import { startTerrainStreaming } from "./world/terrain.js";
 import { startSiteBuilding } from "./world/sites.js";
 import { startAtmosphere } from "./world/atmosphere.js";
 import { registerTravelCommands } from "./portal/travel.js";
+import { startDimensionGuards } from "./world/guards.js";
 
 // Custom dimensions must be registered during the restricted "startup"
 // phase - see docs/DIMENSION.md for why this replaced the old static
@@ -77,6 +78,7 @@ for (const [name, fn] of [
   ["terrain streaming", startTerrainStreaming],
   ["site building", startSiteBuilding],
   ["atmosphere", startAtmosphere],
+  ["dimension guards", startDimensionGuards],
   ["ambience", startAmbience],
   ["passive item effects", startPassiveItemEffects],
   ["armor set bonuses", startArmorSetBonuses],

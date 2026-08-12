@@ -11,6 +11,7 @@ sizes, no missing-texture pink/black checkerboards) but a professional pack
 would replace them with bespoke Blockbench models / hand-painted textures.
 """
 import colorsys
+import json
 import math
 import random
 import os
@@ -1648,10 +1649,73 @@ def gen_armor_attachables():
     print(f"wrote {count} armor attachables")
 
 
+
+# ---------------------------------------------------------------------------
+# Animated portal
+# ---------------------------------------------------------------------------
+PORTAL_FRAMES = 32
+
+
+def gen_portal_flipbook():
+    """A 32-frame flipbook for the portal surface.
+
+    The owner's note was "portal is still and has no particle effects", and the
+    still half was literal: veil_portal.png was one static 16x16 tile, so the
+    rift was a painted wall. Bedrock animates block textures through
+    `textures/flipbook_textures.json` - a tall strip of frames plus an entry
+    naming the atlas tile - which is how vanilla's own nether portal and lava
+    are animated (verified against Mojang's resource pack, where
+    textures/blocks/portal.png is 16x512, i.e. 32 stacked frames).
+
+    Two counter-rotating swirls plus a radial pulse, sampled from a continuous
+    function so the loop is seamless: phase advances by exactly one full turn
+    across the strip, so the last frame flows back into the first.
+    """
+    W = 16
+    img = Image.new("RGBA", (W, W * PORTAL_FRAMES), (0, 0, 0, 0))
+    px = img.load()
+    for f in range(PORTAL_FRAMES):
+        phase = (f / PORTAL_FRAMES) * math.tau
+        for y in range(W):
+            for x in range(W):
+                dx = (x - 7.5) / 7.5
+                dy = (y - 7.5) / 7.5
+                r = math.hypot(dx, dy)
+                a = math.atan2(dy, dx)
+                s1 = math.sin(a * 3 + r * 6 - phase * 2)
+                s2 = math.sin(a * -2 + r * 9 + phase * 3)
+                pulse = math.sin(r * 7 - phase * 2)
+                v = (s1 * 0.45 + s2 * 0.35 + pulse * 0.2) * max(0.0, 1.0 - r * 0.55)
+                t = max(0.0, min(1.0, v * 0.5 + 0.5))
+                if t < 0.42:
+                    col = (28, 4, 6, 205)
+                elif t < 0.62:
+                    col = (120, 16, 18, 225)
+                elif t < 0.80:
+                    col = (198, 40, 28, 240)
+                elif t < 0.92:
+                    col = (240, 92, 48, 250)
+                else:
+                    col = (255, 190, 120, 255)
+                px[x, f * W + y] = col
+    save(img, RP, "textures", "blocks", "veil_portal.png")
+
+    path = os.path.join(RP, "textures", "flipbook_textures.json")
+    with open(path, "w") as fh:
+        json.dump([{
+            "flipbook_texture": "textures/blocks/veil_portal",
+            "atlas_tile": "veil_portal",
+            "ticks_per_frame": 2,
+        }], fh, indent=2)
+        fh.write("\n")
+    print("built animated portal flipbook (32 frames)")
+
+
 if __name__ == "__main__":
     gen_pack_icons()
     gen_item_icons()
     gen_block_textures()
+    gen_portal_flipbook()
     gen_particle_textures()
     gen_particle_definitions()
     gen_ui_textures()
