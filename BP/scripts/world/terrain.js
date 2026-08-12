@@ -1,8 +1,8 @@
 import { world, system, BlockVolume } from "@minecraft/server";
 import { HOLLOW_VEIL, HUB_CLEAR } from "./build.js";
 import {
-  BIOMES, SECTOR, WORLD_RADIUS, BEDROCK_Y, STONE_TOP_Y,
-  biomeAt, heightAt, featureRoll, isWithinWorld,
+  BIOMES, SECTOR, WORLD_RADIUS, BEDROCK_Y, SEA_LEVEL,
+  biomeAt, heightAt, caveFloorAt, crustAt, featureRoll, isWithinWorld,
 } from "./biomes.js";
 import { sectorCandidates, headingFrom } from "./frontier.js";
 
@@ -202,16 +202,32 @@ function rectangles(keyAt) {
   return out;
 }
 
-/** Builds one SECTOR x SECTOR column of world. Returns false if it could not. */
+/**
+ * Builds one SECTOR x SECTOR column of world. Returns false if it could not.
+ *
+ * Three merged passes rather than one, because the world now has three
+ * separate surfaces at different heights:
+ *
+ *   A  bedrock floor + the underground landscape sitting on it
+ *   B  the crust hanging under the surface, and the surface itself
+ *   C  water, wherever the surface fell below sea level
+ *
+ * The cavern between A and B is never written at all. A script-registered
+ * dimension starts as void, so open space is the default state and "carving"
+ * a cave system out of it costs nothing - which is why a world with 87 blocks
+ * of relief and a continuous cave system underneath it is barely more
+ * expensive than the 12-block slab this replaced.
+ */
 function buildSector(dim, sx, sz) {
   const x0 = sx * SECTOR;
   const z0 = sz * SECTOR;
 
-  // Sample height and biome once per column; everything below reads the cache
-  // rather than re-running the noise.
+  // Sample every column once; the passes below read the cache rather than
+  // re-running four bands of noise per block.
   const height = new Int16Array(SECTOR * SECTOR);
+  const floor = new Int16Array(SECTOR * SECTOR);
+  const crust = new Int16Array(SECTOR * SECTOR);
   const biome = new Array(SECTOR * SECTOR);
-  let minH = Infinity;
   let any = false;
   for (let lz = 0; lz < SECTOR; lz++) {
     for (let lx = 0; lx < SECTOR; lx++) {
@@ -222,53 +238,91 @@ function buildSector(dim, sx, sz) {
         height[i] = -1;
         continue;
       }
-      const h = heightAt(x, z);
-      height[i] = h;
-      biome[i] = biomeAt(x, z);
-      if (h < minH) minH = h;
+      const b = biomeAt(x, z);
+      biome[i] = b;
+      height[i] = heightAt(x, z, b);
+      floor[i] = caveFloorAt(x, z);
+      crust[i] = crustAt(x, z);
       any = true;
     }
   }
   if (!any) return true;                       // wholly outside the world: nothing owed
-  const base = Math.max(BEDROCK_Y + 1, Math.min(minH, STONE_TOP_Y));
 
-  // 1. Floor and deep stone, merged on biome alone so they cost a handful of
-  //    fills for the whole sector.
+  const rect = (r) => ({
+    i: r.lz * SECTOR + r.lx,
+    xa: x0 + r.lx, za: z0 + r.lz,
+    xb: x0 + r.lx + r.w - 1, zb: z0 + r.lz + r.h - 1,
+  });
+
+  // --- A. bedrock floor and the underground landscape ---------------------
   let ok = false;
   for (const r of rectangles((lx, lz) => {
     const i = lz * SECTOR + lx;
-    return height[i] < 0 ? null : biome[i].id;
+    return height[i] < 0 ? null : `${floor[i]}:${biome[i].id}`;
   })) {
-    const b = biome[r.lz * SECTOR + r.lx];
-    const xa = x0 + r.lx;
-    const za = z0 + r.lz;
-    const xb = xa + r.w - 1;
-    const zb = za + r.h - 1;
+    const { i, xa, za, xb, zb } = rect(r);
+    const b = biome[i];
+    const cf = floor[i];
     if (fill(dim, xa, BEDROCK_Y, za, xb, BEDROCK_Y, zb, "minecraft:bedrock")) ok = true;
-    fill(dim, xa, BEDROCK_Y + 1, za, xb, base - 1, zb, b.filler);
+    fill(dim, xa, BEDROCK_Y + 1, za, xb, cf - 1, zb, b.filler);
+    fill(dim, xa, cf, za, xb, cf, zb, b.cave ?? b.filler);
   }
   // If not one fill landed the chunk went away mid-build; leave the sector
   // unmarked so a later pass rebuilds it properly.
   if (!ok) return false;
 
-  // 2. The shaped top, merged on height AND biome.
+  // --- B. the crust, and the surface on top of it -------------------------
   for (const r of rectangles((lx, lz) => {
     const i = lz * SECTOR + lx;
-    return height[i] < 0 ? null : `${height[i]}:${biome[i].id}`;
+    return height[i] < 0 ? null : `${height[i]}:${crust[i]}:${biome[i].id}`;
   })) {
-    const i = r.lz * SECTOR + r.lx;
-    const h = height[i];
+    const { i, xa, za, xb, zb } = rect(r);
     const b = biome[i];
-    const xa = x0 + r.lx;
-    const za = z0 + r.lz;
-    const xb = xa + r.w - 1;
-    const zb = za + r.h - 1;
-    if (h > base) fill(dim, xa, base, za, xb, h - 1, zb, b.filler);
+    const h = height[i];
+    // Never let the crust reach down into the cave floor, or the cavern
+    // closes up and the underground disappears.
+    const bottom = Math.max(floor[i] + 2, h - crust[i]);
+    fill(dim, xa, bottom, za, xb, h - 1, zb, b.filler);
     fill(dim, xa, h, za, xb, h, zb, b.surface);
   }
 
+  // --- C. seas and lakes --------------------------------------------------
+  // Everything below sea level floods. This is what turns the marsh into
+  // actual wetland and puts coastlines on the other biomes.
+  for (const r of rectangles((lx, lz) => {
+    const i = lz * SECTOR + lx;
+    return height[i] < 0 || height[i] >= SEA_LEVEL ? null : "sea";
+  })) {
+    const { i, xa, za, xb, zb } = rect(r);
+    fill(dim, xa, height[i] + 1, za, xb, SEA_LEVEL, zb, "minecraft:water");
+  }
+
+  cavePillars(dim, x0, z0, height, floor, crust, biome);
   decorateSector(dim, x0, z0);
   return true;
+}
+
+/**
+ * Columns joining the cave floor to the underside of the crust.
+ *
+ * A cavern with a flat floor and a flat ceiling is a corridor, not a cave.
+ * A handful of pillars per sector breaks the sightlines and gives the
+ * underground somewhere to hide things - and at four per sector they cost
+ * almost nothing.
+ */
+function cavePillars(dim, x0, z0, height, floor, crust, biome) {
+  for (let n = 0; n < 4; n++) {
+    const lx = Math.floor(featureRoll(x0 + n * 5, z0, 131) * SECTOR);
+    const lz = Math.floor(featureRoll(x0, z0 + n * 5, 137) * SECTOR);
+    const i = lz * SECTOR + lx;
+    if (height[i] < 0) continue;
+    const top = Math.max(floor[i] + 2, height[i] - crust[i]);
+    if (top - floor[i] < 6) continue;          // too short to read as a pillar
+    const w = featureRoll(x0 + n, z0 + n, 139) > 0.6 ? 1 : 0;
+    const x = x0 + lx;
+    const z = z0 + lz;
+    fill(dim, x - w, floor[i] + 1, z - w, x + w, top - 1, z + w, biome[i].filler);
+  }
 }
 
 /** Scatters this biome's features across the sector. Everything is driven by
@@ -282,7 +336,7 @@ function decorateSector(dim, x0, z0) {
     // and the arrival point. Decoration must not litter it.
     if (Math.hypot(x, z) < HUB_CLEAR + 4) continue;
     const b = biomeAt(x, z);
-    const y = heightAt(x, z);
+    const y = heightAt(x, z, b);
     const r = featureRoll(x, z, 47);
 
     if (b.accents && r < 0.30) {
@@ -339,26 +393,45 @@ function placeRubble(dim, x, y, z, r) {
   if (r > 0.7) setBlock(dim, x + 1, y + 1, z, "minecraft:cracked_deepslate_bricks");
 }
 
-/** Ore is scattered per sector rather than per world, so it exists
- * everywhere you explore instead of only in one starting island. */
+/**
+ * Ore, placed against the world's real surfaces.
+ *
+ * The old table used fixed absolute heights, which made sense when the whole
+ * world was a 12-block slab and made none once the surface ranges from 40 to
+ * 127. A vein at "y = 54" would be deep underground beneath a mountain and
+ * floating in the sky over the marsh.
+ *
+ * Every vein is now positioned RELATIVE to something the player can actually
+ * find: `crust` sits just under the surface where you dig down, and `cave`
+ * sits on the floor of the cavern system where you go looking for it. That
+ * also gives the tiers a real progression - the good stuff is only in the
+ * caves, so the caves are worth the trip.
+ */
 function scatterOre(dim, x0, z0) {
   const veins = [
-    { block: "hollowveil:wraithsteel_ore", n: 5, lo: BEDROCK_Y + 2, hi: STONE_TOP_Y, salt: 101 },
-    { block: "hollowveil:ember_coal_ore", n: 4, lo: STONE_TOP_Y - 6, hi: STONE_TOP_Y, salt: 103 },
-    { block: "hollowveil:veilsteel_ore", n: 2, lo: BEDROCK_Y + 2, hi: BEDROCK_Y + 9, salt: 107 },
-    { block: "hollowveil:hollowforged_ore", n: 1, lo: BEDROCK_Y + 1, hi: BEDROCK_Y + 3, salt: 109 },
+    { block: "hollowveil:wraithsteel_ore", n: 5, where: "crust", salt: 101 },
+    { block: "hollowveil:ember_coal_ore", n: 4, where: "crust", salt: 103 },
+    { block: "hollowveil:veilsteel_ore", n: 3, where: "cave", salt: 107 },
+    { block: "hollowveil:hollowforged_ore", n: 2, where: "cave", salt: 109, rare: 0.22 },
   ];
   for (const v of veins) {
     for (let i = 0; i < v.n; i++) {
       const rx = featureRoll(x0 + i * 3, z0, v.salt);
       const rz = featureRoll(x0, z0 + i * 3, v.salt + 1);
       const ry = featureRoll(x0 + i, z0 + i, v.salt + 2);
-      // hollowforged stays genuinely rare even though it is now per-sector
-      if (v.block.includes("hollowforged") && ry > 0.22) continue;
+      if (v.rare && ry > v.rare) continue;      // hollowforged stays genuinely rare
       const x = x0 + Math.floor(rx * SECTOR);
       const z = z0 + Math.floor(rz * SECTOR);
       if (!isWithinWorld({ x, z })) continue;
-      const y = Math.floor(v.lo + ry * (v.hi - v.lo));
+      const b = biomeAt(x, z);
+      let y;
+      if (v.where === "crust") {
+        const h = heightAt(x, z, b);
+        y = h - 2 - Math.floor(ry * Math.max(1, crustAt(x, z) - 2));
+      } else {
+        y = caveFloorAt(x, z) + (ry > 0.5 ? 1 : 0);
+      }
+      if (y <= BEDROCK_Y) continue;
       fill(dim, x, y, z, x + 1, y, z, v.block);
     }
   }

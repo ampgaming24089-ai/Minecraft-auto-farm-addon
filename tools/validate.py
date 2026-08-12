@@ -1161,6 +1161,7 @@ def check_manifests():
     # "Duplicate pack detected" error on import, so they are now banned.
     RETIRED = {
         "04144c3f-9f8a-4193-b66f-0ac30b78df95",
+        "0735b6ee-620d-4138-a756-d117bc1d96b1",
         "0b83a713-42b9-4a4c-9c81-6f56cbc67814",
         "0f251285-1535-4d56-89e7-41c4a1143e5e",
         "120a4a8c-7ab9-4dc8-864f-ca818b1ae4ab",
@@ -1171,7 +1172,9 @@ def check_manifests():
         "2d6693e3-30ef-4ab5-af8d-903e5fa06e3f",
         "36864a3d-4e54-465b-886c-66356c03db69",
         "36d910e6-19c8-4464-8aaa-e878ad5775bc",
+        "3a74e9a4-4c91-4608-a236-a51a505b9c07",
         "3e151a25-ce4c-47db-aa91-4b6dc17a5ce1",
+        "3f65329b-a58b-4b0d-89b7-69df9151c585",
         "3fdbb366-598f-4a19-86fb-70d6d2502fc2",
         "4079299a-d286-4658-8f7c-9cb6fbcd19a0",
         "464ebcd1-a74c-4109-94ae-8ff9a324e029",
@@ -1195,6 +1198,7 @@ def check_manifests():
         "8b83720f-c727-40bf-b60b-fd9670e9f17d",
         "8c65e54f-84fb-4532-9199-45ebad51dd37",
         "915cf596-e3c7-4014-978e-df04a7f46861",
+        "91cb30c8-5be2-4d9c-9298-bf715b50afa9",
         "9532f86f-43c7-44aa-81ac-fbee36b80301",
         "a63f5256-bccb-46d7-843b-853bd45956db",
         "a7f48924-5a1a-493f-b2cd-87735ab3b128",
@@ -1209,6 +1213,7 @@ def check_manifests():
         "cefe0049-30d2-40ef-b2ce-08d0e44c481c",
         "d0efb2e8-1cfa-44bb-8426-a9d01ba0f437",
         "da0cf01f-a51c-4d87-b44b-34823328adf8",
+        "dbf4a6bd-f191-4935-a1cf-2defbcd7e477",
         "de973948-5c0d-4eb5-878c-c80622cc573b",
         "e5fdc2a2-636c-4f4d-a1ad-20a1984128c7",
         "e7541459-702e-46a0-abc1-2a4b66b29eaf",

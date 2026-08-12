@@ -25,6 +25,33 @@ one patch above what the dimension API alone needs, because the Veil
 Dragon's rideable-flight components (see README's "Known limitations")
 ship at that version. No experimental world toggle is required for either.
 
+## Confirmed again (and this time with the citation)
+
+The question came up a second time - "can we not make this like normal
+overworld world gen?" - so it was re-checked from the primary sources rather
+than from this document:
+
+* `registerCustomDimension` in the **stable 2.9.0 bindings** takes exactly one
+  argument, `typeId`. There is no generator, biome-source or seed parameter.
+* Mojang *does* ship a data-driven dimension schema
+  (`metadata/json_schemas/client_server/dimension/1.21.60/`, with
+  `components.minecraft:generation.generator_type` and
+  `minecraft:dimension_bounds`), which is why the original attempt got a real
+  parser error rather than "file ignored" - the parser exists and was reading
+  our file. But per Microsoft's own documentation for that file
+  ("Data Driven Overworld Height and Void Generation"): **"The only mutable
+  values in the dimensions JSON file are the min and max values. You cannot
+  modify the generator type or the dimension identifier."** It re-slices the
+  height range of the dimensions that already exist. It cannot create one.
+* The protocol enum does list `Overworld / Flat / Nether / TheEnd / Void`
+  generators per dimension, but nothing in the addon surface lets a pack pick
+  one for a dimension it registers.
+
+So the conclusion below stands, and the response to it was to stop treating
+the script generator as a stopgap and write a real one - see
+`BP/scripts/world/biomes.js` for the noise bands and
+`BP/scripts/world/terrain.js` for how a sector is placed.
+
 ## The big consequence: it's a void, not a generated world
 
 A script-registered custom dimension starts completely empty - no terrain,

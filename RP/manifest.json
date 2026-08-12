@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Ossuary \u00a77- Resource Pack",
-    "description": "Textures, models, sounds and atmosphere for the Hallowed Ossuary.",
-    "uuid": "dbf4a6bd-f191-4935-a1cf-2defbcd7e477",
+    "name": "Hallowed Cairn \u00a77- Resource Pack",
+    "description": "Textures, models, sounds and atmosphere for the Hallowed Cairn.",
+    "uuid": "319f3cdd-55db-4cbc-8f60-bc187d6f6f22",
     "version": [
-      12,
+      13,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "3a74e9a4-4c91-4608-a236-a51a505b9c07",
+      "uuid": "e9c992d5-82e8-445c-a758-ff62a885402a",
       "version": [
-        12,
+        13,
         0,
         0
       ]
@@ -28,9 +28,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "3f65329b-a58b-4b0d-89b7-69df9151c585",
+      "uuid": "af161cc9-2e6e-4f96-b2f6-298f3a9fba51",
       "version": [
-        12,
+        13,
         0,
         0
       ]
@@ -38,7 +38,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Ossuary Team"
+      "Hallowed Cairn Team"
     ],
     "product_type": "addon"
   }

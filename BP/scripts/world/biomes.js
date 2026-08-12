@@ -15,8 +15,38 @@ export const WORLD_RADIUS = 100000; // 90 -> 512 -> 1024 -> 10000 -> 50000 -> 10
 // per-sector state at all - so widening the world costs no memory and no
 // dynamic-property budget. It only changes where the rim is.
 export const SECTOR = 32; // terrain is built one sector at a time, near players
-export const SURFACE_Y = 64;
-export const BEDROCK_Y = SURFACE_Y - 12;
+
+// The shape of the world, top to bottom.
+//
+// The old profile was a 12-block-thick slab: bedrock at 52, surface at 64,
+// and roughly five blocks of roll across the whole map. That is why it read
+// as "all bedrock and not properly generated" - it was, functionally, a
+// textured plane.
+//
+// Bedrock's engine will not generate a script-registered dimension for us.
+// `registerCustomDimension` takes a type id and nothing else, and the
+// data-driven `BP/dimensions/*.json` file only overrides the height limits of
+// the three dimensions that already exist - the generator type there is not
+// mutable. So the only way to get a world that feels generated is to generate
+// one, and that is what the numbers below are for.
+//
+// The profile now has four parts:
+//
+//   BEDROCK_Y ........ a true floor at the bottom of the world
+//   cave floor ....... a rolling underground landscape just above it
+//   (open cavern) .... free: a script dimension starts as void, so the space
+//                      between the cave floor and the underside of the crust
+//                      costs nothing to "carve" - it is simply never filled
+//   crust ............ the few metres of rock hanging under the surface
+//   surface .......... mountains, valleys, coastlines
+//
+// That gives a surface world with 60+ blocks of relief AND a continuous cave
+// system under all of it, for barely more block writes than the old slab.
+export const BEDROCK_Y = 0;
+export const SEA_LEVEL = 58;
+export const SURFACE_Y = 64;      // nominal height; the hub is flattened to it
+export const SURFACE_MIN = 34;
+export const SURFACE_MAX = 132;
 export const STONE_TOP_Y = SURFACE_Y - 2;
 
 /** 32-bit integer hash. Same input always gives the same output, across
@@ -62,6 +92,7 @@ function fbm(x, z, cell, seed) {
 export const BIOMES = {
   hub: {
     id: "hub",
+    base: 0, swell: 0, relief: 0, mountains: 0, cave: "minecraft:deepslate",
     name: "The Misty Reach",
     surface: "hollowveil:bonestone",
     filler: "minecraft:deepslate",
@@ -70,6 +101,7 @@ export const BIOMES = {
   },
   moors: {
     id: "moors",
+    base: 2, swell: 1.0, relief: 1.0, mountains: 0.15, cave: "minecraft:deepslate",
     name: "The Grave Moors",
     surface: "minecraft:podzol",
     filler: "minecraft:deepslate",
@@ -82,6 +114,7 @@ export const BIOMES = {
   },
   ashlands: {
     id: "ashlands",
+    base: 6, swell: 1.1, relief: 1.35, mountains: 1.0, cave: "minecraft:basalt",
     name: "The Ashlands",
     surface: "minecraft:blackstone",
     filler: "minecraft:basalt",
@@ -92,6 +125,7 @@ export const BIOMES = {
   },
   marsh: {
     id: "marsh",
+    base: -9, swell: 0.6, relief: 0.45, mountains: 0.0, cave: "hollowveil:veil_mud",
     name: "The Boneyard Marsh",
     surface: "hollowveil:veil_mud",
     filler: "minecraft:deepslate",
@@ -103,6 +137,7 @@ export const BIOMES = {
   },
   ruins: {
     id: "ruins",
+    base: 0, swell: 0.9, relief: 0.8, mountains: 0.45, cave: "minecraft:deepslate_tiles",
     name: "The Sunken Ruins",
     surface: "minecraft:deepslate_tiles",
     filler: "minecraft:deepslate",
@@ -154,17 +189,92 @@ export function biomeAt(x, z) {
   return b < SPLIT ? BIOMES.marsh : BIOMES.ruins;
 }
 
-/** Ground height at a position. Gently rolling, flattened toward the hub so
- * the arrival area and the village are always buildable, and falling away
- * to a cliff edge at the world rim. */
-export function heightAt(x, z) {
+/** Ridged noise: the standard way to get mountain SPINES rather than blobs.
+ * Folding value noise about its midpoint turns smooth hills into creases, and
+ * squaring sharpens the crease into a ridge. */
+function ridged(x, z, cell, seed) {
+  const n = 1 - Math.abs(noise2(x, z, cell, seed) * 2 - 1);
+  return n * n;
+}
+
+/**
+ * Surface height.
+ *
+ * Four bands of noise, the way a real generator layers them:
+ *
+ *   continents  cell 900   the slow swell that decides sea from highland
+ *   hills       cell 150   the shape you actually walk over
+ *   detail      cell 40    the roughness that keeps slopes from looking milled
+ *   ridges      cell 320   mountain spines, gated by a separate mask so ranges
+ *                          occur in places rather than everywhere
+ *
+ * `biome` is passed in rather than looked up: the caller has already decided
+ * it, and biomeAt is four noise lookups that would otherwise run twice per
+ * column. Each biome scales the bands differently, so the marsh is genuinely
+ * low and wet and the Ashlands are genuinely jagged, instead of every region
+ * being the same terrain in a different colour.
+ */
+export function heightAt(x, z, biome) {
+  const b = biome || biomeAt(x, z);
   const dist = Math.hypot(x, z);
-  const rolling = (fbm(x, z, 70, LAYOUT_SEED + 31) - 0.5) * 11;
-  const hubFlatten = Math.min(1, Math.max(0, (dist - 18) / 34));
-  let y = SURFACE_Y + rolling * hubFlatten;
+
+  const continents = (fbm(x, z, 900, LAYOUT_SEED + 3) - 0.5) * 34;
+  const hills = (fbm(x, z, 150, LAYOUT_SEED + 31) - 0.5) * 26;
+  const detail = (noise2(x, z, 40, LAYOUT_SEED + 41) - 0.5) * 5;
+
+  // Ranges only where the mask is high, so mountains are somewhere you travel
+  // to rather than a uniform crumple over the whole map.
+  const mask = Math.max(0, fbm(x, z, 640, LAYOUT_SEED + 57) - 0.5) / 0.5;
+  const ridges = ridged(x, z, 320, LAYOUT_SEED + 71) * 52 * mask;
+
+  let y = SURFACE_Y + (b.base ?? 0)
+        + continents * (b.swell ?? 1)
+        + hills * (b.relief ?? 1)
+        + detail
+        + ridges * (b.mountains ?? 0);
+
+  // The hub has to stay buildable: the arrival point, the altars and Hollow
+  // Hamlet all sit at SURFACE_Y and none of them want a mountain through them.
+  const hubFlatten = Math.min(1, Math.max(0, (dist - 24) / 90));
+  y = SURFACE_Y + (y - SURFACE_Y) * hubFlatten;
+
   const edge = WORLD_RADIUS - dist;
   if (edge < 48) y -= (48 - edge) * 0.6; // rim drops into the void
-  return Math.round(y);
+  return Math.max(SURFACE_MIN, Math.min(SURFACE_MAX, Math.round(y)));
+}
+
+/**
+ * The floor of the cave system, well below the surface.
+ *
+ * Quantised to 3-block steps on purpose. Terrain is written as merged
+ * rectangles, and a cave floor that moves one block at a time would shatter
+ * every rectangle into slivers - the quantisation costs nothing visually
+ * underground and keeps the sector affordable.
+ */
+export function caveFloorAt(x, z) {
+  const n = fbm(x, z, 260, LAYOUT_SEED + 91);
+  return BEDROCK_Y + 3 + Math.round((n * 14) / 3) * 3;
+}
+
+/** How much rock hangs beneath the surface before the cavern opens up.
+ *
+ * Quantised to three thicknesses for the same reason the cave floor is
+ * quantised: this value is part of the key the surface rectangles merge on,
+ * and letting it vary block by block shattered a mountain sector into 450
+ * separate fills. Three steps is invisible from above - you only ever see the
+ * crust in cross-section at a cliff or a cave mouth - and it roughly halves
+ * the cost of exactly the sectors that were most expensive. */
+export function crustAt(x, z) {
+  // Rendering a cross-section of the first attempt showed the mistake: a flat
+  // 5-11 block crust made the whole world a thin skin stretched over one
+  // continuous abyss. Digging anywhere dropped you forty blocks, and nothing
+  // read as "cave" because there was nothing else for a cave to be inside of.
+  //
+  // The thickness now swings from 8 to 28 blocks on a broad noise field, so
+  // most digging hits ordinary rock and the cave system opens up where the
+  // field runs thin - which is what a cave is: a hole in something.
+  const n = fbm(x, z, 380, LAYOUT_SEED + 97);
+  return 8 + Math.round((n * 20) / 4) * 4;
 }
 
 export function isWithinWorld(pos) {

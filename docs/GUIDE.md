@@ -18,31 +18,31 @@ Stand in the portal you arrived through, or in the pre-lit one beside Hollow Ham
 
 The Veil is a disc 100,000 blocks in every direction from the hub. Terrain builds itself around you as you travel, so there is no edge to reach quickly and nothing to load in advance.
 
-### The Misty Reach
+### Hub
 
 Where you arrive, and where Hollow Hamlet stands. Lit, and nothing hostile spawns within 32 blocks of the shrine.
 
 Lives here: Soul Wisp, Wraith.
 
-### The Grave Moors
+### Moors
 
 Headstones to the horizon. The signature look of the dimension, and the ghosts' home ground.
 
 Lives here: Wraith, Banshee, Shade, Poltergeist, Fallen Knight, Soul Wisp.
 
-### The Ashlands
+### Ashlands
 
 Burnt red country. Demons, the deepest ore, and the only place wild dragons fly.
 
 Lives here: Hellhound, Imp, Ashen Whelp, Bastion Sentinel, Veil Dragon.
 
-### The Boneyard Marsh
+### Marsh
 
 Wet, luminous, and the only place with anything worth eating.
 
 Lives here: Bonehide Elk, Glimmershroom Toad, Marrow Crawler, Ashwing Bat.
 
-### The Sunken Ruins
+### Ruins
 
 A drowned city under guard. Bring something that shoots back.
 

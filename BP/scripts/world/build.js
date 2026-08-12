@@ -1,7 +1,7 @@
 import { world, BlockVolume } from "@minecraft/server";
 import { KEYS, getWorldFlag, setWorldFlag, setWorldJson } from "../lib/state.js";
 import { buildHollowHamlet } from "../village/village.js";
-import { SURFACE_Y, WORLD_RADIUS, biomeAt, heightAt, isWithinWorld } from "./biomes.js";
+import { SURFACE_Y, BEDROCK_Y, WORLD_RADIUS, biomeAt, heightAt, isWithinWorld } from "./biomes.js";
 
 export const HOLLOW_VEIL = "hollowveil:hollow_veil";
 
@@ -68,8 +68,17 @@ export async function ensureWorldBuilt() {
     // player's own loaded chunks either way, so the build can still proceed.
   }
 
-  fillBox(dim, cx - r, y - 12, cz - r, cx + r, y - 12, cz + r, "minecraft:bedrock");
-  fillBox(dim, cx - r, y - 11, cz - r, cx + r, y - 1, cz + r, "minecraft:deepslate");
+  // The hub has to be laid out the same way the generator lays out everywhere
+  // else, or it does not join up with it. That means a bedrock floor at the
+  // bottom of the world, an underground level above it, open cavern, and then
+  // the plateau the village stands on - not a slab hanging in the air.
+  //
+  // The bedrock floor also doubles as the terrain streamer's "is this sector
+  // built" probe, so laying it here is what stops the streamer from deciding
+  // the hub is empty and filling the village in with rock.
+  fillBox(dim, cx - r, BEDROCK_Y, cz - r, cx + r, BEDROCK_Y, cz + r, "minecraft:bedrock");
+  fillBox(dim, cx - r, BEDROCK_Y + 1, cz - r, cx + r, BEDROCK_Y + 12, cz + r, "minecraft:deepslate");
+  fillBox(dim, cx - r, y - 9, cz - r, cx + r, y - 1, cz + r, "minecraft:deepslate");
   fillBox(dim, cx - r, y, cz - r, cx + r, y, cz + r, "hollowveil:bonestone");
   // Headroom. This is the fill whose absence buried people.
   fillBox(dim, cx - r, y + 1, cz - r, cx + r, y + 30, cz + r, "minecraft:air");

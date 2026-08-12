@@ -30,23 +30,23 @@ export const GUIDE = {
       "icon": "soul_compass",
       "entries": [
         {
-          "name": "The Misty Reach",
+          "name": "Hub",
           "text": "Where you arrive, and where Hollow Hamlet stands. Lit, and nothing hostile spawns within 32 blocks of the shrine.\n\nLives here: Soul Wisp, Wraith."
         },
         {
-          "name": "The Grave Moors",
+          "name": "Moors",
           "text": "Headstones to the horizon. The signature look of the dimension, and the ghosts' home ground.\n\nLives here: Wraith, Banshee, Shade, Poltergeist, Fallen Knight, Soul Wisp."
         },
         {
-          "name": "The Ashlands",
+          "name": "Ashlands",
           "text": "Burnt red country. Demons, the deepest ore, and the only place wild dragons fly.\n\nLives here: Hellhound, Imp, Ashen Whelp, Bastion Sentinel, Veil Dragon."
         },
         {
-          "name": "The Boneyard Marsh",
+          "name": "Marsh",
           "text": "Wet, luminous, and the only place with anything worth eating.\n\nLives here: Bonehide Elk, Glimmershroom Toad, Marrow Crawler, Ashwing Bat."
         },
         {
-          "name": "The Sunken Ruins",
+          "name": "Ruins",
           "text": "A drowned city under guard. Bring something that shoots back.\n\nLives here: City Wraithguard, Ashwing Bat, Shade, Fallen Knight."
         }
       ],

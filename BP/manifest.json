@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Ossuary \u00a77- Behavior Pack",
-    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Ossuary.",
-    "uuid": "3f65329b-a58b-4b0d-89b7-69df9151c585",
+    "name": "Hallowed Cairn \u00a77- Behavior Pack",
+    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Cairn.",
+    "uuid": "af161cc9-2e6e-4f96-b2f6-298f3a9fba51",
     "version": [
-      12,
+      13,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "91cb30c8-5be2-4d9c-9298-bf715b50afa9",
+      "uuid": "91f57dfb-b5d1-49fd-940a-6d256f668287",
       "version": [
-        12,
+        13,
         0,
         0
       ]
@@ -28,10 +28,10 @@
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "0735b6ee-620d-4138-a756-d117bc1d96b1",
+      "uuid": "71b944f2-27fe-450a-9139-51e1246cae11",
       "entry": "scripts/main.js",
       "version": [
-        12,
+        13,
         0,
         0
       ]
@@ -39,9 +39,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "dbf4a6bd-f191-4935-a1cf-2defbcd7e477",
+      "uuid": "319f3cdd-55db-4cbc-8f60-bc187d6f6f22",
       "version": [
-        12,
+        13,
         0,
         0
       ]
@@ -57,7 +57,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Ossuary Team"
+      "Hallowed Cairn Team"
     ],
     "product_type": "addon"
   }
