@@ -540,3 +540,139 @@ def paint_chest(draw, rect, base, glow, style):
     if w < 4 or h < 4:
         return
     fn(draw, rect, base, glow)
+
+
+# --------------------------------------------------------------------------
+# the rest of the creature
+# --------------------------------------------------------------------------
+# A face only ever fixed the view from directly in front. Walk behind a mob
+# and it was still a plain box, and its arms and legs were plain the whole
+# time. These paint the other five faces of the head and a marking on each
+# limb, keyed off the same style the face uses so a creature reads as one
+# design from every angle.
+
+
+def head_back(draw, rect, base, glow, style):
+    """The back of the skull. Hair, sutures, manes, carapace - whatever the
+    front of the face implies is behind it."""
+    x, y, w, h = rect
+    dark = shade(base, -60)
+    light = shade(base, 35)
+
+    if style in ("hollow", "hooded"):
+        # a hood drawn closed with laces
+        _fill(draw, x + w // 2, y, 1, h, dark)
+        for ly in range(y + 1, y + h - 1, 2):
+            _fill(draw, x + w // 2 - 1, ly, 3, 1, light)
+    elif style == "skull":
+        # cranial sutures
+        _fill(draw, x + w // 2, y, 1, h, dark)
+        for sy in range(y + 2, y + h - 1, 3):
+            _fill(draw, x + 1, sy, w - 2, 1, dark)
+    elif style == "beast":
+        # a mane running down the centre
+        _fill(draw, x + w // 2 - 1, y, 3, h, dark)
+        for my in range(y, y + h, 2):
+            _fill(draw, x + w // 2, my, 1, 1, light)
+    elif style == "draconic":
+        # a row of spine plates
+        for sy in range(y, y + h, 2):
+            _fill(draw, x + w // 2 - 1, sy, 3, 1, light)
+            _dot(draw, x + w // 2, sy, glow)
+    elif style == "imp":
+        _fill(draw, x + 1, y, 2, 2, dark)          # horn roots
+        _fill(draw, x + w - 3, y, 2, 2, dark)
+        _fill(draw, x + 2, y + h // 2, w - 4, 1, light)
+    elif style == "insect":
+        for sy in range(y, y + h, 2):              # segmented carapace
+            _fill(draw, x + 1, sy, w - 2, 1, dark)
+    elif style == "amphibian":
+        for i in range(3):                          # mottling
+            _fill(draw, x + 1 + (i * 2) % max(1, w - 2), y + 1 + i, 2, 1, dark)
+    elif style == "visor":
+        _fill(draw, x + 1, y + 1, w - 2, 1, light)  # helm seam
+        _fill(draw, x + w // 2, y, 1, h, dark)      # crest slot
+        for rx in (x + 1, x + w - 2):
+            _dot(draw, rx, y + h - 2, light)
+    elif style == "wisp":
+        _fill(draw, x + 1, y + 1, w - 2, h - 2, mix(base, glow, 0.35))
+    else:                                           # bat and anything new
+        for i in range(0, h, 2):
+            _fill(draw, x + 1, y + i, w - 2, 1, dark)
+
+
+def head_side(draw, rect, base, glow, style, flip=False):
+    """Cheeks, ears, gills. Read most often, since players circle mobs."""
+    x, y, w, h = rect
+    dark = shade(base, -65)
+    light = shade(base, 30)
+
+    if style in ("hollow", "hooded"):
+        _fill(draw, x + 1, y + h // 3, w - 2, 1, dark)          # hood edge
+    elif style == "skull":
+        _fill(draw, x + 1, y + h // 3, max(1, w // 2), 2, dark)  # temple hollow
+        _fill(draw, x + 1, y + h - 3, w - 2, 1, shade(base, 40))  # jaw line
+    elif style == "beast":
+        _fill(draw, x + w // 4, y + 1, 2, 2, dark)               # ear base
+        _fill(draw, x + 1, y + h - 3, w - 2, 1, dark)            # jaw
+    elif style == "draconic":
+        _fill(draw, x + 1, y + 1, 2, 1, light)                   # horn
+        _fill(draw, x + w // 3, y + h // 2, 2, 1, glow)          # ear frill
+    elif style == "imp":
+        _fill(draw, x, y + h // 3, 2, 2, dark)                   # pointed ear
+    elif style == "insect":
+        for sy in range(y + 1, y + h - 1, 2):
+            _dot(draw, x + w // 2, sy, dark)                     # spiracles
+    elif style == "amphibian":
+        _fill(draw, x + 1, y + h // 2, w - 2, 1, light)          # gill line
+    elif style == "visor":
+        _fill(draw, x + 1, y + h // 3, w - 2, 1, dark)           # cheek plate
+        _dot(draw, x + w // 2, y + h - 3, light)                 # bolt
+    elif style == "wisp":
+        _fill(draw, x + 1, y + 1, w - 2, h - 2, mix(base, glow, 0.3))
+    else:
+        _fill(draw, x + 1, y + h // 2, w - 2, 1, dark)
+
+
+def head_top(draw, rect, base, glow, style):
+    """Crowns, scutes, horn beds - the view when a mob is below you, which in
+    a dimension full of pits and cliffs happens more than you would think."""
+    x, y, w, h = rect
+    dark = shade(base, -55)
+    light = shade(base, 40)
+
+    if style == "draconic":
+        _fill(draw, x + w // 2 - 1, y, 3, h, light)
+        for sy in range(y, y + h, 2):
+            _dot(draw, x + w // 2, sy, glow)
+    elif style == "skull":
+        _fill(draw, x + w // 2, y, 1, h, dark)
+    elif style in ("imp", "beast"):
+        _fill(draw, x + 1, y + 1, 2, 2, dark)
+        _fill(draw, x + w - 3, y + 1, 2, 2, dark)
+    elif style == "visor":
+        _fill(draw, x + 1, y + 1, w - 2, 1, light)
+        _fill(draw, x + w // 2, y, 1, h, dark)
+    elif style == "wisp":
+        _fill(draw, x + 1, y + 1, w - 2, h - 2, glow)
+    else:
+        for i in range(0, w, 3):
+            _dot(draw, x + i, y + h // 2, dark)
+
+
+# Limb markings: a cuff near the end of each limb plus a stripe up its length.
+# Cheap, and it is what stops arms and legs reading as bare dowels.
+def limb_marking(draw, rect, base, glow, style):
+    x, y, w, h = rect
+    dark = shade(base, -55)
+    light = shade(base, 35)
+    if h >= 5:
+        cuff = y + h - 2
+        _fill(draw, x, cuff, w, 1, dark)
+        if style in ("visor", "skull", "beast"):
+            _fill(draw, x, cuff - 1, w, 1, light)
+        elif style in ("draconic", "imp"):
+            for cx in range(x, x + w, 2):
+                _dot(draw, cx, cuff, glow)
+    if h >= 7 and w >= 2:
+        _fill(draw, x + w // 2, y + 1, 1, h - 4, light if style != "hollow" else dark)

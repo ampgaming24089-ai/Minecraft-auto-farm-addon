@@ -42,29 +42,58 @@ function grant(player, effect, amplifier = 0) {
   }
 }
 
+/**
+ * Set bonuses, and why they carry more weight than they look like they do.
+ *
+ * Minecraft caps armour's contribution at 20 points - the damage formula is
+ * `damage x (1 - min(20, armour) / 25)`, so 20 points is 80% reduction and
+ * nothing in any edition does better. Netherite is exactly 20. Every set in
+ * this pack is above that (see tools/balance.py for the table and the three
+ * real things the surplus still buys), which means the ladder from the entry
+ * suit to the tank suit cannot live in armour points alone.
+ *
+ * It lives here. Resistance stacks multiplicatively with armour, so each rung
+ * is a genuine step: Resistance I on the mid tiers, Resistance II on the tank.
+ * That is the difference between "the tooltip says a bigger number" and
+ * "you survive the boss".
+ */
 export function startArmorSetBonuses() {
   system.runInterval(() => {
     for (const player of world.getAllPlayers()) {
-      if (wornSet(player, "spectral_regalia") && healthRatio(player) < 0.3) {
-        grant(player, "invisibility");
-        grant(player, "water_breathing");
-      }
-      if (wornSet(player, "mourners_shroud")) {
-        if (healthRatio(player) < 0.3) grant(player, "speed", 1);
-      }
-      if (wornSet(player, "ashen_demonplate")) {
-        grant(player, "fire_resistance");
+      const hurt = healthRatio(player) < 0.3;
+
+      // Wraithsteel is the entry suit and deliberately has no bonus - its
+      // 24 points are already a fifth better than netherite.
+
+      if (wornSet(player, "veilsteel")) {
         grant(player, "resistance");
       }
-      // Hollowforged is the craftable top tier - better raw protection than
-      // any boss set - yet it was the only full set in the pack with no set
-      // bonus at all, which made the three boss sets feel like a downgrade
-      // for no reason. Haste and fire resistance suit what it is: the armour
-      // you wear to go mining the deepest ore in the dimension.
+      // Hollowforged: the craftable top tier, and the suit you wear to go
+      // mining the deepest ore in the dimension.
       if (wornSet(player, "hollowforged")) {
+        grant(player, "resistance");
         grant(player, "haste");
         grant(player, "fire_resistance");
-        if (healthRatio(player) < 0.3) grant(player, "absorption", 1);
+        if (hurt) grant(player, "absorption", 1);
+      }
+      // Spectral Regalia: escape, not endurance.
+      if (wornSet(player, "spectral_regalia")) {
+        grant(player, "resistance");
+        if (hurt) {
+          grant(player, "invisibility");
+          grant(player, "water_breathing");
+        }
+      }
+      // Mourner's Shroud: the lightest set in the pack, and the fastest.
+      if (wornSet(player, "mourners_shroud")) {
+        grant(player, "speed");
+        if (hurt) grant(player, "speed", 1);
+      }
+      // Ashen Demonplate: the tank. Hardest boss, heaviest plate, and the
+      // only Resistance II in the pack.
+      if (wornSet(player, "ashen_demonplate")) {
+        grant(player, "resistance", 1);
+        grant(player, "fire_resistance");
       }
     }
   }, INTERVAL);

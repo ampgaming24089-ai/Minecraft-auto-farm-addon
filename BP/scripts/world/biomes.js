@@ -8,8 +8,8 @@
 // so exploring actually turns up something new instead of the same four
 // pie slices in the same four places.
 
-export const WORLD_RADIUS = 50000; // 90 -> 512 -> 1024 -> 10000 -> 50000
-// 50,000 blocks in every direction: a 100,000-block-wide disc, comfortably
+export const WORLD_RADIUS = 100000; // 90 -> 512 -> 1024 -> 10000 -> 50000 -> 100000
+// 100,000 blocks in every direction: a 200,000-block-wide disc, comfortably
 // inside Bedrock's +/-30,000,000 world limit. Nothing about this number is
 // stored anywhere - see world/terrain.js for why the generator holds no
 // per-sector state at all - so widening the world costs no memory and no
@@ -122,9 +122,9 @@ const LAYOUT_SEED = 20260810;
 
 // Territory size. Tuned by sampling the real distribution across the whole
 // 50,000-block radius rather than guessed - see tools/biome_stats.js.
-const BIOME_CELL = 900;
-const BIOME_WARP_CELL = 420;
-const BIOME_WARP = 520;
+const BIOME_CELL = 1500;
+const BIOME_WARP_CELL = 700;
+const BIOME_WARP = 850;
 
 /** Which biome owns this position. */
 export function biomeAt(x, z) {

@@ -20,7 +20,11 @@ Run:  python3 tools/gen_guide.py
 import json
 import os
 import re
+import sys
 from collections import defaultdict
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import balance
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BP = os.path.join(ROOT, "BP")
@@ -50,6 +54,13 @@ def lang_names():
 
 
 NAMES = lang_names()
+
+
+def set_label(set_name):
+    """A set's display name: the chestplate's name minus its slot word, since
+    that word is "Chestplate" for most sets and "Wrap" for the Shroud."""
+    full = pretty(f"hollowveil:{set_name}_chestplate")
+    return full.rsplit(" ", 1)[0] if " " in full else full
 
 
 def pretty(ident):
@@ -374,21 +385,26 @@ def build():
                               "icon": "hollowforged_ingot", "entries": tier_entries})
 
     # --- armour set bonuses ------------------------------------------------
-    bonus_src = open(os.path.join(BP, "scripts", "armor", "setBonuses.js"), encoding="utf-8").read()
-    worn = re.findall(r'wornSet\(player, "(\w+)"\)', bonus_src)
-    SET_TEXT = {
-        "hollowforged": "Haste and fire resistance at all times, plus absorption "
-                        "when you drop below 30% health.",
-        "spectral_regalia": "Below 30% health: invisibility and water breathing.",
-        "mourners_shroud": "Below 30% health: extra speed. Fall damage refunds "
-                           "half of itself as health.",
-        "ashen_demonplate": "Permanent fire resistance and damage resistance.",
-    }
-    set_entries = [{"name": pretty(f"hollowveil:{s}_chestplate").replace(" Chestplate", ""),
-                    "text": SET_TEXT.get(s, "")} for s in dict.fromkeys(worn)]
+    bonus_notes = {}
+    for line in balance.SET_BONUS_NOTES.strip().splitlines()[1:]:
+        if "-" not in line:
+            continue
+        key, text = line.split("-", 1)
+        key = key.strip()
+        if key:
+            bonus_notes[key] = text.strip()
+        elif bonus_notes:                      # a wrapped continuation line
+            last = list(bonus_notes)[-1]
+            bonus_notes[last] += " " + line.strip()
+    set_entries = [{"name": set_label(k),
+                    "text": v} for k, v in bonus_notes.items()]
     guide["sections"].append({"id": "sets", "title": "Armour Set Bonuses",
                               "icon": "hollowforged_chestplate", "entries": set_entries,
-                              "text": "Wear all four pieces of a set to get its bonus."})
+                              "text": ("Wear all four pieces of a set to get its bonus. "
+                                       "Minecraft caps armour's damage reduction at 20 "
+                                       "points - netherite is exactly 20 and every set "
+                                       "here is above it - so these bonuses are where "
+                                       "the tiering above netherite actually lives.")})
 
     # --- tools, trinkets, food --------------------------------------------
     misc = [i for i in sorted(PURPOSE) if not any(
@@ -396,6 +412,26 @@ def build():
     guide["sections"].append({
         "id": "items", "title": "Items & What They Do", "icon": "spirit_lantern",
         "entries": [gear_entry(i) for i in misc if i in it]})
+
+    # --- the numbers, in one table -----------------------------------------
+    base = sum(balance.NETHERITE_ARMOUR)
+    armour_rows = [f"Netherite, for comparison: {'/'.join(map(str, balance.NETHERITE_ARMOUR))} = {base}."]
+    for set_name, spec in balance.ARMOUR.items():
+        total = sum(spec["prot"])
+        armour_rows.append(
+            f"{set_label(set_name)}: "
+            f"{'/'.join(map(str, spec['prot']))} = {total} "
+            f"(+{total - base} over netherite), enchantability {spec['ench']}.")
+    weapon_rows = [f"Netherite sword, for comparison: {balance.NETHERITE_SWORD + 1} damage."]
+    for name, spec in balance.WEAPONS.items():
+        weapon_rows.append(f"{pretty('hollowveil:' + name)}: {spec['damage'] + 1} damage, "
+                           f"{spec['dur']} durability, enchantability {spec['ench']}.")
+    guide["sections"].append({
+        "id": "numbers", "title": "Every Number", "icon": "hollowforged_sword",
+        "text": ("Helmet / chestplate / leggings / boots, then the total. "
+                 "Weapon damage includes the one point every hit does bare-handed."),
+        "entries": [{"name": "Armour", "text": "\n".join(armour_rows)},
+                    {"name": "Weapons and tools", "text": "\n".join(weapon_rows)}]})
 
     # --- bosses ------------------------------------------------------------
     BOSS_TEXT = {

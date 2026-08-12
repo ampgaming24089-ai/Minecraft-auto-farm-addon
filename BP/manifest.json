@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Reliquary \u00a77- Behavior Pack",
-    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Reliquary.",
-    "uuid": "4079299a-d286-4658-8f7c-9cb6fbcd19a0",
+    "name": "Hallowed Sanctum \u00a77- Behavior Pack",
+    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Sanctum.",
+    "uuid": "698cdb7f-e4b9-46d7-aaba-ca59becc38de",
     "version": [
-      8,
+      9,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "5d1cab31-7a08-4be1-bd30-58a88ee6c70e",
+      "uuid": "88a14967-b1ec-4230-9a21-472358d351a4",
       "version": [
-        8,
+        9,
         0,
         0
       ]
@@ -28,10 +28,10 @@
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "e5fdc2a2-636c-4f4d-a1ad-20a1984128c7",
+      "uuid": "3e151a25-ce4c-47db-aa91-4b6dc17a5ce1",
       "entry": "scripts/main.js",
       "version": [
-        8,
+        9,
         0,
         0
       ]
@@ -39,9 +39,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "f8ce7466-bf38-46af-840c-f2fa41062087",
+      "uuid": "d0efb2e8-1cfa-44bb-8426-a9d01ba0f437",
       "version": [
-        8,
+        9,
         0,
         0
       ]
@@ -57,7 +57,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Reliquary Team"
+      "Hallowed Sanctum Team"
     ],
     "product_type": "addon"
   }

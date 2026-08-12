@@ -7,7 +7,7 @@
 
 export const GUIDE = {
   "world": {
-    "radius": 50000
+    "radius": 100000
   },
   "sections": [
     {
@@ -50,7 +50,7 @@ export const GUIDE = {
           "text": "A drowned city under guard. Bring something that shoots back.\n\nLives here: City Wraithguard, Ashwing Bat, Shade, Fallen Knight."
         }
       ],
-      "text": "The Veil is a disc 50,000 blocks in every direction from the hub. Terrain builds itself around you as you travel, so there is no edge to reach quickly and nothing to load in advance."
+      "text": "The Veil is a disc 100,000 blocks in every direction from the hub. Terrain builds itself around you as you travel, so there is no edge to reach quickly and nothing to load in advance."
     },
     {
       "id": "mobs",
@@ -134,15 +134,15 @@ export const GUIDE = {
       "entries": [
         {
           "name": "Wraithsteel",
-          "text": "Diamond-grade. Wraithsteel Ore is common below the moors; smelt the scrap.\n\nWraithsteel Axe\nAttack damage: +9.\nDurability: 900.\nCraft: 3x Wraithsteel Ingot, 2x Stick.\n\nWraithsteel Boots\nProtection: 3.\nDurability: 475.\nCraft: 4x Wraithsteel Ingot.\n\nWraithsteel Chestplate\nProtection: 8.\nDurability: 580.\nCraft: 8x Wraithsteel Ingot.\n\nWraithsteel Helm\nProtection: 3.\nDurability: 400.\nCraft: 5x Wraithsteel Ingot.\n\nWraithsteel Ingot\nSmelt: 1x Wraithsteel Scrap.\n\nWraithsteel Leggings\nProtection: 6.\nDurability: 545.\nCraft: 7x Wraithsteel Ingot.\n\nWraithsteel Pickaxe\nAttack damage: +4.\nDurability: 900.\nCraft: 3x Wraithsteel Ingot, 2x Stick.\n\nWraithsteel Scrap\n-\n\nWraithsteel Sword\nAttack damage: +7.\nDurability: 900.\nCraft: 2x Wraithsteel Ingot, 1x Stick."
+          "text": "Diamond-grade. Wraithsteel Ore is common below the moors; smelt the scrap.\n\nWraithsteel Axe\nAttack damage: +11.\nDurability: 1200.\nCraft: 3x Wraithsteel Ingot, 2x Stick.\n\nWraithsteel Boots\nProtection: 4.\nDurability: 650.\nCraft: 4x Wraithsteel Ingot.\n\nWraithsteel Chestplate\nProtection: 9.\nDurability: 800.\nCraft: 8x Wraithsteel Ingot.\n\nWraithsteel Helm\nProtection: 4.\nDurability: 550.\nCraft: 5x Wraithsteel Ingot.\n\nWraithsteel Ingot\nSmelt: 1x Wraithsteel Scrap.\n\nWraithsteel Leggings\nProtection: 7.\nDurability: 750.\nCraft: 7x Wraithsteel Ingot.\n\nWraithsteel Pickaxe\nAttack damage: +5.\nDurability: 1200.\nCraft: 3x Wraithsteel Ingot, 2x Stick.\n\nWraithsteel Scrap\n-\n\nWraithsteel Sword\nAttack damage: +9.\nDurability: 1200.\nCraft: 2x Wraithsteel Ingot, 1x Stick."
         },
         {
           "name": "Veilsteel",
-          "text": "Better than diamond. The ore sits deep and glows blue at the edges.\n\nVeilsteel Axe\nAttack damage: +11.\nDurability: 1500.\nCraft: 3x Veilsteel Ingot, 2x Stick.\n\nVeilsteel Boots\nProtection: 4.\nDurability: 650.\nCraft: 4x Veilsteel Ingot.\n\nVeilsteel Chestplate\nProtection: 9.\nDurability: 800.\nCraft: 8x Veilsteel Ingot.\n\nVeilsteel Helm\nProtection: 4.\nDurability: 560.\nCraft: 5x Veilsteel Ingot.\n\nVeilsteel Ingot\nSmelt: 1x Veilsteel Scrap.\n\nVeilsteel Leggings\nProtection: 7.\nDurability: 750.\nCraft: 7x Veilsteel Ingot.\n\nVeilsteel Pickaxe\nAttack damage: +5.\nDurability: 1500.\nCraft: 3x Veilsteel Ingot, 2x Stick.\n\nVeilsteel Plating\n-\n\nVeilsteel Scrap\n-\n\nVeilsteel Sword\nAttack damage: +9.\nDurability: 1500.\nCraft: 2x Veilsteel Ingot, 1x Stick."
+          "text": "Better than diamond. The ore sits deep and glows blue at the edges.\n\nVeilsteel Axe\nAttack damage: +14.\nDurability: 2000.\nCraft: 3x Veilsteel Ingot, 2x Stick.\n\nVeilsteel Boots\nProtection: 5.\nDurability: 940.\nCraft: 4x Veilsteel Ingot.\n\nVeilsteel Chestplate\nProtection: 11.\nDurability: 1150.\nCraft: 8x Veilsteel Ingot.\n\nVeilsteel Helm\nProtection: 5.\nDurability: 800.\nCraft: 5x Veilsteel Ingot.\n\nVeilsteel Ingot\nSmelt: 1x Veilsteel Scrap.\n\nVeilsteel Leggings\nProtection: 9.\nDurability: 1080.\nCraft: 7x Veilsteel Ingot.\n\nVeilsteel Pickaxe\nAttack damage: +7.\nDurability: 2000.\nCraft: 3x Veilsteel Ingot, 2x Stick.\n\nVeilsteel Plating\n-\n\nVeilsteel Scrap\n-\n\nVeilsteel Sword\nAttack damage: +12.\nDurability: 2000.\nCraft: 2x Veilsteel Ingot, 1x Stick."
         },
         {
           "name": "Hollowforged",
-          "text": "Better than netherite, and the best gear in the pack. The ore is white with red cracks and only appears in the lowest three layers.\n\nHollowforged Axe\nAttack damage: +12.\nDurability: 1900.\nCraft: 3x Hollowforged Ingot, 2x Stick.\n\nHollowforged Boots\nProtection: 5.\nDurability: 800.\nCraft: 4x Hollowforged Ingot.\n\nHollowforged Chestplate\nProtection: 10.\nDurability: 1040.\nCraft: 8x Hollowforged Ingot.\n\nHollowforged Helm\nProtection: 5.\nDurability: 720.\nCraft: 5x Hollowforged Ingot.\n\nHollowforged Ingot\nSmelt: 1x Hollowforged Scrap.\n\nHollowforged Leggings\nProtection: 9.\nDurability: 960.\nCraft: 7x Hollowforged Ingot.\n\nHollowforged Pickaxe\nAttack damage: +6.\nDurability: 1900.\nCraft: 3x Hollowforged Ingot, 2x Stick.\n\nHollowforged Scrap\n-\n\nHollowforged Sword\nAttack damage: +10.\nDurability: 1900.\nCraft: 2x Hollowforged Ingot, 1x Stick."
+          "text": "Better than netherite, and the best gear in the pack. The ore is white with red cracks and only appears in the lowest three layers.\n\nHollowforged Axe\nAttack damage: +19.\nDurability: 3200.\nCraft: 3x Hollowforged Ingot, 2x Stick.\n\nHollowforged Boots\nProtection: 7.\nDurability: 1420.\nCraft: 4x Hollowforged Ingot.\n\nHollowforged Chestplate\nProtection: 14.\nDurability: 1750.\nCraft: 8x Hollowforged Ingot.\n\nHollowforged Helm\nProtection: 7.\nDurability: 1200.\nCraft: 5x Hollowforged Ingot.\n\nHollowforged Ingot\nSmelt: 1x Hollowforged Scrap.\n\nHollowforged Leggings\nProtection: 11.\nDurability: 1640.\nCraft: 7x Hollowforged Ingot.\n\nHollowforged Pickaxe\nAttack damage: +9.\nDurability: 3200.\nCraft: 3x Hollowforged Ingot, 2x Stick.\n\nHollowforged Scrap\n-\n\nHollowforged Sword\nAttack damage: +17.\nDurability: 3200.\nCraft: 2x Hollowforged Ingot, 1x Stick."
         }
       ]
     },
@@ -152,23 +152,31 @@ export const GUIDE = {
       "icon": "hollowforged_chestplate",
       "entries": [
         {
-          "name": "Spectral Regalia",
-          "text": "Below 30% health: invisibility and water breathing."
+          "name": "Wraithsteel",
+          "text": "none. It is the entry suit; its 24 points are the point."
         },
         {
-          "name": "Mourner's Shroud Wrap",
-          "text": "Below 30% health: extra speed. Fall damage refunds half of itself as health."
-        },
-        {
-          "name": "Ashen Demonplate",
-          "text": "Permanent fire resistance and damage resistance."
+          "name": "Veilsteel",
+          "text": "Resistance I."
         },
         {
           "name": "Hollowforged",
-          "text": "Haste and fire resistance at all times, plus absorption when you drop below 30% health."
+          "text": "Resistance I, Haste I, permanent fire resistance, and"
+        },
+        {
+          "name": "Mourner's Shroud",
+          "text": "permanent Speed I, Speed II below 30% health, and fall"
+        },
+        {
+          "name": "Spectral Regalia",
+          "text": "Resistance I, plus invisibility and water breathing"
+        },
+        {
+          "name": "Ashen Demonplate",
+          "text": "Resistance II and permanent fire resistance. The tank."
         }
       ],
-      "text": "Wear all four pieces of a set to get its bonus."
+      "text": "Wear all four pieces of a set to get its bonus. Minecraft caps armour's damage reduction at 20 points - netherite is exactly 20 and every set here is above it - so these bonuses are where the tiering above netherite actually lives."
     },
     {
       "id": "items",
@@ -213,7 +221,7 @@ export const GUIDE = {
         },
         {
           "name": "Hollow King's Reaper",
-          "text": "Withers what it hits and heals you for a fifth of the damage dealt.\nAttack damage: +9.\nDurability: 1300."
+          "text": "Withers what it hits and heals you for a fifth of the damage dealt.\nAttack damage: +14.\nDurability: 2400."
         },
         {
           "name": "Hollow Veil Journal",
@@ -221,7 +229,7 @@ export const GUIDE = {
         },
         {
           "name": "Malacoda's Fang",
-          "text": "Stacks burning on a target. At twelve stacks it detonates.\nAttack damage: +10.\nDurability: 1250."
+          "text": "Stacks burning on a target. At twelve stacks it detonates.\nAttack damage: +15.\nDurability: 2500."
         },
         {
           "name": "Sigil of the Hollow King",
@@ -265,7 +273,23 @@ export const GUIDE = {
         },
         {
           "name": "Wailing Edge",
-          "text": "Sneak and swing: everything around your target is thrown back.\nAttack damage: +8.\nDurability: 1150."
+          "text": "Sneak and swing: everything around your target is thrown back.\nAttack damage: +13.\nDurability: 2200."
+        }
+      ]
+    },
+    {
+      "id": "numbers",
+      "title": "Every Number",
+      "icon": "hollowforged_sword",
+      "text": "Helmet / chestplate / leggings / boots, then the total. Weapon damage includes the one point every hit does bare-handed.",
+      "entries": [
+        {
+          "name": "Armour",
+          "text": "Netherite, for comparison: 3/8/6/3 = 20.\nWraithsteel: 4/9/7/4 = 24 (+4 over netherite), enchantability 16.\nVeilsteel: 5/11/9/5 = 30 (+10 over netherite), enchantability 20.\nHollowforged: 7/14/11/7 = 39 (+19 over netherite), enchantability 25.\nMourner's Shroud: 5/10/8/5 = 28 (+8 over netherite), enchantability 28.\nSpectral Regalia: 6/12/9/6 = 33 (+13 over netherite), enchantability 30.\nAshen Demonplate: 8/15/12/8 = 43 (+23 over netherite), enchantability 20."
+        },
+        {
+          "name": "Weapons and tools",
+          "text": "Netherite sword, for comparison: 8 damage.\nWraithsteel Sword: 10 damage, 1200 durability, enchantability 16.\nWraithsteel Axe: 12 damage, 1200 durability, enchantability 16.\nWraithsteel Pickaxe: 6 damage, 1200 durability, enchantability 16.\nVeilsteel Sword: 13 damage, 2000 durability, enchantability 20.\nVeilsteel Axe: 15 damage, 2000 durability, enchantability 20.\nVeilsteel Pickaxe: 8 damage, 2000 durability, enchantability 20.\nHollowforged Sword: 18 damage, 3200 durability, enchantability 25.\nHollowforged Axe: 20 damage, 3200 durability, enchantability 25.\nHollowforged Pickaxe: 10 damage, 3200 durability, enchantability 25.\nWailing Edge: 14 damage, 2200 durability, enchantability 30.\nHollow King's Reaper: 15 damage, 2400 durability, enchantability 28.\nMalacoda's Fang: 16 damage, 2500 durability, enchantability 26."
         }
       ]
     },

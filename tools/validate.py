@@ -594,6 +594,24 @@ def check_official_schemas():
                 err(f"schema: {line.strip()}")
 
 
+# --- 9b2. the stat table and the items agree ------------------------------
+# tools/balance.py is the single source of truth for every damage, protection,
+# durability and enchantability value. If an item drifts from it - a hand-edit,
+# a half-applied change - the pack ships two different balance passes at once.
+def check_balance():
+    script = os.path.join(ROOT, "tools", "balance.py")
+    if not os.path.isfile(script):
+        return
+    p = subprocess.run([sys.executable, script, "--check", "--quiet"],
+                       cwd=ROOT, capture_output=True, text=True)
+    if p.returncode != 0:
+        for line in p.stdout.splitlines():
+            if line.strip().startswith("hollowveil") or ": minecraft:" in line:
+                err(f"balance: {line.strip()}")
+        if not any("balance:" in e for e in errors):
+            err("tools/balance.py reports item stats have drifted from the table")
+
+
 # --- 9c. every item and block is reachable in survival --------------------
 # An item with no recipe, no loot entry, no shop trade and no world placement
 # exists only in the creative menu. `hollowveil:ember_core` shipped that way
@@ -1030,13 +1048,16 @@ def check_manifests():
     RETIRED = {
         "0f251285-1535-4d56-89e7-41c4a1143e5e",
         "1335f7ba-d26c-4ed9-bc17-f29b193e18da",
+        "2418701a-7fa0-47a8-bb18-c20a3b9b45e9",
         "2d6693e3-30ef-4ab5-af8d-903e5fa06e3f",
         "36864a3d-4e54-465b-886c-66356c03db69",
         "36d910e6-19c8-4464-8aaa-e878ad5775bc",
+        "4079299a-d286-4658-8f7c-9cb6fbcd19a0",
         "464ebcd1-a74c-4109-94ae-8ff9a324e029",
         "46e6c8fa-b01e-4082-bc0d-8dc073d60e35",
         "4e86adc1-3bd9-4b84-9399-c5f0b391c6bf",
         "583094e0-638f-4560-8015-ff61a552ec14",
+        "5d1cab31-7a08-4be1-bd30-58a88ee6c70e",
         "6022b7d6-f4db-4c7e-8437-5a463313d2c6",
         "64e7a8dd-cef4-42e5-a82e-9b9ccd145a19",
         "72f17a26-4315-4da5-bd56-726b955baae4",
@@ -1060,9 +1081,11 @@ def check_manifests():
         "c83a852e-3f02-435e-a3ca-4eace3dae3a7",
         "cefe0049-30d2-40ef-b2ce-08d0e44c481c",
         "da0cf01f-a51c-4d87-b44b-34823328adf8",
+        "e5fdc2a2-636c-4f4d-a1ad-20a1984128c7",
         "e7541459-702e-46a0-abc1-2a4b66b29eaf",
         "ec0289ad-f988-490b-b4c7-c14baa0c632e",
         "f0806793-e96d-4a61-a128-07ea3e3ed81b",
+        "f8ce7466-bf38-46af-840c-f2fa41062087",
     }
     for u, label in seen.items():
         if u in RETIRED:
@@ -1085,6 +1108,7 @@ def main():
     check_particles()
     check_geometry()
     check_generators()
+    check_balance()
     check_reachability()
     check_attachables()
     check_tool_tags()

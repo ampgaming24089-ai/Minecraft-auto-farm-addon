@@ -15,9 +15,9 @@
         "value": "item.hollowveil:wraithsteel_pickaxe.name"
       },
       "minecraft:hand_equipped": true,
-      "minecraft:damage": 4,
+      "minecraft:damage": 5,
       "minecraft:durability": {
-        "max_durability": 900
+        "max_durability": 1200
       },
       "minecraft:enchantable": {
         "slot": "pickaxe",

@@ -1266,6 +1266,172 @@ def gen_particle_definitions():
 # painted every box-UV face solid, which is why worn armor showed up
 # in-game as huge featureless white boxes instead of armor.
 
+
+# ---------------------------------------------------------------------------
+# Armour trims
+# ---------------------------------------------------------------------------
+# Each set carries its own trim: a band that wraps the helmet, chest, arms,
+# waist, thighs and boot tops, plus a crest on the chest. The bands sit on
+# rows read off the actual 64x32 armour layer maps (rendered with a coordinate
+# grid and checked by eye rather than guessed), and only ever paint on pixels
+# the vanilla map already marks solid, so a trim can never bleed off the model.
+#
+# "Glowing" here is contrast, not a shader: Bedrock exposes no emissive
+# material for armour attachables, and shipping a custom .material file would
+# override vanilla's and risk breaking every other entity. What it does
+# instead is what pixel art has always done - a saturated accent with a
+# near-white core, on a dark suit, in a dark dimension. Paired with the
+# enchanted glint every set carries, it reads as lit.
+
+# (row, x-from, x-to) bands per layer, from the armour layer maps.
+TRIM_BANDS = {
+    1: [
+        (10, 0, 32),    # helmet, all four faces
+        (22, 16, 40),   # chest
+        (22, 40, 56),   # upper arms
+        (30, 16, 40),   # tunic hem
+        (30, 40, 56),   # cuffs
+        (29, 0, 16),    # boot tops
+    ],
+    2: [
+        (29, 24, 40),   # belt
+        (23, 0, 16),    # thigh
+        (27, 0, 16),    # knee
+    ],
+}
+
+# Where the crest goes: the front of the chest on layer 1.
+TRIM_CREST_ORIGIN = (20, 24)
+
+
+def trim_rivets(x):
+    """Solid band, bright rivet every fourth pixel. Plain forge work."""
+    return 2 if x % 4 == 1 else 1
+
+
+def trim_circuit(x):
+    """Dashes with a tick that alternates above and below the line."""
+    if x % 4 == 3:
+        return 0
+    return 2 if x % 8 == 0 else 1
+
+
+def trim_molten(x):
+    """A cracked seam - broken, with the hot core showing through the gaps."""
+    if x % 7 in (3, 4):
+        return 0
+    return 2 if x % 7 in (2, 5) else 1
+
+
+def trim_chevron(x):
+    """Repeating arrowheads."""
+    return 2 if x % 3 == 0 else (1 if x % 3 == 1 else 0)
+
+
+def trim_tears(x):
+    """A mourning band: long dashes, a drop hanging every fifth pixel."""
+    if x % 5 == 4:
+        return 0
+    return 2 if x % 10 == 2 else 1
+
+
+def trim_sawtooth(x):
+    """Teeth. Reads as flame at a glance, which is the idea."""
+    return 2 if x % 2 == 0 else 1
+
+
+TRIM_PATTERNS = {
+    "rivets": trim_rivets, "circuit": trim_circuit, "molten": trim_molten,
+    "chevron": trim_chevron, "tears": trim_tears, "sawtooth": trim_sawtooth,
+}
+
+# A 5x5 crest per set, drawn on the chest. "." skips, "o" is the accent,
+# "@" is the hot core. Each one is the set's own mark: a warding eye, a
+# tear, a horned skull, a crown, a rune, a flame.
+TRIM_CRESTS = {
+    "wraithsteel": [
+        ".o@o.",
+        "o@.@o",
+        "@.@.@",
+        "o@.@o",
+        ".o@o.",
+    ],
+    "veilsteel": [
+        "..@..",
+        ".o@o.",
+        "@@.@@",
+        ".o@o.",
+        "..@..",
+    ],
+    "hollowforged": [
+        "@.@.@",
+        ".@@@.",
+        "@@.@@",
+        ".@@@.",
+        "@.@.@",
+    ],
+    "spectral_regalia": [
+        "@.@.@",
+        "@o@o@",
+        "@@@@@",
+        ".@@@.",
+        "..@..",
+    ],
+    "mourners_shroud": [
+        "..@..",
+        ".o@o.",
+        ".@@@.",
+        ".o@o.",
+        "..@..",
+    ],
+    "ashen_demonplate": [
+        "@...@",
+        ".@.@.",
+        "..@..",
+        ".@o@.",
+        "@.@.@",
+    ],
+}
+
+
+def _hot(color):
+    """The core colour of a trim: the accent pushed toward white so the band
+    has a lit centre instead of being one flat stripe."""
+    return tuple(min(255, int(c + (255 - c) * 0.62)) if i < 3 else 255
+                 for i, c in enumerate(color))
+
+
+def paint_trim(img, rows, spec, layer):
+    """Bands plus crest, on solid pixels only."""
+    w, h = img.size
+    px = img.load()
+    accent = spec["accent"]
+    hot = _hot(accent)
+    pattern = TRIM_PATTERNS[spec["trim"]]
+
+    def solid(x, y):
+        return 0 <= x < w and 0 <= y < h and rows[y][x] != "."
+
+    for (y, x0, x1) in TRIM_BANDS[layer]:
+        for x in range(x0, min(x1, w)):
+            if not solid(x, y):
+                continue
+            mark = pattern(x)
+            if mark:
+                px[x, y] = hot if mark == 2 else accent
+
+    if layer == 1:
+        crest = TRIM_CRESTS.get(spec["name"])
+        if crest:
+            ox, oy = TRIM_CREST_ORIGIN
+            for cy, line in enumerate(crest):
+                for cx, ch in enumerate(line):
+                    if ch == "." or not solid(ox + cx, oy + cy):
+                        continue
+                    px[ox + cx, oy + cy] = hot if ch == "@" else accent
+    return img
+
+
 ARMOR_LAYER_1_TPL = """
 ........65566655................................................
 ........69988776................................................
@@ -1400,49 +1566,37 @@ def render_armor_layer(tpl, spec, layer):
             r, g, b = colorsys.hls_to_rgb(hue, l, sat)
             px[x, y] = (int(r * 255), int(g * 255), int(b * 255), 255)
 
-    # a trim band across the chest (layer 1) / thigh (layer 2) in the set's
-    # accent colour, so each suit has an identifiable marking
-    d = ImageDraw.Draw(img)
-    for (cx, cy) in ACCENT_CELLS[layer]:
-        if 0 <= cx < w and 0 <= cy < h and rows[cy][cx] != ".":
-            d.point((cx, cy), fill=accent)
-    return img
+    return paint_trim(img, rows, spec, layer)
 
 
 # Each set is a distinct suit, not a recolour: its own hue, brightness range,
 # surface treatment and trim.
 ARMOR_SETS = {
     "spectral_regalia": {
-        "name": "spectral_regalia", "tint": (0.52, 0.22), "accent": (170, 235, 255, 255),
-        "lscale": 1.08, "lbias": 0.06, "style": "cloth",
+        "name": "spectral_regalia", "trim": "chevron", "tint": (0.52, 0.30), "accent": (150, 245, 255, 255),
+        "lscale": 0.62, "lbias": -0.02, "style": "cloth",
     },
     "mourners_shroud": {
-        "name": "mourners_shroud", "tint": (0.78, 0.30), "accent": (235, 180, 235, 255),
-        "lscale": 0.90, "lbias": 0.0, "style": "cloth",
+        "name": "mourners_shroud", "trim": "tears", "tint": (0.78, 0.38), "accent": (248, 165, 255, 255),
+        "lscale": 0.55, "lbias": -0.03, "style": "cloth",
     },
     "ashen_demonplate": {
-        "name": "ashen_demonplate", "tint": (0.02, 0.60), "accent": (255, 140, 60, 255),
+        "name": "ashen_demonplate", "trim": "sawtooth", "tint": (0.02, 0.60), "accent": (255, 140, 60, 255),
         "lscale": 0.52, "lbias": -0.04, "style": "charred",
     },
     "hollowforged": {
-        "name": "hollowforged", "tint": (0.0, 0.06), "accent": (255, 60, 50, 255),
+        "name": "hollowforged", "trim": "molten", "tint": (0.0, 0.06), "accent": (255, 60, 50, 255),
         "lscale": 1.12, "lbias": 0.05, "style": "forged",
     },
     "veilsteel": {
-        "name": "veilsteel", "tint": (0.60, 0.55), "accent": (120, 200, 255, 255),
+        "name": "veilsteel", "trim": "circuit", "tint": (0.60, 0.55), "accent": (120, 200, 255, 255),
         "lscale": 0.55, "lbias": -0.02, "style": "plate",
     },
     "wraithsteel": {
-        "name": "wraithsteel", "tint": (0.055, 0.85), "accent": (255, 200, 110, 255),
-        "lscale": 0.95, "lbias": 0.0, "style": "plate",
+        "name": "wraithsteel", "trim": "rivets", "tint": (0.055, 0.85), "accent": (255, 232, 160, 255),
+        "lscale": 0.66, "lbias": -0.02, "style": "plate",
     },
 }
-
-ACCENT_CELLS = {
-    1: [(x, 22) for x in range(21, 27)],
-    2: [(x, 23) for x in range(4, 12)],
-}
-
 
 def gen_armor_layer_textures():
     for name, spec in ARMOR_SETS.items():

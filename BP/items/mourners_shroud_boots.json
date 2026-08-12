@@ -16,15 +16,15 @@
       },
       "minecraft:wearable": {
         "slot": "slot.armor.feet",
-        "protection": 3
+        "protection": 5
       },
       "minecraft:glint": true,
       "minecraft:durability": {
-        "max_durability": 480
+        "max_durability": 1120
       },
       "minecraft:enchantable": {
         "slot": "armor_feet",
-        "value": 20
+        "value": 28
       },
       "minecraft:repairable": {
         "repair_items": [

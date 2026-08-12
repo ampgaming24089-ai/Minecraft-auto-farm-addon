@@ -16,11 +16,11 @@
       },
       "minecraft:wearable": {
         "slot": "slot.armor.chest",
-        "protection": 8
+        "protection": 15
       },
       "minecraft:glint": true,
       "minecraft:durability": {
-        "max_durability": 650
+        "max_durability": 2000
       },
       "minecraft:enchantable": {
         "slot": "armor_torso",

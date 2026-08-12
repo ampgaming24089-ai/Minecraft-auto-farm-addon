@@ -16,14 +16,14 @@
       },
       "minecraft:wearable": {
         "slot": "slot.armor.legs",
-        "protection": 7
+        "protection": 9
       },
       "minecraft:durability": {
-        "max_durability": 750
+        "max_durability": 1080
       },
       "minecraft:enchantable": {
         "slot": "armor_legs",
-        "value": 18
+        "value": 20
       },
       "minecraft:repairable": {
         "repair_items": [

@@ -15,13 +15,13 @@
         "value": "item.hollowveil:hollowforged_pickaxe.name"
       },
       "minecraft:hand_equipped": true,
-      "minecraft:damage": 6,
+      "minecraft:damage": 9,
       "minecraft:durability": {
-        "max_durability": 1900
+        "max_durability": 3200
       },
       "minecraft:enchantable": {
         "slot": "pickaxe",
-        "value": 22
+        "value": 25
       },
       "minecraft:repairable": {
         "repair_items": [

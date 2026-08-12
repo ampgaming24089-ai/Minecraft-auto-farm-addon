@@ -16,13 +16,13 @@
       },
       "minecraft:hand_equipped": true,
       "minecraft:glint": true,
-      "minecraft:damage": 10,
+      "minecraft:damage": 15,
       "minecraft:durability": {
-        "max_durability": 1250
+        "max_durability": 2500
       },
       "minecraft:enchantable": {
         "slot": "sword",
-        "value": 20
+        "value": 26
       },
       "minecraft:repairable": {
         "repair_items": [

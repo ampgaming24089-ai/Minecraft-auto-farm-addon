@@ -34,10 +34,13 @@ const MARKER = "hollowveil:bonestone";
 
 // which site types can appear in which biome
 const BY_BIOME = {
-  moors: ["graveyard", "graveyard", "mausoleum", "watchtower", "crypt", "ruin_arch"],
-  ashlands: ["bastion", "ember_camp", "ember_camp", "watchtower"],
-  marsh: ["bone_nest", "bone_nest", "witch_hut", "ruin_arch"],
-  ruins: ["sunken_city", "ruin_arch", "ruin_arch", "watchtower", "crypt"],
+  moors: ["graveyard", "graveyard", "mausoleum", "watchtower", "crypt",
+          "ruin_arch", "gallows", "standing_stones"],
+  ashlands: ["bastion", "ember_camp", "ember_camp", "watchtower", "forge",
+             "standing_stones"],
+  marsh: ["bone_nest", "bone_nest", "witch_hut", "ruin_arch", "drowned_shrine"],
+  ruins: ["sunken_city", "ruin_arch", "ruin_arch", "watchtower", "crypt",
+          "drowned_shrine", "gallows"],
   hub: [],
 };
 
@@ -53,6 +56,14 @@ export const SITE_LABELS = {
   camp: "an abandoned camp",
   mushroom_ring: "a glimmershroom ring",
   obelisk: "an obelisk",
+  gallows: "a crossroads gallows",
+  standing_stones: "a ring of standing stones",
+  forge: "an abandoned forge",
+  drowned_shrine: "a drowned shrine",
+  mausoleum: "a mausoleum",
+  ember_camp: "an ember camp",
+  bone_nest: "a bone nest",
+  witch_hut: "a witch's hut",
 };
 
 /**
@@ -167,11 +178,81 @@ function buildSite(dim, site) {
     case "sunken_city": return buildSunkenCity(ctx);
     case "ruin_arch": return buildRuinArch(ctx);
     case "crypt": return buildCrypt(ctx);
+    case "gallows": return buildGallows(ctx);
+    case "standing_stones": return buildStandingStones(ctx);
+    case "forge": return buildForge(ctx);
+    case "drowned_shrine": return buildDrownedShrine(ctx);
     default: return undefined;
   }
 }
 
 // --- the sites -----------------------------------------------------------
+
+/** A crossroads gallows: three empty nooses and a lantern that never went out.
+ * The smallest of the landmarks, and the most common thing to stumble on. */
+function buildGallows({ run, x, y, z }) {
+  run(`fill ${x - 3} ${y} ${z} ${x + 3} ${y} ${z} hollowveil:bonestone`);
+  run(`fill ${x - 3} ${y + 1} ${z} ${x - 3} ${y + 5} ${z} hollowveil:ashwood_log`);
+  run(`fill ${x + 3} ${y + 1} ${z} ${x + 3} ${y + 5} ${z} hollowveil:ashwood_log`);
+  run(`fill ${x - 3} ${y + 5} ${z} ${x + 3} ${y + 5} ${z} hollowveil:ashwood_log`);
+  for (const ox of [-2, 0, 2]) {
+    run(`fill ${x + ox} ${y + 2} ${z} ${x + ox} ${y + 4} ${z} minecraft:chain`);
+  }
+  run(`setblock ${x} ${y + 1} ${z + 1} hollowveil:soul_lantern`);
+  run(`fill ${x - 1} ${y + 1} ${z - 1} ${x + 1} ${y + 1} ${z - 1} minecraft:cobblestone_wall`);
+}
+
+/** A ring of monoliths around a lit altar stone. Visible from a long way off,
+ * which is the point in country this open. */
+function buildStandingStones({ run, dim, x, y, z }) {
+  const r = 7;
+  for (let i = 0; i < 8; i++) {
+    const a = (Math.PI * 2 * i) / 8;
+    const sx = Math.round(x + Math.cos(a) * r);
+    const sz = Math.round(z + Math.sin(a) * r);
+    const h = 4 + Math.floor(featureRoll(sx, sz, 211) * 4);
+    run(`fill ${sx} ${y} ${sz} ${sx} ${y + h} ${sz} hollowveil:soulforged_obsidian`);
+    if (i % 2 === 0) run(`setblock ${sx} ${y + h + 1} ${sz} hollowveil:soul_lantern`);
+  }
+  run(`fill ${x - 1} ${y} ${z - 1} ${x + 1} ${y} ${z + 1} hollowveil:bonestone`);
+  run(`setblock ${x} ${y + 1} ${z} hollowveil:ritual_altar`);
+}
+
+/** An abandoned forge, still hot. The one place you can find Hollowforged
+ * material above ground, so it is worth crossing the Ashlands for. */
+function buildForge({ run, dim, x, y, z }) {
+  const r = 5;
+  run(`fill ${x - r} ${y} ${z - r} ${x + r} ${y} ${z + r} hollowveil:bastion_brick`);
+  run(`fill ${x - r} ${y + 1} ${z - r} ${x + r} ${y + 4} ${z + r} hollowveil:bastion_brick hollow`);
+  run(`fill ${x - r + 1} ${y + 1} ${z - r} ${x + r - 1} ${y + 3} ${z - r} air`);
+  run(`fill ${x - 1} ${y + 1} ${z + 2} ${x + 1} ${y + 2} ${z + 3} minecraft:magma_block`);
+  run(`setblock ${x} ${y + 1} ${z} minecraft:anvil`);
+  run(`setblock ${x - 2} ${y + 1} ${z - 2} hollowveil:soul_lantern`);
+  run(`setblock ${x + 2} ${y + 1} ${z - 2} hollowveil:soul_lantern`);
+  run(`fill ${x - 3} ${y - 1} ${z + 3} ${x - 2} ${y - 1} ${z + 4} hollowveil:hollowforged_ore`);
+  chest(dim, run, x + 2, y + 1, z + 2, [
+    S("hollowveil:hollowforged_scrap", 2), S("hollowveil:ember_coal", 6),
+    S("hollowveil:veilsteel_ingot", 2),
+  ]);
+  spawner(run, dim, x, y + 1, z - 3, "hollowveil:bastion_sentinel", "hollowveil:sentinel_spawner");
+}
+
+/** A shrine that went under when the marsh rose. Half-flooded, still lit. */
+function buildDrownedShrine({ run, dim, x, y, z }) {
+  const r = 6;
+  run(`fill ${x - r} ${y - 2} ${z - r} ${x + r} ${y - 1} ${z + r} hollowveil:sunken_bricks`);
+  run(`fill ${x - r + 1} ${y - 1} ${z - r + 1} ${x + r - 1} ${y} ${z + r - 1} minecraft:water`);
+  for (const [ox, oz] of [[-4, -4], [4, -4], [-4, 4], [4, 4]]) {
+    run(`fill ${x + ox} ${y} ${z + oz} ${x + ox} ${y + 4} ${z + oz} hollowveil:sunken_bricks`);
+    run(`setblock ${x + ox} ${y + 5} ${z + oz} hollowveil:soul_lantern`);
+  }
+  run(`fill ${x - 1} ${y} ${z - 1} ${x + 1} ${y} ${z + 1} hollowveil:bonestone`);
+  run(`setblock ${x} ${y + 1} ${z} hollowveil:ritual_altar`);
+  chest(dim, run, x + 1, y + 1, z + 1, [
+    S("hollowveil:toad_mucus", 4), S("hollowveil:glimmershroom_item", 3),
+    S("hollowveil:spectral_dust", 4),
+  ]);
+}
 
 function buildGraveyard({ run, dim, x, y, z }) {
   const r = 9;

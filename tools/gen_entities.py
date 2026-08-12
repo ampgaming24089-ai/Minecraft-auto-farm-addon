@@ -19,8 +19,8 @@ from gen_assets import PAL, RP, EYE_GLOW, ENTITY_PATTERN, save, stable_seed
 CUBE = tuple  # (origin(x,y,z), size(dx,dy,dz))
 
 
-def _front_face_of(bone):
-    """The atlas rectangle covering a bone's primary cube's front face."""
+def _faces_of(bone):
+    """Every atlas rectangle for a bone's primary cube, plus the cube."""
     if not bone or not bone.get("cubes"):
         return None, None
     cube = bone["cubes"][0]
@@ -28,7 +28,13 @@ def _front_face_of(bone):
         return None, None
     u, v = cube["_uv"]
     dx, dy, dz = cube["size"]
-    return boxuv.face_rects(u, v, dx, dy, dz)["front"], cube
+    return boxuv.face_rects(u, v, dx, dy, dz), cube
+
+
+def _front_face_of(bone):
+    """The atlas rectangle covering a bone's primary cube's front face."""
+    rects, cube = _faces_of(bone)
+    return (rects["front"] if rects else None), cube
 
 
 def paint_features(draw, bones, identifier, palette, glow_color):
@@ -41,16 +47,39 @@ def paint_features(draw, bones, identifier, palette, glow_color):
     the torso so the largest surface on the model is not a blank slab. See
     tools/faces.py for the styles and which creature wears which.
     """
-    head, head_cube = _front_face_of(next((b for b in bones if b["name"] == "head"), None))
-    if head:
-        base = (head_cube.get("palette") or palette).get("front") or palette.get("side")
-        faces.paint_face(draw, head, base, glow_color, faces.FACE_OF.get(identifier, "hollow"))
+    style = faces.FACE_OF.get(identifier, "hollow")
+
+    head_rects, head_cube = _faces_of(next((b for b in bones if b["name"] == "head"), None))
+    if head_rects:
+        pal = head_cube.get("palette") or palette
+        front = pal.get("front") or pal.get("side")
+        side = pal.get("side") or front
+        top = pal.get("top") or side
+        faces.paint_face(draw, head_rects["front"], front, glow_color, style)
+        # The other five faces. A face alone only ever fixed the view from
+        # directly in front - walk behind a mob and it was still a plain box.
+        faces.head_back(draw, head_rects["back"], pal.get("back") or side, glow_color, style)
+        faces.head_side(draw, head_rects["left"], side, glow_color, style)
+        faces.head_side(draw, head_rects["right"], side, glow_color, style, flip=True)
+        faces.head_top(draw, head_rects["top"], top, glow_color, style)
 
     torso_bone = next((b for b in bones if b["name"] in ("torso", "body")), None)
     chest, chest_cube = _front_face_of(torso_bone)
     if chest:
         base = (chest_cube.get("palette") or palette).get("front") or palette.get("side")
         faces.paint_chest(draw, chest, base, glow_color, faces.CHEST_OF.get(identifier, "none"))
+
+    # Arms and legs: a cuff and a stripe, so limbs stop reading as dowels.
+    for bone in bones:
+        if not any(bone["name"].startswith(p) for p in ("arm", "leg", "left_arm", "right_arm")):
+            continue
+        rects, cube = _faces_of(bone)
+        if not rects:
+            continue
+        pal = cube.get("palette") or palette
+        limb = pal.get("side") or palette.get("side")
+        for key in ("front", "left", "right", "back"):
+            faces.limb_marking(draw, rects[key], limb, glow_color, style)
 
 
 def entity_geo(identifier, tex_name, bones, palette, atlas_width=64, visible_bounds=(2, 2.5, 1)):

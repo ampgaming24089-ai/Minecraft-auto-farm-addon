@@ -1,4 +1,4 @@
-# Hallowed Reliquary — a Minecraft Bedrock dimension add-on
+# Hallowed Sanctum — a Minecraft Bedrock dimension add-on
 
 (packaged/pack-facing name; the dimension is still called "the Hollow Veil"
 in-fiction throughout the story and UI — see `docs/STORY.md`)
@@ -19,7 +19,7 @@ join. Read `docs/STORY.md` for the fiction the mechanics are built to tell.
 
 ## Install
 
-1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowedReliquary.mcaddon`.
+1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowedSanctum.mcaddon`.
 2. Send that file to a device with Minecraft Bedrock and open it, or copy
    `BP/` and `RP/` directly into your world's
    `com.mojang/development_behavior_packs` / `development_resource_packs`.
@@ -413,6 +413,71 @@ players (`docs/guide.html`). The only hand-written text is what a thing is
 *for*; every number, recipe and drop is derived. Change a recipe, re-run the
 generator, and all three follow. `validate.py` runs the generator on every
 build, so a guide that has drifted out of sync fails the build.
+
+### Balance: a post-endgame curve, and the cap that shapes it
+
+The stats had drifted into mush. The entry-tier sword did exactly netherite
+damage, the entry-tier armour was exactly netherite's 20 points, one boss set
+(Mourner's Shroud, 18) was *worse* than netherite, and two boss weapons hit
+softer than the craftable sword you could make without fighting anything. For
+a dimension you only reach after finishing the base game, all of that is
+backwards.
+
+`tools/balance.py` is now the single source of truth for every damage,
+protection, durability and enchantability value in the pack, and
+`validate.py` fails the build if an item drifts from it. The guide reads the
+same table, so the numbers on the page are the numbers in the game.
+
+The curve, with netherite as the floor rather than the ceiling:
+
+| set | h/c/l/b | total | over netherite |
+|---|---|---|---|
+| netherite | 3/8/6/3 | 20 | — |
+| Wraithsteel | 4/9/7/4 | 24 | +4 |
+| Mourner's Shroud | 5/10/8/5 | 28 | +8 |
+| Veilsteel | 5/11/9/5 | 30 | +10 |
+| Spectral Regalia | 6/12/9/6 | 33 | +13 |
+| Hollowforged | 7/14/11/7 | 39 | +19 |
+| Ashen Demonplate | 8/15/12/8 | 43 | +23 |
+
+Swords run 10 → 13 → 18 damage across the three craftable tiers (netherite is
+8), with the three boss weapons at 14/15/16 — between the mid and top tiers on
+raw damage, and carrying the effects that make them worth the fight.
+
+**The honest part.** Minecraft's damage formula is
+`damage x (1 - min(20, armour) / 25)`. That `min(20, ...)` is a hard cap:
+20 armour points is 80% reduction and nothing in any edition does better.
+Netherite is exactly 20. So the totals above cannot all turn into damage
+reduction, and presenting them as if they did would be a lie.
+
+They are not decorative either — points past the cap buy three real things:
+a single 15-point chestplate puts you at 75% of the cap wearing one piece
+where netherite's 8 puts you at 40%; you stay at the cap far longer as gear
+wears out; and a boss helmet over craftable plate still adds. But the scaling
+that survives *past* the cap lives in the set bonuses, which is where the real
+tiering now sits: Resistance I on the mid tiers, Resistance II on the tank,
+and a different identity for each set — the Shroud is the fastest, the Regalia
+escapes, the Demonplate absorbs.
+
+### Armour trims
+
+Each set carries its own trim now, not the six-pixel accent stripe it had
+before: a band that wraps the helmet, chest, arms, hem, cuffs and boot tops,
+plus a crest on the chest. Six patterns — rivets, circuitry, molten cracks,
+chevrons, mourning tears, sawtooth flame — each in the set's own accent with a
+near-white core so the band has a lit centre.
+
+The bands sit on rows read off the actual 64x32 armour layer maps (rendered
+with a coordinate grid and checked by eye, not guessed) and only ever paint on
+pixels the vanilla map already marks solid, so a trim can never bleed off the
+model.
+
+"Glowing" here is contrast, not a shader, and that is a deliberate limit
+rather than an oversight: Bedrock exposes no emissive material for armour
+attachables, and shipping a custom `.material` file would override vanilla's
+and risk every other entity in the game. Three suits were also repainted —
+the Spectral Regalia and Mourner's Shroud were bright enough that their own
+trim vanished into them.
 
 ### format_version is a parser selector, not a label
 

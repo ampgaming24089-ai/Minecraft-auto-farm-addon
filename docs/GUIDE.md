@@ -14,7 +14,7 @@ Stand in the portal you arrived through, or in the pre-lit one beside Hollow Ham
 
 ## The Five Regions
 
-The Veil is a disc 50,000 blocks in every direction from the hub. Terrain builds itself around you as you travel, so there is no edge to reach quickly and nothing to load in advance.
+The Veil is a disc 100,000 blocks in every direction from the hub. Terrain builds itself around you as you travel, so there is no edge to reach quickly and nothing to load in advance.
 
 ### The Misty Reach
 
@@ -189,44 +189,44 @@ Drops: Soul Shard, Spectral Dust.
 Diamond-grade. Wraithsteel Ore is common below the moors; smelt the scrap.
 
 Wraithsteel Axe
-Attack damage: +9.
-Durability: 900.
+Attack damage: +11.
+Durability: 1200.
 Craft: 3x Wraithsteel Ingot, 2x Stick.
 
 Wraithsteel Boots
-Protection: 3.
-Durability: 475.
+Protection: 4.
+Durability: 650.
 Craft: 4x Wraithsteel Ingot.
 
 Wraithsteel Chestplate
-Protection: 8.
-Durability: 580.
+Protection: 9.
+Durability: 800.
 Craft: 8x Wraithsteel Ingot.
 
 Wraithsteel Helm
-Protection: 3.
-Durability: 400.
+Protection: 4.
+Durability: 550.
 Craft: 5x Wraithsteel Ingot.
 
 Wraithsteel Ingot
 Smelt: 1x Wraithsteel Scrap.
 
 Wraithsteel Leggings
-Protection: 6.
-Durability: 545.
+Protection: 7.
+Durability: 750.
 Craft: 7x Wraithsteel Ingot.
 
 Wraithsteel Pickaxe
-Attack damage: +4.
-Durability: 900.
+Attack damage: +5.
+Durability: 1200.
 Craft: 3x Wraithsteel Ingot, 2x Stick.
 
 Wraithsteel Scrap
 -
 
 Wraithsteel Sword
-Attack damage: +7.
-Durability: 900.
+Attack damage: +9.
+Durability: 1200.
 Craft: 2x Wraithsteel Ingot, 1x Stick.
 
 ### Veilsteel
@@ -234,36 +234,36 @@ Craft: 2x Wraithsteel Ingot, 1x Stick.
 Better than diamond. The ore sits deep and glows blue at the edges.
 
 Veilsteel Axe
-Attack damage: +11.
-Durability: 1500.
+Attack damage: +14.
+Durability: 2000.
 Craft: 3x Veilsteel Ingot, 2x Stick.
 
 Veilsteel Boots
-Protection: 4.
-Durability: 650.
+Protection: 5.
+Durability: 940.
 Craft: 4x Veilsteel Ingot.
 
 Veilsteel Chestplate
-Protection: 9.
-Durability: 800.
+Protection: 11.
+Durability: 1150.
 Craft: 8x Veilsteel Ingot.
 
 Veilsteel Helm
-Protection: 4.
-Durability: 560.
+Protection: 5.
+Durability: 800.
 Craft: 5x Veilsteel Ingot.
 
 Veilsteel Ingot
 Smelt: 1x Veilsteel Scrap.
 
 Veilsteel Leggings
-Protection: 7.
-Durability: 750.
+Protection: 9.
+Durability: 1080.
 Craft: 7x Veilsteel Ingot.
 
 Veilsteel Pickaxe
-Attack damage: +5.
-Durability: 1500.
+Attack damage: +7.
+Durability: 2000.
 Craft: 3x Veilsteel Ingot, 2x Stick.
 
 Veilsteel Plating
@@ -273,8 +273,8 @@ Veilsteel Scrap
 -
 
 Veilsteel Sword
-Attack damage: +9.
-Durability: 1500.
+Attack damage: +12.
+Durability: 2000.
 Craft: 2x Veilsteel Ingot, 1x Stick.
 
 ### Hollowforged
@@ -282,65 +282,73 @@ Craft: 2x Veilsteel Ingot, 1x Stick.
 Better than netherite, and the best gear in the pack. The ore is white with red cracks and only appears in the lowest three layers.
 
 Hollowforged Axe
-Attack damage: +12.
-Durability: 1900.
+Attack damage: +19.
+Durability: 3200.
 Craft: 3x Hollowforged Ingot, 2x Stick.
 
 Hollowforged Boots
-Protection: 5.
-Durability: 800.
+Protection: 7.
+Durability: 1420.
 Craft: 4x Hollowforged Ingot.
 
 Hollowforged Chestplate
-Protection: 10.
-Durability: 1040.
+Protection: 14.
+Durability: 1750.
 Craft: 8x Hollowforged Ingot.
 
 Hollowforged Helm
-Protection: 5.
-Durability: 720.
+Protection: 7.
+Durability: 1200.
 Craft: 5x Hollowforged Ingot.
 
 Hollowforged Ingot
 Smelt: 1x Hollowforged Scrap.
 
 Hollowforged Leggings
-Protection: 9.
-Durability: 960.
+Protection: 11.
+Durability: 1640.
 Craft: 7x Hollowforged Ingot.
 
 Hollowforged Pickaxe
-Attack damage: +6.
-Durability: 1900.
+Attack damage: +9.
+Durability: 3200.
 Craft: 3x Hollowforged Ingot, 2x Stick.
 
 Hollowforged Scrap
 -
 
 Hollowforged Sword
-Attack damage: +10.
-Durability: 1900.
+Attack damage: +17.
+Durability: 3200.
 Craft: 2x Hollowforged Ingot, 1x Stick.
 
 ## Armour Set Bonuses
 
-Wear all four pieces of a set to get its bonus.
+Wear all four pieces of a set to get its bonus. Minecraft caps armour's damage reduction at 20 points - netherite is exactly 20 and every set here is above it - so these bonuses are where the tiering above netherite actually lives.
 
-### Spectral Regalia
+### Wraithsteel
 
-Below 30% health: invisibility and water breathing.
+none. It is the entry suit; its 24 points are the point.
 
-### Mourner's Shroud Wrap
+### Veilsteel
 
-Below 30% health: extra speed. Fall damage refunds half of itself as health.
-
-### Ashen Demonplate
-
-Permanent fire resistance and damage resistance.
+Resistance I.
 
 ### Hollowforged
 
-Haste and fire resistance at all times, plus absorption when you drop below 30% health.
+Resistance I, Haste I, permanent fire resistance, and
+
+### Mourner's Shroud
+
+permanent Speed I, Speed II below 30% health, and fall
+
+### Spectral Regalia
+
+Resistance I, plus invisibility and water breathing
+
+### Ashen Demonplate
+
+Resistance II and permanent fire resistance. The tank.
 
 ## Items & What They Do
 
@@ -389,8 +397,8 @@ Marsh mushroom. Goes in the stew.
 ### Hollow King's Reaper
 
 Withers what it hits and heals you for a fifth of the damage dealt.
-Attack damage: +9.
-Durability: 1300.
+Attack damage: +14.
+Durability: 2400.
 
 ### Hollow Veil Journal
 
@@ -399,8 +407,8 @@ This guide. You are handed one the first time you join; the Occultist sells repl
 ### Malacoda's Fang
 
 Stacks burning on a target. At twelve stacks it detonates.
-Attack damage: +10.
-Durability: 1250.
+Attack damage: +15.
+Durability: 2500.
 
 ### Sigil of the Hollow King
 
@@ -454,8 +462,38 @@ Craft: 1x Elk Marrow, 1x Glimmershroom, 1x Bowl.
 ### Wailing Edge
 
 Sneak and swing: everything around your target is thrown back.
-Attack damage: +8.
-Durability: 1150.
+Attack damage: +13.
+Durability: 2200.
+
+## Every Number
+
+Helmet / chestplate / leggings / boots, then the total. Weapon damage includes the one point every hit does bare-handed.
+
+### Armour
+
+Netherite, for comparison: 3/8/6/3 = 20.
+Wraithsteel: 4/9/7/4 = 24 (+4 over netherite), enchantability 16.
+Veilsteel: 5/11/9/5 = 30 (+10 over netherite), enchantability 20.
+Hollowforged: 7/14/11/7 = 39 (+19 over netherite), enchantability 25.
+Mourner's Shroud: 5/10/8/5 = 28 (+8 over netherite), enchantability 28.
+Spectral Regalia: 6/12/9/6 = 33 (+13 over netherite), enchantability 30.
+Ashen Demonplate: 8/15/12/8 = 43 (+23 over netherite), enchantability 20.
+
+### Weapons and tools
+
+Netherite sword, for comparison: 8 damage.
+Wraithsteel Sword: 10 damage, 1200 durability, enchantability 16.
+Wraithsteel Axe: 12 damage, 1200 durability, enchantability 16.
+Wraithsteel Pickaxe: 6 damage, 1200 durability, enchantability 16.
+Veilsteel Sword: 13 damage, 2000 durability, enchantability 20.
+Veilsteel Axe: 15 damage, 2000 durability, enchantability 20.
+Veilsteel Pickaxe: 8 damage, 2000 durability, enchantability 20.
+Hollowforged Sword: 18 damage, 3200 durability, enchantability 25.
+Hollowforged Axe: 20 damage, 3200 durability, enchantability 25.
+Hollowforged Pickaxe: 10 damage, 3200 durability, enchantability 25.
+Wailing Edge: 14 damage, 2200 durability, enchantability 30.
+Hollow King's Reaper: 15 damage, 2400 durability, enchantability 28.
+Malacoda's Fang: 16 damage, 2500 durability, enchantability 26.
 
 ## The Three Wardens
 

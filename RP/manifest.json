@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Reliquary \u00a77- Resource Pack",
-    "description": "Textures, models, sounds and atmosphere for the Hallowed Reliquary.",
-    "uuid": "f8ce7466-bf38-46af-840c-f2fa41062087",
+    "name": "Hallowed Sanctum \u00a77- Resource Pack",
+    "description": "Textures, models, sounds and atmosphere for the Hallowed Sanctum.",
+    "uuid": "d0efb2e8-1cfa-44bb-8426-a9d01ba0f437",
     "version": [
-      8,
+      9,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "2418701a-7fa0-47a8-bb18-c20a3b9b45e9",
+      "uuid": "2bce0818-2c7b-47cc-ab8e-b29c59646fec",
       "version": [
-        8,
+        9,
         0,
         0
       ]
@@ -28,9 +28,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "4079299a-d286-4658-8f7c-9cb6fbcd19a0",
+      "uuid": "698cdb7f-e4b9-46d7-aaba-ca59becc38de",
       "version": [
-        8,
+        9,
         0,
         0
       ]
@@ -38,7 +38,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Reliquary Team"
+      "Hallowed Sanctum Team"
     ],
     "product_type": "addon"
   }

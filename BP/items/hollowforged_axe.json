@@ -15,13 +15,13 @@
         "value": "item.hollowveil:hollowforged_axe.name"
       },
       "minecraft:hand_equipped": true,
-      "minecraft:damage": 12,
+      "minecraft:damage": 19,
       "minecraft:durability": {
-        "max_durability": 1900
+        "max_durability": 3200
       },
       "minecraft:enchantable": {
         "slot": "axe",
-        "value": 22
+        "value": 25
       },
       "minecraft:repairable": {
         "repair_items": [
