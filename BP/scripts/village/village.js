@@ -8,8 +8,11 @@ import { commandRunner } from "../lib/cmd.js";
  * as a static structure file. Runs once per world (guarded by a dynamic
  * property flag). */
 export function buildHollowHamlet(dimension, origin) {
+  // The flag is set AFTER the build, not before. Setting it first meant a
+  // build that threw - and every one of these did, while they went through the
+  // removed runCommandAsync - permanently marked the village as standing when
+  // no part of it had been placed.
   if (getWorldFlag(KEYS.VILLAGE_BUILT)) return;
-  setWorldFlag(KEYS.VILLAGE_BUILT, true);
 
   const { x, y, z } = origin;
   const run = commandRunner(dimension);
@@ -43,6 +46,15 @@ export function buildHollowHamlet(dimension, origin) {
   run(`summon hollowveil:occultist ${x} ${y + 1} ${z - 4} facing ${x} ${y + 1} ${z}`);
 
   setWorldJson(KEYS.VILLAGE_SHRINE_POS, { x, y: y + 1, z });
+
+  // Only now, and only if the shrine lantern really landed.
+  try {
+    if (dimension.getBlock({ x: x + 2, y: y + 1, z })?.typeId === "hollowveil:soul_lantern") {
+      setWorldFlag(KEYS.VILLAGE_BUILT, true);
+    }
+  } catch {
+    /* leave it unflagged; the next arrival retries */
+  }
 }
 
 function buildHut(run, { x, y, z }) {

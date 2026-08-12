@@ -77,8 +77,8 @@
         ]
       },
       "minecraft:collision_box": {
-        "width": 1.8,
-        "height": 2.1
+        "width": 2.9,
+        "height": 3.2
       },
       "minecraft:health": {
         "value": 40,
@@ -171,6 +171,9 @@
       },
       "minecraft:experience_reward": {
         "on_death": "query.last_hit_by_player ? 10 : 0"
+      },
+      "minecraft:scale": {
+        "value": 1.6
       }
     },
     "events": {

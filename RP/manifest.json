@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Vigil \u00a77- Resource Pack",
-    "description": "Textures, models, sounds and atmosphere for the Hallowed Vigil.",
-    "uuid": "120a4a8c-7ab9-4dc8-864f-ca818b1ae4ab",
+    "name": "Hallowed Ossuary \u00a77- Resource Pack",
+    "description": "Textures, models, sounds and atmosphere for the Hallowed Ossuary.",
+    "uuid": "dbf4a6bd-f191-4935-a1cf-2defbcd7e477",
     "version": [
-      11,
+      12,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "b845e8c1-2008-4772-a403-25c51c3f3be2",
+      "uuid": "3a74e9a4-4c91-4608-a236-a51a505b9c07",
       "version": [
-        11,
+        12,
         0,
         0
       ]
@@ -28,9 +28,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "4d71cb1a-a5e2-4f78-9ecd-99db22624af6",
+      "uuid": "3f65329b-a58b-4b0d-89b7-69df9151c585",
       "version": [
-        11,
+        12,
         0,
         0
       ]
@@ -38,7 +38,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Vigil Team"
+      "Hallowed Ossuary Team"
     ],
     "product_type": "addon"
   }

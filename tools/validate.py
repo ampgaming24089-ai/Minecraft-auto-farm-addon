@@ -821,17 +821,32 @@ def check_tool_tags():
 # correct build was rejected. tools/test_portal.js runs the real detection
 # code against a stub world containing exactly that frame.
 def check_portal():
-    test = os.path.join(ROOT, "tools", "test_portal.js")
+    run_node_tests("portal", "test_portal.js")
+
+
+# --- 9c. the world has no edge you can see --------------------------------
+# "The new dimension is all bedrock and not properly generated, it's not an
+# open world it seems and has an edge you can fall off of." The builder kept
+# 96 blocks of terrain around a player while Bedrock renders up to ~256, so
+# the generation frontier was always on screen. tools/test_terrain.js sprints
+# a simulated player across the world against the real scheduling policy and
+# fails if anything within view distance is ever missing.
+def check_terrain():
+    run_node_tests("terrain", "test_terrain.js")
+
+
+def run_node_tests(label, filename):
+    test = os.path.join(ROOT, "tools", filename)
     if not os.path.isfile(test):
-        skipped.append("portal frame tests (tools/test_portal.js missing)")
+        skipped.append(f"{label} tests (tools/{filename} missing)")
         return
     p = subprocess.run(["node", test], cwd=ROOT, capture_output=True, text=True)
     if p.returncode != 0:
-        for line in p.stdout.splitlines():
-            if line.strip().startswith("FAIL"):
-                err(f"portal: {line.strip()[5:].strip()}")
-        if not any(l.strip().startswith("FAIL") for l in p.stdout.splitlines()):
-            err(f"tools/test_portal.js failed to run: {p.stderr.strip().splitlines()[-1:]}")
+        fails = [l.strip() for l in p.stdout.splitlines() if l.strip().startswith("FAIL")]
+        for line in fails:
+            err(f"{label}: {line[5:].strip()}")
+        if not fails:
+            err(f"tools/{filename} failed to run: {p.stderr.strip().splitlines()[-1:]}")
 
 
 # --- 10. early-execution safety -------------------------------------------
@@ -1148,6 +1163,7 @@ def check_manifests():
         "04144c3f-9f8a-4193-b66f-0ac30b78df95",
         "0b83a713-42b9-4a4c-9c81-6f56cbc67814",
         "0f251285-1535-4d56-89e7-41c4a1143e5e",
+        "120a4a8c-7ab9-4dc8-864f-ca818b1ae4ab",
         "1335f7ba-d26c-4ed9-bc17-f29b193e18da",
         "2418701a-7fa0-47a8-bb18-c20a3b9b45e9",
         "2903629b-308d-4d31-9571-59a793dead48",
@@ -1160,6 +1176,7 @@ def check_manifests():
         "4079299a-d286-4658-8f7c-9cb6fbcd19a0",
         "464ebcd1-a74c-4109-94ae-8ff9a324e029",
         "46e6c8fa-b01e-4082-bc0d-8dc073d60e35",
+        "4d71cb1a-a5e2-4f78-9ecd-99db22624af6",
         "4e86adc1-3bd9-4b84-9399-c5f0b391c6bf",
         "583094e0-638f-4560-8015-ff61a552ec14",
         "5d1cab31-7a08-4be1-bd30-58a88ee6c70e",
@@ -1178,11 +1195,14 @@ def check_manifests():
         "8b83720f-c727-40bf-b60b-fd9670e9f17d",
         "8c65e54f-84fb-4532-9199-45ebad51dd37",
         "915cf596-e3c7-4014-978e-df04a7f46861",
+        "9532f86f-43c7-44aa-81ac-fbee36b80301",
         "a63f5256-bccb-46d7-843b-853bd45956db",
         "a7f48924-5a1a-493f-b2cd-87735ab3b128",
         "ae6e6ecc-4012-4967-b18f-602b77319602",
         "b059cd3b-38ec-408e-b1bd-9862c445c434",
         "b5759d66-90c1-4161-a552-66a8226eb61f",
+        "b845e8c1-2008-4772-a403-25c51c3f3be2",
+        "bc676859-4871-41c4-ab96-2a5271a41cc3",
         "bf3fdb90-652d-40c2-acf9-2ee24737a2ad",
         "c351775c-40e4-4758-9d3c-d6e2dba24311",
         "c83a852e-3f02-435e-a3ca-4eace3dae3a7",
@@ -1223,6 +1243,7 @@ def main():
     check_attachables()
     check_tool_tags()
     check_portal()
+    check_terrain()
     check_early_execution()
     check_component_schema()
     check_official_schemas()

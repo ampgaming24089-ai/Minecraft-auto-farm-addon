@@ -447,88 +447,200 @@ add(
 
 # --- Bosses ---
 
+# The Hollow King.
+#
+# The owner's note was that Malacoda was the only boss that read as detailed.
+# Comparing them, the difference was not cube count - it was silhouette.
+# Malacoda has wings, horns, a tail and cloven hooves, so its outline is
+# unmistakable from any angle; the King was a robed rectangle with a crown, and
+# from behind or in profile he was a box.
+#
+# So he is rebuilt around an outline: no legs at all (the robe frays into
+# vapour, so he hangs rather than stands), a ragged five-panel cloak of
+# different lengths, an open ribcage of separate ribs rather than one slab,
+# spiked pauldrons with hanging chains, a halo of broken crown shards orbiting
+# his head, and a two-handed reaper held across the body.
 add(
     "hollow_king",
     "hollow_king",
     [
-        bone("base", [0, 8, 0], [cube("robe_swirl", [-9, 0, -9], [18, 10, 18])]),
-        bone("cloak_a", [0, 8, 9], [cube("cloak_a", [-8, 4, 9], [16, 20, 2])], parent="base"),
-        bone("cloak_b", [6, 8, 9], [cube("cloak_b", [4, 2, 9.2], [4, 16, 2])], parent="base"),
-        bone("cloak_c", [-6, 8, 9], [cube("cloak_c", [-8, 2, 9.2], [4, 16, 2])], parent="base"),
+        # The robe, tapered rather than one 18x10x18 slab - a render of the
+        # first pass showed a featureless pyramid the size of the rest of him,
+        # which is exactly the "plain box" problem this rebuild was for. Three
+        # stacked tiers narrow toward the waist, with vertical fold ridges so
+        # the largest surface on the model is not blank.
+        bone("base", [0, 8, 0], [
+            cube("robe_hem", [-9, 0, -8], [18, 4, 16]),
+            cube("robe_mid", [-7, 4, -6], [14, 5, 13]),
+            cube("robe_top", [-5, 9, -5], [10, 4, 10]),
+            cube("fold_f", [-6, 1, -9], [3, 8, 2], "front"),
+            cube("fold_f2", [3, 1, -9], [3, 8, 2], "front"),
+            cube("fold_l", [8, 1, -3], [2, 8, 7]),
+            cube("fold_r", [-10, 1, -3], [2, 8, 7]),
+        ]),
+        # Frayed hem. Four strips of different depths so the bottom edge is
+        # torn from every side instead of cut flat.
+        bone("hem_f", [0, 3, -8], [cube("hem_f", [-7, -7, -9], [14, 9, 2])], parent="base"),
+        bone("hem_b", [0, 3, 8], [cube("hem_b", [-7, -5, 7], [14, 7, 2])], parent="base"),
+        bone("hem_l", [8, 3, 0], [cube("hem_l", [7, -8, -6], [2, 10, 12])], parent="base"),
+        bone("hem_r", [-8, 3, 0], [cube("hem_r", [-9, -6, -6], [2, 8, 12])], parent="base"),
+        # Cloak: five panels, longest in the middle, so the back is ragged.
+        bone("cloak_a", [0, 8, 9], [cube("cloak_a", [-8, 2, 9], [16, 22, 2])], parent="base"),
+        bone("cloak_b", [6, 8, 9], [cube("cloak_b", [4, -2, 11], [4, 20, 2])], parent="base"),
+        bone("cloak_c", [-6, 8, 9], [cube("cloak_c", [-8, -2, 11], [4, 20, 2])], parent="base"),
+        bone("cloak_d", [9, 8, 8], [cube("cloak_d", [8, 3, 8], [2, 16, 6])], parent="base"),
+        bone("cloak_e", [-9, 8, 8], [cube("cloak_e", [-10, 3, 8], [2, 16, 6])], parent="base"),
         bone("torso", [0, 18, 0], [
-            cube("ribcage", [-7, 18, -4], [14, 16, 8], "front"),
-            cube("gorget", [-8, 31, -5], [16, 4, 10], "top"),      # collar over the shoulders
-            cube("breastplate", [-5, 22, -5], [10, 8, 1], "front"),  # a raised chest plate
-            cube("sash", [-7, 20, -4.5], [14, 2, 9]),               # belt of office
+            cube("spine", [-3, 18, -1], [6, 16, 5]),
+            cube("gorget", [-8, 31, -5], [16, 4, 10], "top"),        # collar over the shoulders
+            cube("breastplate", [-5, 25, -6], [10, 9, 2], "front"),  # a raised chest plate
+            cube("sash", [-7, 20, -5], [14, 2, 10]),                 # belt of office
         ], parent="base"),
+        # An open ribcage: four separate ribs you can see daylight between,
+        # rather than one closed box of a chest.
+        bone("rib_a", [0, 30, 0], [cube("rib_a", [-7, 30, -5], [14, 2, 9], "front")], parent="torso"),
+        bone("rib_b", [0, 27, 0], [cube("rib_b", [-7, 27, -5], [14, 2, 9], "front")], parent="torso"),
+        bone("rib_c", [0, 24, 0], [cube("rib_c", [-6, 24, -5], [12, 2, 9], "front")], parent="torso"),
+        bone("rib_d", [0, 21, 0], [cube("rib_d", [-5, 21, -4], [10, 2, 8], "front")], parent="torso"),
         bone("head", [0, 36, 0], [
             cube("skull", [-5, 36, -5], [10, 10, 10]),
-            cube("jaw", [-4, 35, -6], [8, 3, 4], "front"),          # a hanging jaw
+            cube("jaw", [-4, 34, -6], [8, 3, 5], "front"),           # a hanging jaw
             cube("brow", [-5, 43, -6], [10, 2, 2], "front"),
+            cube("cheek_l", [4, 37, -5], [2, 5, 4]),                 # sunken cheekbones
+            cube("cheek_r", [-6, 37, -5], [2, 5, 4]),
         ], parent="torso"),
-        bone("crown_a", [0, 46, 0], [cube("crown_a", [-1, 46, -2], [2, 7, 2], "top")], parent="head"),
-        bone("crown_b", [3, 46, 0], [cube("crown_b", [2, 46, -2], [2, 5, 2], "top")], parent="head"),
-        bone("crown_c", [-3, 46, 0], [cube("crown_c", [-4, 46, -2], [2, 5, 2], "top")], parent="head"),
-        bone("crown_d", [5, 46, 0], [cube("crown_d", [4, 46, -1], [2, 4, 2], "top")], parent="head"),
-        bone("crown_e", [-5, 46, 0], [cube("crown_e", [-6, 46, -1], [2, 4, 2], "top")], parent="head"),
+        bone("crown_a", [0, 46, 0], [cube("crown_a", [-1, 46, -2], [2, 9, 2], "top")], parent="head"),
+        bone("crown_b", [3, 46, 0], [cube("crown_b", [2, 46, -2], [2, 7, 2], "top")], parent="head"),
+        bone("crown_c", [-3, 46, 0], [cube("crown_c", [-4, 46, -2], [2, 7, 2], "top")], parent="head"),
+        bone("crown_d", [5, 46, 0], [cube("crown_d", [4, 46, -1], [2, 5, 2], "top")], parent="head"),
+        bone("crown_e", [-5, 46, 0], [cube("crown_e", [-6, 46, -1], [2, 5, 2], "top")], parent="head"),
+        bone("crown_band", [0, 45, 0], [cube("crown_band", [-6, 44, -6], [12, 2, 12], "top")], parent="head"),
+        # A halo of broken crown shards, hanging off the head bone so they
+        # swing with it. This is the piece that makes him unmistakable in
+        # silhouette from behind, which is where he used to read as a box.
+        bone("halo_f", [0, 50, -9], [cube("halo_f", [-2, 49, -10], [4, 4, 2], "top")], parent="head"),
+        bone("halo_b", [0, 50, 9], [cube("halo_b", [-2, 49, 8], [4, 4, 2], "top")], parent="head"),
+        bone("halo_l", [9, 50, 0], [cube("halo_l", [8, 50, -2], [2, 5, 4], "top")], parent="head"),
+        bone("halo_r", [-9, 50, 0], [cube("halo_r", [-10, 50, -2], [2, 5, 4], "top")], parent="head"),
         bone("arm_l", [9, 30, 0], [
-            cube("arm_l", [7, 14, -2.5], [5, 16, 5]),
-            cube("pauldron_l", [6, 28, -4], [8, 5, 8], "top"),      # shoulder plate
-            cube("gauntlet_l", [6, 12, -3.5], [7, 4, 7]),
+            cube("arm_l", [7, 14, -3], [5, 16, 5]),
+            cube("pauldron_l", [6, 28, -4], [8, 5, 8], "top"),       # shoulder plate
+            cube("spike_l", [8, 33, -2], [3, 6, 3], "top"),          # and its spike
+            cube("gauntlet_l", [6, 12, -4], [7, 4, 7]),
+            cube("chain_l", [11, 18, -1], [1, 11, 1]),               # a chain off the pauldron
         ], parent="torso"),
         bone("arm_r", [-9, 30, 0], [
-            cube("arm_r", [-12, 14, -2.5], [5, 16, 5]),
+            cube("arm_r", [-12, 14, -3], [5, 16, 5]),
             cube("pauldron_r", [-14, 28, -4], [8, 5, 8], "top"),
-            cube("gauntlet_r", [-13, 12, -3.5], [7, 4, 7]),
+            cube("spike_r", [-11, 33, -2], [3, 6, 3], "top"),
+            cube("gauntlet_r", [-13, 12, -4], [7, 4, 7]),
+            cube("chain_r", [-12, 18, -1], [1, 11, 1]),
         ], parent="torso"),
+        # The Reaper he drops, carried. A long haft across the body with a
+        # curved head, which reads instantly at any distance.
+        bone("reaper", [-10, 12, -2], [
+            cube("haft", [-11, 10, -3], [2, 34, 2]),
+            cube("blade_a", [-11, 42, -3], [2, 3, 12], "top"),
+            cube("blade_b", [-11, 39, 6], [2, 4, 3], "top"),
+            cube("pommel", [-12, 8, -4], [4, 3, 4], "top"),
+        ], parent="arm_r"),
     ],
     scale=1.6,
-    visible_bounds=(4.5, 5.5, 2.2),
+    visible_bounds=(5.5, 7.0, 3.0),
 )
 
+# The Weeping Widow.
+#
+# Same problem, same treatment. She had four stubby spider arms that read as
+# pipes; she now has six three-segment legs that arch up above her shoulders
+# and back down - the classic spider outline, which is what makes her
+# recognisable at a glance. The veil is a side-drape rather than a front
+# panel, so her face is actually visible (it was completely covered before,
+# which is why she read as a faceless slab), and the dress hangs in separate
+# torn panels.
 add(
     "weeping_widow",
     "weeping_widow",
     [
         bone("dress", [0, 7, 0], [cube("dress_flare", [-11, 0, -9], [22, 14, 7])]),
+        # Four torn panels instead of one skirt block.
+        bone("skirt_f", [0, 6, -8], [cube("skirt_f", [-8, -6, -10], [16, 8, 2])], parent="dress"),
+        bone("skirt_l", [10, 6, 0], [cube("skirt_l", [9, -7, -6], [2, 9, 12])], parent="dress"),
+        bone("skirt_r", [-10, 6, 0], [cube("skirt_r", [-11, -5, -6], [2, 7, 12])], parent="dress"),
         bone("torso", [0, 18, 0], [
-            cube("torso", [-6, 15, -3.5], [12, 14, 7]),
-            cube("shawl", [-8, 25, -4.5], [16, 5, 9], "top"),        # mourning shawl
-            cube("corset", [-6, 16, -4], [12, 5, 8], "front"),
+            cube("torso", [-6, 15, -4], [12, 14, 7]),
+            cube("shawl", [-8, 25, -5], [16, 5, 10], "top"),         # mourning shawl
+            cube("corset", [-6, 16, -5], [12, 5, 9], "front"),
+            cube("clasp", [-2, 27, -6], [4, 3, 2], "front"),         # the brooch at her throat
         ], parent="dress"),
         bone("head", [0, 33, 0], [
-            cube("head", [-4.5, 33, -4.5], [9, 10, 9]),
+            cube("head", [-4, 33, -4], [9, 10, 9]),
             cube("hair", [-5, 38, 3], [10, 8, 3]),                   # hair down the back
         ], parent="torso"),
-        bone("veil", [0, 34, -4.5], [
-            cube("veil", [-5, 28, -6.5], [10, 8, 2]),
-            cube("veil_hem", [-6, 26, -6], [12, 3, 2]),              # a torn lower hem
+        # Hair in strands, so the back of her head is not a plain block.
+        bone("hair_l", [5, 40, 2], [cube("hair_l", [4, 28, 1], [2, 13, 4])], parent="head"),
+        bone("hair_r", [-5, 40, 2], [cube("hair_r", [-6, 26, 1], [2, 15, 4])], parent="head"),
+        bone("hair_c", [0, 40, 5], [cube("hair_c", [-3, 24, 4], [6, 17, 2])], parent="head"),
+        # The veil drapes at the sides and over the brow, not across the face.
+        bone("veil", [0, 42, 0], [
+            cube("veil_crown", [-5, 41, -5], [11, 3, 11], "top"),
+            cube("veil_l", [5, 30, -5], [2, 12, 11]),
+            cube("veil_r", [-6, 30, -5], [2, 12, 11]),
+            cube("veil_hem", [-6, 27, -5], [12, 3, 2]),              # a torn lower hem
         ], parent="head"),
         bone("arm_l", [7, 25, 0], [
             cube("arm_l", [5, 12, -2], [4, 14, 4]),
-            cube("hand_l", [4, 9, -2.5], [6, 4, 5]),
+            cube("hand_l", [4, 8, -3], [6, 4, 5]),
+            cube("claw_l", [4, 6, -4], [6, 2, 2]),
         ], parent="torso"),
         bone("arm_r", [-7, 25, 0], [
             cube("arm_r", [-9, 12, -2], [4, 14, 4]),
-            cube("hand_r", [-10, 9, -2.5], [6, 4, 5]),
+            cube("hand_r", [-10, 8, -3], [6, 4, 5]),
+            cube("claw_r", [-10, 6, -4], [6, 2, 2]),
         ], parent="torso"),
-        bone("spider_arm_l", [10, 16, 3], [
-            cube("sa_l", [9, 8, 2], [2, 18, 2]),
-            cube("sa_l2", [9, 24, 2], [2, 8, 5]),                    # the joint above it
-        ], parent="torso"),
-        bone("spider_arm_r", [-10, 16, 3], [
-            cube("sa_r", [-11, 8, 2], [2, 18, 2]),
-            cube("sa_r2", [-11, 24, 2], [2, 8, 5]),
-        ], parent="torso"),
-        bone("spider_arm_l2", [12, 14, 5], [cube("sb_l", [11, 6, 5], [2, 16, 2])], parent="torso"),
-        bone("spider_arm_r2", [-12, 14, 5], [cube("sb_r", [-13, 6, 5], [2, 16, 2])], parent="torso"),
+    ]
+    # Six spider legs.
+    #
+    # First attempt made all three segments vertical bars at increasing x, and
+    # an orthographic render of the result showed six parallel fence-posts
+    # flanking her - no spider read at all. A spider leg is out-then-down, so
+    # the femur is now a horizontal outrigger stepping UP and OUT from the
+    # shoulder, and the tibia is the long vertical drop hanging off its far
+    # end. That is the shape that makes the outline unmistakable.
+    #
+    # Built in a loop: six legs by hand is six chances to fumble a coordinate,
+    # and the pairs have to mirror exactly.
+    + [
+        seg
+        for i, (zc, top, reach) in enumerate(((-3, 32, 15), (3, 35, 17), (9, 31, 14)))
+        for side, sx in (("l", 1), ("r", -1))
+        for seg in (
+            # femur: shoulder -> out and up, in two steps so it reads as a raised joint
+            bone(f"spider_{side}{i}_femur", [sx * 6, 26, zc], [
+                cube(f"sp_{side}{i}_f1", [min(sx * 6, sx * (reach - 4)), 26, zc - 1],
+                     [abs(reach - 4 - 6), 3, 2]),
+                cube(f"sp_{side}{i}_f2", [min(sx * (reach - 5), sx * reach), top - 3, zc - 1],
+                     [5, 3, 2]),
+            ], parent="torso"),
+            # tibia: the long drop past the hem
+            bone(f"spider_{side}{i}_tibia", [sx * reach, top - 3, zc], [
+                cube(f"sp_{side}{i}_t", [sx * reach - 1, 5, zc - 1], [2, top - 8, 2]),
+            ], parent=f"spider_{side}{i}_femur"),
+            # tarsus: a splayed foot on the ground
+            bone(f"spider_{side}{i}_tarsus", [sx * reach, 5, zc], [
+                cube(f"sp_{side}{i}_k", [min(sx * reach - 1, sx * (reach + 3)), 3, zc - 1],
+                     [4, 3, 2]),
+            ], parent=f"spider_{side}{i}_tibia"),
+        )
+    ]
+    + [
         bone("tail", [0, 6, 7], [
             cube("dress_tail", [-7, 0, 7], [14, 10, 2]),
             cube("dress_train", [-5, 0, 9], [10, 6, 4]),             # a train dragging behind
         ], parent="dress"),
     ],
     scale=1.5,
-    visible_bounds=(4.2, 5.2, 2.4),
+    visible_bounds=(6.0, 6.0, 3.2),
 )
 
 add(
@@ -790,8 +902,8 @@ def build_dragon():
                     "identifier": "geometry.hv_veil_dragon",
                     "texture_width": w,
                     "texture_height": h,
-                    "visible_bounds_width": 6,
-                    "visible_bounds_height": 5,
+                    "visible_bounds_width": 10,
+                    "visible_bounds_height": 8,
                     "visible_bounds_offset": [0, 2, 0],
                 },
                 "bones": geo_bones,

@@ -176,14 +176,42 @@ def build():
     for l, r in ARM_PAIRS:
         idle[l] = {"rotation": [sin(12.0, 5.0), 0.0, f"6.0 + {sin(10.0, 4.0)}"]}
         idle[r] = {"rotation": [sin(12.0, 5.0, 60), 0.0, f"-6.0 - {sin(10.0, 4.0)}"]}
-    for n in ("cloak_a", "cloak_b", "cloak_c", "dress", "veil", "tail"):
-        idle[n] = {"rotation": [sin(10.0, 7.0), 0.0, 0.0]}
-    for n in ("crown_a", "crown_b", "crown_c", "horn_l", "horn_r"):
+    # Trailing cloth. The Hollow King's cloak and hem are five and four
+    # separate panels now, each given a slightly different period so they
+    # stream out of step instead of moving as one flat sheet.
+    for i, n in enumerate(("cloak_a", "cloak_b", "cloak_c", "cloak_d", "cloak_e",
+                           "hem_f", "hem_b", "hem_l", "hem_r",
+                           "skirt_f", "skirt_l", "skirt_r",
+                           "dress", "veil", "tail")):
+        idle[n] = {"rotation": [sin(10.0 + i * 0.7, 7.0, i * 25), 0.0, 0.0]}
+    for i, n in enumerate(("hair_l", "hair_r", "hair_c")):
+        idle[n] = {"rotation": [sin(12.0 + i, 6.0, i * 40), 0.0, sin(9.0, 4.0, i * 30)]}
+    for n in ("crown_a", "crown_b", "crown_c", "crown_d", "crown_e", "horn_l", "horn_r"):
         idle[n] = {"rotation": [0.0, 0.0, sin(13.0, 2.0)]}
+    # The crown shards orbit the head rather than sitting still - it is the
+    # King's most recognisable feature, so it should be the one that moves.
+    for i, n in enumerate(("halo_f", "halo_b", "halo_l", "halo_r")):
+        idle[n] = {
+            "rotation": [sin(16.0, 8.0, i * 90), sin(11.0, 14.0, i * 90), 0.0],
+            "position": [0.0, sin(19.0, 1.4, i * 90), 0.0],
+        }
+    idle["reaper"] = {"rotation": [sin(8.0, 3.0), 0.0, sin(11.0, 2.5)]}
     idle["wing_l"] = {"rotation": [0.0, 0.0, sin(34.0, 16.0)]}
     idle["wing_r"] = {"rotation": [0.0, 0.0, f"-{sin(34.0, 16.0)}"]}
-    idle["spider_arm_l"] = {"rotation": [sin(20.0, 10.0), 0.0, 0.0]}
-    idle["spider_arm_r"] = {"rotation": [sin(20.0, 10.0, 90), 0.0, 0.0]}
+    # The Widow's six three-segment legs. Each pair is driven a third of a
+    # cycle apart so the set ripples front-to-back the way a spider's does,
+    # and the tibia counter-rotates against the femur so the joint bends
+    # instead of the whole leg swinging as one stick.
+    for i in range(3):
+        for side, sign in (("l", 1.0), ("r", -1.0)):
+            ph = i * 60
+            idle[f"spider_{side}{i}_femur"] = {
+                "rotation": [sin(14.0, 6.0, ph), 0.0, f"{sign * 4.0} + {sin(12.0, 5.0, ph)}"],
+            }
+            idle[f"spider_{side}{i}_tibia"] = {
+                "rotation": [sin(14.0, -9.0, ph), 0.0, f"{-sign * 3.0} - {sin(12.0, 7.0, ph)}"],
+            }
+            idle[f"spider_{side}{i}_tarsus"] = {"rotation": [sin(14.0, 5.0, ph + 30), 0.0, 0.0]}
     anims["animation.hv.boss.idle"] = {"loop": True, "bones": idle}
     move = {}
     for l, r in ARM_PAIRS:
@@ -194,6 +222,16 @@ def build():
         move[r] = {"rotation": [sin(24.0, -30.0), 0.0, 0.0]}
     for r in ROOTS:
         move[r] = {"position": [0.0, f"math.abs({sin(48.0, 1.6)})", 0.0]}
+    # Walking: the spider legs stride, the cloth streams back.
+    for i in range(3):
+        for side, sign in (("l", 1.0), ("r", -1.0)):
+            ph = i * 60 + (0 if sign > 0 else 90)
+            move[f"spider_{side}{i}_femur"] = {"rotation": [sin(30.0, 26.0, ph), 0.0, sign * 6.0]}
+            move[f"spider_{side}{i}_tibia"] = {"rotation": [sin(30.0, -34.0, ph), 0.0, 0.0]}
+    for i, n in enumerate(("cloak_a", "cloak_b", "cloak_c", "cloak_d", "cloak_e",
+                           "hem_f", "hem_b", "hem_l", "hem_r",
+                           "skirt_f", "skirt_l", "skirt_r", "veil", "tail")):
+        move[n] = {"rotation": [f"20.0 + {sin(38.0 + i, 9.0, i * 25)}", 0.0, 0.0]}
     anims["animation.hv.boss.move"] = {
         "loop": True, "anim_time_update": "query.modified_distance_moved", "bones": move}
 

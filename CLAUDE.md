@@ -19,7 +19,7 @@ word must be one that has not been used before. Used so far, oldest first:
     Hallowed Depths, Hallow Dimension, Hallow Dimension v2, Hallowed Veil,
     Hallowed Reaches, Hallowed Requiem, Hallowed Covenant, Hallowed Expanse,
     Hallowed Reliquary, Hallowed Sanctum, Hallowed Threshold,
-    Hallowed Vigil
+    Hallowed Vigil, Hallowed Ossuary
 
 The checklist for a rename (all five UUIDs are regenerated, never reused):
 

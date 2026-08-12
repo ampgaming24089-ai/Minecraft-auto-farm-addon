@@ -162,6 +162,32 @@ function showCrossingTitle(player, title, subtitle) {
   }
 }
 
+/**
+ * Where to actually put someone who has just crossed over.
+ *
+ * The old code teleported to a hard-coded y and trusted it. On any world whose
+ * hub build had failed, the terrain streamer had since filled that spot with
+ * solid ground, and players arrived encased in rock with a stone ceiling -
+ * which is exactly what the owner photographed. Now the arrival column is
+ * cleared and the standing height is read off the world rather than assumed.
+ */
+function safeArrival(dim) {
+  const { x, z } = ARRIVAL_POS;
+  // Guarantee a pocket to stand in no matter what is there now.
+  setBox(dim, { x: x - 1, y: ARRIVAL_POS.y + 1, z: z - 1 },
+              { x: x + 1, y: ARRIVAL_POS.y + 4, z: z + 1 }, "minecraft:air");
+  let y = ARRIVAL_POS.y;
+  try {
+    const top = dim.getTopmostBlock({ x, z }, ARRIVAL_POS.y + 40);
+    if (top && !top.isAir) y = top.location.y;
+  } catch {
+    /* fall back to the hub's surface height */
+  }
+  // Something solid underfoot, so a gap in the floor cannot drop them.
+  setBox(dim, { x: x - 1, y, z: z - 1 }, { x: x + 1, y, z: z + 1 }, "hollowveil:bonestone");
+  return { x: x + 0.5, y: y + 1, z: z + 0.5 };
+}
+
 export async function sendPlayerToHollowVeil(player, pos) {
   setPlayerJson(player, KEYS.RETURN_POS, { dimension: player.dimension.id, pos: { x: pos.x, y: pos.y, z: pos.z } });
   crossingFade(player);
@@ -169,7 +195,7 @@ export async function sendPlayerToHollowVeil(player, pos) {
   await ensureWorldBuilt();
   const dim = world.getDimension(HOLLOW_VEIL);
   buildReturnPortalFrame(dim);
-  player.teleport({ x: ARRIVAL_POS.x + 0.5, y: ARRIVAL_POS.y, z: ARRIVAL_POS.z + 0.5 }, { dimension: dim });
+  player.teleport(safeArrival(dim), { dimension: dim });
   showCrossingTitle(player, "§l§4THE HOLLOW VEIL", "§7A grey country stitched between worlds");
 }
 

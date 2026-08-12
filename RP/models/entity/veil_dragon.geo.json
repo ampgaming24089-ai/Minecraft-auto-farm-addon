@@ -6,8 +6,8 @@
         "identifier": "geometry.hv_veil_dragon",
         "texture_width": 91,
         "texture_height": 131,
-        "visible_bounds_width": 6,
-        "visible_bounds_height": 5,
+        "visible_bounds_width": 10,
+        "visible_bounds_height": 8,
         "visible_bounds_offset": [
           0,
           2,
