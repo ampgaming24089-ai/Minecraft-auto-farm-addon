@@ -1,4 +1,4 @@
-# Hallowed Expanse — a Minecraft Bedrock dimension add-on
+# Hallowed Reliquary — a Minecraft Bedrock dimension add-on
 
 (packaged/pack-facing name; the dimension is still called "the Hollow Veil"
 in-fiction throughout the story and UI — see `docs/STORY.md`)
@@ -19,7 +19,7 @@ join. Read `docs/STORY.md` for the fiction the mechanics are built to tell.
 
 ## Install
 
-1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowedExpanse.mcaddon`.
+1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowedReliquary.mcaddon`.
 2. Send that file to a device with Minecraft Bedrock and open it, or copy
    `BP/` and `RP/` directly into your world's
    `com.mojang/development_behavior_packs` / `development_resource_packs`.
@@ -413,6 +413,74 @@ players (`docs/guide.html`). The only hand-written text is what a thing is
 *for*; every number, recipe and drop is derived. Change a recipe, re-run the
 generator, and all three follow. `validate.py` runs the generator on every
 build, so a guide that has drifted out of sync fails the build.
+
+### format_version is a parser selector, not a label
+
+A device test caught three regressions at once, all mine, all the same
+mistake: **the validator checked every file against Mojang's *newest* schema
+while the files themselves declared much older `format_version`s.** The
+engine picks its parser from the file's declared version, so "valid in
+1.26.40" says nothing about a file that declares 1.20.0.
+
+What that cost:
+
+- `minecraft:tags` on blocks is a **1.26.20** component. The blocks declared
+  1.21.0. Adding tags took out all seventeen tagged blocks — and the recipes
+  that produce Soulforged Obsidian, Ashwood Planks and the Soul Lantern
+  failed right behind them with "the item is missing or invalid".
+- The single FloatRange `attack_interval` on `behavior.ranged_attack` is
+  **1.26.40**. Those entities declare 1.20.0, where the parser wants a plain
+  float and the interval is `attack_interval_min`/`_max` — which is what they
+  had before I "modernised" them, and what vanilla's own `skeleton.json` still
+  writes. Four mobs stopped loading.
+- `minecraft:pushable` appears in **no** entity schema Mojang ships, 1.21.80
+  through 1.26.40. The engine tolerates it below the oldest schema — ten
+  entities here declare 1.20.0 and use it happily — and rejects it outright at
+  1.26.30, which is what the Veil Dragon declares. The dragon stopped loading.
+
+The fixes: blocks now declare 1.26.20 (their components already validated
+clean against that schema, and `min_engine_version` is 1.26.40, so only the
+declaration was wrong); `attack_interval` is back to `_min`/`_max`; and
+`minecraft:pushable` is gone from the dragon.
+
+The real fix is in the tooling. `gen_vanilla_schema.py` now walks **every**
+schema version Mojang ships, not just the newest, and derives from the
+differences between them:
+
+- `since` — the version that introduced a component or field. Using one below
+  that version is now an error naming both versions.
+- `in_schema: false` — components vanilla content uses that no schema has ever
+  described. Fine below the oldest schema, fatal at or above it.
+- an error when a **block** declares a format older than 1.26.20, the only
+  block schema that ships — such a file cannot be checked at all, and the
+  device proved that is fatal rather than theoretical.
+- a warning, on files older than any schema, when a component is written in
+  the modern spelling where vanilla content of that era uses a legacy one.
+
+Getting this right took three attempts, and each wrong attempt is worth
+recording because they are all the same trap. Claiming
+`minecraft:nameable` was "added in 1.21.80" — no: 1.21.80 is just the oldest
+schema sampled, so anything already in it has an unknown, older origin.
+Claiming all sixteen fields of `behavior.ranged_attack` arrived in 1.26.40 —
+no: 1.26.40 is the first version that *describes* the component, which is not
+the same as the first version that *has* it. And flagging `priority` and
+`attack_radius` as suspicious modern spellings — no: a field is only suspect
+if a legacy name actually extends it, the way `attack_interval_min` extends
+`attack_interval`. All three re-introduced defects are now caught, each on
+the one file that carries it.
+
+### Two log lines that are not this pack
+
+`[Scripting] Plugin [Syc's Force Creative - 1.0.5] does not contain main file
+[main.js]` is a different add-on installed alongside this one; nothing here
+is named that or ships a plugin.
+
+`[Lighting][error] the input is outside of the accepted range [0, 5]` still is
+not attributable to this pack. There is no `lighting/` folder here and no
+deferred-rendering config; `minecraft:light_emission` is an integer 0–15 in
+Mojang's own schema and every value used here (1, 3, 4, 6, 7, 9, 11, 14) is
+inside it. Nothing in `documentation/Lighting.html` has a `[0, 5]` range at
+all. Reported rather than "fixed" with a guess.
 
 ### One log line this pass did *not* chase
 

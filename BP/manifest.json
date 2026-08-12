@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Expanse \u00a77- Behavior Pack",
-    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Expanse.",
-    "uuid": "7d9c8b34-de57-4fa7-8fbb-e474b13b215c",
+    "name": "Hallowed Reliquary \u00a77- Behavior Pack",
+    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Reliquary.",
+    "uuid": "4079299a-d286-4658-8f7c-9cb6fbcd19a0",
     "version": [
-      7,
+      8,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "36864a3d-4e54-465b-886c-66356c03db69",
+      "uuid": "5d1cab31-7a08-4be1-bd30-58a88ee6c70e",
       "version": [
-        7,
+        8,
         0,
         0
       ]
@@ -28,10 +28,10 @@
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "c83a852e-3f02-435e-a3ca-4eace3dae3a7",
+      "uuid": "e5fdc2a2-636c-4f4d-a1ad-20a1984128c7",
       "entry": "scripts/main.js",
       "version": [
-        7,
+        8,
         0,
         0
       ]
@@ -39,9 +39,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "8c65e54f-84fb-4532-9199-45ebad51dd37",
+      "uuid": "f8ce7466-bf38-46af-840c-f2fa41062087",
       "version": [
-        7,
+        8,
         0,
         0
       ]
@@ -57,7 +57,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Expanse Team"
+      "Hallowed Reliquary Team"
     ],
     "product_type": "addon"
   }

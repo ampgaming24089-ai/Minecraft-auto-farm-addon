@@ -1,5 +1,5 @@
 {
-  "format_version": "1.21.0",
+  "format_version": "1.26.20",
   "minecraft:block": {
     "description": {
       "identifier": "hollowveil:bonestone",

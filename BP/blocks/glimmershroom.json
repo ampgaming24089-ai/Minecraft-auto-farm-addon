@@ -1,12 +1,27 @@
 {
-  "format_version": "1.21.0",
+  "format_version": "1.26.20",
   "minecraft:block": {
-    "description": { "identifier": "hollowveil:glimmershroom", "menu_category": { "category": "nature" }, "traits": {} },
+    "description": {
+      "identifier": "hollowveil:glimmershroom",
+      "menu_category": {
+        "category": "nature"
+      },
+      "traits": {}
+    },
     "components": {
-      "minecraft:material_instances": { "*": { "texture": "glimmershroom", "render_method": "opaque" } },
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "glimmershroom",
+          "render_method": "opaque"
+        }
+      },
       "minecraft:geometry": "minecraft:geometry.full_block",
-      "minecraft:destructible_by_mining": { "seconds_to_destroy": 0.5 },
-      "minecraft:destructible_by_explosion": { "explosion_resistance": 0.5 },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 0.5
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 0.5
+      },
       "minecraft:light_emission": 9,
       "minecraft:map_color": "#7fd6c0",
       "minecraft:loot": "loot_tables/blocks/glimmershroom.json"

@@ -554,6 +554,25 @@ def check_generators():
             err(f"tools/{mod} fails to run: {last}")
 
 
+# Blocks are the one domain where Mojang ships a single schema version, so a
+# block declaring anything older than it is completely unverifiable - and the
+# device proved that situation is fatal rather than theoretical: seventeen
+# blocks at 1.21.0 died on a 1.26.20-only component this check could not see.
+# Entities and items ship many schema versions and 21 entity files here
+# legitimately declare 1.20.0 and load fine, so those stay a warning.
+UNVERIFIABLE_IS_FATAL = {"block"}
+
+
+def _report_unverified(unverified, snapshot):
+    for domain, files in sorted(unverified.items()):
+        floor = snapshot["oldest_schema"][domain]
+        message = (f"{len(files)} {domain} file(s) declare a format_version older "
+                   f"than {floor}, the oldest schema Mojang ships for {domain}s - "
+                   f"nothing about their components can be verified: "
+                   f"{', '.join(files[:4])}")
+        (err if domain in UNVERIFIABLE_IS_FATAL else warnings.append)(message)
+
+
 # --- 8b. full draft-07 validation against Mojang's official schemas --------
 # The snapshot check above is stdlib-only and covers component shapes and
 # field names. When the samples checkout and `jsonschema` are both present,
@@ -787,6 +806,11 @@ def format_version_of(doc):
     return tuple(int(x) for x in re.findall(r"\d+", str(doc.get("format_version", "")))[:3])
 
 
+def parse_version(text):
+    parts = re.findall(r"\d+", str(text or ""))
+    return tuple(int(p) for p in parts[:3]) if parts else ()
+
+
 def check_format_gated(domain, ident, fmt, comps):
     for rule in FORMAT_GATED:
         if rule["domain"] != domain or fmt >= rule["since"]:
@@ -807,6 +831,8 @@ def check_component_schema():
         ("item", f"{BP}/items/*.json", "minecraft:item", ()),
         ("block", f"{BP}/blocks/*.json", "minecraft:block", ()),
     ]
+    oldest = {k: parse_version(v) for k, v in (snapshot.get("oldest_schema") or {}).items() if v}
+    unverified = {}
 
     for domain, pattern, root, group_keys in domains:
         known = snapshot.get(domain, {})
@@ -824,8 +850,21 @@ def check_component_schema():
             for perm in doc.get("permutations") or []:
                 blocks.append(("permutations", perm.get("components")))
 
+            fmt = format_version_of(d)
             if isinstance(doc.get("components"), dict):
-                check_format_gated(domain, ident, format_version_of(d), doc["components"])
+                check_format_gated(domain, ident, fmt, doc["components"])
+
+            # A file whose format_version predates every schema Mojang ships
+            # for its domain cannot be verified at all: the checks below are
+            # measuring it against a parser newer than the one that will read
+            # it. That is not a hypothetical - blocks declared 1.21.0 were
+            # checked against the 1.26.20 block schema, which is how a
+            # 1.26.20-only component got waved through and killed seventeen
+            # of them on a real device.
+            floor = oldest.get(domain)
+            if fmt and floor and fmt < floor:
+                unverified.setdefault(domain, []).append(
+                    f"{ident} ({'.'.join(map(str, fmt))})")
 
             for where, comps in blocks:
                 if not isinstance(comps, dict):
@@ -834,6 +873,38 @@ def check_component_schema():
                     if not comp.startswith("minecraft:"):
                         continue
                     spec = known.get(comp)
+                    # The version gate. A component the engine only learned
+                    # about in a later format_version than this file declares
+                    # is not "unsupported" - it fails the whole definition.
+                    # Three separate regressions shipped this way before this
+                    # check existed: minecraft:tags on 1.21.0 blocks (added
+                    # 1.26.20) took out seventeen blocks, the FloatRange
+                    # attack_interval on 1.20.0 entities (added 1.26.40) took
+                    # out four mobs, and minecraft:pushable - which no schema
+                    # has ever listed - took out the Veil Dragon the moment it
+                    # moved to a modern format.
+                    if spec is not None and fmt:
+                        since = parse_version(spec.get("since")) if spec.get("since") else None
+                        if since and fmt < since:
+                            err(f"{ident} ({where}): {comp} was added in format "
+                                f"{spec['since']}, but this file declares "
+                                f"{'.'.join(map(str, fmt))} - the whole "
+                                f"definition will fail to parse")
+                            continue
+                        if spec.get("in_schema") is False and fmt >= oldest.get(domain, (99, 0, 0)):
+                            err(f"{ident} ({where}): {comp} is in no schema "
+                                f"Mojang ships. The parser tolerates it below "
+                                f"format {snapshot['oldest_schema'][domain]} "
+                                f"and rejects it at or above - this file "
+                                f"declares {'.'.join(map(str, fmt))}")
+                            continue
+                        for key in (value if isinstance(value, dict) else ()):
+                            added = (spec.get("field_since") or {}).get(key)
+                            if added and fmt < parse_version(added):
+                                err(f"{ident} ({where}): {comp}.{key} was added "
+                                    f"in format {added}, but this file declares "
+                                    f"{'.'.join(map(str, fmt))} - the whole "
+                                    f"definition will fail to parse")
                     if spec is None:
                         # patternProperties components (memory_behavior.*) carry
                         # a user-chosen suffix, so match on the prefix too.
@@ -852,10 +923,30 @@ def check_component_schema():
 
                     fields = spec.get("fields")
                     legacy = spec.get("legacy_fields") or []
+                    if legacy and fmt and fmt < oldest.get(domain, (0, 0, 0)) \
+                            and isinstance(value, dict):
+                        # Only fields that a legacy field actually REPLACED -
+                        # i.e. some legacy name extends this one, the way
+                        # attack_interval_min extends attack_interval. Without
+                        # that test this fired on `priority` and
+                        # `attack_radius`, which have been valid forever.
+                        modern = [k for k in value
+                                  if k in (fields or []) and k not in legacy
+                                  and any(old.startswith(k + "_") for old in legacy)]
+                        if modern:
+                            warnings.append(
+                                f"{ident} ({where}): {comp} uses "
+                                f"{', '.join(sorted(modern))} at format "
+                                f"{'.'.join(map(str, fmt))}, which predates any "
+                                f"schema describing this component. Vanilla "
+                                f"content of this era writes "
+                                f"{', '.join(sorted(legacy))} instead")
                     if fields and isinstance(value, dict):
                         for key in value:
                             if key in fields:
                                 continue
+                            if key in legacy and fmt and fmt < oldest.get(domain, (0, 0, 0)):
+                                continue   # correct spelling for this format
                             if key in legacy:
                                 # Vanilla content still writes this field but
                                 # the current schema dropped it. Sometimes the
@@ -887,6 +978,7 @@ def check_component_schema():
                                 warnings.append(
                                     f"{ident} ({where}): {comp}.{key} is not in "
                                     f"Mojang's component reference")
+    _report_unverified(unverified, snapshot)
 
 
 # --- 12. entity particle references --------------------------------------
@@ -939,6 +1031,7 @@ def check_manifests():
         "0f251285-1535-4d56-89e7-41c4a1143e5e",
         "1335f7ba-d26c-4ed9-bc17-f29b193e18da",
         "2d6693e3-30ef-4ab5-af8d-903e5fa06e3f",
+        "36864a3d-4e54-465b-886c-66356c03db69",
         "36d910e6-19c8-4464-8aaa-e878ad5775bc",
         "464ebcd1-a74c-4109-94ae-8ff9a324e029",
         "46e6c8fa-b01e-4082-bc0d-8dc073d60e35",
@@ -947,12 +1040,15 @@ def check_manifests():
         "6022b7d6-f4db-4c7e-8437-5a463313d2c6",
         "64e7a8dd-cef4-42e5-a82e-9b9ccd145a19",
         "72f17a26-4315-4da5-bd56-726b955baae4",
+        "7356403b-01aa-4249-8c6e-f56aa98972db",
         "75d3b110-bcbd-4b4c-9b87-6e21508ad7c0",
         "7c58c9a1-0068-429a-9f2c-472760a3fefb",
         "7c86d2fc-67c1-4aa1-b552-93e58e3c7dfb",
+        "7d9c8b34-de57-4fa7-8fbb-e474b13b215c",
         "873bb57b-2eec-4c8f-810a-380f2c9fbe4b",
         "885991b9-2285-453c-88d9-b9caa859c2fc",
         "8b83720f-c727-40bf-b60b-fd9670e9f17d",
+        "8c65e54f-84fb-4532-9199-45ebad51dd37",
         "915cf596-e3c7-4014-978e-df04a7f46861",
         "a63f5256-bccb-46d7-843b-853bd45956db",
         "a7f48924-5a1a-493f-b2cd-87735ab3b128",
@@ -961,6 +1057,7 @@ def check_manifests():
         "b5759d66-90c1-4161-a552-66a8226eb61f",
         "bf3fdb90-652d-40c2-acf9-2ee24737a2ad",
         "c351775c-40e4-4758-9d3c-d6e2dba24311",
+        "c83a852e-3f02-435e-a3ca-4eace3dae3a7",
         "cefe0049-30d2-40ef-b2ce-08d0e44c481c",
         "da0cf01f-a51c-4d87-b44b-34823328adf8",
         "e7541459-702e-46a0-abc1-2a4b66b29eaf",

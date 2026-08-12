@@ -91,9 +91,6 @@
       "minecraft:physics": {
         "has_gravity": false
       },
-      "minecraft:pushable": {
-        "is_pushable": false
-      },
       "minecraft:navigation.fly": {
         "can_path_over_water": true,
         "can_pass_doors": false,

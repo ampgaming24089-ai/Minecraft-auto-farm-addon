@@ -36,11 +36,16 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "schema", "vanilla_components.json")
 DEFAULT_SAMPLES = os.environ.get("BEDROCK_SAMPLES", "/workspace/mojang/bedrock-samples")
 
-# Schema roots to read each domain's component map from. Newest available, so
-# the snapshot describes the engine this pack targets (min_engine 1.26.30).
-ENTITY_COMPONENTS = "server/entity/1.26.40/Entity component definitions.json"
-ITEM_COMPONENTS = "server/item/1.26.30/Item Components.json"
-BLOCK_COMPONENTS = "server/block/1.26.20/Components.json"
+# Where each domain's component map lives, and what the file is called in
+# that domain's version folders. Mojang ships one folder per format version,
+# so walking all of them tells us exactly WHICH VERSION introduced a given
+# component or field - which is the thing that actually matters and the thing
+# guessing got wrong three times.
+DOMAINS = {
+    "entity": ("server/entity", ["Entity component definitions.json"]),
+    "item": ("server/item", ["Item Components.json", "Components.json"]),
+    "block": ("server/block", ["Components.json"]),
+}
 
 
 # ---------------------------------------------------------------- JSONC ----
@@ -102,12 +107,28 @@ class SchemaSet:
         return self._cache[uri]
 
     def resolve(self, node, base, depth=0):
-        """Follow $ref until a concrete node; returns (node, base_uri)."""
+        """Follow $ref until a concrete node; returns (node, base_uri).
+
+        Internal `#/definitions/...` pointers have to be chased as well as
+        external file refs. Older item schemas keep every component's shape in
+        a local `definitions` block, so skipping internal refs made those
+        versions look like they defined no fields at all - which in turn made
+        every field look like it was introduced in the one version that uses
+        external refs. That produced 200 confident, completely wrong "added in
+        1.26.30" errors the first time this ran.
+        """
         seen = 0
         while isinstance(node, dict) and "$ref" in node and seen < 16:
             ref = node["$ref"]
             if ref.startswith("#"):
-                return node, base            # internal pointer: not worth chasing
+                target = self.load(base)
+                for part in ref.lstrip("#/").split("/"):
+                    if not isinstance(target, dict) or part not in target:
+                        return None, base
+                    target = target[part]
+                node = target
+                seen += 1
+                continue
             target = os.path.normpath(os.path.join(os.path.dirname(base), ref))
             if not target.startswith("/"):
                 target = "/" + target
@@ -166,6 +187,82 @@ class SchemaSet:
                 continue
             out[comp] = self.describe(spec, uri)
         return out
+
+    def versioned_maps(self, domain):
+        """[(version tuple, version string, component map)] oldest first.
+
+        One entry per format version Mojang ships a schema for. Diffing these
+        is how `since` below is derived: the first version whose map contains
+        a component is the version that introduced it.
+        """
+        folder, filenames = DOMAINS[domain]
+        base = os.path.join(self.root, folder)
+        found = []
+        for name in sorted(os.listdir(base)):
+            key = version_key(name)
+            if not key:
+                continue                 # "beta" and friends: not a real format
+            for filename in filenames:
+                rel = f"{folder}/{name}/{filename}"
+                if os.path.exists(os.path.join(self.root, rel)):
+                    found.append((key, name, self.component_map(rel)))
+                    break
+        found.sort()
+        return found
+
+
+def version_key(text):
+    """"1.26.20" -> (1, 26, 20). Non-numeric folders ("beta") return None."""
+    parts = re.findall(r"\d+", str(text))
+    return tuple(int(p) for p in parts[:3]) if parts else None
+
+
+def introduced(domain, schemas):
+    """When each component, and each of its fields, first appears.
+
+    Returns {component: {"since": "1.26.20", "fields": {name: "1.26.40"}}}.
+    A component this pack uses at a format_version OLDER than its `since` is
+    a component the engine has never heard of yet - it does not warn, it fails
+    the whole definition. That is precisely how `minecraft:tags` (blocks,
+    1.26.20) killed seventeen blocks declared at 1.21.0, and how the single
+    FloatRange `attack_interval` (entities, 1.26.40) killed four entities
+    declared at 1.20.0.
+    """
+    if not schemas:
+        return {}
+    oldest = schemas[0][1]
+    first = {}
+    for _, label, comps in schemas:
+        for comp, (_types, fields) in comps.items():
+            entry = first.setdefault(comp, {"since": label, "described": None, "fields": {}})
+            if fields is None:
+                continue
+            # The first version that actually DESCRIBES the component's fields.
+            # Before that the schema carries the component but says nothing
+            # about its insides, so a field showing up in the first described
+            # version is not evidence of anything. Missing this made the
+            # generator announce that all sixteen fields of
+            # behavior.ranged_attack arrived in 1.26.40, when 1.26.40 is
+            # simply the first version that documents the component at all.
+            if entry["described"] is None:
+                entry["described"] = label
+            for field in fields:
+                entry["fields"].setdefault(field, label)
+
+    # Anything already present in the OLDEST schema Mojang ships tells us
+    # nothing about when it arrived - it is at least that old and probably far
+    # older. Recording "since: <oldest>" would make every long-standing
+    # component look brand new and bury the real finds: the first run of this
+    # claimed minecraft:nameable was added in 1.21.80. Only differences that
+    # appear after the first sample are evidence.
+    out = {}
+    for comp, entry in first.items():
+        since = entry["since"] if entry["since"] != oldest else None
+        described = entry["described"]
+        fields = {f: v for f, v in entry["fields"].items()
+                  if v != oldest and v != described}
+        out[comp] = {"since": since, "fields": fields}
+    return out
 
 
 # ------------------------------------------------- shapes vanilla ships ----
@@ -314,26 +411,45 @@ def main():
     docs = os.path.join(samples, "documentation")
     schemas = SchemaSet(os.path.join(samples, "metadata", "json_schemas"))
 
-    ent_schema = schemas.component_map(ENTITY_COMPONENTS)
+    ent_versions = schemas.versioned_maps("entity")
+    ent_schema = ent_versions[-1][2]
+    ent_since = introduced("entity", ent_versions)
     ent_types, ent_fields, ent_counts = observe(
         [os.path.join(bp, "entities")], "minecraft:entity", ("component_groups",))
     entity = merge(ent_schema, ent_types, ent_fields, ent_counts,
                    doc_fields(os.path.join(docs, "Entities.html")))
 
-    item_schema = schemas.component_map(ITEM_COMPONENTS)
+    item_versions = schemas.versioned_maps("item")
+    item_schema = item_versions[-1][2]
+    item_since = introduced("item", item_versions)
     item_types, item_fields, item_counts = observe(
         [os.path.join(bp, "items")], "minecraft:item")
     item = merge(item_schema, item_types, item_fields, item_counts)
 
-    try:
-        blk_schema = schemas.component_map(BLOCK_COMPONENTS)
-    except (OSError, ValueError):
-        blk_schema = {}
+    blk_versions = schemas.versioned_maps("block")
+    blk_schema = blk_versions[-1][2] if blk_versions else {}
+    blk_since = introduced("block", blk_versions)
     # Vanilla ships no block JSON, so the schema is the only source here.
     block = merge(blk_schema, {}, {})
 
     with open(os.path.join(samples, "version.json"), encoding="utf-8") as fh:
         version = json.load(fh).get("latest", {}).get("version", "unknown")
+
+    for domain, since in (("entity", ent_since), ("item", item_since), ("block", blk_since)):
+        table = {"entity": entity, "item": item, "block": block}[domain]
+        for comp, entry in table.items():
+            info = since.get(comp)
+            # Whether ANY shipped schema lists this component at all. False
+            # means vanilla content uses it but no schema has ever described
+            # it - minecraft:pushable is the example. The engine tolerates
+            # those below the oldest schema version and rejects them at or
+            # above it, which is exactly how the Veil Dragon died.
+            entry["in_schema"] = info is not None
+            if info:
+                if info["since"]:
+                    entry["since"] = info["since"]
+                if info["fields"]:
+                    entry["field_since"] = info["fields"]
 
     snapshot = {
         "_source": "Mojang bedrock-samples",
@@ -343,11 +459,23 @@ def main():
                      "accepts at the component root, 'fields' every top-level "
                      "key it accepts inside; both are hard constraints taken "
                      "from Mojang's official schemas. 'doc_fields' and "
-                     "'seen'/'seen_count' are advisory - the HTML reference's "
+                     "'since' is the oldest format_version whose schema lists "
+                     "the component, and 'field_since' the same per field: "
+                     "using either below that version fails the whole "
+                     "definition. 'seen'/'seen_count' are advisory - the HTML reference's "
                      "field list, and the shapes vanilla content uses, for "
                      "components the schemas leave open. 'legacy_fields' are "
                      "fields vanilla still writes that the schema has dropped. "
                      "A missing key means unconstrained."),
+        # The oldest format_version Mojang ships a schema for, per domain.
+        # Below this the engine's parser predates the strict schema and
+        # tolerates components that no schema lists (minecraft:pushable, for
+        # one); at or above it, the same component fails the whole definition.
+        "oldest_schema": {
+            "entity": ent_versions[0][1] if ent_versions else None,
+            "item": item_versions[0][1] if item_versions else None,
+            "block": blk_versions[0][1] if blk_versions else None,
+        },
         "entity": entity,
         "item": item,
         "block": block,
