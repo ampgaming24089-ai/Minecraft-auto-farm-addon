@@ -1,4 +1,4 @@
-# Hallowed Threshold — a Minecraft Bedrock dimension add-on
+# Hallowed Vigil — a Minecraft Bedrock dimension add-on
 
 (packaged/pack-facing name; the dimension is still called "the Hollow Veil"
 in-fiction throughout the story and UI — see `docs/STORY.md`)
@@ -19,7 +19,7 @@ join. Read `docs/STORY.md` for the fiction the mechanics are built to tell.
 
 ## Install
 
-1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowedThreshold.mcaddon`.
+1. Run `./build_addon.sh` (needs `zip`) — it writes `dist/HallowedVigil.mcaddon`.
 2. Send that file to a device with Minecraft Bedrock and open it, or copy
    `BP/` and `RP/` directly into your world's
    `com.mojang/development_behavior_packs` / `development_resource_packs`.

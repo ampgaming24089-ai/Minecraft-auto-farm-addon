@@ -28,6 +28,39 @@ function igniterDebounced(player) {
   return false;
 }
 
+/**
+ * The tap path.
+ *
+ * The owner's report was "it should work on tap not hold", and that is exactly
+ * what a custom item without a custom component does on touch controls: a tap
+ * on a block that isn't interactive falls through to mining, and only a
+ * long-press raises the generic `itemUse`. `playerInteractWithBlock` doesn't
+ * save it either, because the engine never decides an interaction happened.
+ *
+ * `minecraft:custom_components` is the engine's own answer. A registered
+ * `onUseOn` makes the item interactive, so a single tap on the gold frame is
+ * an interaction and the callback fires with the block already resolved - no
+ * raycast, no long-press, no guessing what the player aimed at.
+ *
+ * Verified: the component is in the item schema for format versions 1.20.80
+ * through 1.21.80 (the igniter declares 1.21.0, inside that band - it was
+ * dropped again at 1.21.90, so this must NOT be copied onto a newer item),
+ * and `ItemComponentRegistry.registerCustomComponent` with an `onUseOn`
+ * closure at `default` privilege is in the @minecraft/server 2.9.0 bindings.
+ *
+ * Must be called from inside `system.beforeEvents.startup` - custom components
+ * can only be registered during the startup phase.
+ */
+export function registerIgniterComponent(itemComponentRegistry) {
+  itemComponentRegistry.registerCustomComponent("hollowveil:soulfire_igniter", {
+    onUseOn(ev) {
+      const player = ev.source;
+      if (!player || player.typeId !== "minecraft:player") return;
+      useIgniter(player, ev.block, ev.blockFace, ev.itemStack);
+    },
+  });
+}
+
 export function registerItemHandlers() {
   world.afterEvents.itemUse.subscribe((ev) => {
     const { source, itemStack } = ev;

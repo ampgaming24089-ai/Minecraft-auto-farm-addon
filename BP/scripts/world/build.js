@@ -2,6 +2,7 @@ import { world } from "@minecraft/server";
 import { KEYS, getWorldFlag, setWorldFlag, setWorldJson } from "../lib/state.js";
 import { buildHollowHamlet } from "../village/village.js";
 import { SURFACE_Y, WORLD_RADIUS, biomeAt, heightAt, isWithinWorld } from "./biomes.js";
+import { commandRunner } from "../lib/cmd.js";
 
 export const HOLLOW_VEIL = "hollowveil:hollow_veil";
 
@@ -50,7 +51,7 @@ export async function ensureWorldBuilt() {
     to: { x: cx + r + 4, y: y + 40, z: cz + r + 4 },
   });
 
-  const run = (cmd) => dim.runCommandAsync(cmd);
+  const run = commandRunner(dim);
   run(`fill ${cx - r} ${y - 12} ${cz - r} ${cx + r} ${y - 12} ${cz + r} minecraft:bedrock`);
   run(`fill ${cx - r} ${y - 11} ${cz - r} ${cx + r} ${y - 1} ${cz + r} minecraft:deepslate`);
   run(`fill ${cx - r} ${y} ${cz - r} ${cx + r} ${y} ${cz + r} hollowveil:bonestone`);

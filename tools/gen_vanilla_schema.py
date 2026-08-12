@@ -231,10 +231,13 @@ def introduced(domain, schemas):
     if not schemas:
         return {}
     oldest = schemas[0][1]
+    newest = schemas[-1][1]
     first = {}
     for _, label, comps in schemas:
         for comp, (_types, fields) in comps.items():
-            entry = first.setdefault(comp, {"since": label, "described": None, "fields": {}})
+            entry = first.setdefault(comp, {"since": label, "described": None,
+                                            "last": label, "fields": {}})
+            entry["last"] = label
             if fields is None:
                 continue
             # The first version that actually DESCRIBES the component's fields.
@@ -255,13 +258,24 @@ def introduced(domain, schemas):
     # component look brand new and bury the real finds: the first run of this
     # claimed minecraft:nameable was added in 1.21.80. Only differences that
     # appear after the first sample are evidence.
+    # The mirror of `since`: components Mojang has REMOVED. The snapshot used
+    # to be built from the newest schema alone, so a component that existed in
+    # older versions and was dropped looked like it had never existed at all.
+    # `minecraft:custom_components` is exactly that - valid on items from
+    # 1.20.80 through 1.21.80 and gone at 1.21.90 - which made the one
+    # engine-supported way to give a custom item a tap-to-use interaction
+    # unusable, because the checker called it imaginary.
+    #
+    # `until` is only recorded when a component is genuinely absent from the
+    # newest schema; a component present there is simply current.
     out = {}
     for comp, entry in first.items():
         since = entry["since"] if entry["since"] != oldest else None
+        until = entry["last"] if entry["last"] != newest else None
         described = entry["described"]
         fields = {f: v for f, v in entry["fields"].items()
                   if v != oldest and v != described}
-        out[comp] = {"since": since, "fields": fields}
+        out[comp] = {"since": since, "until": until, "fields": fields}
     return out
 
 
@@ -435,8 +449,28 @@ def main():
     with open(os.path.join(samples, "version.json"), encoding="utf-8") as fh:
         version = json.load(fh).get("latest", {}).get("version", "unknown")
 
-    for domain, since in (("entity", ent_since), ("item", item_since), ("block", blk_since)):
+    for domain, since, versions in (("entity", ent_since, ent_versions),
+                                    ("item", item_since, item_versions),
+                                    ("block", blk_since, blk_versions)):
         table = {"entity": entity, "item": item, "block": block}[domain]
+        # Components Mojang has since removed are absent from the newest
+        # schema and so never made it into `table` at all - they simply
+        # vanished from the snapshot, which is why a checker built on it
+        # called minecraft:custom_components imaginary. Re-add them from the
+        # last version that still described them, so the shape they had while
+        # they were valid is still checkable.
+        for comp, info in since.items():
+            if comp in table or not info.get("until"):
+                continue
+            last_map = next((m for _k, label, m in reversed(versions)
+                             if label == info["until"]), {})
+            types, fields = last_map.get(comp, (None, None))
+            entry = {}
+            if types:
+                entry["types"] = sorted(types)
+            if fields:
+                entry["fields"] = sorted(fields)
+            table[comp] = entry
         for comp, entry in table.items():
             info = since.get(comp)
             # Whether ANY shipped schema lists this component at all. False
@@ -448,6 +482,8 @@ def main():
             if info:
                 if info["since"]:
                     entry["since"] = info["since"]
+                if info.get("until"):
+                    entry["until"] = info["until"]
                 if info["fields"]:
                     entry["field_since"] = info["fields"]
 
@@ -462,7 +498,11 @@ def main():
                      "'since' is the oldest format_version whose schema lists "
                      "the component, and 'field_since' the same per field: "
                      "using either below that version fails the whole "
-                     "definition. 'seen'/'seen_count' are advisory - the HTML reference's "
+                     "definition. 'until' is the NEWEST format_version whose "
+                     "schema still lists the component - present only on ones "
+                     "Mojang has removed, and using it above that version "
+                     "fails the definition the same way. "
+                     "'seen'/'seen_count' are advisory - the HTML reference's "
                      "field list, and the shapes vanilla content uses, for "
                      "components the schemas leave open. 'legacy_fields' are "
                      "fields vanilla still writes that the schema has dropped. "

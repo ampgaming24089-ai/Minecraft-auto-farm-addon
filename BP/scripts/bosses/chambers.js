@@ -1,5 +1,6 @@
 import { world } from "@minecraft/server";
 import { KEYS, getWorldJson, setWorldJson } from "../lib/state.js";
+import { commandRunner } from "../lib/cmd.js";
 
 const BOSS_COOLDOWN_TICKS = 24000; // 20 minutes real-time, set the instant a chamber is used
 
@@ -58,7 +59,7 @@ export function buildChamberAndSpawn(dimension, origin, bossId, currentTick) {
   if (!cfg) return false;
   const { x, y, z } = origin;
   const r = 8;
-  const run = (cmd) => dimension.runCommandAsync(cmd);
+  const run = commandRunner(dimension);
 
   run(`fill ${x - r} ${y} ${z - r} ${x + r} ${y + 8} ${z + r} air`);
   run(`fill ${x - r} ${y - 1} ${z - r} ${x + r} ${y - 1} ${z + r} ${cfg.floor}`);

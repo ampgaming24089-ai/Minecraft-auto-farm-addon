@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Threshold \u00a77- Resource Pack",
-    "description": "Textures, models, sounds and atmosphere for the Hallowed Threshold.",
-    "uuid": "3fdbb366-598f-4a19-86fb-70d6d2502fc2",
+    "name": "Hallowed Vigil \u00a77- Resource Pack",
+    "description": "Textures, models, sounds and atmosphere for the Hallowed Vigil.",
+    "uuid": "120a4a8c-7ab9-4dc8-864f-ca818b1ae4ab",
     "version": [
-      10,
+      11,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "0b83a713-42b9-4a4c-9c81-6f56cbc67814",
+      "uuid": "b845e8c1-2008-4772-a403-25c51c3f3be2",
       "version": [
-        10,
+        11,
         0,
         0
       ]
@@ -28,9 +28,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "de973948-5c0d-4eb5-878c-c80622cc573b",
+      "uuid": "4d71cb1a-a5e2-4f78-9ecd-99db22624af6",
       "version": [
-        10,
+        11,
         0,
         0
       ]
@@ -38,7 +38,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Threshold Team"
+      "Hallowed Vigil Team"
     ],
     "product_type": "addon"
   }

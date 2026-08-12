@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Pre-ship validator for the Hallowed Depths addon.
+Pre-ship validator for this addon.
 
 Every check in here exists because a real device test caught the bug it
 looks for. Run it before every build:
@@ -296,6 +296,95 @@ def check_script_effects():
                 err(f"{rel(f)}:{line}: {m.group(1)!r} is not a Minecraft Bedrock "
                     f"status effect - the call throws and the ability silently "
                     f"never happens")
+
+
+# --- 3d. every method we call on an engine object actually exists ---------
+# The one that cost the most. Every builder in this pack called
+# `dimension.runCommandAsync(...)`, which is a @minecraft/server *1.x* API
+# removed in 2.x. It threw `TypeError: ... is not a function` in the portal
+# lighter, the hub builder, the terrain streamer, the site builder, the
+# village and the boss chambers - so the portal "did nothing" for three
+# rounds while frame detection was working perfectly and dying on the very
+# last line.
+#
+# A wrong event *name* was already caught (3a) and a wrong event *property*
+# was already caught (3b); a wrong *method* was the remaining hole.
+#
+# The test is deliberately blunt: collect every method and property name that
+# exists anywhere in the server + server-ui bindings, add JavaScript's own
+# built-ins and every name this pack defines itself, and flag any `.name(`
+# left over. That set is 1000+ names wide, so it is not a whitelist anyone
+# has to maintain - it is "this identifier is not a function on anything,
+# anywhere", which is exactly what runCommandAsync was.
+JS_BUILTIN_METHODS = set("""
+push pop shift unshift slice splice concat join map filter forEach reduce reduceRight
+find findIndex findLast findLastIndex includes indexOf lastIndexOf sort reverse some
+every flat flatMap keys values entries fill at copyWithin
+add has delete clear get set
+toString toLocaleString valueOf hasOwnProperty isPrototypeOf propertyIsEnumerable
+charAt charCodeAt codePointAt startsWith endsWith padStart padEnd repeat replace
+replaceAll split substring substr toLowerCase toUpperCase trim trimStart trimEnd
+match matchAll normalize localeCompare search concat
+then catch finally all allSettled race any resolve reject
+toFixed toPrecision toExponential
+bind call apply
+parse stringify
+floor ceil round abs min max hypot sqrt cbrt pow sign cos sin tan acos asin atan atan2
+log log2 log10 exp trunc fround clz32 imul random
+now getTime getFullYear getMonth getDate getHours getMinutes getSeconds
+error warn log info debug trace assert
+from fromEntries of isArray isInteger isSafeInteger isFinite isNaN parseInt parseFloat
+freeze assign create defineProperty getPrototypeOf seal
+test exec
+next return throw
+""".split())
+
+
+def _locally_defined_names():
+    """Every identifier this pack defines that can appear after a dot.
+
+    Covers plain declarations, class/object-literal shorthand methods and
+    `name: (…) =>` properties, so calling one of our own helpers off an object
+    is never mistaken for a missing engine API.
+    """
+    names = set()
+    for f in glob.glob(f"{BP}/scripts/**/*.js", recursive=True):
+        src = js_source(f)
+        names |= set(re.findall(r"(?:function|const|let|var|class)\s+(\w+)", src))
+        names |= set(re.findall(r"^\s{2,}(\w+)\s*\(", src, re.M))
+        names |= set(re.findall(r"(\w+)\s*[:(]\s*(?:function|\()", src))
+    return names
+
+
+def check_script_api():
+    ui_version = script_module_version("@minecraft/server-ui")
+    ui_bindings = os.path.join(SCRIPT_MODULES, f"server-ui-bindings_{ui_version}.json")
+    if not os.path.isfile(BINDINGS) or not os.path.isfile(ui_bindings):
+        skipped.append("Script API method names (bedrock-samples not cloned)")
+        return
+
+    api = set()
+    for path in (BINDINGS, ui_bindings):
+        d = json.load(open(path))
+        for group in ("classes", "interfaces", "objects", "errors"):
+            for c in d.get(group) or []:
+                for fn in c.get("functions") or []:
+                    api.add(fn["name"])
+                for p in c.get("properties") or []:
+                    api.add(p["name"])
+
+    known = api | JS_BUILTIN_METHODS | _locally_defined_names()
+    for f in sorted(glob.glob(f"{BP}/scripts/**/*.js", recursive=True)):
+        src = js_source(f)
+        for m in re.finditer(r"\.(\w+)\s*\(", src):
+            name = m.group(1)
+            if name in known:
+                continue
+            line = src[:m.start()].count("\n") + 1
+            err(f"{rel(f)}:{line}: .{name}() is not a method on anything in "
+                f"@minecraft/server {SERVER_VERSION}, @minecraft/server-ui "
+                f"{ui_version}, JavaScript, or this pack - the call throws "
+                f"TypeError at runtime")
 
 
 # --- 4. item schema ------------------------------------------------------
@@ -909,6 +998,16 @@ def check_component_schema():
                                 f"{'.'.join(map(str, fmt))} - the whole "
                                 f"definition will fail to parse")
                             continue
+                        # The mirror of the gate above: a component Mojang has
+                        # REMOVED fails just as hard above its last version as
+                        # a new one does below its first.
+                        until = parse_version(spec.get("until")) if spec.get("until") else None
+                        if until and fmt > until:
+                            err(f"{ident} ({where}): {comp} was removed after "
+                                f"format {spec['until']}, but this file declares "
+                                f"{'.'.join(map(str, fmt))} - the whole "
+                                f"definition will fail to parse")
+                            continue
                         if spec.get("in_schema") is False and fmt >= oldest.get(domain, (99, 0, 0)):
                             err(f"{ident} ({where}): {comp} is in no schema "
                                 f"Mojang ships. The parser tolerates it below "
@@ -1046,14 +1145,18 @@ def check_manifests():
     # These shipped in earlier builds. Reusing one is what produced the
     # "Duplicate pack detected" error on import, so they are now banned.
     RETIRED = {
+        "04144c3f-9f8a-4193-b66f-0ac30b78df95",
+        "0b83a713-42b9-4a4c-9c81-6f56cbc67814",
         "0f251285-1535-4d56-89e7-41c4a1143e5e",
         "1335f7ba-d26c-4ed9-bc17-f29b193e18da",
         "2418701a-7fa0-47a8-bb18-c20a3b9b45e9",
+        "2903629b-308d-4d31-9571-59a793dead48",
         "2bce0818-2c7b-47cc-ab8e-b29c59646fec",
         "2d6693e3-30ef-4ab5-af8d-903e5fa06e3f",
         "36864a3d-4e54-465b-886c-66356c03db69",
         "36d910e6-19c8-4464-8aaa-e878ad5775bc",
         "3e151a25-ce4c-47db-aa91-4b6dc17a5ce1",
+        "3fdbb366-598f-4a19-86fb-70d6d2502fc2",
         "4079299a-d286-4658-8f7c-9cb6fbcd19a0",
         "464ebcd1-a74c-4109-94ae-8ff9a324e029",
         "46e6c8fa-b01e-4082-bc0d-8dc073d60e35",
@@ -1086,6 +1189,7 @@ def check_manifests():
         "cefe0049-30d2-40ef-b2ce-08d0e44c481c",
         "d0efb2e8-1cfa-44bb-8426-a9d01ba0f437",
         "da0cf01f-a51c-4d87-b44b-34823328adf8",
+        "de973948-5c0d-4eb5-878c-c80622cc573b",
         "e5fdc2a2-636c-4f4d-a1ad-20a1984128c7",
         "e7541459-702e-46a0-abc1-2a4b66b29eaf",
         "ec0289ad-f988-490b-b4c7-c14baa0c632e",
@@ -1104,6 +1208,7 @@ def main():
     check_dead_code()
     check_events()
     check_event_properties()
+    check_script_api()
     check_script_effects()
     check_items(lang)
     check_entities_blocks(lang)

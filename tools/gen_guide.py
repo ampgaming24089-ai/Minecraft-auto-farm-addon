@@ -269,11 +269,16 @@ SECTIONS_INTRO = {
         "Getting In",
         "Craft Soulfire and Steel from one Soul Sand and one Iron Ingot. Build "
         "a frame out of Gold Blocks exactly the way you would build a nether "
-        "portal - the corners are optional - and strike the frame with the "
-        "igniter. The portal burns red. Walk through.\n\n"
+        "portal - the corners are optional - and TAP the frame with the "
+        "igniter. One tap is enough; you do not need to hold. The portal "
+        "burns red. Walk through.\n\n"
         "If it will not light, the igniter tells you why: which blocks are "
         "missing, or that the opening is the wrong shape or size. Any "
-        "rectangle from 2x3 up to 21x21 works."),
+        "rectangle from 2x3 up to 21x21 works.\n\n"
+        "If it still will not light, nothing here depends on it. Open this "
+        "guide and press 'Travel to the Hollow Veil' at the bottom, or type "
+        "/scriptevent hollowveil:portal to have a working portal built where "
+        "you stand."),
     "back": (
         "Getting Home",
         "Stand in the portal you arrived through, or in the pre-lit one beside "

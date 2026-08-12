@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Threshold \u00a77- Behavior Pack",
-    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Threshold.",
-    "uuid": "de973948-5c0d-4eb5-878c-c80622cc573b",
+    "name": "Hallowed Vigil \u00a77- Behavior Pack",
+    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Vigil.",
+    "uuid": "4d71cb1a-a5e2-4f78-9ecd-99db22624af6",
     "version": [
-      10,
+      11,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "04144c3f-9f8a-4193-b66f-0ac30b78df95",
+      "uuid": "9532f86f-43c7-44aa-81ac-fbee36b80301",
       "version": [
-        10,
+        11,
         0,
         0
       ]
@@ -28,10 +28,10 @@
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "2903629b-308d-4d31-9571-59a793dead48",
+      "uuid": "bc676859-4871-41c4-ab96-2a5271a41cc3",
       "entry": "scripts/main.js",
       "version": [
-        10,
+        11,
         0,
         0
       ]
@@ -39,9 +39,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "3fdbb366-598f-4a19-86fb-70d6d2502fc2",
+      "uuid": "120a4a8c-7ab9-4dc8-864f-ca818b1ae4ab",
       "version": [
-        10,
+        11,
         0,
         0
       ]
@@ -57,7 +57,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Threshold Team"
+      "Hallowed Vigil Team"
     ],
     "product_type": "addon"
   }

@@ -2,6 +2,7 @@ import { world, system, ItemStack } from "@minecraft/server";
 import { HOLLOW_VEIL } from "./build.js";
 import { BIOMES, BEDROCK_Y, WORLD_RADIUS, biomeAt, heightAt, featureRoll, isWithinWorld } from "./biomes.js";
 import { KEYS, getWorldJson, setWorldJson } from "../lib/state.js";
+import { commandRunner } from "../lib/cmd.js";
 
 // Landmarks.
 //
@@ -163,7 +164,7 @@ const LABEL = {
 };
 
 function buildSite(dim, site) {
-  const run = (cmd) => dim.runCommandAsync(cmd);
+  const run = commandRunner(dim);
   const y = heightAt(site.x, site.z);
   const ctx = { dim, run, x: site.x, y, z: site.z };
   stampMarker(run, site);

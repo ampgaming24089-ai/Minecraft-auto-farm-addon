@@ -1,7 +1,8 @@
 import { world, system } from "@minecraft/server";
 import { HOLLOW_VEIL } from "../world/build.js";
-import { sendPlayerToHollowVeil } from "./portal.js";
+import { sendPlayerToHollowVeil, setBox } from "./portal.js";
 import { KEYS, getPlayerJson } from "../lib/state.js";
+import { lastCommandError } from "../lib/cmd.js";
 
 /**
  * A way into the dimension that cannot fail.
@@ -90,20 +91,20 @@ function buildPortalHere(player) {
   const x = Math.floor(loc.x);
   const y = Math.floor(loc.y);
   const z = Math.floor(loc.z) + 3;          // a few blocks ahead, not underfoot
-  const run = (cmd) => {
-    try {
-      dim.runCommand(cmd);
-    } catch {
-      /* one failed fill should not abandon the rest of the frame */
-    }
-  };
+  // Placed block by block rather than with /fill, for the same reason
+  // fillPortal is: this is the escape hatch, and it should not depend on the
+  // command parser, an operator level, or cheats being on any more than it
+  // has to.
+  const gold = "minecraft:gold_block";
+  const portal = "hollowveil:veil_portal";
   // A 4x5 nether-shaped frame running along x, corners left out like vanilla.
-  run(`fill ${x - 1} ${y - 1} ${z} ${x + 2} ${y - 1} ${z} minecraft:gold_block`);
-  run(`fill ${x - 1} ${y + 3} ${z} ${x + 2} ${y + 3} ${z} minecraft:gold_block`);
-  run(`fill ${x - 2} ${y} ${z} ${x - 2} ${y + 2} ${z} minecraft:gold_block`);
-  run(`fill ${x + 3} ${y} ${z} ${x + 3} ${y + 2} ${z} minecraft:gold_block`);
-  run(`fill ${x - 1} ${y} ${z} ${x + 2} ${y + 2} ${z} hollowveil:veil_portal`);
-  player.sendMessage("§5A portal opens in front of you. Walk into it.");
+  setBox(dim, { x: x - 1, y: y - 1, z }, { x: x + 2, y: y - 1, z }, gold);
+  setBox(dim, { x: x - 1, y: y + 3, z }, { x: x + 2, y: y + 3, z }, gold);
+  setBox(dim, { x: x - 2, y, z }, { x: x - 2, y: y + 2, z }, gold);
+  setBox(dim, { x: x + 3, y, z }, { x: x + 3, y: y + 2, z }, gold);
+  const placed = setBox(dim, { x: x - 1, y, z }, { x: x + 2, y: y + 2, z }, portal);
+  if (placed) player.sendMessage("§5A portal opens in front of you. Walk into it.");
+  else player.sendMessage("§cCouldn't place blocks here - move somewhere open and try again.");
 }
 
 /** Proof of life, so "nothing happens" can be told apart from "the scripts
@@ -115,4 +116,8 @@ function report(player) {
   player.sendMessage("§7/scriptevent hollowveil:travel §8- go to the Veil");
   player.sendMessage("§7/scriptevent hollowveil:portal §8- build a working portal here");
   player.sendMessage("§7/scriptevent hollowveil:home §8- return");
+  // If the world builders are failing, say so here rather than leaving the
+  // owner to guess from an empty landscape.
+  const cmdError = lastCommandError();
+  if (cmdError) player.sendMessage(`§6World builder: §7${cmdError}`);
 }

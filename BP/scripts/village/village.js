@@ -1,4 +1,5 @@
 import { KEYS, getWorldFlag, setWorldFlag, setWorldJson } from "../lib/state.js";
+import { commandRunner } from "../lib/cmd.js";
 
 /** Procedurally raises Hollow Hamlet: a small perimeter of lit boundary
  * stones, three ashwood/bonestone huts, and a central shrine where the
@@ -11,7 +12,7 @@ export function buildHollowHamlet(dimension, origin) {
   setWorldFlag(KEYS.VILLAGE_BUILT, true);
 
   const { x, y, z } = origin;
-  const run = (cmd) => dimension.runCommandAsync(cmd);
+  const run = commandRunner(dimension);
 
   // clear + flatten a modest plaza
   run(`fill ${x - 16} ${y} ${z - 16} ${x + 16} ${y + 10} ${z + 16} air`);

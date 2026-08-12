@@ -53,13 +53,25 @@ function looksLikeAnAttempt(world, pos) {
  * addon.
  */
 export function tryIgnitePortal(dimension, clickedPos, player, blockFace) {
-  const view = probe(dimension);
-  const result = findAnyFrame(view, seedsForClick(clickedPos, blockFace));
-  if (!result.ok) {
-    if (looksLikeAnAttempt(view, clickedPos)) player?.sendMessage(explainFailure(result));
+  let result;
+  try {
+    const view = probe(dimension);
+    result = findAnyFrame(view, seedsForClick(clickedPos, blockFace));
+    if (!result.ok) {
+      if (looksLikeAnAttempt(view, clickedPos)) player?.sendMessage(explainFailure(result));
+      return false;
+    }
+    if (!fillPortal(dimension, result.frame)) {
+      player?.sendMessage("§cThe frame is right, but the blocks wouldn't take. Try again where the chunk is loaded.");
+      return false;
+    }
+  } catch (err) {
+    // Never fail silently again. Three rounds of "the tool does nothing" were
+    // a TypeError thrown right here with nothing to show for it in-game.
+    console.error(`[Hollow Veil] portal ignition failed: ${err}`);
+    player?.sendMessage(`§cThe igniter faltered: §7${err}`);
     return false;
   }
-  fillPortal(dimension, result.frame);
   try {
     dimension.playSound("hollowveil.portal.ignite", clickedPos);
   } catch {
@@ -69,11 +81,42 @@ export function tryIgnitePortal(dimension, clickedPos, player, blockFace) {
   return true;
 }
 
+/**
+ * Places a box of blocks one block at a time.
+ *
+ * Deliberately NOT a command. This is the last step of lighting a portal, and
+ * it is where every previous attempt died: it called
+ * `dimension.runCommandAsync`, which does not exist in @minecraft/server 2.x,
+ * so it threw `TypeError` after the frame had already been found. Nothing
+ * about filling a doorway needs the command parser - `setBlockType` is a
+ * direct native call, it is on the 2.9.0 Dimension bindings, and it cannot be
+ * defeated by a command being disabled or a permission level.
+ *
+ * Returns how many blocks were actually placed, so the caller can tell a real
+ * portal from a no-op in an unloaded chunk.
+ */
+export function setBox(dimension, from, to, typeId) {
+  let placed = 0;
+  for (let x = Math.min(from.x, to.x); x <= Math.max(from.x, to.x); x++) {
+    for (let y = Math.min(from.y, to.y); y <= Math.max(from.y, to.y); y++) {
+      for (let z = Math.min(from.z, to.z); z <= Math.max(from.z, to.z); z++) {
+        try {
+          dimension.setBlockType({ x, y, z }, typeId);
+          placed += 1;
+        } catch {
+          // unloaded chunk or outside the build height - skip this one block
+        }
+      }
+    }
+  }
+  return placed;
+}
+
 function fillPortal(dimension, frame) {
-  const { axis, fixedAxis, fixedVal, minA, maxA, minY, maxY } = frame;
+  const { axis, fixedVal, minA, maxA, minY, maxY } = frame;
   const from = axis === "x" ? { x: minA, y: minY, z: fixedVal } : { x: fixedVal, y: minY, z: minA };
   const to = axis === "x" ? { x: maxA, y: maxY, z: fixedVal } : { x: fixedVal, y: maxY, z: maxA };
-  dimension.runCommandAsync(`fill ${from.x} ${from.y} ${from.z} ${to.x} ${to.y} ${to.z} ${PORTAL_BLOCK}`);
+  return setBox(dimension, from, to, PORTAL_BLOCK) > 0;
 }
 
 function buildReturnPortalFrame(dim) {
@@ -82,11 +125,12 @@ function buildReturnPortalFrame(dim) {
   const { x, y, z } = ARRIVAL_POS;
   // a pre-built, pre-lit return portal frame (4 wide x 5 tall, facing +x) at
   // the edge of Hollow Hamlet
-  dim.runCommandAsync(`fill ${x - 1} ${y} ${z + 2} ${x + 2} ${y} ${z + 2} ${FRAME_BLOCK}`);
-  dim.runCommandAsync(`fill ${x - 1} ${y + 4} ${z + 2} ${x + 2} ${y + 4} ${z + 2} ${FRAME_BLOCK}`);
-  dim.runCommandAsync(`fill ${x - 1} ${y + 1} ${z + 2} ${x - 1} ${y + 3} ${z + 2} ${FRAME_BLOCK}`);
-  dim.runCommandAsync(`fill ${x + 2} ${y + 1} ${z + 2} ${x + 2} ${y + 3} ${z + 2} ${FRAME_BLOCK}`);
-  dim.runCommandAsync(`fill ${x} ${y + 1} ${z + 2} ${x + 1} ${y + 3} ${z + 2} ${PORTAL_BLOCK}`);
+  const zf = z + 2;
+  setBox(dim, { x: x - 1, y, z: zf }, { x: x + 2, y, z: zf }, FRAME_BLOCK);
+  setBox(dim, { x: x - 1, y: y + 4, z: zf }, { x: x + 2, y: y + 4, z: zf }, FRAME_BLOCK);
+  setBox(dim, { x: x - 1, y: y + 1, z: zf }, { x: x - 1, y: y + 3, z: zf }, FRAME_BLOCK);
+  setBox(dim, { x: x + 2, y: y + 1, z: zf }, { x: x + 2, y: y + 3, z: zf }, FRAME_BLOCK);
+  setBox(dim, { x, y: y + 1, z: zf }, { x: x + 1, y: y + 3, z: zf }, PORTAL_BLOCK);
 }
 
 // A "custom transition" within what the stable Script API actually exposes:

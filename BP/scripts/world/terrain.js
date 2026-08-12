@@ -4,6 +4,7 @@ import {
   BIOMES, SECTOR, WORLD_RADIUS, BEDROCK_Y, STONE_TOP_Y,
   biomeAt, heightAt, featureRoll, isWithinWorld,
 } from "./biomes.js";
+import { commandRunner } from "../lib/cmd.js";
 
 // Streaming terrain.
 //
@@ -111,7 +112,7 @@ function drainQueue(dim) {
 function buildSector(dim, sx, sz) {
   const x0 = sx * SECTOR;
   const z0 = sz * SECTOR;
-  const run = (cmd) => dim.runCommandAsync(cmd);
+  const run = commandRunner(dim);
 
   // Terrain is built as columns of constant height. Rather than one fill per
   // block column (1024 commands), adjacent columns of equal height and biome

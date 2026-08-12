@@ -16,6 +16,9 @@
       },
       "minecraft:hand_equipped": true,
       "minecraft:glint": true,
+      "minecraft:custom_components": [
+        "hollowveil:soulfire_igniter"
+      ],
       "minecraft:durability": {
         "max_durability": 64
       },

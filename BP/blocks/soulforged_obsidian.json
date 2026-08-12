@@ -25,7 +25,6 @@
       "minecraft:map_color": "#2a1338",
       "minecraft:light_emission": 3,
       "minecraft:friction": 0.6,
-      "tag:hollowveil:portal_frame": {},
       "minecraft:tags": [
         "stone",
         "iron_pick_diggable",

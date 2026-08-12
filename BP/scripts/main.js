@@ -5,7 +5,9 @@ import { startBossAI } from "./bosses/bossAI.js";
 import { registerMobAbilities, startWraithPhasing } from "./mobs/abilities.js";
 import { startMobSpawner } from "./mobs/spawner.js";
 import { startStructureSpawners } from "./world/spawners.js";
-import { registerItemHandlers, startPassiveItemEffects, registerFoodConversions } from "./items/tools.js";
+import {
+  registerItemHandlers, startPassiveItemEffects, registerFoodConversions, registerIgniterComponent,
+} from "./items/tools.js";
 import { registerBossWeapons } from "./items/weapons.js";
 import { registerDragonEgg } from "./items/dragon.js";
 import { startArmorSetBonuses } from "./armor/setBonuses.js";
@@ -20,7 +22,21 @@ import { registerTravelCommands } from "./portal/travel.js";
 // phase - see docs/DIMENSION.md for why this replaced the old static
 // BP/dimensions/*.json approach.
 system.beforeEvents.startup.subscribe((ev) => {
-  ev.dimensionRegistry.registerCustomDimension(HOLLOW_VEIL);
+  // Each registration is isolated for the same reason the subsystems below
+  // are: one throw in here would take the custom dimension down with it, and
+  // a pack whose dimension does not exist has nothing left to offer.
+  try {
+    ev.dimensionRegistry.registerCustomDimension(HOLLOW_VEIL);
+  } catch (err) {
+    console.error(`[Hollow Veil] dimension registration failed: ${err}`);
+  }
+  try {
+    // Makes the Soulfire Igniter respond to a single tap on a block. See
+    // items/tools.js for why this is needed on top of the event handlers.
+    registerIgniterComponent(ev.itemComponentRegistry);
+  } catch (err) {
+    console.error(`[Hollow Veil] igniter component registration failed: ${err}`);
+  }
 });
 
 // Each subsystem is started in isolation. Previously these were bare calls,

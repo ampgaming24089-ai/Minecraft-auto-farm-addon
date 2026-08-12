@@ -3,7 +3,7 @@
 Bedrock add-ons can't ship hand-authored `.mcstructure` NBT files without an
 in-game Structure Block export pass, so instead of a placeholder chamber this
 addon **builds each boss chamber procedurally at runtime** via the Script API
-(`/fill`/`/setblock` executed through `dimension.runCommandAsync`, see
+(`/fill`/`/setblock` executed through `dimension.runCommand`, see
 `BP/scripts/bosses/chambers.js`). This is a legitimate, common technique for
 data/script-only Bedrock add-ons and has three advantages over shipping a
 static structure:
@@ -42,7 +42,7 @@ If you want a bespoke, hand-decorated room instead of the procedural one:
    (`Save` mode), and export it — this produces a `.mcstructure` file.
 2. Drop it in `BP/structures/hollowveil/<boss>.mcstructure`.
 3. In `chambers.js`, replace the relevant `buildX()` function's fill calls
-   with `dimension.runCommandAsync("structure load hollowveil:<boss> x y z")`.
+   with `dimension.runCommand("structure load hollowveil:<boss> x y z")`.
 
 No other system needs to change — sigils, altars, spawning and cooldown all
 stay the same.
