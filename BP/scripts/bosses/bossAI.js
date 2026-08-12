@@ -30,9 +30,25 @@ function tickAllBosses() {
   for (const boss of bosses) tickBoss(boss);
 }
 
+const BOSS_NAMES = {
+  hollow_king: "§4The Hollow King",
+  weeping_widow: "§5The Weeping Widow",
+  malacoda: "§6Malacoda, the Ashen Demon",
+};
+
 function tickBoss(boss) {
   const shortId = SHORT_ID[boss.typeId];
   if (!shortId) return;
+
+  // Name every boss, however it got here. Summoned bosses were named by the
+  // altar, but one from a spawn egg had no nameTag at all - which is why the
+  // owner's health-bar overlay labelled them "Unknown". A boss should say
+  // what it is regardless of how it arrived.
+  try {
+    if (!boss.nameTag) boss.nameTag = BOSS_NAMES[shortId] ?? boss.typeId;
+  } catch {
+    /* not worth failing a tick over */
+  }
   const health = boss.getComponent("minecraft:health");
   if (!health) return;
   const ratio = health.currentValue / health.effectiveMax;

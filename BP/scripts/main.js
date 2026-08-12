@@ -14,6 +14,7 @@ import { startAmbience } from "./mobs/ambience.js";
 import { startTerrainStreaming } from "./world/terrain.js";
 import { startSiteBuilding } from "./world/sites.js";
 import { startAtmosphere } from "./world/atmosphere.js";
+import { registerTravelCommands } from "./portal/travel.js";
 
 // Custom dimensions must be registered during the restricted "startup"
 // phase - see docs/DIMENSION.md for why this replaced the old static
@@ -52,6 +53,7 @@ for (const [name, fn] of [
   ["dragon egg", registerDragonEgg],
   ["shop UI", registerShop],
   ["portal ticking", startPortalTicking],
+  ["travel commands", registerTravelCommands],
   ["boss AI", startBossAI],
   ["wraith phasing", startWraithPhasing],
   ["mob spawner", startMobSpawner],

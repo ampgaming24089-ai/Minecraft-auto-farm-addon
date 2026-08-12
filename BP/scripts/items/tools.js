@@ -7,6 +7,27 @@ import { nearestSite, SITE_LABELS } from "../world/sites.js";
 import { regionAt, HOLLOW_VEIL } from "../world/build.js";
 import { BIOMES } from "../world/biomes.js";
 
+/**
+ * How long to ignore a second igniter trigger for the same click.
+ *
+ * The igniter now listens on TWO events, because after three rounds of "the
+ * tool does nothing" the honest conclusion is that I cannot tell from here
+ * whether playerInteractWithBlock reaches a custom item on the owner's device.
+ * `itemUse` is a different event on a different path, and it is one the
+ * journal already proves fires - the journal opens from it. If either arrives,
+ * the igniter works; this window stops both arriving from being two ignitions.
+ */
+const IGNITER_DEBOUNCE_TICKS = 6;
+const lastIgniterUse = new Map();
+
+function igniterDebounced(player) {
+  const now = system.currentTick;
+  const previous = lastIgniterUse.get(player.id) ?? -999;
+  if (now - previous < IGNITER_DEBOUNCE_TICKS) return true;
+  lastIgniterUse.set(player.id, now);
+  return false;
+}
+
 export function registerItemHandlers() {
   world.afterEvents.itemUse.subscribe((ev) => {
     const { source, itemStack } = ev;
@@ -14,6 +35,11 @@ export function registerItemHandlers() {
       openJournal(source);
     } else if (itemStack.typeId === "hollowveil:soul_compass") {
       pointToShrine(source);
+    } else if (itemStack.typeId === "hollowveil:soulfire_igniter") {
+      // The redundant path. itemUse carries no block, so find what the player
+      // is actually looking at - which is also more forgiving than requiring
+      // a precise tap on the frame.
+      useIgniterFromView(source, itemStack);
     }
   });
 
@@ -59,11 +85,46 @@ const FACE_OFFSETS = {
  * its recipe promise.
  */
 function useIgniter(player, block, blockFace, itemStack) {
+  if (igniterDebounced(player)) return;
+  igniteAt(player, block, blockFace, itemStack);
+}
+
+/**
+ * The igniter used with no block supplied: raycast from the player's eyes to
+ * whatever they are aiming at, up to a normal reach.
+ */
+function useIgniterFromView(player, itemStack) {
+  if (igniterDebounced(player)) return;
+  let hit;
+  try {
+    hit = player.getBlockFromViewDirection({ maxDistance: 7, includeLiquidBlocks: false });
+  } catch {
+    hit = undefined;
+  }
+  if (!hit?.block) {
+    player.sendMessage("§7Nothing in reach. Aim at a gold-block frame and use it again.");
+    return;
+  }
+  igniteAt(player, hit.block, hit.face, itemStack);
+}
+
+/**
+ * One place both paths end up. Always says something: silence is what made
+ * this impossible to diagnose across three rounds of reports.
+ */
+function igniteAt(player, block, blockFace, itemStack) {
   if (tryIgnitePortal(block.dimension, block.location, player, blockFace)) {
     damageIgniter(player, itemStack, 1);
     return;
   }
-  if (lightFire(block, blockFace)) damageIgniter(player, itemStack, 1);
+  if (lightFire(block, blockFace)) {
+    damageIgniter(player, itemStack, 1);
+    return;
+  }
+  player.sendMessage(
+    `§7Nothing caught on ${block.typeId.replace("minecraft:", "")}. ` +
+    `§8Build a 4x5 gold frame like a nether portal and strike it, or run ` +
+    `§7/scriptevent hollowveil:portal§8 to have one built for you.`);
 }
 
 function lightFire(block, blockFace) {

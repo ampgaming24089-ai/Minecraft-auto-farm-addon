@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Sanctum \u00a77- Resource Pack",
-    "description": "Textures, models, sounds and atmosphere for the Hallowed Sanctum.",
-    "uuid": "d0efb2e8-1cfa-44bb-8426-a9d01ba0f437",
+    "name": "Hallowed Threshold \u00a77- Resource Pack",
+    "description": "Textures, models, sounds and atmosphere for the Hallowed Threshold.",
+    "uuid": "3fdbb366-598f-4a19-86fb-70d6d2502fc2",
     "version": [
-      9,
+      10,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "resources",
-      "uuid": "2bce0818-2c7b-47cc-ab8e-b29c59646fec",
+      "uuid": "0b83a713-42b9-4a4c-9c81-6f56cbc67814",
       "version": [
-        9,
+        10,
         0,
         0
       ]
@@ -28,9 +28,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "698cdb7f-e4b9-46d7-aaba-ca59becc38de",
+      "uuid": "de973948-5c0d-4eb5-878c-c80622cc573b",
       "version": [
-        9,
+        10,
         0,
         0
       ]
@@ -38,7 +38,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Sanctum Team"
+      "Hallowed Threshold Team"
     ],
     "product_type": "addon"
   }

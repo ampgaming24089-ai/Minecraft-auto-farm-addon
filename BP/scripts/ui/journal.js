@@ -1,6 +1,8 @@
 import { ActionFormData, MessageFormData } from "@minecraft/server-ui";
 import { bossesDefeated } from "../lib/state.js";
 import { GUIDE } from "./guidedata.js";
+import { travelToVeil, returnHome } from "../portal/travel.js";
+import { HOLLOW_VEIL } from "../world/build.js";
 
 const ICON = "textures/items/";
 
@@ -129,11 +131,23 @@ export function openJournal(player) {
     form.button(`§e${section.title}`, ICON + section.icon);
   }
   form.button("§dThe Story", ICON + "journal");
+  // The way in, on a button. The portal has been reported broken three times
+  // and I have not been able to reproduce it from here, so the guide - which
+  // opens on a different event, and which every player is handed on their
+  // first join - carries a door of its own.
+  const inVeil = player.dimension.id === HOLLOW_VEIL;
+  form.button(inVeil ? "§bLeave the Hollow Veil" : "§bTravel to the Hollow Veil",
+              ICON + "soulfire_igniter");
 
   form.show(player).then((res) => {
     if (res.canceled || res.selection === undefined) return;
     if (res.selection === GUIDE.sections.length) {
       openStory(player);
+      return;
+    }
+    if (res.selection === GUIDE.sections.length + 1) {
+      if (inVeil) returnHome(player);
+      else travelToVeil(player);
       return;
     }
     openSection(player, GUIDE.sections[res.selection]);

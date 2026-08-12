@@ -118,7 +118,7 @@ function showCrossingTitle(player, title, subtitle) {
   }
 }
 
-async function sendPlayerToHollowVeil(player, pos) {
+export async function sendPlayerToHollowVeil(player, pos) {
   setPlayerJson(player, KEYS.RETURN_POS, { dimension: player.dimension.id, pos: { x: pos.x, y: pos.y, z: pos.z } });
   crossingFade(player);
   player.sendMessage("§cYou step through into the Hollow Veil...");

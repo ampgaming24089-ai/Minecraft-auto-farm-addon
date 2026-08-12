@@ -455,13 +455,32 @@ add(
         bone("cloak_a", [0, 8, 9], [cube("cloak_a", [-8, 4, 9], [16, 20, 2])], parent="base"),
         bone("cloak_b", [6, 8, 9], [cube("cloak_b", [4, 2, 9.2], [4, 16, 2])], parent="base"),
         bone("cloak_c", [-6, 8, 9], [cube("cloak_c", [-8, 2, 9.2], [4, 16, 2])], parent="base"),
-        bone("torso", [0, 18, 0], [cube("ribcage", [-7, 18, -4], [14, 16, 8], "front")], parent="base"),
-        bone("head", [0, 36, 0], [cube("skull", [-5, 36, -5], [10, 10, 10])], parent="torso"),
-        bone("crown_a", [0, 46, 0], [cube("crown_a", [-1, 46, -1], [2, 4, 2], "top")], parent="head"),
-        bone("crown_b", [3, 46, 0], [cube("crown_b", [2, 46, -1], [2, 3, 2], "top")], parent="head"),
-        bone("crown_c", [-3, 46, 0], [cube("crown_c", [-4, 46, -1], [2, 3, 2], "top")], parent="head"),
-        bone("arm_l", [9, 30, 0], [cube("arm_l", [7, 14, -2.5], [5, 16, 5])], parent="torso"),
-        bone("arm_r", [-9, 30, 0], [cube("arm_r", [-12, 14, -2.5], [5, 16, 5])], parent="torso"),
+        bone("torso", [0, 18, 0], [
+            cube("ribcage", [-7, 18, -4], [14, 16, 8], "front"),
+            cube("gorget", [-8, 31, -5], [16, 4, 10], "top"),      # collar over the shoulders
+            cube("breastplate", [-5, 22, -5], [10, 8, 1], "front"),  # a raised chest plate
+            cube("sash", [-7, 20, -4.5], [14, 2, 9]),               # belt of office
+        ], parent="base"),
+        bone("head", [0, 36, 0], [
+            cube("skull", [-5, 36, -5], [10, 10, 10]),
+            cube("jaw", [-4, 35, -6], [8, 3, 4], "front"),          # a hanging jaw
+            cube("brow", [-5, 43, -6], [10, 2, 2], "front"),
+        ], parent="torso"),
+        bone("crown_a", [0, 46, 0], [cube("crown_a", [-1, 46, -2], [2, 7, 2], "top")], parent="head"),
+        bone("crown_b", [3, 46, 0], [cube("crown_b", [2, 46, -2], [2, 5, 2], "top")], parent="head"),
+        bone("crown_c", [-3, 46, 0], [cube("crown_c", [-4, 46, -2], [2, 5, 2], "top")], parent="head"),
+        bone("crown_d", [5, 46, 0], [cube("crown_d", [4, 46, -1], [2, 4, 2], "top")], parent="head"),
+        bone("crown_e", [-5, 46, 0], [cube("crown_e", [-6, 46, -1], [2, 4, 2], "top")], parent="head"),
+        bone("arm_l", [9, 30, 0], [
+            cube("arm_l", [7, 14, -2.5], [5, 16, 5]),
+            cube("pauldron_l", [6, 28, -4], [8, 5, 8], "top"),      # shoulder plate
+            cube("gauntlet_l", [6, 12, -3.5], [7, 4, 7]),
+        ], parent="torso"),
+        bone("arm_r", [-9, 30, 0], [
+            cube("arm_r", [-12, 14, -2.5], [5, 16, 5]),
+            cube("pauldron_r", [-14, 28, -4], [8, 5, 8], "top"),
+            cube("gauntlet_r", [-13, 12, -3.5], [7, 4, 7]),
+        ], parent="torso"),
     ],
     scale=1.6,
     visible_bounds=(4.5, 5.5, 2.2),
@@ -472,14 +491,41 @@ add(
     "weeping_widow",
     [
         bone("dress", [0, 7, 0], [cube("dress_flare", [-11, 0, -9], [22, 14, 7])]),
-        bone("torso", [0, 18, 0], [cube("torso", [-6, 15, -3.5], [12, 14, 7])], parent="dress"),
-        bone("head", [0, 33, 0], [cube("head", [-4.5, 33, -4.5], [9, 10, 9])], parent="torso"),
-        bone("veil", [0, 34, -4.5], [cube("veil", [-5, 28, -6.5], [10, 8, 2])], parent="head"),
-        bone("arm_l", [7, 25, 0], [cube("arm_l", [5, 12, -2], [4, 14, 4])], parent="torso"),
-        bone("arm_r", [-7, 25, 0], [cube("arm_r", [-9, 12, -2], [4, 14, 4])], parent="torso"),
-        bone("spider_arm_l", [10, 16, 3], [cube("sa_l", [9, 8, 2], [2, 18, 2])], parent="torso"),
-        bone("spider_arm_r", [-10, 16, 3], [cube("sa_r", [-11, 8, 2], [2, 18, 2])], parent="torso"),
-        bone("tail", [0, 6, 7], [cube("dress_tail", [-7, 0, 7], [14, 10, 2])], parent="dress"),
+        bone("torso", [0, 18, 0], [
+            cube("torso", [-6, 15, -3.5], [12, 14, 7]),
+            cube("shawl", [-8, 25, -4.5], [16, 5, 9], "top"),        # mourning shawl
+            cube("corset", [-6, 16, -4], [12, 5, 8], "front"),
+        ], parent="dress"),
+        bone("head", [0, 33, 0], [
+            cube("head", [-4.5, 33, -4.5], [9, 10, 9]),
+            cube("hair", [-5, 38, 3], [10, 8, 3]),                   # hair down the back
+        ], parent="torso"),
+        bone("veil", [0, 34, -4.5], [
+            cube("veil", [-5, 28, -6.5], [10, 8, 2]),
+            cube("veil_hem", [-6, 26, -6], [12, 3, 2]),              # a torn lower hem
+        ], parent="head"),
+        bone("arm_l", [7, 25, 0], [
+            cube("arm_l", [5, 12, -2], [4, 14, 4]),
+            cube("hand_l", [4, 9, -2.5], [6, 4, 5]),
+        ], parent="torso"),
+        bone("arm_r", [-7, 25, 0], [
+            cube("arm_r", [-9, 12, -2], [4, 14, 4]),
+            cube("hand_r", [-10, 9, -2.5], [6, 4, 5]),
+        ], parent="torso"),
+        bone("spider_arm_l", [10, 16, 3], [
+            cube("sa_l", [9, 8, 2], [2, 18, 2]),
+            cube("sa_l2", [9, 24, 2], [2, 8, 5]),                    # the joint above it
+        ], parent="torso"),
+        bone("spider_arm_r", [-10, 16, 3], [
+            cube("sa_r", [-11, 8, 2], [2, 18, 2]),
+            cube("sa_r2", [-11, 24, 2], [2, 8, 5]),
+        ], parent="torso"),
+        bone("spider_arm_l2", [12, 14, 5], [cube("sb_l", [11, 6, 5], [2, 16, 2])], parent="torso"),
+        bone("spider_arm_r2", [-12, 14, 5], [cube("sb_r", [-13, 6, 5], [2, 16, 2])], parent="torso"),
+        bone("tail", [0, 6, 7], [
+            cube("dress_tail", [-7, 0, 7], [14, 10, 2]),
+            cube("dress_train", [-5, 0, 9], [10, 6, 4]),             # a train dragging behind
+        ], parent="dress"),
     ],
     scale=1.5,
     visible_bounds=(4.2, 5.2, 2.4),
@@ -489,16 +535,55 @@ add(
     "malacoda",
     "malacoda",
     [
-        bone("legs", [0, 8, 0], [cube("leg_l", [2, 0, -3], [6, 16, 6]), cube("leg_r", [-8, 0, -3], [6, 16, 6])]),
-        bone("torso", [0, 24, 0], [cube("torso", [-8, 24, -4.5], [16, 18, 9])], parent="legs"),
-        bone("head", [0, 42, 0], [cube("head", [-5, 42, -5], [10, 10, 10])], parent="torso"),
-        bone("horn_l", [3, 52, -2], [cube("horn_l", [2, 52, -3], [2, 6, 2], "top")], parent="head"),
-        bone("horn_r", [-3, 52, -2], [cube("horn_r", [-4, 52, -3], [2, 6, 2], "top")], parent="head"),
-        bone("arm_l", [11, 36, 0], [cube("arm_l", [8, 18, -2.5], [5, 18, 5])], parent="torso"),
-        bone("arm_r", [-11, 36, 0], [cube("arm_r", [-13, 18, -2.5], [5, 18, 5])], parent="torso"),
-        bone("tail", [0, 22, 4], [cube("tail", [-1.5, 12, 4], [3, 3, 14])], parent="legs"),
-        bone("wing_l", [8, 38, 4], [cube("wing_l", [8, 24, 4], [2, 18, 24], "front")], parent="torso"),
-        bone("wing_r", [-8, 38, 4], [cube("wing_r", [-10, 24, 4], [2, 18, 24], "front")], parent="torso"),
+        bone("legs", [0, 8, 0], [
+            cube("leg_l", [2, 0, -3], [6, 16, 6]), cube("leg_r", [-8, 0, -3], [6, 16, 6]),
+            cube("hoof_l", [1, 0, -5], [8, 4, 9]),                   # cloven hooves
+            cube("hoof_r", [-9, 0, -5], [8, 4, 9]),
+        ]),
+        bone("torso", [0, 24, 0], [
+            cube("torso", [-8, 24, -4.5], [16, 18, 9]),
+            cube("pectoral", [-7, 34, -6], [14, 7, 2], "front"),     # a slab of chest
+            cube("brazier", [-4, 28, -6], [8, 6, 2], "front"),       # the burning core
+            cube("belt", [-8, 25, -5], [16, 3, 10]),
+            cube("collar", [-9, 40, -5], [18, 3, 10], "top"),
+        ], parent="legs"),
+        bone("head", [0, 42, 0], [
+            cube("head", [-5, 42, -5], [10, 10, 10]),
+            cube("jaw", [-4, 41, -7], [8, 4, 5], "front"),           # underslung jaw
+            cube("brow", [-5, 49, -6], [10, 3, 2], "front"),
+        ], parent="torso"),
+        bone("horn_l", [3, 52, -2], [
+            cube("horn_l", [2, 52, -3], [2, 8, 2], "top"),
+            cube("horn_l2", [2, 58, -6], [2, 3, 4], "top"),          # the horn curls forward
+        ], parent="head"),
+        bone("horn_r", [-3, 52, -2], [
+            cube("horn_r", [-4, 52, -3], [2, 8, 2], "top"),
+            cube("horn_r2", [-4, 58, -6], [2, 3, 4], "top"),
+        ], parent="head"),
+        bone("arm_l", [11, 36, 0], [
+            cube("arm_l", [8, 18, -2.5], [5, 18, 5]),
+            cube("pauldron_l", [7, 34, -4], [9, 6, 9], "top"),       # spiked shoulder
+            cube("claw_l", [7, 14, -3.5], [7, 5, 7]),
+        ], parent="torso"),
+        bone("arm_r", [-11, 36, 0], [
+            cube("arm_r", [-13, 18, -2.5], [5, 18, 5]),
+            cube("pauldron_r", [-16, 34, -4], [9, 6, 9], "top"),
+            cube("claw_r", [-14, 14, -3.5], [7, 5, 7]),
+        ], parent="torso"),
+        bone("tail", [0, 22, 4], [
+            cube("tail", [-1.5, 12, 4], [3, 3, 14]),
+            cube("tail_spade", [-3, 11, 17], [6, 5, 5]),             # the barb on the end
+        ], parent="legs"),
+        bone("wing_l", [8, 38, 4], [
+            cube("wing_l", [8, 24, 4], [2, 18, 24], "front"),
+            cube("wing_l_strut", [8, 40, 4], [2, 4, 22], "top"),     # the leading edge
+            cube("wing_l_claw", [8, 42, 2], [2, 5, 3], "top"),
+        ], parent="torso"),
+        bone("wing_r", [-8, 38, 4], [
+            cube("wing_r", [-10, 24, 4], [2, 18, 24], "front"),
+            cube("wing_r_strut", [-10, 40, 4], [2, 4, 22], "top"),
+            cube("wing_r_claw", [-10, 42, 2], [2, 5, 3], "top"),
+        ], parent="torso"),
     ],
     scale=1.8,
     visible_bounds=(5.5, 6.5, 3.5),

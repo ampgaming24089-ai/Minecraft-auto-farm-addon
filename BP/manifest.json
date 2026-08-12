@@ -1,11 +1,11 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Hallowed Sanctum \u00a77- Behavior Pack",
-    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Sanctum.",
-    "uuid": "698cdb7f-e4b9-46d7-aaba-ca59becc38de",
+    "name": "Hallowed Threshold \u00a77- Behavior Pack",
+    "description": "Mobs, bosses, items, loot, trading and scripts for the Hallowed Threshold.",
+    "uuid": "de973948-5c0d-4eb5-878c-c80622cc573b",
     "version": [
-      9,
+      10,
       0,
       0
     ],
@@ -18,9 +18,9 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "88a14967-b1ec-4230-9a21-472358d351a4",
+      "uuid": "04144c3f-9f8a-4193-b66f-0ac30b78df95",
       "version": [
-        9,
+        10,
         0,
         0
       ]
@@ -28,10 +28,10 @@
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "3e151a25-ce4c-47db-aa91-4b6dc17a5ce1",
+      "uuid": "2903629b-308d-4d31-9571-59a793dead48",
       "entry": "scripts/main.js",
       "version": [
-        9,
+        10,
         0,
         0
       ]
@@ -39,9 +39,9 @@
   ],
   "dependencies": [
     {
-      "uuid": "d0efb2e8-1cfa-44bb-8426-a9d01ba0f437",
+      "uuid": "3fdbb366-598f-4a19-86fb-70d6d2502fc2",
       "version": [
-        9,
+        10,
         0,
         0
       ]
@@ -57,7 +57,7 @@
   ],
   "metadata": {
     "authors": [
-      "Hallowed Sanctum Team"
+      "Hallowed Threshold Team"
     ],
     "product_type": "addon"
   }
