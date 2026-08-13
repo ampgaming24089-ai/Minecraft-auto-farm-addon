@@ -1,0 +1,21 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Aurora Animations",
+    "description": "Reanimated player and mobs - weighted walk and sprint cycles, follow-through on every swing, and per-mob personality for the whole roster.",
+    "uuid": "e02d8cbe-4b9e-4eb4-adc7-33a14934e279",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 21, 120]
+  },
+  "metadata": {
+    "authors": ["Aurora"],
+    "product_type": "addon"
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "42dd4883-4f72-4f01-8ed2-6eb7ffc2e77f",
+      "version": [1, 0, 0]
+    }
+  ]
+}

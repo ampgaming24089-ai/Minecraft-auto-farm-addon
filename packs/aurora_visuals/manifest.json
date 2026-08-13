@@ -1,0 +1,22 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Aurora Visuals",
+    "description": "Vibrant Visuals shader layer - volumetric skies, golden-hour sun, deep water with waves and caustics, cinematic color grading and soft shadows.",
+    "uuid": "bb71399e-d139-48e5-a2cf-b2b72bf855ba",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 21, 120]
+  },
+  "metadata": {
+    "authors": ["Aurora"],
+    "product_type": "addon"
+  },
+  "capabilities": ["pbr"],
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "e3d05aca-37aa-43fa-8f3f-45dbe2a9d213",
+      "version": [1, 0, 0]
+    }
+  ]
+}

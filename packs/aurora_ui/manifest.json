@@ -1,0 +1,21 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Aurora Interface",
+    "description": "A single dark-slate and cyan interface style shared by every screen - inventory, containers, crafting, HUD, chat, pause and settings.",
+    "uuid": "9acc9112-3183-45be-b158-90ba706c92cc",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 21, 120]
+  },
+  "metadata": {
+    "authors": ["Aurora"],
+    "product_type": "addon"
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "184abb56-2a3e-4c68-ac97-06e539c47de0",
+      "version": [1, 0, 0]
+    }
+  ]
+}

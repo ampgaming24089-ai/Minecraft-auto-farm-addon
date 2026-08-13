@@ -1,0 +1,51 @@
+{
+  "$light_button_default_text_color": [ 0.914, 0.941, 0.961 ],
+  "$light_button_pressed_text_color": [ 0.561, 0.941, 0.894 ],
+  "$light_button_locked_text_color": [ 0.365, 0.404, 0.463 ],
+
+  "$light_button_secondary_default_text_color": [ 0.624, 0.690, 0.753 ],
+  "$light_button_secondary_hover_text_color": [ 0.914, 0.941, 0.961 ],
+  "$light_button_secondary_pressed_text_color": [ 0.561, 0.941, 0.894 ],
+  "$light_button_secondary_locked_text_color": [ 0.365, 0.404, 0.463 ],
+
+  "$dark_button_locked_text_color": [ 0.365, 0.404, 0.463 ],
+  "$dark_button_secondary_default_text_color": [ 0.624, 0.690, 0.753, 1.0 ],
+  "$dark_button_secondary_hover_text_color": [ 0.914, 0.941, 0.961 ],
+  "$dark_button_secondary_pressed_text_color": [ 0.561, 0.941, 0.894 ],
+  "$dark_button_secondary_locked_text_color": [ 0.365, 0.404, 0.463 ],
+  "$dark_bg_contrast_button_default_text_color": [ 0.624, 0.690, 0.753 ],
+
+  "$light_toggle_default_text_color": [ 0.914, 0.941, 0.961 ],
+  "$light_toggle_checked_default_text_color": [ 0.302, 0.890, 0.816 ],
+  "$light_toggle_checked_hover_text_color": [ 0.561, 0.941, 0.894 ],
+
+  "$title_text_color": [ 0.914, 0.941, 0.961 ],
+  "$pocket_title_text_color": [ 0.914, 0.941, 0.961 ],
+  "$main_header_text_color": [ 0.914, 0.941, 0.961 ],
+  "$sub_header_text_color": [ 0.624, 0.690, 0.753 ],
+  "$dark_body_text_color": [ 0.624, 0.690, 0.753 ],
+
+  "$tab_checked_text_color": [ 0.302, 0.890, 0.816 ],
+  "$tab_checked_hover_text_color": [ 0.561, 0.941, 0.894 ],
+  "$tab_checked_locked_text_color": [ 0.431, 0.494, 0.565 ],
+  "$tab_checked_locked_hover_text_color": [ 0.431, 0.494, 0.565 ],
+  "$tab_unchecked_text_color": [ 0.624, 0.690, 0.753 ],
+  "$tab_unchecked_hover_text_color": [ 0.914, 0.941, 0.961 ],
+  "$tab_unchecked_locked_text_color": [ 0.431, 0.494, 0.565 ],
+  "$tab_unchecked_locked_hover_text_color": [ 0.431, 0.494, 0.565 ],
+
+  "$tab_checked_glyph_color": [ 0.302, 0.890, 0.816 ],
+  "$tab_checked_hover_glyph_color": [ 0.561, 0.941, 0.894 ],
+  "$tab_checked_locked_glyph_color": [ 0.431, 0.494, 0.565 ],
+  "$tab_checked_locked_hover_glyph_color": [ 0.431, 0.494, 0.565 ],
+  "$tab_unchecked_glyph_color": [ 0.624, 0.690, 0.753 ],
+  "$tab_unchecked_hover_glyph_color": [ 0.914, 0.941, 0.961 ],
+  "$tab_unchecked_locked_glyph_color": [ 0.431, 0.494, 0.565 ],
+  "$tab_unchecked_locked_hover_glyph_color": [ 0.431, 0.494, 0.565 ],
+
+  "$item_stack_count_color": [ 0.914, 0.941, 0.961 ],
+  "$selected_item_stack_count_color": [ 0.561, 0.941, 0.894 ],
+
+  "$text_box_text_color": [ 0.914, 0.941, 0.961 ],
+  "$text_box_locked_text_color": [ 0.431, 0.494, 0.565 ]
+}

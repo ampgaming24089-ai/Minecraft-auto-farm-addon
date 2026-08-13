@@ -1,0 +1,103 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:color_grading_settings": {
+    "description": {
+      "identifier": "minecraft:pale_garden_color_grading"
+    },
+    "color_grading": {
+      "midtones": {
+        "contrast": [
+          1.3,
+          1.3,
+          1.3
+        ],
+        "gain": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "gamma": [
+          2.2,
+          2.2,
+          2.2
+        ],
+        "offset": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "saturation": [
+          0.55,
+          0.55,
+          0.55
+        ]
+      },
+      "shadows": {
+        "enabled": true,
+        "shadowsMax": 0.36,
+        "contrast": [
+          1.05,
+          1.05,
+          1.05
+        ],
+        "gain": [
+          0.96,
+          0.98,
+          1.05
+        ],
+        "gamma": [
+          2.2,
+          2.2,
+          2.2
+        ],
+        "offset": [
+          -0.004,
+          -0.002,
+          0.008
+        ],
+        "saturation": [
+          0.55,
+          0.55,
+          0.55
+        ]
+      },
+      "highlights": {
+        "enabled": true,
+        "highlightsMin": 1.05,
+        "contrast": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "gain": [
+          1.0,
+          1.0,
+          1.02
+        ],
+        "gamma": [
+          2.2,
+          2.2,
+          2.2
+        ],
+        "offset": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "saturation": [
+          0.95,
+          0.95,
+          0.95
+        ]
+      },
+      "temperature": {
+        "enabled": true,
+        "temperature": 7200,
+        "type": "color_temperature"
+      }
+    },
+    "tone_mapping": {
+      "operator": "hable"
+    }
+  }
+}

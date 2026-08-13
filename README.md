@@ -1,399 +1,169 @@
-# Auto Farm Addon (Minecraft Bedrock)
+# Aurora
 
-Instant, stackable auto farms for Minecraft Bedrock / Pocket Edition. Right-click
-a block with the **Structure Build Tool**, pick a farm from a menu, preview
-its footprint as a particle outline, then confirm to have it built instantly.
+Three resource packs for **Minecraft Bedrock 26.40** (`1.26.40`) that together
+restyle how the game looks, how its menus feel, and how everything in it moves:
 
-Includes three farms:
+| Pack | What it changes |
+| --- | --- |
+| **Aurora Visuals** | The shader layer — sun and moon, sky scattering, water, colour grading, soft shadows |
+| **Aurora Interface** | One dark-slate-and-cyan style shared by every screen |
+| **Aurora Animations** | Reanimated player and mobs — 83 animation overrides |
 
-- **Stackable Iron Farm** — an open villager hall (beds + composters, not
-  sealed pods — see below for why that matters), an open-top lit spawn
-  platform that's a real water pool (not just a current over a dry floor),
-  and a corner magma kill pocket. Build 1-4 levels, stacked vertically and
-  deliberately close together.
-- **Auto Crop Farm** — a pinwheel layout: 4 farmer villagers, each with
-  their own composter-on-water plot, arranged around ONE caged collector
-  villager at the center, with rail and parked hopper minecarts in the pit
-  catching whatever food gets tossed in. Build 1-4 of these as fully
-  separate, independent farms on the ground, 10 blocks apart from each
-  other.
-- **Passive Mob Farm** — a lit, open grass platform where cows/pigs/sheep/
-  chickens spawn and graze, a water funnel pushes them into a fall + magma
-  kill zone, and an auto-smoker cooks the drops before a hopper stores them
-  in a chest. Build 1-4 of these too, same ground-level layout as the crop
-  farm.
-
-## Important: what "stackable" actually means for the iron farm
-
-Bedrock's real requirement for iron golems to spawn at all is **20 beds and
-10 villagers, with 75% of them having reached and used a workstation in the
-last in-game day** — much bigger than most people assume, and far bigger
-than earlier versions of this addon used (which is why golems never spawned
-and "water doesn't push them" was moot — there was nothing to push). Each
-level here has **20 beds + 20 composters** in two open rows of 10.
-
-The golem population cap is **1 golem per 10 villagers in a village**. An
-earlier version of this addon tried to give every floor its own
-*independent* cap by spacing levels far enough apart (80+ blocks) that
-Bedrock wouldn't merge them into one village. That turned out to be a
-mistake, based on a mechanic I'd missed:
-
-**A village only spawns golems while a player is standing inside its
-"activation region"** — the village's bounds expanded outward by roughly
-32-48 blocks depending on your simulation distance setting. The distance
-needed to keep two villages from merging is *larger* than that (~64+ blocks
-beyond each village's own bounds). Since the separation-to-avoid-merging is
-always bigger than the activation range, **there is no single spot you can
-stand that keeps two truly separate villages both active at once** — you'd
-only ever activate whichever one you're currently near, and the others sit
-idle. That's true whether the farms are stacked vertically or spread out
-horizontally on the ground — spreading them out doesn't fix it, it just
-changes which axis the wasted distance is on.
-
-So this farm does the opposite: **levels are built close together on
-purpose so they merge into one combined village.** More levels = more total
-villagers = a higher population cap, and because it's one village with one
-activation region, every floor can spawn golems simultaneously from a
-single AFK spot at the base:
-
-- **4 levels = 80 villagers in one village = a population cap of 8**
-  concurrent golems, all reachable from one spot.
-- **Height is back to normal** — a 4-level build is about 45 blocks tall,
-  not 250.
-- **Collection is shared again** — one external hopper shaft down to one
-  base chest, since the levels are close enough together that this is
-  fast, not the minutes-long chain a spread-out design would need.
-- **1-3 levels may not reliably spawn golems at all** if you don't fill
-  every level's beds. This farm is only guaranteed to work with every
-  built level fully populated (20/20 beds per level).
-- **Build it away from any existing village** (100+ blocks is a commonly
-  cited safe distance) — a nearby real village can merge with yours and
-  throw off the cap.
-
-Two more fixes worth calling out explicitly, both found from real in-game
-testing feedback:
-
-- **The water current wasn't pushing golems anywhere.** The earlier design
-  ringed all 4 edges of the spawn platform with water flowing inward. That
-  looks reasonable on paper, but water only flows about 7 blocks from a
-  source before stopping, and two currents flowing head-on into each other
-  from opposite edges create a dead/ambiguous push exactly where they
-  meet — which was exactly the center drain, the one place the push needed
-  to be strongest. The fix drops the north/south edges entirely and only
-  uses a full-depth water column on the west wall (flowing east) and one on
-  the east wall (flowing west). Every tile on the platform now has exactly
-  one clear push direction toward the drain, never two fighting each other.
-- **No more roof.** Each level used to be a fully sealed box. That's gone —
-  every level is now open at the top. An enclosed room's darkness used to
-  be what (accidentally) kept hostile mobs out; with the roof gone, that
-  job is done instead by lighting the place heavily (sea lanterns lining
-  both walls at hall height and platform height on every level), which
-  keeps light levels high enough that nothing hostile spawns despite the
-  open top.
-
-Both the iron farm's platform and the crop farm's layout were rebuilt again
-after that to match specific, widely-used reference designs the actual
-builder shared screenshots of, rather than my own from-scratch layouts:
-
-- **Iron farm platform is now a real pool, and the kill point moved to a
-  corner.** The push mechanism is unchanged (it's the fix above — a source
-  column on 2 adjacent walls only, everything else left for the game's own
-  fluid physics to fill in, so it still has a real single-direction push
-  instead of a hand-placed pool of uniform source blocks, which would have
-  no push at all). What changed is the shape: instead of a thin current
-  across a mostly-dry floor draining to a center hole, the whole platform
-  fills in as a pool draining to a 2-wide hole in the SE corner.
-- **Kill pocket is magma again, not lava.** A version of this pocket briefly
-  used lava (matching a reference design's material list), but it leaked —
-  lava spread out across the surrounding hall floor in testing instead of
-  staying in the intended pocket. I traced through the containment logic
-  and couldn't find where it actually escapes on paper, which means either
-  there's a subtlety in how Bedrock's fluid placement behaves that I don't
-  have full visibility into, or it was stale lava left over from an earlier
-  rebuild at the same spot — I can't say for certain which. Rather than
-  keep guessing at a fluid, it's magma now: a solid block, not a fluid, so
-  it's physically incapable of spreading or leaking no matter what the real
-  cause was. Same real damage-over-time, zero loot loss, zero leak risk.
-- **No more zombie cage.** Earlier versions caged a zombie near the
-  villagers on the theory that a nearby threat raises golem-spawn urgency.
-  That's a real mechanic — on Java, where 3 panicking villagers can
-  emergency-summon a golem. That panic mechanic doesn't exist on Bedrock at
-  all; Bedrock's golem spawning is purely population/bed/workstation-based
-  (see above), so the zombie was doing nothing except taking up space and
-  materials. Removed.
-- **Crop farm is a pinwheel now, not paired plots.** 4 farmer quadrants
-  around one central collector pit, with a short (1-block-high) wall around
-  the pit — low enough for a farmer standing outside to reach over and
-  share food, tall enough that the caged collector can't walk out. A hopper
-  sits under every pit tile, rail on top, and a parked hopper minecart on
-  the 8 tiles around the collector — matching the reference design's
-  screenshot, which clearly shows rail and parked minecarts in the pit (an
-  earlier pass here mistakenly replaced that with a bare hopper floor).
-- **Mob farm's water wasn't actually pushing anything.** It still had the
-  original west+east opposing-current pattern (two currents flowing
-  head-on into each other cancel out right where they'd meet) even after
-  that exact bug was found and fixed on the iron farm — the fix was never
-  carried over to this file. Now uses the same west+north
-  adjacent-walls-converge-on-a-corner pattern as the iron farm, with the
-  drain and fall shaft moved to match.
-
-## Achievement compatibility (read this first)
-
-This took three tries to get right, so here's the real story:
-
-1. **First version** used the Script API with no `metadata.product_type`
-   field. Activating it immediately showed Minecraft's "You can't earn
-   achievements" dialog — *"An external behavior pack was activated."*
-2. **Second version** removed the Script API entirely and rebuilt
-   everything as data-driven items triggering `.mcfunction` files via each
-   item's `minecraft:on_use` component. This turned out to be a dead end:
-   `run_command` (the action that actually invokes the function) requires
-   the **Holiday Creator Features** experimental toggle to work at all —
-   without it, the item silently does nothing, which is exactly what
-   happened when tested. And experimental toggles disable achievements
-   independently of everything else, so this path could never have worked
-   for the stated goal even if the wiring had been correct.
-3. **This version** goes back to the Script API (which doesn't need any
-   experimental toggle — stable, non-beta `@minecraft/server` module
-   versions like the ones this addon depends on never require Beta APIs or
-   Holiday Creator Features) and adds the piece that was actually missing
-   from the start:
-   ```json
-   "metadata": {
-     "product_type": "addon"
-   }
-   ```
-   in **both** `BP/manifest.json` and `RP/manifest.json`. Without this
-   field, Bedrock treats any custom pack as a potential "cheat world" and
-   blocks achievements regardless of what it contains — this is documented
-   community knowledge and matches how other achievement-friendly
-   community addons (e.g. Force Creative-style packs, which do far more
-   invasive things than this one) stay compatible.
-
-So: Script API + `product_type: addon`, no experiments, no cheats. This is
-the version to test.
+They are independent. Enable one, two, or all three.
 
 ## Install
 
-1. Run `./build_addon.sh` (requires `zip`) to produce `dist/AutoFarmAddon.mcaddon`,
-   or zip the `BP/` and `RP/` folders together yourself.
-2. Send that `.mcaddon` file to your device and open it — Minecraft will
-   import both packs.
-3. In your world settings, add **both** **Groundwork Farms [Behavior]**
-   *and* **Groundwork Farms [Resources]** — under their respective
-   Behavior Packs / Resource Packs tabs. Adding only one is a common
-   mistake and shows up as items with no icon and a raw
-   `item.autofarm:...name` name instead of proper text/art, since that
-   text and icon live in the resource pack.
-4. Leave everything under **Experiments** off, and leave cheats off.
-   Nothing here needs them.
+Download or build `dist/Aurora.mcaddon` and open it — Minecraft imports all
+three packs at once. Then enable them per world under
+**Settings → Global Resources**, or per world in **Edit World → Resource Packs**.
 
-## Using it in-game
+To install just one pack, use the matching `dist/*.mcpack`.
 
-1. Craft a **Structure Build Tool**: iron ingot / emerald / iron ingot on
-   the top row, stick in the bottom-middle row (see `BP/recipes/build_tool.json`,
-   or check the recipe book). It's also in the Creative inventory under
-   Equipment.
-2. Stand where you want the farm's front-left corner and right-click the
-   ground with the tool.
-3. Pick a farm from the menu.
-4. Pick how many to build (1-4 — stacked levels for the iron farm, or
-   separate ground-level units 10 blocks apart for the crop and mob farms)
-   and whether to show the outline preview.
-5. If enabled, a particle box appears showing exactly where the structure
-   will go. Confirm to build it instantly, or cancel — nothing is placed
-   until you confirm.
+> **Aurora Visuals needs Vibrant Visuals turned on.**
+> Set **Settings → Video → Graphics Mode** to *Vibrant Visuals*. That mode is what
+> runs Bedrock's deferred renderer; with it off, the lighting and water files in
+> this pack are ignored and only the other two packs do anything.
 
-The farm is built facing away from the direction you were looking when you
-clicked, snapped to the nearest cardinal direction.
+## Aurora Visuals
 
-## How the mechanics actually work
+Bedrock shaders are not GLSL. Since the Vibrant Visuals renderer shipped, the
+look of the world is driven by JSON that the engine compiles into its deferred
+pipeline, and a resource pack changes the look by replacing those files.
 
-Nothing here is scripted loot or fake spawns — every drop comes from real
-vanilla AI and physics:
+Aurora Visuals replaces **all 47 of them** — so every biome is restyled, not
+just the default — and adds a shadow-settings file that vanilla does not ship:
 
-**Iron Farm** — Two open rows of 10 beds facing 10 composters each (20 of
-each per level) let villagers freely path between sleeping and working,
-which is what actually keeps them counted as valid village members
-(sealing them in isolated pods, an earlier design, silently broke this).
-Levels are spaced close together (12 blocks) on purpose so every built
-level merges into one combined village instead of staying separate — see
-"what stackable actually means" above for why deliberately merging beats
-trying to keep floors independent. No zombie cage — that's a Java-only
-mechanic (see above). Golems spawn in the open-top, heavily-lit water pool
-above each level (inside the village bounds); a source column on the west
-wall (flows east) and one on the north wall (flows south) push everything
-toward a 2-wide drain in the SE corner, and the rest of the pool fills in
-from those two sources via the game's own fluid physics (a hand-filled
-pool of uniform source blocks would have no current — see the
-water-current notes above). Golems fall down the corner shaft onto a magma
-kill pocket and take real damage over time until they die; one hopper tile
-in the pocket is a direct catch point for the drops, feeding the shared
-collection shaft.
+- **Lighting** (15 files) — noon runs brighter than vanilla (130 vs 100 lux) and
+  the falloff into evening is stretched between 0.18 and 0.29 of the day cycle,
+  which is what produces the long golden hour. Moonlight is raised from 0.4 to
+  0.9 so nights stay readable and cast real directional shadows. Ambient light
+  is kept low and tinted by time of day — blue at night, warm at dusk — so
+  shadows have colour instead of going flat grey.
+- **Atmospherics** (17 files) — deeper Rayleigh scattering for a richer blue
+  zenith, and forward Mie scattering more than doubled (1.6 vs vanilla's 0.75)
+  but only inside the golden hours, so a low sun blooms without washing out
+  midday. The Nether, the End and each Nether biome keep their own fixed skies.
+- **Colour grading** (14 files) — a filmic pass with `hable` tone mapping: cool
+  desaturated shadows against warm highlights, mild contrast, per-biome
+  temperature from 5200K in the badlands to 7900K over ice spikes.
+- **Water** — waves and caustics enabled, with chlorophyll and CDOM
+  concentrations set so water reads as deep teal and darkens with depth.
+- **Shadows** — `soft_shadows` at texel size 16.
 
-**Crop Farm** — A pinwheel: 4 farmer villagers, each in their own 9x9
-quadrant (farmers won't work land more than ~4 blocks from their
-composter, so a composter centered in each quadrant covers the whole
-thing), arranged around a single collector villager caged in a small pit
-at the center. Each quadrant's center tile is a water source with a
-composter placed directly on top of it — hydrates the whole quadrant and
-serves as that farmer's job site in one tile — with glowstone above for
-light. The collector's pit has a 1-block-high stone brick wall: tall
-enough that the collector can't walk out, short enough that a farmer
-standing right outside can reach over and share surplus food with it. A
-hopper sits under all 9 pit tiles, with rail and a parked hopper minecart
-on the 8 tiles around the collector's own spot — that share attempt drops
-food onto whichever minecart is nearest, and the hopper below drains it
-out to the shared collection chest. This is a documented, real Bedrock
-design (matching a specific, widely-used reference tutorial), not an
-invented one — but it's still real (and therefore somewhat unpredictable)
-villager AI, so give it real time before judging it broken. Like the mob
-farm, this one isn't stacked — each of the 1-4 you build is a complete,
-independent 4-farmer pinwheel on the ground, 10 blocks from the next one.
+Blocks are left alone on purpose: vanilla already ships 1206 PBR texture sets
+with per-pixel metalness/emissive/roughness maps, so overriding them with flat
+values would lose detail rather than add it.
 
-**Passive Mob Farm** — An open, heavily-lit grass platform where cows,
-pigs, sheep, and chickens naturally spawn and graze over time (no
-breeding required, though feeding them speeds it up) inside a 2-block-high
-fence barrier that keeps them from wandering off the edge early. The same
-west+north adjacent-walls water convergence as the iron farm pushes grown
-animals into a 2-wide SE corner drain, which drops them 14 blocks — far
-enough to kill cows/pigs/sheep outright with fall damage alone. Chickens
-take no fall damage in vanilla, so the landing zone is also lined with
-magma blocks (safe for item drops, and — being a solid block rather than a
-fluid — physically unable to spread past where it's placed) as a
-guaranteed finisher. A hopper tile in the landing zone directly catches
-drops and feeds a smoker's input slot from directly above — standard
-vanilla hopper-into-furnace behavior, no scripting needed for the cooking
-itself. The smoker's fuel slot is pre-loaded with a stack of coal at build
-time (good for 512 smelts), and a second hopper underneath automatically
-pulls the cooked output into the final chest.
+### Tuning it
 
-All three farms funnel their output into one shared external hopper chain
-ending in a double chest — not buried, so it's immediately visible without
-digging, and there's only ever one chest to check per farm type regardless
-of how many levels/units you built.
+Everything is generated from one file, `tools/gen_visuals.py`, which holds the
+master day/night curves at the top and a per-biome table of tints and multipliers
+below. Change a number, re-run it, rebuild:
 
-## Known limitations / tuning tips
-
-- **Three real bugs found and fixed via testing + the in-game content
-  log** (Settings → Creator → Content Log), not guesswork:
-  1. `@minecraft/server` removed the `itemUseOn` event entirely in its
-     2.0.0 release, and the manifest still pointed at the old 1.x module
-     line — the script's event handler likely never loaded at all.
-     Updated `BP/manifest.json` to `@minecraft/server` 2.0.0 /
-     `@minecraft/server-ui` 2.1.0, and switched
-     `scripts/main.js` from `world.afterEvents.itemUseOn` to
-     `world.afterEvents.playerInteractWithBlock` (the documented
-     replacement).
-  2. **The actual cause of the persistent blank icon**, found via the
-     content log's exact error text: `menu_category -> group: string
-     must be prefixed with a namespace`. `BP/items/structure_tool.json`
-     had `"group": "itemGroup.name.tool"` with no namespace, which made
-     the *entire item* fail to parse — so no icon fix could ever have
-     worked, because the item using that icon never successfully loaded
-     in the first place. Fixed to `"minecraft:itemGroup.name.tool"`.
-  3. The tool's icon points at a texture this pack ships itself
-     (`RP/textures/items/build_tool_icon.png`) rather than trying to
-     reference a vanilla texture by path without shipping it — that
-     approach produced the same "missing icon" error reliably in
-     testing, so item icons apparently require the file to be physically
-     present in the resource pack that declares the shortname.
-- **Bed and hopper orientation** are set programmatically and rotated to
-  match the direction you built in; if a state value mapping doesn't match
-  your game version exactly, the bed/hopper still functions — worst case
-  it's a purely cosmetic mismatch you can fix by breaking and replacing
-  that one block.
-- **Crop farm collection is still the least deterministic mechanic here.**
-  Each farmer quadrant has its own dedicated composter, but the actual
-  food-sharing-into-the-pit behavior is real, somewhat unpredictable
-  vanilla AI. Give it real in-game time before concluding it isn't working.
-- **Stay near the build site until you see "Build Complete!"** on screen.
-  Building spreads block placement across many ticks to avoid freezing the
-  game; a 4-level farm can take a while. If you wander far enough that
-  chunks unload mid-build, later placements (including villager spawns,
-  which happen last) can silently fail, leaving an incomplete structure. If
-  that happens, just build again while staying put.
-- **On leaves and golem spawning**: leaves aren't part of the vanilla iron
-  golem spawn algorithm as far as I'm aware — spawning depends on village
-  size/bed count, golem population cap, and a valid flat surface, not
-  nearby foliage. If you have a specific source suggesting otherwise I'm
-  happy to look into it, but I didn't want to add block placements based
-  on a mechanic I can't verify is real.
-- **Building 4 of the crop or mob farm** means the farthest unit's items
-  travel through a long shared hopper chain (up to ~120 blocks) to reach
-  the one collection chest. This is normal vanilla hopper transfer speed,
-  not a bug — expect a real but bounded delay (each hop is 8 game ticks),
-  not data loss (hoppers buffer 5 stacks each). If you'd rather have faster,
-  fully independent collection per unit at the cost of more chests to
-  check, that's a one-line change in the farm's `plan()` — see "Adding your
-  own farm" below.
-- **Passive Mob Farm fall shaft goes ~15 blocks below where you build.** If
-  you build on ground very close to the world's minimum build height, the
-  kill zone/smoker/chest can clip below it. Build on typical Overworld
-  terrain and this isn't a concern.
-- **Testing methodology**: every farm change is run through a mock-runtime
-  harness (stub `@minecraft/server` modules) across all 4 facings and every
-  level count, checking for invalid coordinates/ids, accidental overlaps
-  between separately-authored pieces, and — since a real bug slipped
-  through here once (a lava kill pocket that leaked, root cause never
-  fully confirmed) — a flood-fill check that every water/lava placement's
-  reachable open area stays within a sane size, catching containment
-  mistakes before they ship instead of after. This doesn't replace actually
-  testing in-game (it can't verify real Bedrock physics, villager AI, or
-  anything that depends on the live game), but it does catch a real class
-  of authoring mistakes automatically.
-- **Build site**: the tool clears a generous interior volume before
-  building, but doesn't touch anything outside the farm's own footprint.
-  Build on relatively flat ground, away from any existing village (see
-  above). Clearance needed: the iron farm is roughly 45 blocks tall at 4
-  levels (15x15 footprint); the crop and mob farms are only ~5-7 blocks
-  tall each but stretch to ~120 blocks wide at 4 units (23x23 and 15x15
-  footprints per unit, 10 blocks apart) since they're built side by side on
-  the ground rather than stacked.
-- Module/engine versions in `BP/manifest.json` are set to reasonably recent
-  values; if your Minecraft version is newer, update them per Mojang's
-  Script API changelog.
-- If a beacon/tool shows up with no icon and a raw translation key as its
-  name, the resource pack isn't active for that world — see step 3 under
-  Install.
-
-## Project layout
-
-```
-BP/                      Behavior pack
-  manifest.json            Includes metadata.product_type: "addon"
-  items/structure_tool.json
-  recipes/build_tool.json
-  scripts/
-    main.js               Item-use handler, menus, build orchestration
-    lib/geometry.js         Facing + rotation math
-    lib/builder.js            Block/entity placement generators (system.runJob-safe)
-    lib/outline.js             Particle bounding-box preview
-    farms/ironFarm.js           Iron farm layout + mechanics
-    farms/cropFarm.js            Crop farm layout + mechanics
-    farms/mobFarm.js              Passive mob farm layout + mechanics
-RP/                      Resource pack (icon, item texture, lang)
-  manifest.json             Includes metadata.product_type: "addon"
-build_addon.sh            Packages BP/ + RP/ into dist/AutoFarmAddon.mcaddon
+```bash
+python3 tools/gen_visuals.py && ./build.sh
 ```
 
-## Adding your own farm
+To get a punchier, higher-contrast image, change the grading `operator` default
+from `hable` to `aces`.
 
-Each farm module exports an object with `id`, `name`, `shortDescription`,
-`size`, `levelSpacing`, `maxLevels`, and a `plan({ levels, facing })` method
-returning `{ placements, spawns, fills? }` in local space (see `ironFarm.js`
-for a fully worked example of vertical stacking, or `cropFarm.js`/
-`mobFarm.js` for side-by-side ground units). Register it in `FARMS` in
-`scripts/main.js` and it shows up in the menu automatically.
+## Aurora Interface
 
-A few optional properties change how the generic build flow treats a farm:
+Bedrock draws nearly every screen from one small shared pool of textures. Aurora
+replaces 61 of them, which is why the inventory, chests, crafting, furnaces,
+tooltips, the pause menu and settings all change together.
 
-- `stackAxis: "x"` (or `"z"`) — repeat levels sideways in local space
-  instead of stacking them in `y`. Defaults to `"y"` if omitted.
-- `levelLabel` — override the slider's label text in the level-count menu
-  (defaults to `"Stack height (levels)"`).
-- `unitNoun` — override the word used for "N of these" in menus/messages
-  (defaults to `"Level"`).
-- `fills` — a list of `{x, y, z, slot, itemId, amount}` to pre-load into an
-  already-placed container's inventory slot after building (e.g. fuel into
-  a smoker), applied after `placements` but before `spawns`.
+That is also deliberate restraint. JSON UI is unversioned and breaks when Mojang
+edits vanilla layouts, so this pack ships **no copied screen layouts** — only
+textures plus a 41-key colour override in `ui/_global_variables.json`. Since
+vanilla resolves its labels through those variables (the inventory title is
+`$title_text_color`, not a hardcoded colour), overriding them recolours text
+everywhere at once. Those flips are load-bearing: vanilla's "light" button text
+is dark grey because vanilla buttons are pale, and Aurora's are dark slate.
+
+Textures are drawn at 4x resolution wherever a texture declares a `base_size`,
+and at native size where it does not. All detail is kept inside the fixed
+nine-slice border so that stretched panels never smear.
+
+Palette: `#0A0C11` wells, `#12151D` panels, `#1A1F2B` buttons, `#4DE3D0` accent.
+Edit `tools/gen_ui_textures.py` and re-run to change it.
+
+## Aurora Animations
+
+Bedrock overrides animations **by identifier, not by file path**, and the
+override is absolute for that one identifier. So this pack defines only the 83
+animations it wants to change; everything else stays vanilla, and no Mojang
+files are copied.
+
+**Player** — arm and leg swings widen when sprinting, arms swing slightly across
+the body, and the torso leans and bounces with each footfall (all scaled by
+`query.modified_move_speed`, so nothing moves while standing still). Attacks get
+a heavier windup, a body twist, a forward lunge and counter-swing on the off
+arm. Sneaking sits lower, the swim kick is stronger, and gliding finally uses a
+real swept-back wingsuit pose instead of running in mid-air.
+
+**Mobs** — around 60 identities, either individually or through the shared bases
+they inherit:
+
+- *Shared bases* — `animation.humanoid.move` gains a torso sway, and
+  `animation.quadruped.walk` gains diagonal leg phasing plus a body bounce, so
+  every humanoid and every farm animal walks better.
+- *Undead* — zombies reach with an uneven, drifting shamble; skeletons hold a
+  tighter, rattling aim; wither skeletons are stiffer and wider; drowned sway.
+- *Hostiles* — spiders get a proper alternating-tetrapod gait, creepers a subtle
+  waddle, blazes counter-rotate their rods at three different speeds, ghasts
+  ripple their tentacles in a travelling wave, phantoms and vexes and bats beat
+  their wings with delayed wingtips, silverfish and endermites ripple
+  segment-by-segment, wardens lumber, creakings sway when idle.
+- *Passives* — cats and ocelots walk and sprint differently, wolves have a
+  wagging tail, rabbits hop rather than walk, bees and allays hover with fast
+  wingbeats, axolotls and dolphins and fish undulate from body to tail, camels
+  and sniffers and armadillos each get their own gait, horses (and donkeys,
+  mules, skeleton and zombie horses) share a rebuilt canter.
+
+Mobs whose walk comes from a shared base — zombies and skeletons both use
+`animation.humanoid.move` — are differentiated through the animations they *do*
+own, such as their attack poses.
+
+## Development
+
+```bash
+python3 tools/gen_visuals.py        # shader JSON
+python3 tools/gen_ui_textures.py    # UI textures  (needs Pillow)
+python3 tools/gen_pack_icons.py     # pack icons   (needs Pillow)
+python3 tools/validate.py           # checks
+./build.sh                          # dist/Aurora.mcaddon + per-pack .mcpack
+```
+
+### Validation
+
+`tools/validate.py` parses every shipped file as strict JSON, checks manifest
+UUIDs are unique and engine versions are high enough, and range-checks the
+Vibrant Visuals settings against the documented limits.
+
+Given a vanilla checkout it also catches the two ways an override fails
+silently:
+
+- **Dead overrides** — an animation identifier, UI texture, or UI variable that
+  vanilla does not have, which would simply never apply.
+- **Dropped bones** — a bone the vanilla animation moved but ours does not.
+  Because overriding is absolute, that motion would vanish with no error. This
+  check caught three real cases during development: strider bristles, camel ears
+  and the axolotl's head.
+
+```bash
+git clone --depth 1 https://github.com/Mojang/bedrock-samples.git
+BEDROCK_SAMPLES=./bedrock-samples python3 tools/validate.py
+```
+
+## Compatibility
+
+- Built and validated against vanilla `1.26.40.5`.
+- `min_engine_version` is `1.21.120`, the first version with Vibrant Visuals
+  resource pack support, so the packs also load on releases between that and
+  26.40.
+- Other packs that replace the same `textures/ui/` files or the same animation
+  identifiers will conflict; whichever sits higher in the pack list wins.
+- No behaviour pack, no scripts, and no gameplay changes — these are
+  client-side visuals only, so they are safe on servers and do not affect
+  achievements.

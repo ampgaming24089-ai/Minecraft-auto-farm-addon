@@ -1,9 +1,0 @@
-{
-  "resource_pack_name": "auto_farm_addon",
-  "texture_name": "atlas.items",
-  "texture_data": {
-    "autofarm_build_tool_icon": {
-      "textures": "textures/items/build_tool_icon"
-    }
-  }
-}
