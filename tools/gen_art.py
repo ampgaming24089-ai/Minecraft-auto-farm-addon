@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate every Voidbound texture from source.
+"""Regenerate every Riftborne texture from source.
 
     python3 tools/gen_art.py
 

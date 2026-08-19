@@ -100,7 +100,7 @@ export function startRiftCompass() {
     try {
       survey(player);
     } catch (error) {
-      console.warn(`[Voidbound] compass survey failed: ${error}`);
+      console.warn(`[Riftborne] compass survey failed: ${error}`);
     }
   });
 

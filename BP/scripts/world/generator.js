@@ -2,7 +2,7 @@
  * Turning sites into actual structures.
  *
  * Bedrock add-ons cannot add structures to the chunk generator itself, so
- * Voidbound generates them just ahead of the player instead: a scan every two
+ * Riftborne generates them just ahead of the player instead: a scan every two
  * seconds finds sited structures the player is approaching, checks that the
  * ground under them is untouched natural End, and builds them over a handful
  * of ticks with system.runJob.
@@ -96,7 +96,7 @@ function* buildJob(dimension, site, origin) {
 
     markBuilt(site.key);
   } catch (error) {
-    console.warn(`[Voidbound] build failed at ${site.key}: ${error}`);
+    console.warn(`[Riftborne] build failed at ${site.key}: ${error}`);
     rejected.add(site.key);
   } finally {
     building.delete(site.key);

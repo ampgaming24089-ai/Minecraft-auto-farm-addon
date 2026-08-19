@@ -41,7 +41,7 @@ function recordFound(player, key) {
     player.setDynamicProperty(COUNT_PROPERTY, total);
     return total;
   } catch (error) {
-    console.warn(`[Voidbound] could not record discovery: ${error}`);
+    console.warn(`[Riftborne] could not record discovery: ${error}`);
     return undefined;
   }
 }

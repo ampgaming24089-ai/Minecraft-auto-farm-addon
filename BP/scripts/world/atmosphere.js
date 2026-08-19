@@ -58,7 +58,7 @@ function apply() {
       try {
         player.runCommand(`fog @s push ${wanted} ${HANDLE}`);
       } catch (error) {
-        console.warn(`[Voidbound] could not push fog ${wanted}: ${error}`);
+        console.warn(`[Riftborne] could not push fog ${wanted}: ${error}`);
         applied.set(player.id, undefined);
         continue;
       }

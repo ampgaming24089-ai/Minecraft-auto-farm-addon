@@ -43,7 +43,7 @@ export function markBuilt(key) {
   try {
     world.setDynamicProperty(PROPERTY, entries.join(","));
   } catch (error) {
-    console.warn(`[Voidbound] could not persist built sites: ${error}`);
+    console.warn(`[Riftborne] could not persist built sites: ${error}`);
   }
 }
 

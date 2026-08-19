@@ -1,12 +1,12 @@
 /**
- * Voidbound - entry point.
+ * Riftborne - entry point.
  *
  * Four systems, started once at load:
  *   sites/generator  places seed-derived structures ahead of the player
  *   atmosphere       swaps fog by region, above what the client biome provides
  *   discovery        acknowledges arriving somewhere new
  *   rift compass     reads the structure map and points at it
- *   armour set       grants the Voidbound set bonus in the End
+ *   armour set       grants the Riftborne set bonus in the End
  *
  * Everything visual - lighting, atmospherics, colour grading, PBR - is data in
  * the resource pack and needs no script at all. This file only covers the
@@ -26,7 +26,7 @@ function start() {
   startDiscovery();
   startRiftCompass();
   startArmorSet();
-  console.log("[Voidbound] End systems online");
+  console.log("[Riftborne] End systems online");
 }
 
 // worldLoad fires once the world is ready for world.seed and player queries.
@@ -35,6 +35,6 @@ world.afterEvents.worldLoad.subscribe(() => {
   try {
     start();
   } catch (error) {
-    console.error(`[Voidbound] failed to start: ${error}`);
+    console.error(`[Riftborne] failed to start: ${error}`);
   }
 });

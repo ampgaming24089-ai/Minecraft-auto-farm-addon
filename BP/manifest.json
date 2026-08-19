@@ -6,7 +6,7 @@
     "uuid": "2590091e-a4ae-4fbb-a66d-3a5fd243e436",
     "version": [
       1,
-      0,
+      1,
       0
     ],
     "min_engine_version": [
@@ -18,11 +18,11 @@
   "metadata": {
     "product_type": "addon",
     "authors": [
-      "Voidbound"
+      "Riftborne"
     ],
     "generated_with": {
-      "voidbound_tools": [
-        "1.0.0"
+      "riftborne_tools": [
+        "1.1.0"
       ]
     }
   },
@@ -32,7 +32,7 @@
       "uuid": "21d98bc3-8df4-4980-bc71-672fe8218614",
       "version": [
         1,
-        0,
+        1,
         0
       ]
     },
@@ -42,7 +42,7 @@
       "uuid": "68481530-b5f3-4432-bfa1-1b0089fd040b",
       "version": [
         1,
-        0,
+        1,
         0
       ],
       "entry": "scripts/main.js"
@@ -57,7 +57,7 @@
       "uuid": "a43f065f-f856-479e-927f-c871a7b16dcc",
       "version": [
         1,
-        0,
+        1,
         0
       ]
     }

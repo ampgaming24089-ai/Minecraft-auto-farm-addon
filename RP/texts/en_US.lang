@@ -1,5 +1,5 @@
-pack.name=Voidbound [Resources]
-pack.description=Vibrant Visuals lighting, atmospherics, volumetric fog and PBR art for the Voidbound End.
+pack.name=Riftborne [Resources]
+pack.description=Vibrant Visuals lighting, atmospherics, volumetric fog and PBR art for the Riftborne End.
 
 ## Blocks
 tile.voidbound:shattered_end_stone.name=Shattered End Stone
@@ -18,10 +18,10 @@ item.voidbound:rift_compass.name=Rift Compass
 item.voidbound:lumen_berry.name=Lumen Berry
 
 ## Armor
-item.voidbound:void_helmet.name=Voidbound Helm
-item.voidbound:void_chestplate.name=Voidbound Cuirass
-item.voidbound:void_leggings.name=Voidbound Greaves
-item.voidbound:void_boots.name=Voidbound Sabatons
+item.voidbound:void_helmet.name=Riftborne Helm
+item.voidbound:void_chestplate.name=Riftborne Cuirass
+item.voidbound:void_leggings.name=Riftborne Greaves
+item.voidbound:void_boots.name=Riftborne Sabatons
 
 ## Entities
 entity.voidbound:lumen_wisp.name=Lumen Wisp

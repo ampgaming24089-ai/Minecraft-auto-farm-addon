@@ -1,6 +1,6 @@
-# Voidbound — an End overhaul for Minecraft Bedrock
+# Riftborne — an End overhaul for Minecraft Bedrock
 
-The End has been one biome, one sky and two structures since 1.9. Voidbound
+The End has been one biome, one sky and two structures since 1.9. Riftborne
 rebuilds it for Bedrock **26.4** (internal `1.26.40`, current hotfix `26.44`):
 a new sky and lighting model, volumetric fog that changes with where you are,
 four kinds of seed-derived structure scattered across the outer islands, two
@@ -10,7 +10,7 @@ Everything runs on documented, non-experimental APIs. No experiments toggle,
 no world conversion, no commands typed by the player.
 
 ```
-./build_addon.sh --check      # validate everything, then build dist/Voidbound.mcaddon
+./build_addon.sh --check      # validate everything, then build dist/Riftborne.mcaddon
 ```
 
 Import the `.mcaddon`, enable both packs on a world, and turn **Vibrant
@@ -25,7 +25,7 @@ content, just not the PBR lighting.
 ### The sky and the light
 
 The End's built-in look is a flat purple void: two constant white directional
-lights, a near-black sky, no depth. Voidbound replaces the whole Vibrant
+lights, a near-black sky, no depth. Riftborne replaces the whole Vibrant
 Visuals stack for `minecraft:the_end`.
 
 | File | What it does |
@@ -44,7 +44,7 @@ through `lighting/global.json`. That is the part most End packs get wrong.
 ### Fog that knows where you are
 
 Bedrock exposes exactly one End biome, so a biome-bound fog can only ever be
-one mood. Voidbound ships four fog definitions and pushes the right one onto
+one mood. Riftborne ships four fog definitions and pushes the right one onto
 each player's fog stack — the layer that sits above biome fog:
 
 - **`fog_end_open`** — the default, bound to the biome. Thin violet haze that
@@ -94,15 +94,15 @@ Chest contents scale with distance from the origin: the rare pool goes from a
 - **Rift Compass** — points at the nearest structure by name, distance and
   bearing, and names the runner-up so you can pick a route.
 
-### Voidbound armour
+### Riftborne armour
 
 The endgame set, a clear step past netherite:
 
 | | Helm | Cuirass | Greaves | Sabatons | Set |
 |---|---|---|---|---|---|
-| Voidbound protection | 4 | 9 | 7 | 4 | **24** |
+| Riftborne protection | 4 | 9 | 7 | 4 | **24** |
 | Netherite protection | 3 | 8 | 6 | 3 | 20 |
-| Voidbound durability | 561 | 816 | 765 | 663 | |
+| Riftborne durability | 561 | 816 | 765 | 663 | |
 | Netherite durability | 407 | 592 | 555 | 481 | |
 
 Enchantability is 18 against netherite's 15, and pieces repair with void
