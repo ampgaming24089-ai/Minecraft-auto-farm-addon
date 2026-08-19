@@ -30,9 +30,9 @@ Visuals stack for `minecraft:the_end`.
 
 | File | What it does |
 |---|---|
-| `RP/lighting/voidbound_end.json` | Violet sun / teal moon over a day cycle, a brighter amethyst End flash (16 lx vs vanilla's 3), lower sky intensity for harder shadows |
-| `RP/atmospherics/voidbound_end.json` | Deep indigo zenith with a violet horizon that shifts through the day, heavier Rayleigh scattering so the glow carries |
-| `RP/color_grading/voidbound_end.json` | ACES tone mapping, crushed cool shadows, magenta highlights, 8200 K balance |
+| `RP/lighting/end.json` | Pink-white sun, cool moon, and a vivid magenta End flash at 18 lx against vanilla's 3 |
+| `RP/atmospherics/end.json` | Deep violet zenith under a magenta horizon, with Rayleigh scattering turned up so the glow carries to the horizon |
+| `RP/color_grading/end.json` | ACES tone mapping, crushed cool shadows, magenta highlights, 8200 K balance |
 | `RP/pbr/global.json` | Fallback MER values so untextured surfaces still light correctly |
 | `RP/local_lighting/local_lighting.json` | Coloured point lights — end rods go violet, lumen bulbs teal |
 | `RP/biomes/the_end.client_biome.json` | Binds all of the above to the End biome |
@@ -87,8 +87,34 @@ Chest contents scale with distance from the origin: the rare pool goes from a
 - **Voidbloom** and **Lumen Bulb** — glowing flora in scattered patches.
 - **Shattered End Stone**, **Verdant End Stone**, **Void Crystal Block**,
   **Void Glass**, **Rift Lantern** — building blocks, all craftable.
+- **Void Moth** — passive, four-winged, drifts between islands. Drops lumen
+  berries and phantom membrane.
+- **Echo Sentinel** — a 3-block masonry guardian with an echo core in its
+  chest. 60 health, 9 damage, near-immune to knockback. Drops void crystals.
 - **Rift Compass** — points at the nearest structure by name, distance and
   bearing, and names the runner-up so you can pick a route.
+
+### Voidbound armour
+
+The endgame set, a clear step past netherite:
+
+| | Helm | Cuirass | Greaves | Sabatons | Set |
+|---|---|---|---|---|---|
+| Voidbound protection | 4 | 9 | 7 | 4 | **24** |
+| Netherite protection | 3 | 8 | 6 | 3 | 20 |
+| Voidbound durability | 561 | 816 | 765 | 663 | |
+| Netherite durability | 407 | 592 | 555 | 481 | |
+
+Enchantability is 18 against netherite's 15, and pieces repair with void
+crystals. Crafted from void crystals alone — 24 for the full set, which is 12
+crafts of the crystal recipe, so it is a genuine grind rather than an upgrade
+stone.
+
+Raw numbers would only make it a slightly better netherite, so the set carries
+a bonus: **wearing all four pieces in the End grants Slow Falling and
+Resistance I**, which is what actually changes how the dimension plays — the
+gaps between islands stop being lethal. Remove a piece or leave the End and it
+lapses within two seconds.
 
 Recipes are in `BP/recipes/`. The chain is: mine echo ore → echo shards →
 void crystals (with an ender pearl) → crystal blocks, glass, lanterns, and the
@@ -182,43 +208,70 @@ rules and blocks, and misses unknown component names, out-of-range values and
 most item fields. Treat a clean run as "no known-bad JSON", not "provably
 correct".
 
-## What has not been verified
+## What the first in-game load found
 
-**This has never been loaded into Minecraft.** Everything above is checked
-against Mojang's published schemas, id tables, type definitions and
-documentation, and the vanilla packs were used as the reference for every
-file format. That rules out the whole class of silent-load failures, but it is
-not the same as running it.
+The pack has now been loaded on Bedrock 26.44 (iOS). The content log caught
+six real faults that no amount of schema checking would have — every one of
+them a case where the published schema and Mojang's own documentation both
+accepted something the engine rejects:
 
-Specifically worth watching on first load:
+| Log error | Cause | Fix |
+|---|---|---|
+| `minecraft:flower_pottable` needs Upcoming Creator Features | The component requires block format 1.21.120; the blocks declared 1.21.100 | Blocks bumped to 1.21.120 |
+| `child 'minecraft:instrument_sound' not valid here` | The engine rejects the object form the schema documents | Component dropped |
+| `min_sides_must_attach` value 0 outside `[1, 4]` | 0 does not mean "no requirement" | Set to 1 |
+| `[Lighting] Expected keyframes` | The lighting file carried `emissive` and `sky` objects with scalar values | Rewritten to mirror the vanilla pack's own `end_lighting.json` exactly |
+| `cannot find atmosphere definition` | The atmospherics file failed to register, which took the whole client biome with it — so no custom fog or sky either | Rewritten to the vanilla `end_atmospherics.json` shape, all values keyframed |
+| Recipe result malformed, "is not a block" | Cascades from the three blocks that failed to parse | Resolved by the fixes above |
 
-- Whether the Vibrant Visuals values are *tasteful*, not just valid. Colour
+The remaining `[Scripting] Plugin [Syc's Force Creative]` error is a different
+add-on in the same world, not this one.
+
+Fog densities were also pulled back (open End from 0.045 to 0.022) and the
+palette pushed from indigo toward magenta, since the first screenshots showed
+a grainy grey haze rather than the End reading as vivid.
+
+**Turn Vibrant Visuals on.** Without it you get the fog and sky colour but
+none of the PBR lighting, and the End will still look flat.
+
+### Still unverified
+
+- Whether the lighting and atmospherics files now register. They mirror the
+  vanilla End files structurally, which is the strongest available evidence
+  short of another load.
+- Whether the visuals are *tasteful* rather than merely valid. The colour
   grading and scattering strengths are judgement calls made without seeing
-  them rendered; expect to tune `rayleigh_strength` and the fog densities.
-- Structure generation timing when flying fast with elytra — `BUILD_RADIUS` in
+  them rendered.
+- Armour rendering on the player model, and whether the plate art lines up
+  with vanilla's armour UV layout.
+- Structure generation timing under elytra — `BUILD_RADIUS` in
   `BP/scripts/world/generator.js` may need raising.
-- Mob spawn rates. The weights in `BP/spawn_rules/` are first guesses.
+- Mob spawn rates; the weights in `BP/spawn_rules/` are still first guesses.
 - The mobs have no custom sounds; they are silent.
+- Armour renders through vanilla's `controller.render.armor` and the
+  `geometry.humanoid.armor.*` models, copied from the vanilla netherite
+  attachables. The plate art was authored blind against that UV layout.
 
 ## Tuning
 
 | What | Where |
 |---|---|
 | Palette / all texture colours | `PALETTE` in `tools/gen_art.py` |
-| Sky, sun, flash, ambient | `RP/lighting/voidbound_end.json` |
-| Sky colours and scattering | `RP/atmospherics/voidbound_end.json` |
+| Sky, sun, flash, ambient | `RP/lighting/end.json` |
+| Sky colours and scattering | `RP/atmospherics/end.json` |
 | Fog density and colour | `RP/fogs/*.json` |
 | Structure spacing and rarity | `CELL_SIZE`, `SITE_CHANCE`, `INNER_CLEARANCE` in `BP/scripts/world/sites.js` |
 | Which structures, how often | `STRUCTURES` weights in `BP/scripts/structures/index.js` |
 | Chest contents and rarity curve | `BP/scripts/content/loot.js` |
 | Ore and flora density | `BP/feature_rules/*.json` |
 | Mob spawn weights | `BP/spawn_rules/*.json` |
+| Armour stats and set bonus | `BP/items/void_*.json`, `BP/scripts/content/armorSet.js` |
 
 ## Layout
 
 ```
 BP/                     behavior pack
-  blocks/ items/        8 blocks, 4 items
+  blocks/ items/        8 blocks, 8 items (4 of them armour)
   entities/ spawn_rules/ loot_tables/
   features/ feature_rules/   ore, shattered stone and flora generation
   recipes/
@@ -231,7 +284,7 @@ RP/                     resource pack
   lighting/ atmospherics/ color_grading/ pbr/ local_lighting/ fogs/
   biomes/               client biome binding the above to the End
   textures/             generated art + texture sets
-  models/ animations/ entity/ render_controllers/
+  models/ animations/ entity/ render_controllers/ attachables/
 tools/                  art generation and the four checks
 ```
 

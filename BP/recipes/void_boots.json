@@ -1,0 +1,29 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:void_boots"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "C C",
+      "C C"
+    ],
+    "key": {
+      "C": {
+        "item": "voidbound:void_crystal"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:void_crystal"
+      }
+    ],
+    "result": {
+      "item": "voidbound:void_boots",
+      "count": 1
+    }
+  }
+}

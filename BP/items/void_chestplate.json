@@ -1,0 +1,46 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:item": {
+    "description": {
+      "identifier": "voidbound:void_chestplate",
+      "menu_category": {
+        "category": "equipment"
+      }
+    },
+    "components": {
+      "minecraft:display_name": {
+        "value": "item.voidbound:void_chestplate.name"
+      },
+      "minecraft:icon": {
+        "textures": {
+          "default": "voidbound_void_chestplate"
+        }
+      },
+      "minecraft:max_stack_size": 1,
+      "minecraft:rarity": "epic",
+      "minecraft:wearable": {
+        "slot": "slot.armor.chest",
+        "protection": 9,
+        "dispensable": true
+      },
+      "minecraft:durability": {
+        "max_durability": 816
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": [
+              "voidbound:void_crystal"
+            ],
+            "repair_amount": 120
+          }
+        ]
+      },
+      "minecraft:enchantable": {
+        "slot": "armor_torso",
+        "value": 18
+      },
+      "minecraft:should_despawn": false
+    }
+  }
+}

@@ -189,6 +189,10 @@ const KNOWN_SCHEMA_DEFECTS = [
     why: "the schema's own description calls this a number in the range 0.0-0.9",
   },
   {
+    match: /^\/minecraft:attachable\/description\/(materials|textures|geometry)\/\w+ must be object$/,
+    why: "every vanilla attachable maps these names to plain strings (checked against netherite_helmet.json)",
+  },
+  {
     match: /allowed_faces must be object/,
     why: "the schema's own description calls this a list of face-name strings",
   },

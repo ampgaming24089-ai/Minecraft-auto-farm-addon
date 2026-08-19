@@ -13,6 +13,18 @@
     },
     "voidbound_lumen_berry": {
       "textures": "textures/items/voidbound_lumen_berry"
+    },
+    "voidbound_void_helmet": {
+      "textures": "textures/items/voidbound_void_helmet"
+    },
+    "voidbound_void_chestplate": {
+      "textures": "textures/items/voidbound_void_chestplate"
+    },
+    "voidbound_void_leggings": {
+      "textures": "textures/items/voidbound_void_leggings"
+    },
+    "voidbound_void_boots": {
+      "textures": "textures/items/voidbound_void_boots"
     }
   }
 }

@@ -6,6 +6,7 @@
  *   atmosphere       swaps fog by region, above what the client biome provides
  *   discovery        acknowledges arriving somewhere new
  *   rift compass     reads the structure map and points at it
+ *   armour set       grants the Voidbound set bonus in the End
  *
  * Everything visual - lighting, atmospherics, colour grading, PBR - is data in
  * the resource pack and needs no script at all. This file only covers the
@@ -13,6 +14,7 @@
  */
 
 import { world } from "@minecraft/server";
+import { startArmorSet } from "./content/armorSet.js";
 import { startRiftCompass } from "./content/riftCompass.js";
 import { startAtmosphere } from "./world/atmosphere.js";
 import { startDiscovery } from "./world/discovery.js";
@@ -23,6 +25,7 @@ function start() {
   startAtmosphere();
   startDiscovery();
   startRiftCompass();
+  startArmorSet();
   console.log("[Voidbound] End systems online");
 }
 

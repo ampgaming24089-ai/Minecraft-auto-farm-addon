@@ -61,6 +61,7 @@ const KNOWN_NON_ID = new Set([
   "minecraft:fog_the_end",
   // Component and particle names, which are namespaced but are not content ids.
   "minecraft:inventory",
+  "minecraft:equippable",
   "minecraft:endrod",
 ]);
 

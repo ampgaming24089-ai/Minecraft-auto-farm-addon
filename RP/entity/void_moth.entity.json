@@ -1,0 +1,32 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:void_moth",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_void_moth"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.void_moth"
+      },
+      "animations": {
+        "fly": "animation.voidbound.void_moth.fly"
+      },
+      "scripts": {
+        "animate": [
+          "fly"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#4A2B6E",
+        "overlay_color": "#C77BFF"
+      }
+    }
+  }
+}

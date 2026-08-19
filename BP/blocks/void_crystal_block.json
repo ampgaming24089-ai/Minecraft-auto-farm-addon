@@ -1,5 +1,5 @@
 {
-  "format_version": "1.21.100",
+  "format_version": "1.21.120",
   "minecraft:block": {
     "description": {
       "identifier": "voidbound:void_crystal_block",
@@ -24,11 +24,7 @@
       "minecraft:destructible_by_explosion": {
         "explosion_resistance": 12
       },
-      "minecraft:light_emission": 10,
-      "minecraft:instrument_sound": {
-        "up": "note.chime",
-        "down": "note.bell"
-      }
+      "minecraft:light_emission": 10
     }
   }
 }

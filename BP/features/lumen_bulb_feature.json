@@ -13,7 +13,7 @@
       "minecraft:air"
     ],
     "may_attach_to": {
-      "min_sides_must_attach": 0,
+      "min_sides_must_attach": 1,
       "bottom": [
         "minecraft:end_stone",
         "voidbound:shattered_end_stone",

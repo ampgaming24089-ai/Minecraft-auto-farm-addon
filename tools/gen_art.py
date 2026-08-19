@@ -16,6 +16,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from artlib import (  # noqa: E402
+    TRANSPARENT,
     Canvas,
     Rng,
     bevel,
@@ -555,6 +556,268 @@ def entity_rift_stalker():
     )
 
 
+def entity_void_moth():
+    """64x32 sheet: a dusty violet body under four translucent-looking wings."""
+    c = Canvas(64, 32)
+    fur = mix(PALETTE["void"], PALETTE["endstone_dark"], 0.22)
+    fur_hi = mix(fur, PALETTE["void_lit"], 0.35)
+    wing = mix(PALETTE["void_lit"], PALETTE["void"], 0.45)
+    wing_edge = shade(PALETTE["void_lit"], 0.35)
+
+    def body(face, fx, fy, fw, fh):
+        n = fbm(fx * 2, fy * 2, 12, 4310, octaves=3, base_period=4)
+        base = mix(fur, fur_hi, n * 0.55)
+        # Banding along the abdomen.
+        if face in ("east", "west", "top") and fy % 2 == 0:
+            return shade(base, -0.12)
+        return base
+
+    paint_box(c, 0, 0, 4, 4, 6, body)
+
+    def head(face, fx, fy, fw, fh):
+        base = mix(fur_hi, fur, 0.3)
+        if face == "north" and fy == 1 and fx in (1, fw - 2):
+            return shade(PALETTE["lumen_lit"], 0.4)  # eyes
+        return base
+
+    paint_box(c, 22, 0, 4, 3, 2, head)
+
+    def make_wing(scale):
+        def paint(face, fx, fy, fw, fh):
+            # Veins run outward from the wing root; the trailing edge glows.
+            t = fx / float(max(1, fw - 1))
+            n = fbm(fx * 3, fy * 3, 16, 4311, octaves=2, base_period=4)
+            base = mix(wing, mix(wing, PALETTE["void"], 0.55), t * scale)
+            if fx % 3 == 0:
+                base = mix(base, wing_edge, 0.45)
+            if face == "top" or face == "bottom":
+                return mix(base, wing_edge, 0.15 + n * 0.2)
+            return base
+        return paint
+
+    paint_box(c, 0, 12, 7, 1, 5, make_wing(0.9))
+    paint_box(c, 0, 19, 7, 1, 5, make_wing(0.9))
+    paint_box(c, 26, 12, 5, 1, 4, make_wing(1.1))
+    paint_box(c, 26, 18, 5, 1, 4, make_wing(1.1))
+
+    def antenna(_face, fx, fy, fw, fh):
+        return mix(fur_hi, PALETTE["lumen_lit"], 1.0 - fy / float(max(1, fh - 1)))
+
+    paint_box(c, 46, 0, 1, 3, 1, antenna)
+
+    emit(
+        c,
+        ENTITY,
+        "voidbound_void_moth",
+        roughness=190,
+        emissive_from=PALETTE["void_lit"][:3],
+        emissive_gain=0.85,
+        emissive_threshold=0.28,
+    )
+
+
+def entity_echo_sentinel():
+    """64x64 sheet: quarried end stone bound around a burning echo core."""
+    c = Canvas(64, 64)
+    stone = mix(PALETTE["endstone_dark"], PALETTE["void"], 0.42)
+    stone_hi = mix(stone, PALETTE["endstone"], 0.35)
+    seam = PALETTE["lumen_lit"]
+
+    def masonry(seed, seam_faces=()):
+        def paint(face, fx, fy, fw, fh):
+            n = fbm(fx * 1.4, fy * 1.4, 16, seed, octaves=3, base_period=4)
+            base = mix(stone, stone_hi, n)
+            # Brick courses, offset every other row.
+            if fy % 4 == 0:
+                base = shade(base, -0.22)
+            elif (fx + (fy // 4) * 2) % 5 == 0:
+                base = shade(base, -0.16)
+            if face in seam_faces and abs(fx - (fw - 1) / 2.0) < 0.6:
+                return mix(base, seam, 0.5)
+            return base
+        return paint
+
+    paint_box(c, 0, 0, 10, 14, 6, masonry(7710, ("north",)))
+    paint_box(c, 0, 22, 8, 8, 8, masonry(7711))
+    paint_box(c, 34, 0, 4, 14, 4, masonry(7712))
+    paint_box(c, 34, 20, 4, 14, 4, masonry(7713))
+    paint_box(c, 0, 40, 4, 12, 4, masonry(7714))
+    paint_box(c, 18, 40, 4, 12, 4, masonry(7715))
+
+    def core(_face, fx, fy, fw, fh):
+        dx = (fx + 0.5) / fw - 0.5
+        dy = (fy + 0.5) / fh - 0.5
+        d = min(1.0, math.hypot(dx, dy) * 2.2)
+        return mix(shade(seam, 0.6), mix(seam, PALETTE["void"], 0.6), d)
+
+    paint_box(c, 36, 40, 4, 4, 1, core)
+
+    # Eyes on the head's north face.
+    for x, y in ((10, 33), (13, 33), (10, 34), (13, 34)):
+        c.set(x, y, shade(seam, 0.55))
+
+    emit(
+        c,
+        ENTITY,
+        "voidbound_echo_sentinel",
+        roughness=232,
+        emissive_from=PALETTE["lumen_lit"][:3],
+        emissive_gain=1.2,
+        emissive_threshold=0.22,
+    )
+
+
+# --------------------------------------------------------------------------
+# Armor
+# --------------------------------------------------------------------------
+
+ARMOR = os.path.join(ROOT, "RP", "textures", "models", "armor")
+
+# Vanilla's humanoid.armor UV layout on a 64x32 sheet. Layer 1 carries the
+# helmet, chestplate and boots; layer 2 carries the leggings. Copied from the
+# vanilla netherite attachables so the plates land on the right body parts.
+ARMOR_LAYER_1 = [
+    ("helmet", 0, 0, 8, 8, 8),
+    ("body", 16, 16, 8, 12, 4),
+    ("arm", 40, 16, 4, 12, 4),
+    ("leg", 0, 16, 4, 12, 4),
+]
+ARMOR_LAYER_2 = [
+    ("body", 16, 16, 8, 12, 4),
+    ("leg", 0, 16, 4, 12, 4),
+]
+
+
+def _plate_painter(part, seed):
+    """Obsidian plate with a lit rift seam running down the centre."""
+    plate = mix(PALETTE["void"], (0, 0, 0, 255), 0.30)
+    plate_hi = mix(plate, PALETTE["void_lit"], 0.22)
+    seam = PALETTE["void_lit"]
+    echo = PALETTE["lumen_lit"]
+
+    def paint(face, fx, fy, fw, fh):
+        if face == "bottom":
+            return mix(plate, (0, 0, 0, 255), 0.25)
+        n = fbm(fx * 1.7, fy * 1.7, 16, seed, octaves=3, base_period=4)
+        base = mix(plate, plate_hi, n * 0.8)
+
+        # Rim light along the top edge of every face reads as a bevelled plate.
+        if fy == 0:
+            base = mix(base, plate_hi, 0.7)
+        elif fy == fh - 1:
+            base = shade(base, -0.22)
+
+        centre = abs(fx - (fw - 1) / 2.0)
+        if face in ("north", "south") and centre < 0.6 and fh > 4:
+            # The seam fades out before the hem so it does not look printed on.
+            fade = 1.0 - max(0.0, (fy - (fh - 4)) / 3.0)
+            return mix(base, seam, 0.85 * max(0.0, fade))
+        if part == "helmet" and face == "north" and fy in (3, 4) and fw - 2 > fx > 1:
+            return mix(base, seam, 0.55)  # visor band
+        if part == "body" and face in ("east", "west") and fx == fw // 2 and fy in (3, 7):
+            return mix(base, echo, 0.6)   # echo studs on the flanks
+        if part == "leg" and face == "north" and fy >= fh - 3 and centre < 1.6:
+            return mix(base, echo, 0.45)  # lit boot toe
+        return base
+
+    return paint
+
+
+def armor_layers():
+    os.makedirs(ARMOR, exist_ok=True)
+    for name, parts, seed in (
+        ("voidbound_armor_1", ARMOR_LAYER_1, 8801),
+        ("voidbound_armor_2", ARMOR_LAYER_2, 8802),
+    ):
+        sheet = Canvas(64, 32)
+        for part, u, v, w, h, d in parts:
+            paint_box(sheet, u, v, w, h, d, _plate_painter(part, seed))
+        emit(
+            sheet,
+            ARMOR,
+            name,
+            metalness=48,
+            roughness=118,
+            emissive_from=PALETTE["void_lit"][:3],
+            emissive_gain=1.15,
+            emissive_threshold=0.22,
+        )
+
+
+def _armor_icon(name, draw):
+    """Shared finishing pass for the four armour icons."""
+    c = Canvas(16)
+    plate = mix(PALETTE["void"], (0, 0, 0, 255), 0.28)
+    draw(c, plate, PALETTE["void_lit"], PALETTE["lumen_lit"])
+    bevel(c, light=0.26, dark=0.28)
+    c.outline(mix(PALETTE["void"], (0, 0, 0, 255), 0.65))
+    emit(
+        c,
+        ITEMS,
+        name,
+        metalness=64,
+        roughness=104,
+        emissive_from=PALETTE["void_lit"][:3],
+        emissive_gain=1.1,
+        emissive_threshold=0.26,
+    )
+
+
+def item_void_helmet():
+    def draw(c, plate, lit, echo):
+        c.rect(3, 3, 12, 10, plate)
+        c.rect(2, 5, 13, 11, plate)
+        c.rect(5, 8, 10, 11, TRANSPARENT)   # face opening
+        for x in range(5, 11):
+            c.set(x, 7, lit)                # visor band
+        c.set(7, 2, lit)
+        c.set(8, 2, lit)
+        c.set(3, 11, echo)
+        c.set(12, 11, echo)
+    _armor_icon("voidbound_void_helmet", draw)
+
+
+def item_void_chestplate():
+    def draw(c, plate, lit, echo):
+        c.rect(2, 3, 13, 5, plate)          # shoulders
+        c.rect(4, 3, 11, 13, plate)         # torso
+        c.rect(2, 4, 3, 9, plate)           # left pauldron
+        c.rect(12, 4, 13, 9, plate)         # right pauldron
+        for y in range(5, 13):
+            c.set(7, y, lit)
+            c.set(8, y, lit)
+        c.set(3, 6, echo)
+        c.set(12, 6, echo)
+    _armor_icon("voidbound_void_chestplate", draw)
+
+
+def item_void_leggings():
+    def draw(c, plate, lit, echo):
+        c.rect(3, 2, 12, 5, plate)          # belt
+        c.rect(3, 5, 6, 14, plate)          # left leg
+        c.rect(9, 5, 12, 14, plate)         # right leg
+        for x in range(4, 12):
+            c.set(x, 3, lit)
+        c.set(4, 9, echo)
+        c.set(11, 9, echo)
+    _armor_icon("voidbound_void_leggings", draw)
+
+
+def item_void_boots():
+    def draw(c, plate, lit, echo):
+        c.rect(2, 6, 6, 12, plate)
+        c.rect(9, 6, 13, 12, plate)
+        c.rect(1, 11, 6, 13, plate)         # left toe
+        c.rect(9, 11, 14, 13, plate)        # right toe
+        for x in range(2, 7):
+            c.set(x, 7, lit)
+        for x in range(9, 14):
+            c.set(x, 7, lit)
+        c.set(2, 12, echo)
+        c.set(13, 12, echo)
+    _armor_icon("voidbound_void_boots", draw)
+
+
 # --------------------------------------------------------------------------
 # Pack icons
 # --------------------------------------------------------------------------
@@ -606,7 +869,7 @@ def pack_icon(path, accent):
 
 
 def main():
-    for folder in (BLOCKS, ITEMS, ENTITY):
+    for folder in (BLOCKS, ITEMS, ENTITY, ARMOR):
         os.makedirs(folder, exist_ok=True)
 
     recipes = [
@@ -624,6 +887,13 @@ def main():
         item_lumen_berry,
         entity_lumen_wisp,
         entity_rift_stalker,
+        entity_void_moth,
+        entity_echo_sentinel,
+        armor_layers,
+        item_void_helmet,
+        item_void_chestplate,
+        item_void_leggings,
+        item_void_boots,
     ]
     for recipe in recipes:
         recipe()
@@ -634,7 +904,7 @@ def main():
     print("  generated pack icons")
 
     total = sum(
-        len([f for f in os.listdir(d) if f.endswith(".png")]) for d in (BLOCKS, ITEMS, ENTITY)
+        len([f for f in os.listdir(d) if f.endswith(".png")]) for d in (BLOCKS, ITEMS, ENTITY, ARMOR)
     )
     print(f"{total} texture files written")
 

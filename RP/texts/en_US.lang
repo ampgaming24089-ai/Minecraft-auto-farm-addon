@@ -17,11 +17,21 @@ item.voidbound:void_crystal.name=Void Crystal
 item.voidbound:rift_compass.name=Rift Compass
 item.voidbound:lumen_berry.name=Lumen Berry
 
+## Armor
+item.voidbound:void_helmet.name=Voidbound Helm
+item.voidbound:void_chestplate.name=Voidbound Cuirass
+item.voidbound:void_leggings.name=Voidbound Greaves
+item.voidbound:void_boots.name=Voidbound Sabatons
+
 ## Entities
 entity.voidbound:lumen_wisp.name=Lumen Wisp
 entity.voidbound:rift_stalker.name=Rift Stalker
 item.spawn_egg.entity.voidbound:lumen_wisp.name=Spawn Lumen Wisp
 item.spawn_egg.entity.voidbound:rift_stalker.name=Spawn Rift Stalker
+entity.voidbound:void_moth.name=Void Moth
+entity.voidbound:echo_sentinel.name=Echo Sentinel
+item.spawn_egg.entity.voidbound:void_moth.name=Spawn Void Moth
+item.spawn_egg.entity.voidbound:echo_sentinel.name=Spawn Echo Sentinel
 
 ## Interaction prompts
 action.interact.voidbound.survey=Survey
