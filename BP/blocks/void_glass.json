@@ -1,0 +1,32 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:block": {
+    "description": {
+      "identifier": "voidbound:void_glass",
+      "menu_category": {
+        "category": "construction"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.voidbound:void_glass.name",
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "voidbound_void_glass",
+          "render_method": "blend",
+          "ambient_occlusion": 0.0,
+          "face_dimming": false
+        }
+      },
+      "minecraft:map_color": "#3A2B5E",
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 0.4
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 1
+      },
+      "minecraft:light_dampening": 0,
+      "minecraft:light_emission": 3
+    }
+  }
+}

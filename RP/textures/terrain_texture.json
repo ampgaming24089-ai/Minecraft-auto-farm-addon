@@ -1,0 +1,35 @@
+{
+  "resource_pack_name": "voidbound",
+  "texture_name": "atlas.terrain",
+  "padding": 8,
+  "num_mip_levels": 4,
+  "texture_data": {
+    "voidbound_shattered_end_stone": {
+      "textures": "textures/blocks/voidbound_shattered_end_stone"
+    },
+    "voidbound_verdant_end_stone": {
+      "textures": "textures/blocks/voidbound_verdant_end_stone"
+    },
+    "voidbound_echo_ore": {
+      "textures": "textures/blocks/voidbound_echo_ore"
+    },
+    "voidbound_void_crystal_block": {
+      "textures": "textures/blocks/voidbound_void_crystal_block"
+    },
+    "voidbound_void_glass": {
+      "textures": "textures/blocks/voidbound_void_glass"
+    },
+    "voidbound_voidbloom": {
+      "textures": "textures/blocks/voidbound_voidbloom"
+    },
+    "voidbound_lumen_bulb": {
+      "textures": "textures/blocks/voidbound_lumen_bulb"
+    },
+    "voidbound_rift_lantern_side": {
+      "textures": "textures/blocks/voidbound_rift_lantern_side"
+    },
+    "voidbound_rift_lantern_top": {
+      "textures": "textures/blocks/voidbound_rift_lantern_top"
+    }
+  }
+}

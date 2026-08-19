@@ -1,20 +1,38 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Groundwork Farms [Resources]",
-    "description": "Resources for Groundwork Farms - structure build tool icon and text.",
-    "uuid": "87836772-0c98-4269-b4dd-0f4ac358deef",
-    "version": [1, 0, 0],
-    "min_engine_version": [1, 21, 60]
+    "name": "pack.name",
+    "description": "pack.description",
+    "uuid": "a43f065f-f856-479e-927f-c871a7b16dcc",
+    "version": [
+      1,
+      0,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      40
+    ]
   },
   "metadata": {
-    "product_type": "addon"
+    "product_type": "addon",
+    "authors": [
+      "Voidbound"
+    ]
   },
   "modules": [
     {
       "type": "resources",
-      "uuid": "c44be564-e596-4c50-8a8b-a4b1a6bc16f3",
-      "version": [1, 0, 0]
+      "uuid": "dcfcdbd3-1c10-400b-8fab-08e6b56d748c",
+      "version": [
+        1,
+        0,
+        0
+      ]
     }
+  ],
+  "capabilities": [
+    "pbr"
   ]
 }

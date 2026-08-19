@@ -1,0 +1,31 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:block": {
+    "description": {
+      "identifier": "voidbound:verdant_end_stone",
+      "menu_category": {
+        "category": "nature"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.voidbound:verdant_end_stone.name",
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "voidbound_verdant_end_stone",
+          "render_method": "opaque",
+          "ambient_occlusion": 1.0
+        }
+      },
+      "minecraft:map_color": "#6C8F72",
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 0.9
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 9
+      },
+      "minecraft:light_emission": 2,
+      "minecraft:friction": 0.6
+    }
+  }
+}

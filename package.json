@@ -1,0 +1,23 @@
+{
+  "name": "voidbound",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Voidbound - an End dimension overhaul add-on for Minecraft Bedrock 26.4",
+  "scripts": {
+    "art": "python3 tools/gen_art.py",
+    "preview": "python3 tools/preview.py",
+    "check:ids": "node tools/check_ids.mjs",
+    "check:json": "node tools/validate.mjs",
+    "check:scripts": "node tools/smoketest.mjs",
+    "check:types": "tsc -p tsconfig.check.json",
+    "check": "npm run check:ids && npm run check:json && npm run check:scripts && npm run check:types",
+    "build": "./build_addon.sh --check"
+  },
+  "devDependencies": {
+    "@minecraft/bedrock-schemas": "1.26.40-beta.26",
+    "@minecraft/server": "2.9.0",
+    "@minecraft/vanilla-data": "^1.21.0",
+    "ajv": "^8.17.1",
+    "typescript": "^5.6.0"
+  }
+}

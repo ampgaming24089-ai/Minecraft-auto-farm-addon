@@ -1,0 +1,34 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:rift_compass"
+    },
+    "tags": [ "crafting_table" ],
+    "pattern": [
+      " S ",
+      "SMS",
+      " C "
+    ],
+    "key": {
+      "S": {
+        "item": "voidbound:echo_shard"
+      },
+      "M": {
+        "item": "minecraft:compass"
+      },
+      "C": {
+        "item": "voidbound:void_crystal"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:echo_shard"
+      }
+    ],
+    "result": {
+      "item": "voidbound:rift_compass",
+      "count": 1
+    }
+  }
+}

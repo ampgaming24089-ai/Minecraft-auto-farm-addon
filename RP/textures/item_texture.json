@@ -1,9 +1,18 @@
 {
-  "resource_pack_name": "auto_farm_addon",
+  "resource_pack_name": "voidbound",
   "texture_name": "atlas.items",
   "texture_data": {
-    "autofarm_build_tool_icon": {
-      "textures": "textures/items/build_tool_icon"
+    "voidbound_echo_shard": {
+      "textures": "textures/items/voidbound_echo_shard"
+    },
+    "voidbound_void_crystal": {
+      "textures": "textures/items/voidbound_void_crystal"
+    },
+    "voidbound_rift_compass": {
+      "textures": "textures/items/voidbound_rift_compass"
+    },
+    "voidbound_lumen_berry": {
+      "textures": "textures/items/voidbound_lumen_berry"
     }
   }
 }

@@ -1,0 +1,29 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:rift_stalker",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_rift_stalker"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.rift_stalker"
+      },
+      "animations": {
+        "idle": "animation.voidbound.rift_stalker.idle",
+        "walk": "animation.voidbound.rift_stalker.walk"
+      },
+      "scripts": {
+        "animate": [ "idle", "walk" ]
+      },
+      "render_controllers": [ "controller.render.voidbound.default" ],
+      "spawn_egg": {
+        "base_color": "#2A1140",
+        "overlay_color": "#C77BFF"
+      }
+    }
+  }
+}

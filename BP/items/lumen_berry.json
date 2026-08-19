@@ -1,0 +1,32 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:item": {
+    "description": {
+      "identifier": "voidbound:lumen_berry",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:display_name": {
+        "value": "item.voidbound:lumen_berry.name"
+      },
+      "minecraft:icon": {
+        "textures": {
+          "default": "voidbound_lumen_berry"
+        }
+      },
+      "minecraft:max_stack_size": 16,
+      "minecraft:food": {
+        "can_always_eat": true,
+        "nutrition": 4,
+        "saturation_modifier": 0.8
+      },
+      "minecraft:use_modifiers": {
+        "use_duration": 1.6,
+        "movement_modifier": 0.35
+      },
+      "minecraft:use_animation": "eat"
+    }
+  }
+}

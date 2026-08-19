@@ -1,2 +1,27 @@
-pack.name=Groundwork Farms [Resources]
-pack.description=Resources for Groundwork Farms - structure build tool icon and text.
+pack.name=Voidbound [Resources]
+pack.description=Vibrant Visuals lighting, atmospherics, volumetric fog and PBR art for the Voidbound End.
+
+## Blocks
+tile.voidbound:shattered_end_stone.name=Shattered End Stone
+tile.voidbound:verdant_end_stone.name=Verdant End Stone
+tile.voidbound:echo_ore.name=Echo Ore
+tile.voidbound:void_crystal_block.name=Void Crystal Block
+tile.voidbound:void_glass.name=Void Glass
+tile.voidbound:rift_lantern.name=Rift Lantern
+tile.voidbound:voidbloom.name=Voidbloom
+tile.voidbound:lumen_bulb.name=Lumen Bulb
+
+## Items
+item.voidbound:echo_shard.name=Echo Shard
+item.voidbound:void_crystal.name=Void Crystal
+item.voidbound:rift_compass.name=Rift Compass
+item.voidbound:lumen_berry.name=Lumen Berry
+
+## Entities
+entity.voidbound:lumen_wisp.name=Lumen Wisp
+entity.voidbound:rift_stalker.name=Rift Stalker
+item.spawn_egg.entity.voidbound:lumen_wisp.name=Spawn Lumen Wisp
+item.spawn_egg.entity.voidbound:rift_stalker.name=Spawn Rift Stalker
+
+## Interaction prompts
+action.interact.voidbound.survey=Survey

@@ -1,41 +1,65 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Groundwork Farms [Behavior]",
-    "description": "Instant stackable auto farms - build tool, menu-driven, achievement friendly.",
-    "uuid": "6d777d9e-1f18-4476-93aa-d05addc86366",
-    "version": [1, 0, 0],
-    "min_engine_version": [1, 21, 90]
+    "name": "pack.name",
+    "description": "pack.description",
+    "uuid": "2590091e-a4ae-4fbb-a66d-3a5fd243e436",
+    "version": [
+      1,
+      0,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      40
+    ]
   },
   "metadata": {
-    "product_type": "addon"
+    "product_type": "addon",
+    "authors": [
+      "Voidbound"
+    ],
+    "generated_with": {
+      "voidbound_tools": [
+        "1.0.0"
+      ]
+    }
   },
   "modules": [
     {
       "type": "data",
-      "uuid": "7750b803-da74-4ccd-a7d1-586b43e23c7d",
-      "version": [1, 0, 0]
+      "uuid": "21d98bc3-8df4-4980-bc71-672fe8218614",
+      "version": [
+        1,
+        0,
+        0
+      ]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "facd1e9f-d031-4300-98a9-a5aadd3a8af4",
-      "version": [1, 0, 0],
+      "uuid": "68481530-b5f3-4432-bfa1-1b0089fd040b",
+      "version": [
+        1,
+        0,
+        0
+      ],
       "entry": "scripts/main.js"
     }
   ],
   "dependencies": [
     {
       "module_name": "@minecraft/server",
-      "version": "2.0.0"
+      "version": "2.9.0"
     },
     {
-      "module_name": "@minecraft/server-ui",
-      "version": "2.1.0"
-    },
-    {
-      "uuid": "87836772-0c98-4269-b4dd-0f4ac358deef",
-      "version": [1, 0, 0]
+      "uuid": "a43f065f-f856-479e-927f-c871a7b16dcc",
+      "version": [
+        1,
+        0,
+        0
+      ]
     }
   ]
 }

@@ -1,0 +1,27 @@
+{
+  "format_version": "1.1.0",
+  "voidbound:shattered_end_stone": {
+    "sound": "stone"
+  },
+  "voidbound:verdant_end_stone": {
+    "sound": "grass"
+  },
+  "voidbound:echo_ore": {
+    "sound": "stone"
+  },
+  "voidbound:void_crystal_block": {
+    "sound": "amethyst_block"
+  },
+  "voidbound:void_glass": {
+    "sound": "glass"
+  },
+  "voidbound:rift_lantern": {
+    "sound": "lantern"
+  },
+  "voidbound:voidbloom": {
+    "sound": "grass"
+  },
+  "voidbound:lumen_bulb": {
+    "sound": "grass"
+  }
+}

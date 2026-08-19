@@ -1,0 +1,28 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:lumen_wisp",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_lumen_wisp"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.lumen_wisp"
+      },
+      "animations": {
+        "idle": "animation.voidbound.lumen_wisp.idle"
+      },
+      "scripts": {
+        "animate": [ "idle" ]
+      },
+      "render_controllers": [ "controller.render.voidbound.default" ],
+      "spawn_egg": {
+        "base_color": "#5FE8D2",
+        "overlay_color": "#1E8C7E"
+      }
+    }
+  }
+}
