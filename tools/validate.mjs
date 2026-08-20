@@ -287,6 +287,23 @@ for (const file of [...walk(join(ROOT, "BP")), ...walk(join(ROOT, "RP"))]) {
   }
 }
 
+// A manifest header that names a loc key relies on a lookup that does not
+// always fire - it shipped once as a literal "pack.name" on screen. Names
+// must be literal strings.
+for (const manifest of ["BP/manifest.json", "RP/manifest.json"]) {
+  const full = join(ROOT, manifest);
+  if (!existsSync(full)) continue;
+  const header = JSON.parse(readFileSync(full, "utf8")).header ?? {};
+  for (const field of ["name", "description"]) {
+    if (typeof header[field] === "string" && /^pack\./.test(header[field])) {
+      failures.push({
+        rel: manifest,
+        errors: [`header.${field} is the loc key "${header[field]}" - use a literal string`],
+      });
+    }
+  }
+}
+
 console.log(`schema-checked ${checked} file(s)` + (stubbed ? ` (stubbed ${stubbed} broken ref(s) in the schema package)` : ""));
 if (unmapped.length) console.log(`  ${unmapped.length} with no schema in the catalog: ${unmapped.join(", ")}`);
 if (uncompilable.length) console.log(`  ${uncompilable.length} whose schema the package cannot compile: ${uncompilable.join(", ")}`);
