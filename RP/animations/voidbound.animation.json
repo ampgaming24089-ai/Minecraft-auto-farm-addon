@@ -225,6 +225,99 @@
           ]
         }
       }
+    },
+    "animation.voidbound.rift_sovereign.idle": {
+      "loop": true,
+      "animation_length": 6.0,
+      "bones": {
+        "root": {
+          "position": [
+            0,
+            "math.sin(query.anim_time * 46) * 1.4",
+            0
+          ]
+        },
+        "shell_upper": {
+          "rotation": [
+            0,
+            "query.anim_time * 26 * (1.0 + (1.0 - query.health / 400) * 1.8)",
+            0
+          ],
+          "position": [
+            0,
+            "math.sin(query.anim_time * 62) * 0.6",
+            0
+          ]
+        },
+        "shell_lower": {
+          "rotation": [
+            0,
+            "query.anim_time * -34 * (1.0 + (1.0 - query.health / 400) * 1.8)",
+            0
+          ],
+          "position": [
+            0,
+            "-math.sin(query.anim_time * 62) * 0.6",
+            0
+          ]
+        },
+        "crown": {
+          "rotation": [
+            0,
+            "query.anim_time * 40 * (1.0 + (1.0 - query.health / 400) * 1.8)",
+            0
+          ]
+        },
+        "core": {
+          "scale": [
+            "1.0 + math.sin(query.anim_time * 150) * 0.06",
+            "1.0 + math.sin(query.anim_time * 150) * 0.06",
+            "1.0 + math.sin(query.anim_time * 150) * 0.06"
+          ]
+        },
+        "mantle": {
+          "rotation": [
+            "math.sin(query.anim_time * 40) * 6",
+            "math.sin(query.anim_time * 31) * 5",
+            0
+          ]
+        },
+        "shard_a": {
+          "rotation": [
+            0,
+            "query.anim_time * 74 * (1.0 + (1.0 - query.health / 400) * 1.8)",
+            0
+          ]
+        },
+        "shard_b": {
+          "rotation": [
+            0,
+            "query.anim_time * 74 * (1.0 + (1.0 - query.health / 400) * 1.8)",
+            0
+          ]
+        },
+        "shard_c": {
+          "rotation": [
+            0,
+            "query.anim_time * -58 * (1.0 + (1.0 - query.health / 400) * 1.8)",
+            0
+          ]
+        },
+        "shard_d": {
+          "rotation": [
+            0,
+            "query.anim_time * -58 * (1.0 + (1.0 - query.health / 400) * 1.8)",
+            0
+          ]
+        },
+        "eye": {
+          "scale": [
+            1,
+            "0.7 + math.sin(query.anim_time * 190) * 0.35",
+            1
+          ]
+        }
+      }
     }
   }
 }

@@ -79,6 +79,19 @@ function* buildJob(dimension, site, origin) {
       yield;
     }
 
+    if (plan.boss) {
+      try {
+        dimension.spawnEntity("voidbound:rift_sovereign", {
+          x: origin.x,
+          y: origin.y + 6,
+          z: origin.z,
+        });
+      } catch (error) {
+        console.warn(`[Riftborne] could not place the Sovereign at ${site.key}: ${error}`);
+      }
+      yield;
+    }
+
     for (let i = 0; i < (plan.guards ?? 0); i++) {
       const angle = rng.float(0, Math.PI * 2);
       const reach = rng.float(4, site.blueprint.radius);

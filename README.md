@@ -77,6 +77,38 @@ island, the obsidian pillars and the gateway are untouched.
 Chest contents scale with distance from the origin: the rare pool goes from a
 6% chance near the island to 28% around 30,000 blocks out.
 
+### The Rift Sovereign
+
+The End's second boss, holding open the tear at the centre of every Rift
+Anchor. 400 health, a boss bar, and a fight that escalates in three phases
+rather than repeating one attack:
+
+| | Phase 1 | Phase 2 (below 66%) | Phase 3 (below 33%) |
+|---|---|---|---|
+| Rift lance | yes | faster | faster still |
+| Shockwave | — | 9-block ring, knockback | — |
+| Blink | — | repositions behind you | — |
+| Summons | 3 rift stalkers | 3 rift stalkers | 2 echo sentinels |
+| Cooldowns | full | −20% | −33% |
+
+Its shells counter-rotate and its shard ring orbits faster as its health
+drops, driven from the model's own Molang rather than a second animation, so
+the escalation is visible before the attack pattern changes. Five custom
+particle effects carry the fight — a standing aura, the lance bolt, the burst,
+the ground shockwave, and a slow collapse on death that deliberately reads
+differently from every attack that preceded it.
+
+Drops 12–20 void crystals and 16–28 echo shards — roughly a full armour set
+in one kill — plus a rift compass and two rolls of a rarer pool.
+
+### The sky
+
+`RP/textures/environment/end_sky.png` replaces the End's skybox with a
+seamless magenta nebula starfield. This is deliberately *not* a Vibrant
+Visuals cubemap: Mojang restricts cubemap customisation to the Overworld, and
+the End keeps its built-in one. Overriding the vanilla texture works either
+way, so the sky changes whether or not Vibrant Visuals is switched on.
+
 ### Mobs, ore and flora
 
 - **Lumen Wisp** — passive, floating, shy. Drops lumen berries and the odd echo
@@ -91,6 +123,7 @@ Chest contents scale with distance from the origin: the rare pool goes from a
   berries and phantom membrane.
 - **Echo Sentinel** — a 3-block masonry guardian with an echo core in its
   chest. 60 health, 9 damage, near-immune to knockback. Drops void crystals.
+- **Rift Sovereign** — the boss, above.
 - **Rift Compass** — points at the nearest structure by name, distance and
   bearing, and names the runner-up so you can pick a route.
 
@@ -208,49 +241,65 @@ rules and blocks, and misses unknown component names, out-of-range values and
 most item fields. Treat a clean run as "no known-bad JSON", not "provably
 correct".
 
-## What the first in-game load found
+## What the in-game loads found
 
-The pack has now been loaded on Bedrock 26.44 (iOS). The content log caught
-six real faults that no amount of schema checking would have — every one of
-them a case where the published schema and Mojang's own documentation both
-accepted something the engine rejects:
+Two rounds of content-log errors on Bedrock 26.44 (iOS). Every one is a case
+the published schemas and Mojang's own documentation both accept but the
+engine rejects, so none could have been caught without running it.
+
+**Round one:**
 
 | Log error | Cause | Fix |
 |---|---|---|
-| `minecraft:flower_pottable` needs Upcoming Creator Features | The component requires block format 1.21.120; the blocks declared 1.21.100 | Blocks bumped to 1.21.120 |
+| `minecraft:flower_pottable` needs Upcoming Creator Features | Requires block format 1.21.120; the blocks declared 1.21.100 | Bumped to 1.21.120 |
 | `child 'minecraft:instrument_sound' not valid here` | The engine rejects the object form the schema documents | Component dropped |
 | `min_sides_must_attach` value 0 outside `[1, 4]` | 0 does not mean "no requirement" | Set to 1 |
-| `[Lighting] Expected keyframes` | The lighting file carried `emissive` and `sky` objects with scalar values | Rewritten to mirror the vanilla pack's own `end_lighting.json` exactly |
-| `cannot find atmosphere definition` | The atmospherics file failed to register, which took the whole client biome with it — so no custom fog or sky either | Rewritten to the vanilla `end_atmospherics.json` shape, all values keyframed |
-| Recipe result malformed, "is not a block" | Cascades from the three blocks that failed to parse | Resolved by the fixes above |
+| Recipe malformed, "is not a block" | Cascades from the blocks that failed to parse | Resolved by the above |
 
-The remaining `[Scripting] Plugin [Syc's Force Creative]` error is a different
-add-on in the same world, not this one.
+**Round two:**
 
-Fog densities were also pulled back (open End from 0.045 to 0.022) and the
-palette pushed from indigo toward magenta, since the first screenshots showed
-a grainy grey haze rather than the End reading as vivid.
+| Log error | Cause | Fix |
+|---|---|---|
+| `random_offset -> x -> range: expected an object` | `range` takes `{min, max}`, not `[min, max]` — the schema allows the array form | Switched to the object form |
+| `minecraft:wearable -> dispensable: not present in the Schema` | `dispensable` does not exist in this version | Removed from all four armour pieces |
+| `cannot find atmosphere definition` | Still unresolved — see below | The binding removed so it stops taking the rest down |
 
-**Turn Vibrant Visuals on.** Without it you get the fog and sky colour but
-none of the PBR lighting, and the End will still look flat.
+### The atmosphere binding, and why it is currently off
+
+`RP/atmospherics/end.json` will not register, and the log says only
+`[Lighting] Expected keyframes`. The file has been rewritten twice — once as a
+structural clone of the vanilla pack's own `end_atmospherics.json`, once with
+every value keyframed — and neither took.
+
+A client biome file is all-or-nothing: one unresolvable identifier makes the
+engine discard the whole file. So that single failing binding was throwing away
+the fog, sky colour, lighting and colour grading bindings with it, which is why
+the End kept rendering as vanilla no matter what else changed. The
+`minecraft:atmosphere_identifier` line is now removed from the client biome.
+The other four bindings apply, and the atmospherics JSON stays in the pack,
+unreferenced, until the cause is understood.
+
+The sky is covered regardless by the `end_sky.png` override, which does not go
+through Vibrant Visuals at all.
+
+### Reading the log
+
+Content-log errors carry the world path they came from. Two different worlds
+appeared in the last report — one still running an older build of the pack, so
+half those errors were already fixed. Check the path before chasing one:
+`.../minecraftWorlds/<world id>/behavior_packs/pack`. The
+`Syc's Force Creative` scripting error is a different add-on entirely.
 
 ### Still unverified
 
-- Whether the lighting and atmospherics files now register. They mirror the
-  vanilla End files structurally, which is the strongest available evidence
-  short of another load.
-- Whether the visuals are *tasteful* rather than merely valid. The colour
-  grading and scattering strengths are judgement calls made without seeing
-  them rendered.
+- Whether the Rift Sovereign fight reads well in play — phase timings, attack
+  cadence and damage are tuned blind.
 - Armour rendering on the player model, and whether the plate art lines up
   with vanilla's armour UV layout.
 - Structure generation timing under elytra — `BUILD_RADIUS` in
   `BP/scripts/world/generator.js` may need raising.
 - Mob spawn rates; the weights in `BP/spawn_rules/` are still first guesses.
-- The mobs have no custom sounds; they are silent.
-- Armour renders through vanilla's `controller.render.armor` and the
-  `geometry.humanoid.armor.*` models, copied from the vanilla netherite
-  attachables. The plate art was authored blind against that UV layout.
+- The mobs and the boss have no custom sounds; they are silent.
 
 ## Tuning
 

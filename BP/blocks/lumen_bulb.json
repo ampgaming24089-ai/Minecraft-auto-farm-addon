@@ -44,17 +44,17 @@
       "minecraft:flower_pottable": {},
       "minecraft:random_offset": {
         "x": {
-          "range": [
-            -0.25,
-            0.25
-          ],
+          "range": {
+            "min": -0.25,
+            "max": 0.25
+          },
           "steps": 4
         },
         "z": {
-          "range": [
-            -0.25,
-            0.25
-          ],
+          "range": {
+            "min": -0.25,
+            "max": 0.25
+          },
           "steps": 4
         }
       },

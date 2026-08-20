@@ -1,8 +1,10 @@
 /**
  * Rift Anchor - an obsidian frame holding a tear in the End open.
  *
- * The most hostile of the four: the frame is guarded, the fog closes in, and
- * the payoff sits in the open where you have to stand still to take it.
+ * The most hostile of the four, and the only structure that carries a boss:
+ * the Rift Sovereign holds the tear open, so the anchor doubles as its arena.
+ * The fog closes in and the payoff sits in the open, where you have to stand
+ * still to take it.
  */
 
 import { at, blob, box, merge } from "../lib/blueprint.js";
@@ -69,7 +71,8 @@ export const RiftAnchor = {
       placements: merge(dais, frame, tear, pillars, offerings),
       chests: [{ x: 0, y: 2, z: 3 }],
       beacon: { x: 0, y: frameHeight, z: 0 },
-      guards: rng.int(2, 4),
+      guards: rng.int(1, 2),
+      boss: true,
     };
   },
 };

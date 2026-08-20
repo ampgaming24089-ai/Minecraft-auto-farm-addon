@@ -1,0 +1,101 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.voidbound.rift_sovereign",
+        "texture_width": 128,
+        "texture_height": 128,
+        "visible_bounds_width": 4,
+        "visible_bounds_height": 4,
+        "visible_bounds_offset": [ 0, 1.6, 0 ]
+      },
+      "bones": [
+        { "name": "root", "pivot": [ 0, 0, 0 ] },
+        {
+          "name": "shell_lower",
+          "parent": "root",
+          "pivot": [ 0, 15, 0 ],
+          "cubes": [
+            { "origin": [ -8, 12, -8 ], "size": [ 16, 6, 16 ], "uv": [ 0, 46 ] }
+          ]
+        },
+        {
+          "name": "core",
+          "parent": "root",
+          "pivot": [ 0, 23, 0 ],
+          "cubes": [
+            { "origin": [ -5, 18, -5 ], "size": [ 10, 10, 10 ], "uv": [ 0, 0 ] }
+          ]
+        },
+        {
+          "name": "eye",
+          "parent": "core",
+          "pivot": [ 0, 23, -5 ],
+          "cubes": [
+            { "origin": [ -3, 22, -6 ], "size": [ 6, 2, 1 ], "uv": [ 76, 66 ] }
+          ]
+        },
+        {
+          "name": "shell_upper",
+          "parent": "root",
+          "pivot": [ 0, 31, 0 ],
+          "cubes": [
+            { "origin": [ -8, 28, -8 ], "size": [ 16, 6, 16 ], "uv": [ 0, 22 ] }
+          ]
+        },
+        {
+          "name": "crown",
+          "parent": "shell_upper",
+          "pivot": [ 0, 34, 0 ],
+          "cubes": [
+            { "origin": [ -1, 34, -7 ], "size": [ 2, 8, 2 ], "uv": [ 66, 0 ] },
+            { "origin": [ -1, 34, 5 ], "size": [ 2, 8, 2 ], "uv": [ 66, 12 ] },
+            { "origin": [ -7, 34, -1 ], "size": [ 2, 8, 2 ], "uv": [ 66, 24 ] },
+            { "origin": [ 5, 34, -1 ], "size": [ 2, 8, 2 ], "uv": [ 66, 36 ] }
+          ]
+        },
+        {
+          "name": "mantle",
+          "parent": "root",
+          "pivot": [ 0, 18, 7 ],
+          "cubes": [
+            { "origin": [ -6, 4, 7 ], "size": [ 12, 14, 2 ], "uv": [ 66, 48 ] }
+          ]
+        },
+        {
+          "name": "shard_a",
+          "parent": "root",
+          "pivot": [ 0, 23, 0 ],
+          "cubes": [
+            { "origin": [ -13, 22, -1 ], "size": [ 3, 3, 3 ], "uv": [ 96, 0 ] }
+          ]
+        },
+        {
+          "name": "shard_b",
+          "parent": "root",
+          "pivot": [ 0, 23, 0 ],
+          "cubes": [
+            { "origin": [ 10, 22, -1 ], "size": [ 3, 3, 3 ], "uv": [ 96, 10 ] }
+          ]
+        },
+        {
+          "name": "shard_c",
+          "parent": "root",
+          "pivot": [ 0, 23, 0 ],
+          "cubes": [
+            { "origin": [ -1, 22, -13 ], "size": [ 3, 3, 3 ], "uv": [ 96, 20 ] }
+          ]
+        },
+        {
+          "name": "shard_d",
+          "parent": "root",
+          "pivot": [ 0, 23, 0 ],
+          "cubes": [
+            { "origin": [ -1, 22, 10 ], "size": [ 3, 3, 3 ], "uv": [ 96, 30 ] }
+          ]
+        }
+      ]
+    }
+  ]
+}

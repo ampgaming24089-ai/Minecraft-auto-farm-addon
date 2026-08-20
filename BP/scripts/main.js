@@ -7,6 +7,7 @@
  *   discovery        acknowledges arriving somewhere new
  *   rift compass     reads the structure map and points at it
  *   armour set       grants the Riftborne set bonus in the End
+ *   rift sovereign   drives the boss fight's phases, attacks and death
  *
  * Everything visual - lighting, atmospherics, colour grading, PBR - is data in
  * the resource pack and needs no script at all. This file only covers the
@@ -16,6 +17,7 @@
 import { world } from "@minecraft/server";
 import { startArmorSet } from "./content/armorSet.js";
 import { startRiftCompass } from "./content/riftCompass.js";
+import { startRiftSovereign } from "./content/riftSovereign.js";
 import { startAtmosphere } from "./world/atmosphere.js";
 import { startDiscovery } from "./world/discovery.js";
 import { startGenerator } from "./world/generator.js";
@@ -26,6 +28,7 @@ function start() {
   startDiscovery();
   startRiftCompass();
   startArmorSet();
+  startRiftSovereign();
   console.log("[Riftborne] End systems online");
 }
 

@@ -20,8 +20,7 @@
       "minecraft:rarity": "epic",
       "minecraft:wearable": {
         "slot": "slot.armor.legs",
-        "protection": 7,
-        "dispensable": true
+        "protection": 7
       },
       "minecraft:durability": {
         "max_durability": 765

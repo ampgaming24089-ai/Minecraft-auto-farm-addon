@@ -14,9 +14,6 @@
       "minecraft:water_appearance": {
         "surface_color": "#4A3E9E"
       },
-      "minecraft:atmosphere_identifier": {
-        "atmosphere_identifier": "voidbound:end_atmospherics"
-      },
       "minecraft:color_grading_identifier": {
         "color_grading_identifier": "voidbound:end_color_grading"
       },

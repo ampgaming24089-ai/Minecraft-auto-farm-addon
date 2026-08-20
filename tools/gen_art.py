@@ -819,6 +819,228 @@ def item_void_boots():
 
 
 # --------------------------------------------------------------------------
+# The Rift Sovereign and its particles
+# --------------------------------------------------------------------------
+
+PARTICLE = os.path.join(ROOT, "RP", "textures", "particle")
+
+
+def particle_atlas():
+    """A 64x64 sheet of four 16x16 particle cells.
+
+    Cell layout, referenced by uv in the particle JSON:
+      (0,0)   soft glow      (16,0)  four-point spark
+      (0,16)  crystal shard  (16,16) smoke puff
+    """
+    c = Canvas(64, 64)
+    white = (255, 255, 255, 255)
+
+    # Soft radial glow - tinted at runtime, so authored white.
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x + 0.5 - 8, y + 0.5 - 8) / 7.5
+            if d <= 1.0:
+                a = int(255 * (1.0 - d) ** 2.0)
+                c.set(x, y, (255, 255, 255, a))
+
+    # Spark: a bright core with four tapering arms.
+    for i in range(8):
+        a = int(255 * (1.0 - i / 8.0) ** 1.4)
+        c.set(16 + 8 + i, 8, (255, 255, 255, a))
+        c.set(16 + 8 - i, 8, (255, 255, 255, a))
+        c.set(16 + 8, 8 + i, (255, 255, 255, a))
+        c.set(16 + 8, 8 - i, (255, 255, 255, a))
+    for dx, dy in ((0, 0), (1, 0), (0, 1), (1, 1), (-1, 0), (0, -1)):
+        c.set(16 + 8 + dx, 8 + dy, white)
+
+    # Crystal shard: a small faceted diamond.
+    for y in range(16):
+        for x in range(16):
+            if abs(x - 8) + abs(y - 8) * 0.7 <= 5:
+                edge = (abs(x - 8) + abs(y - 8) * 0.7) / 5.0
+                c.set(x, 16 + y, (255, 255, 255, int(255 * (1.0 - edge * 0.45))))
+
+    # Smoke puff: soft noise blob.
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x + 0.5 - 8, y + 0.5 - 8) / 8.0
+            n = fbm(x * 2, y * 2, 16, 6060, octaves=3, base_period=4)
+            a = max(0.0, (1.0 - d) * (0.45 + n * 0.55))
+            if a > 0.03:
+                c.set(16 + x, 16 + y, (255, 255, 255, int(min(255, a * 210))))
+
+    os.makedirs(PARTICLE, exist_ok=True)
+    out(c, PARTICLE, "voidbound_particles")
+
+
+# Boss UV layout on a 128x128 sheet, kept here so the geometry and the painter
+# cannot drift apart.
+SOVEREIGN_PARTS = [
+    ("core", 0, 0, 10, 10, 10),
+    ("shell_upper", 0, 22, 16, 6, 16),
+    ("shell_lower", 0, 46, 16, 6, 16),
+    ("spike_a", 66, 0, 2, 8, 2),
+    ("spike_b", 66, 12, 2, 8, 2),
+    ("spike_c", 66, 24, 2, 8, 2),
+    ("spike_d", 66, 36, 2, 8, 2),
+    ("mantle", 66, 48, 12, 14, 2),
+    ("shard_a", 96, 0, 3, 3, 3),
+    ("shard_b", 96, 10, 3, 3, 3),
+    ("shard_c", 96, 20, 3, 3, 3),
+    ("shard_d", 96, 30, 3, 3, 3),
+    ("eye", 76, 66, 6, 2, 1),
+]
+
+
+def entity_rift_sovereign():
+    """128x128 sheet: black basalt regalia around a magenta rift core."""
+    c = Canvas(128, 128)
+    regalia = mix(PALETTE["void"], (0, 0, 0, 255), 0.52)
+    regalia_hi = mix(regalia, hex_rgba("#E56BD8"), 0.30)
+    gold = hex_rgba("#C9A85C")
+    core_hot = hex_rgba("#FFE4FA")
+    core_mid = hex_rgba("#E75BE0")
+    core_deep = hex_rgba("#5A0F7A")
+
+    def paint_core(_face, fx, fy, fw, fh):
+        dx = (fx + 0.5) / fw - 0.5
+        dy = (fy + 0.5) / fh - 0.5
+        d = min(1.0, math.hypot(dx, dy) * 2.1)
+        n = fbm(fx * 2.4, fy * 2.4, 16, 9001, octaves=3, base_period=4)
+        t = min(1.0, d * 0.8 + n * 0.28)
+        return mix(core_hot, mix(core_mid, core_deep, t), min(1.0, t * 1.25))
+
+    def paint_shell(seed, banded):
+        def paint(face, fx, fy, fw, fh):
+            n = fbm(fx * 1.3, fy * 1.3, 16, seed, octaves=3, base_period=4)
+            base = mix(regalia, shade(regalia, 0.30), n)
+            if face == "top":
+                base = shade(base, 0.14)
+            elif face == "bottom":
+                base = shade(base, -0.24)
+            # Inlaid gold banding around the rim of each shell.
+            if banded and face in ("north", "south", "east", "west"):
+                if fy == 1 or fy == fh - 2:
+                    return mix(base, gold, 0.65)
+                if fx % 4 == 0:
+                    return mix(base, regalia_hi, 0.5)
+            return base
+        return paint
+
+    def paint_spike(_face, fx, fy, fw, fh):
+        t = fy / float(max(1, fh - 1))
+        return mix(mix(core_mid, gold, 0.35), regalia, min(1.0, t * 1.2))
+
+    def paint_mantle(face, fx, fy, fw, fh):
+        t = fy / float(max(1, fh - 1))
+        n = fbm(fx * 2, fy * 2, 16, 9100, octaves=2, base_period=4)
+        base = mix(regalia, shade(regalia, 0.22), n * 0.6)
+        # The hem burns out into rift light.
+        if t > 0.62:
+            return mix(base, core_mid, (t - 0.62) / 0.38 * 0.9)
+        if face in ("north", "south") and fx % 3 == 0:
+            return mix(base, regalia_hi, 0.35)
+        return base
+
+    def paint_shard(_face, fx, fy, fw, fh):
+        t = (fx + fy) / float(max(1, fw + fh - 2))
+        return mix(shade(core_mid, 0.4), core_deep, t)
+
+    def paint_eye(_face, fx, fy, fw, fh):
+        return mix(core_hot, core_mid, fx / float(max(1, fw - 1)))
+
+    painters = {
+        "core": paint_core,
+        "shell_upper": paint_shell(9010, True),
+        "shell_lower": paint_shell(9011, True),
+        "mantle": paint_mantle,
+        "eye": paint_eye,
+    }
+    for part, u, v, w, h, d in SOVEREIGN_PARTS:
+        if part.startswith("spike"):
+            painter = paint_spike
+        elif part.startswith("shard"):
+            painter = paint_shard
+        else:
+            painter = painters[part]
+        paint_box(c, u, v, w, h, d, painter)
+
+    emit(
+        c,
+        ENTITY,
+        "voidbound_rift_sovereign",
+        metalness=72,
+        roughness=96,
+        emissive_from=core_mid[:3],
+        emissive_gain=1.45,
+        emissive_threshold=0.12,
+    )
+
+
+# --------------------------------------------------------------------------
+# The End sky
+# --------------------------------------------------------------------------
+
+ENVIRONMENT = os.path.join(ROOT, "RP", "textures", "environment")
+
+
+def end_sky():
+    """Replace the End's skybox tile: textures/environment/end_sky.png.
+
+    Vibrant Visuals will not let a pack supply a cubemap for the End - Mojang
+    restricts that to the Overworld - but the skybox is an ordinary vanilla
+    texture, so overriding it changes the End's sky whether or not Vibrant
+    Visuals is switched on. It tiles across all six faces, so the art has to
+    wrap seamlessly and carry no obvious horizon.
+    """
+    size = 128
+    c = Canvas(size, size)
+
+    # Layered nebula: three octaves of wrapping noise, coloured from deep void
+    # through violet into a magenta core.
+    deep = hex_rgba("#07030F")
+    mid = hex_rgba("#2A0B44")
+    hot = hex_rgba("#8B1E9E")
+    ember = hex_rgba("#E56BD8")
+
+    for y in range(size):
+        for x in range(size):
+            base = fbm(x, y, size, 2201, octaves=5, base_period=4, gain=0.55)
+            veil = fbm(x + 37, y + 91, size, 5507, octaves=3, base_period=8)
+            cloud = max(0.0, (base * 0.68 + veil * 0.32 - 0.34)) / 0.46
+
+            color = mix(deep, mid, min(1.0, cloud * 1.9))
+            if cloud > 0.34:
+                color = mix(color, hot, min(1.0, (cloud - 0.34) / 0.34))
+            if cloud > 0.70:
+                color = mix(color, ember, min(1.0, (cloud - 0.70) / 0.30) * 0.85)
+            c.set(x, y, color)
+
+    # Stars, sized by brightness so the field has depth rather than uniform dots.
+    rng = Rng(31337)
+    for _ in range(340):
+        sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
+        brightness = rng.next() ** 2.2
+        tint = mix(hex_rgba("#FFFFFF"), ember, rng.range(0.0, 0.55))
+        core = mix(c.get(sx, sy), tint, 0.35 + brightness * 0.65)
+        c.set(sx, sy, core)
+        if brightness > 0.55:
+            halo = mix(c.get(sx, sy), tint, 0.22)
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                nx, ny = (sx + dx) % size, (sy + dy) % size
+                c.set(nx, ny, mix(c.get(nx, ny), halo, 0.5))
+        if brightness > 0.9:
+            # A few bright stars get a cross flare.
+            for reach in (2, 3):
+                for dx, dy in ((reach, 0), (-reach, 0), (0, reach), (0, -reach)):
+                    nx, ny = (sx + dx) % size, (sy + dy) % size
+                    c.set(nx, ny, mix(c.get(nx, ny), tint, 0.28 / reach))
+
+    os.makedirs(ENVIRONMENT, exist_ok=True)
+    out(c, ENVIRONMENT, "end_sky")
+
+
+# --------------------------------------------------------------------------
 # Pack icons
 # --------------------------------------------------------------------------
 
@@ -869,7 +1091,7 @@ def pack_icon(path, accent):
 
 
 def main():
-    for folder in (BLOCKS, ITEMS, ENTITY, ARMOR):
+    for folder in (BLOCKS, ITEMS, ENTITY, ARMOR, ENVIRONMENT, PARTICLE):
         os.makedirs(folder, exist_ok=True)
 
     recipes = [
@@ -889,11 +1111,14 @@ def main():
         entity_rift_stalker,
         entity_void_moth,
         entity_echo_sentinel,
+        entity_rift_sovereign,
+        particle_atlas,
         armor_layers,
         item_void_helmet,
         item_void_chestplate,
         item_void_leggings,
         item_void_boots,
+        end_sky,
     ]
     for recipe in recipes:
         recipe()
@@ -904,7 +1129,7 @@ def main():
     print("  generated pack icons")
 
     total = sum(
-        len([f for f in os.listdir(d) if f.endswith(".png")]) for d in (BLOCKS, ITEMS, ENTITY, ARMOR)
+        len([f for f in os.listdir(d) if f.endswith(".png")]) for d in (BLOCKS, ITEMS, ENTITY, ARMOR, ENVIRONMENT, PARTICLE)
     )
     print(f"{total} texture files written")
 

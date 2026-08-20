@@ -30,8 +30,10 @@ item.spawn_egg.entity.voidbound:lumen_wisp.name=Spawn Lumen Wisp
 item.spawn_egg.entity.voidbound:rift_stalker.name=Spawn Rift Stalker
 entity.voidbound:void_moth.name=Void Moth
 entity.voidbound:echo_sentinel.name=Echo Sentinel
+entity.voidbound:rift_sovereign.name=Rift Sovereign
 item.spawn_egg.entity.voidbound:void_moth.name=Spawn Void Moth
 item.spawn_egg.entity.voidbound:echo_sentinel.name=Spawn Echo Sentinel
+item.spawn_egg.entity.voidbound:rift_sovereign.name=Spawn Rift Sovereign
 
 ## Interaction prompts
 action.interact.voidbound.survey=Survey

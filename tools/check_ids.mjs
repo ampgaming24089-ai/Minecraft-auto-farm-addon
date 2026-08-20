@@ -62,6 +62,7 @@ const KNOWN_NON_ID = new Set([
   // Component and particle names, which are namespaced but are not content ids.
   "minecraft:inventory",
   "minecraft:equippable",
+  "minecraft:health",
   "minecraft:endrod",
 ]);
 
@@ -108,6 +109,9 @@ function packDefinitions() {
   }
   for (const file of walk(join(ROOT, "BP", "feature_rules"))) {
     readIdentifier(file, "minecraft:feature_rules", "description", "identifier");
+  }
+  for (const file of walk(join(ROOT, "RP", "particles"))) {
+    readIdentifier(file, "particle_effect", "description", "identifier");
   }
   for (const folder of ["fogs", "lighting", "atmospherics", "color_grading"]) {
     for (const file of walk(join(ROOT, "RP", folder))) {
