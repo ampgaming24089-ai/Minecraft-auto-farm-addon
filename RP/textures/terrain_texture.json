@@ -42,6 +42,18 @@
     },
     "voidbound_ender_bush": {
       "textures": "textures/blocks/voidbound_ender_bush"
+    },
+    "voidbound_ender_planks": {
+      "textures": "textures/blocks/voidbound_ender_planks"
+    },
+    "voidbound_ender_bricks": {
+      "textures": "textures/blocks/voidbound_ender_bricks"
+    },
+    "voidbound_void_crystal_bricks": {
+      "textures": "textures/blocks/voidbound_void_crystal_bricks"
+    },
+    "voidbound_echo_lamp": {
+      "textures": "textures/blocks/voidbound_echo_lamp"
     }
   }
 }

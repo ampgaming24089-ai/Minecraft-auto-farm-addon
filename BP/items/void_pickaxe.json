@@ -44,7 +44,7 @@
             "block": {
               "tags": "q.any_tag('stone','metal','diamond_pick_diggable')"
             },
-            "speed": 14.0
+            "speed": 14
           }
         ]
       },

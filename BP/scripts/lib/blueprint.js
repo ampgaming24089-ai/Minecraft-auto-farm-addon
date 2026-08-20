@@ -118,14 +118,19 @@ export function siteIsClear(dimension, origin, radius = 10, height = 14) {
   for (let x = -radius; x <= radius; x += 3) {
     for (let z = -radius; z <= radius; z += 3) {
       for (let y = -3; y <= height; y += 3) {
-        let block;
+        // Reading typeId is what throws on an unloaded chunk, not getBlock, so
+        // the whole read has to sit inside the guard.
         try {
-          block = dimension.getBlock({ x: origin.x + x, y: origin.y + y, z: origin.z + z });
+          const block = dimension.getBlock({
+            x: origin.x + x,
+            y: origin.y + y,
+            z: origin.z + z,
+          });
+          if (!block) return false;
+          if (looksPlayerBuilt(block.typeId)) return false;
         } catch {
           return false; // Unloaded chunk - try again on a later pass.
         }
-        if (!block) return false;
-        if (looksPlayerBuilt(block.typeId)) return false;
       }
     }
   }

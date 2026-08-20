@@ -41,13 +41,6 @@
       "minecraft:movement": {
         "value": 0.22
       },
-      "minecraft:movement.fly": {},
-      "minecraft:navigation.fly": {
-        "can_path_over_water": true,
-        "can_path_from_air": true,
-        "can_pass_doors": false,
-        "avoid_damage_blocks": false
-      },
       "minecraft:can_fly": {},
       "minecraft:physics": {
         "has_gravity": false,
@@ -82,17 +75,6 @@
         "speed_multiplier": 1.1,
         "track_target": true
       },
-      "minecraft:behavior.float_wander": {
-        "priority": 5,
-        "xz_dist": 6,
-        "y_dist": 3,
-        "y_offset": 1,
-        "random_reselect": true,
-        "float_duration": [
-          0.1,
-          0.4
-        ]
-      },
       "minecraft:behavior.look_at_player": {
         "priority": 7,
         "look_distance": 24
@@ -102,6 +84,26 @@
       },
       "minecraft:loot": {
         "table": "loot_tables/entities/rift_sovereign.json"
+      },
+      "minecraft:movement.hover": {},
+      "minecraft:navigation.hover": {
+        "can_path_over_water": true,
+        "can_sink": false,
+        "can_pass_doors": false,
+        "can_path_from_air": true,
+        "avoid_water": true,
+        "avoid_damage_blocks": false
+      },
+      "minecraft:behavior.random_hover": {
+        "priority": 5,
+        "xz_dist": 5,
+        "y_dist": 3,
+        "y_offset": 1,
+        "interval": 70,
+        "hover_height": [
+          3,
+          7
+        ]
       }
     }
   }

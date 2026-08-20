@@ -616,6 +616,22 @@ def entity_rift_stalker():
 
     paint_box(c, 24, 20, 2, 4, 6, crest)
 
+    def jaw(face, fx, fy, fw, fh):
+        n = fbm(fx * 2, fy * 2, 12, 6161, octaves=2, base_period=4)
+        base = mix(shade(hide, -0.12), hide_lit, n * 0.3)
+        # Teeth along the lower edge of the muzzle.
+        if face == "north" and fy == fh - 1 and fx % 2 == 0:
+            return hex_rgba("#E8E0F0")
+        return base
+
+    paint_box(c, 40, 19, 6, 2, 4, jaw)
+
+    def tail(_face, fx, fy, fw, fh):
+        t = fy / float(max(1, fh - 1))
+        return mix(hide_lit, hide, min(1.0, t * 1.4))
+
+    paint_box(c, 40, 26, 2, 2, 4, tail)
+
     def limb(_face, fx, fy, fw, fh):
         t = fy / float(max(1, fh - 1))
         return mix(shade(hide, 0.1), mix(hide, PALETTE["void_lit"], 0.25), t)
@@ -1206,6 +1222,78 @@ def entity_echo_warden():
          emissive_from=core[:3], emissive_gain=1.3, emissive_threshold=0.2)
 
 
+def block_building_set():
+    """Four worked blocks, so the End's materials can actually be built with."""
+    # Planks: milled ender log, grain running one way.
+    planks = Canvas(16)
+    plank = hex_rgba("#7E6D96")
+    plank_lo = mix(plank, PALETTE["void"], 0.45)
+    plank_hi = mix(plank, hex_rgba("#D2C6E4"), 0.4)
+
+    def plank_face(x, y, _cur):
+        row = y // 4
+        n = fbm(x * 3.0, y * 0.8, 16, 9400 + row * 31, octaves=3, base_period=4)
+        base = mix(plank_lo, plank, n)
+        if n > 0.66:
+            base = mix(base, plank_hi, (n - 0.66) / 0.34 * 0.7)
+        if y % 4 == 0:
+            return shade(base, -0.30)              # board seam
+        # Stagger the butt joints like vanilla planks do.
+        if (x + row * 5) % 8 == 0:
+            return shade(base, -0.20)
+        return base
+
+    planks.each(plank_face)
+    emit(planks, BLOCKS, "voidbound_ender_planks", roughness=238)
+
+    # Ender bricks: coursed masonry from shattered end stone.
+    bricks = Canvas(16)
+    brick = mix(PALETTE["endstone_dark"], hex_rgba("#CFC8A4"), 0.5)
+    brick_lo = mix(brick, PALETTE["void"], 0.4)
+    mortar = mix(brick_lo, (0, 0, 0, 255), 0.35)
+
+    def brick_face(x, y, _cur):
+        row = y // 4
+        n = fbm(x * 1.8, y * 1.8, 16, 9410, octaves=3, base_period=4)
+        if y % 4 == 0:
+            return mortar
+        if (x + row * 4) % 8 == 0:
+            return mortar
+        return mix(brick_lo, brick, n)
+
+    bricks.each(brick_face)
+    speckle(bricks, 9411, 0.05, [shade(brick, 0.2), shade(brick_lo, -0.2)])
+    emit(bricks, BLOCKS, "voidbound_ender_bricks", roughness=242)
+
+    # Crystal bricks: cut void crystal, still lit from within.
+    crystal = Canvas(16)
+    deep = PALETTE["void"]
+    lit = PALETTE["void_lit"]
+
+    def crystal_face(x, y, _cur):
+        row = y // 8
+        n = fbm(x * 2.2, y * 2.2, 16, 9420, octaves=3, base_period=4)
+        base = mix(deep, lit, min(1.0, n * 0.95))
+        if y % 8 == 0 or (x + row * 4) % 8 == 0:
+            return mix(shade(deep, -0.25), lit, 0.15)
+        return base
+
+    crystal.each(crystal_face)
+    emit(crystal, BLOCKS, "voidbound_void_crystal_bricks", roughness=64,
+         emissive_from=lit[:3], emissive_gain=0.95, emissive_threshold=0.24)
+
+    # Echo lamp: a full-brightness lamp, the End's answer to glowstone.
+    lamp = Canvas(16)
+    frame = mix(PALETTE["endstone_dark"], PALETTE["void"], 0.5)
+    glow = PALETTE["lumen_lit"]
+    lamp.fill(frame)
+    for cx, cy in ((4, 4), (11, 4), (4, 11), (11, 11), (8, 8)):
+        radial(lamp, cx + 0.5, cy + 0.5, 3.4, shade(glow, 0.45), frame, falloff=1.5)
+    speckle(lamp, 9430, 0.06, [shade(glow, 0.6), shade(frame, -0.2)])
+    emit(lamp, BLOCKS, "voidbound_echo_lamp", roughness=110,
+         emissive_from=glow[:3], emissive_gain=1.5, emissive_threshold=0.1)
+
+
 # --------------------------------------------------------------------------
 # The Rift Sovereign and its particles
 # --------------------------------------------------------------------------
@@ -1503,6 +1591,7 @@ def main():
         block_ender_log,
         block_ender_leaves,
         block_ender_bush,
+        block_building_set,
         item_ender_fruit,
         item_sovereign_crown,
         particle_atlas,

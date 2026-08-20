@@ -1,0 +1,29 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:void_crystal_bricks"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "CC",
+      "CC"
+    ],
+    "key": {
+      "C": {
+        "item": "voidbound:void_crystal_block"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:void_crystal_block"
+      }
+    ],
+    "result": {
+      "item": "voidbound:void_crystal_bricks",
+      "count": 4
+    }
+  }
+}

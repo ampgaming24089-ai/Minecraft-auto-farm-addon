@@ -41,11 +41,15 @@
       "light_color": "#B57BE8",
       "light_type": "static_light"
     },
-    "minecraft:end_crystal": {
-      "light_color": "#E75BE0",
+    "minecraft:end_gateway": {
+      "light_color": "#C77BFF",
+      "light_type": "static_light"
+    },
+    "voidbound:echo_lamp": {
+      "light_color": "#5FE8D2",
       "light_type": "point_light"
     },
-    "minecraft:end_gateway": {
+    "voidbound:void_crystal_bricks": {
       "light_color": "#C77BFF",
       "light_type": "static_light"
     }

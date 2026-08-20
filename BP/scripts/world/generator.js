@@ -46,19 +46,29 @@ const rejected = new Set();
 
 /**
  * Find the surface to stand the structure on.
+ *
+ * The whole body is guarded, not just the lookup. A Block handle is lazy:
+ * getTopmostBlock can hand one back and then throw LocationInUnloadedChunk the
+ * moment you read typeId off it, which is exactly what happened in play - the
+ * scan hit a sited structure at the edge of the loaded area and threw twice a
+ * second, forever, because nothing about the site changed between scans.
+ *
  * @returns {number | undefined} y of the topmost natural ground block
  */
 function groundHeight(dimension, x, z) {
-  let block;
   try {
-    block = dimension.getTopmostBlock({ x, z });
+    // Cheap pre-check so the common "player is nowhere near it yet" case
+    // never reaches the throwing path at all.
+    if (!dimension.isChunkLoaded({ x, y: GROUND_MIN_Y, z })) return undefined;
+    const block = dimension.getTopmostBlock({ x, z });
+    if (!block) return undefined;
+    const y = block.y;
+    if (y < GROUND_MIN_Y || y > GROUND_MAX_Y) return undefined;
+    if (!NATURAL_GROUND.has(block.typeId)) return undefined;
+    return y;
   } catch {
-    return undefined; // Chunk not loaded yet - try again next scan.
+    return undefined; // Chunk went away mid-read; try again next scan.
   }
-  if (!block) return undefined;
-  if (block.y < GROUND_MIN_Y || block.y > GROUND_MAX_Y) return undefined;
-  if (!NATURAL_GROUND.has(block.typeId)) return undefined;
-  return block.y;
 }
 
 function* buildJob(dimension, site, origin) {

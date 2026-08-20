@@ -13,6 +13,10 @@ tile.voidbound:lumen_bulb.name=Lumen Bulb
 tile.voidbound:ender_log.name=Ender Log
 tile.voidbound:ender_leaves.name=Ender Leaves
 tile.voidbound:ender_bush.name=Ender Bush
+tile.voidbound:ender_planks.name=Ender Planks
+tile.voidbound:ender_bricks.name=Ender Bricks
+tile.voidbound:void_crystal_bricks.name=Void Crystal Bricks
+tile.voidbound:echo_lamp.name=Echo Lamp
 
 ## Items
 item.voidbound:echo_shard.name=Echo Shard

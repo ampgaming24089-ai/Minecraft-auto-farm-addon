@@ -3,34 +3,36 @@
  *
  * Hover navigation tethers a mob to the ground beneath it, but the End is
  * mostly *not* ground: fly out past an island edge and there is nothing below
- * for hundreds of blocks, so the tether has nothing to hold on to and the mob
- * climbs or drifts off into the void until it despawns.
+ * for hundreds of blocks, so the tether has nothing to hold and the mob climbs
+ * or drifts until it despawns. Behaviour components have no answer for that.
  *
- * Behaviour components have no answer for that, so this is the backstop: every
- * second, any of this pack's flyers that has climbed too far above the island
- * it belongs to gets pulled down, and any that has wandered out over open void
- * gets returned to the nearest player. It never touches a mob that is
- * behaving, so a normal flight path is unaffected.
+ * So each flyer gets a home. The first time one is seen standing over solid
+ * ground, that spot is written to its own dynamic property, and from then on
+ * this pass keeps it inside a radius of that spot and under a ceiling above
+ * it. Bosses get a much tighter radius than wandering mobs, because a boss
+ * that leaves its arena has effectively ended the fight.
+ *
+ * Nothing happens to a mob that is behaving, so ordinary flight is untouched.
  */
 
 import { system, world } from "@minecraft/server";
 import { END_DIMENSION } from "./generator.js";
 
-const FLYERS = [
-  "voidbound:lumen_wisp",
-  "voidbound:void_moth",
-  "voidbound:shard_wraith",
-  "voidbound:echo_sentinel",
-  "voidbound:rift_sovereign",
-];
+/** typeId -> { ceiling, leash } in blocks. */
+const FLYERS = new Map([
+  ["voidbound:lumen_wisp", { ceiling: 8, leash: 28 }],
+  ["voidbound:void_moth", { ceiling: 9, leash: 32 }],
+  ["voidbound:shard_wraith", { ceiling: 10, leash: 30 }],
+  ["voidbound:echo_sentinel", { ceiling: 7, leash: 24 }],
+  ["voidbound:echo_warden", { ceiling: 6, leash: 16 }],
+  ["voidbound:rift_sovereign", { ceiling: 9, leash: 20 }],
+]);
 
-const CHECK_INTERVAL_TICKS = 20;
+const CHECK_INTERVAL_TICKS = 10;
 
-/** Blocks above the ground below it that a flyer may climb to. */
-const MAX_ALTITUDE = 14;
-
-/** How far a stranded flyer may be from a player before it is recalled. */
-const RECALL_RANGE = 72;
+const HOME_X = "voidbound.home_x";
+const HOME_Y = "voidbound.home_y";
+const HOME_Z = "voidbound.home_z";
 
 /** Ground search band - End islands live here. */
 const GROUND_MIN_Y = 4;
@@ -38,60 +40,76 @@ const GROUND_MAX_Y = 128;
 
 function groundBelow(dimension, location) {
   try {
+    if (!dimension.isChunkLoaded({ x: location.x, y: GROUND_MIN_Y, z: location.z })) {
+      return undefined;
+    }
     const block = dimension.getTopmostBlock({ x: location.x, z: location.z });
     if (!block) return undefined;
-    if (block.y < GROUND_MIN_Y || block.y > GROUND_MAX_Y) return undefined;
-    if (block.y > location.y + 2) return undefined; // Ground is above it, not below.
-    return block.y;
+    const y = block.y;
+    if (y < GROUND_MIN_Y || y > GROUND_MAX_Y) return undefined;
+    if (y > location.y + 2) return undefined; // That is ground above, not below.
+    return y;
   } catch {
     return undefined;
   }
 }
 
-function nearestPlayer(dimension, location) {
-  let best;
-  let bestDistance = Infinity;
-  for (const player of dimension.getPlayers()) {
-    const dx = player.location.x - location.x;
-    const dy = player.location.y - location.y;
-    const dz = player.location.z - location.z;
-    const distance = dx * dx + dy * dy + dz * dz;
-    if (distance < bestDistance) {
-      bestDistance = distance;
-      best = player;
+function readHome(entity) {
+  try {
+    const x = entity.getDynamicProperty(HOME_X);
+    const y = entity.getDynamicProperty(HOME_Y);
+    const z = entity.getDynamicProperty(HOME_Z);
+    if (typeof x === "number" && typeof y === "number" && typeof z === "number") {
+      return { x, y, z };
     }
+  } catch {
+    // Fall through and treat it as homeless.
   }
-  return bestDistance <= RECALL_RANGE * RECALL_RANGE ? best : undefined;
+  return undefined;
 }
 
-function correct(entity) {
+function writeHome(entity, at) {
+  try {
+    entity.setDynamicProperty(HOME_X, at.x);
+    entity.setDynamicProperty(HOME_Y, at.y);
+    entity.setDynamicProperty(HOME_Z, at.z);
+  } catch {
+    // Not fatal: it will be re-derived on a later pass.
+  }
+}
+
+function correct(entity, limits) {
   const location = entity.location;
   const ground = groundBelow(entity.dimension, location);
 
-  if (ground !== undefined) {
-    const altitude = location.y - ground;
-    if (altitude <= MAX_ALTITUDE) return;
-    // Set it back down at a sensible hover height rather than shoving it, so
-    // it does not immediately climb again fighting its own navigation.
-    entity.teleport(
-      { x: location.x, y: ground + 4, z: location.z },
-      { dimension: entity.dimension }
-    );
-    return;
+  // Claim a home the first time we see it over real ground.
+  let home = readHome(entity);
+  if (!home && ground !== undefined) {
+    home = { x: location.x, y: ground, z: location.z };
+    writeHome(entity, home);
   }
+  if (!home) return; // Spawned over void and never grounded; nothing to anchor to.
 
-  // Out over the void with nothing beneath it.
-  const player = nearestPlayer(entity.dimension, location);
-  if (!player) return; // Nobody to return it to; let it despawn naturally.
-  const angle = Math.random() * Math.PI * 2;
-  entity.teleport(
-    {
-      x: player.location.x + Math.cos(angle) * 6,
-      y: player.location.y + 3,
-      z: player.location.z + Math.sin(angle) * 6,
-    },
-    { dimension: entity.dimension }
-  );
+  const dx = location.x - home.x;
+  const dz = location.z - home.z;
+  const drift = Math.hypot(dx, dz);
+  const altitude = location.y - (ground !== undefined ? ground : home.y);
+
+  if (drift <= limits.leash && altitude <= limits.ceiling) return;
+
+  // One correction covers both cases: put it back over its home at a sensible
+  // hover height. Setting it down rather than shoving it stops it fighting its
+  // own navigation and climbing straight back up.
+  const pullBack = drift > limits.leash;
+  const target = pullBack
+    ? { x: home.x, y: home.y + 3, z: home.z }
+    : { x: location.x, y: (ground ?? home.y) + Math.max(2, limits.ceiling - 3), z: location.z };
+
+  try {
+    entity.teleport(target, { dimension: entity.dimension });
+  } catch {
+    // Blocked destination; try again next pass.
+  }
 }
 
 function tick() {
@@ -101,7 +119,7 @@ function tick() {
   } catch {
     return;
   }
-  for (const typeId of FLYERS) {
+  for (const [typeId, limits] of FLYERS) {
     let entities;
     try {
       entities = dimension.getEntities({ type: typeId });
@@ -111,7 +129,7 @@ function tick() {
     for (const entity of entities) {
       if (!entity.isValid) continue;
       try {
-        correct(entity);
+        correct(entity, limits);
       } catch {
         // Entity died or unloaded mid-pass.
       }

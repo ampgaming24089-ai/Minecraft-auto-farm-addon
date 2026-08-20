@@ -44,7 +44,7 @@
             "block": {
               "tags": "q.any_tag('sand','dirt','gravel','grass','snow')"
             },
-            "speed": 14.0
+            "speed": 14
           }
         ]
       },

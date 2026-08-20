@@ -1,0 +1,33 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:echo_lamp"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      " S ",
+      "SCS",
+      " S "
+    ],
+    "key": {
+      "S": {
+        "item": "voidbound:echo_shard"
+      },
+      "C": {
+        "item": "voidbound:void_crystal"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:echo_shard"
+      }
+    ],
+    "result": {
+      "item": "voidbound:echo_lamp",
+      "count": 1
+    }
+  }
+}

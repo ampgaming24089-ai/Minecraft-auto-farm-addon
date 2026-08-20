@@ -57,6 +57,20 @@
             "math.sin(query.anim_time * 33) * 4",
             0
           ]
+        },
+        "jaw": {
+          "rotation": [
+            "6 + math.sin(query.anim_time * 96) * 5",
+            0,
+            0
+          ]
+        },
+        "tail": {
+          "rotation": [
+            "math.sin(query.anim_time * 52) * 7",
+            "math.sin(query.anim_time * 41) * 12",
+            0
+          ]
         }
       }
     },
@@ -95,6 +109,20 @@
           "position": [
             0,
             "math.cos(query.modified_distance_moved * 76.34) * 0.6 * query.modified_move_speed",
+            0
+          ]
+        },
+        "jaw": {
+          "rotation": [
+            "18 * query.modified_move_speed",
+            0,
+            0
+          ]
+        },
+        "tail": {
+          "rotation": [
+            0,
+            "math.cos(query.modified_distance_moved * 38.17) * 26 * query.modified_move_speed",
             0
           ]
         }

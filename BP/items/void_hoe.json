@@ -44,7 +44,7 @@
             "block": {
               "tags": "q.any_tag('plant','leaves')"
             },
-            "speed": 14.0
+            "speed": 14
           }
         ]
       },

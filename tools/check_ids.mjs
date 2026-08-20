@@ -192,22 +192,71 @@ for (const file of [...walk(join(ROOT, "BP")), ...walk(join(ROOT, "RP"))]) {
 }
 
 const problems = [];
-for (const [id, files] of [...references].sort()) {
-  if (KNOWN_NON_ID.has(id)) continue;
-  if (id.startsWith("voidbound:")) {
-    if (!DEFINED.has(id)) {
-      problems.push({ id, files, why: "not defined anywhere in this pack" });
+
+// --------------------------------------------------------------------------
+// Structural checks for mistakes the schemas do not catch
+// --------------------------------------------------------------------------
+
+/** Block ids only - local_lighting cannot colour an entity or an item. */
+const BLOCK_IDS = new Set(Object.values(vanilla.MinecraftBlockTypes ?? {}));
+// Real blocks that @minecraft/vanilla-data's block list leaves out. Confirmed
+// against the game: it accepted end_gateway and rejected end_crystal, which is
+// an entity.
+for (const id of ["minecraft:end_gateway", "minecraft:end_portal"]) BLOCK_IDS.add(id);
+for (const file of walk(join(ROOT, "BP", "blocks"))) {
+  const id = JSON.parse(readFileSync(file, "utf8"))["minecraft:block"]?.description?.identifier;
+  if (id) BLOCK_IDS.add(id);
+}
+
+const localLighting = join(ROOT, "RP", "local_lighting", "local_lighting.json");
+if (existsSync(localLighting)) {
+  const settings =
+    JSON.parse(readFileSync(localLighting, "utf8"))["minecraft:local_light_settings"] ?? {};
+  for (const id of Object.keys(settings)) {
+    if (!BLOCK_IDS.has(id)) {
+      problems.push({
+        id,
+        files: new Set(["RP/local_lighting/local_lighting.json"]),
+        why: "local_lighting only accepts blocks, and this is not one",
+      });
     }
-    continue;
   }
-  if (!VANILLA.has(id)) {
-    problems.push({ id, files, why: "not a known vanilla identifier" });
+}
+
+/**
+ * Fields the engine insists are whole numbers.
+ *
+ * This has to read the file as text, not as parsed JSON. JSON has no integer
+ * type, so `14.0` and `14` are the same value once parsed and no amount of
+ * Number.isInteger will tell them apart - but the engine reads the literal and
+ * rejects `14.0` outright. That one character killed all five tools, icons
+ * included, and neither the schema nor the id check saw a thing.
+ */
+const INTEGER_FIELDS = [
+  { field: "speed", why: "digger destroy_speeds speed must be a whole number" },
+  { field: "light_emission", why: "light_emission must be a whole number from 0 to 15" },
+  { field: "max_durability", why: "max_durability must be a whole number" },
+  { field: "nutrition", why: "food nutrition must be a whole number" },
+  { field: "protection", why: "wearable protection must be a whole number" },
+  { field: "max_stack_size", why: "max_stack_size must be a whole number" },
+];
+
+for (const file of [...walk(join(ROOT, "BP", "items")), ...walk(join(ROOT, "BP", "blocks"))]) {
+  if (!file.endsWith(".json")) continue;
+  const text = readFileSync(file, "utf8");
+  const rel = relative(ROOT, file).split("\\").join("/");
+  for (const { field, why } of INTEGER_FIELDS) {
+    const pattern = new RegExp(`"${field}"\\s*:\\s*(-?\\d+\\.\\d+)`, "g");
+    for (const match of text.matchAll(pattern)) {
+      problems.push({ id: `${rel}: "${field}": ${match[1]}`, files: new Set([rel]), why });
+    }
   }
 }
 
 console.log(
   `checked ${references.size} distinct identifier(s) ` +
-    `against ${VANILLA.size} vanilla ids and ${DEFINED.size} pack definitions`
+    `against ${VANILLA.size} vanilla ids and ${DEFINED.size} pack definitions, ` +
+    `plus block-reference and integer-field rules`
 );
 
 if (problems.length === 0) {

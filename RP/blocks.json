@@ -32,5 +32,17 @@
   },
   "voidbound:ender_bush": {
     "sound": "grass"
+  },
+  "voidbound:ender_planks": {
+    "sound": "wood"
+  },
+  "voidbound:ender_bricks": {
+    "sound": "stone"
+  },
+  "voidbound:void_crystal_bricks": {
+    "sound": "amethyst_block"
+  },
+  "voidbound:echo_lamp": {
+    "sound": "glass"
   }
 }

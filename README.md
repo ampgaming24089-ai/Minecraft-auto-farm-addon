@@ -11,14 +11,14 @@ no world conversion, no commands typed by the player.
 
 | | |
 |---|---|
-| Blocks | 11 |
+| Blocks | 15 |
 | Items | 18 |
 | Mobs | 9, two of them bosses |
-| Recipes | 16 |
+| Recipes | 20 |
 | Structures | 4 kinds, procedurally varied |
 | Particle effects | 9 |
 | Animations | 17 clips across 8 models |
-| Textures | 86, all generated from code |
+| Textures | 94, all generated from code |
 
 ```
 ./build_addon.sh --check      # validate everything, then build the .mcaddon
@@ -250,7 +250,7 @@ npm run check
 
 | Check | What it catches |
 |---|---|
-| `check:ids` | Every `minecraft:` and `voidbound:` identifier in every JSON value and JS string, against Mojang's published id tables. This is what caught `minecraft:end_stone_bricks` — Bedrock calls that block `minecraft:end_bricks`. |
+| `check:ids` | Every `minecraft:` and `voidbound:` identifier in every JSON value and JS string, against Mojang's published id tables. This is what caught `minecraft:end_stone_bricks` — Bedrock calls that block `minecraft:end_bricks`. It also checks that `local_lighting` only names blocks (it once named `end_crystal`, which is an entity), and scans the raw file text for whole-number fields written as floats — `"speed": 14.0` is a different literal from `"speed": 14` to the engine, and JSON parsing erases the difference, so this rule has to read the text. |
 | `check:json` | Every JSON file against `@minecraft/bedrock-schemas` for the target version |
 | `check:scripts` | Runs the siting, blueprint and loot code against a stub of `@minecraft/server` — 10,000+ assertions over 200 seeds per structure |
 | `check:types` | TypeScript over the scripts against the real `@minecraft/server` 2.9.0 type definitions |
