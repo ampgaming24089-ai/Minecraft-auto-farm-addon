@@ -15,6 +15,7 @@
 
 import { system, world } from "@minecraft/server";
 import { END_DIMENSION } from "./generator.js";
+import { distanceTo, sitesNear } from "./sites.js";
 
 const INTERVAL_TICKS = 10;
 
@@ -26,6 +27,15 @@ const DRIFT_RADIUS = 22;
 
 /** Chance per interval that a player sees a falling streak. */
 const FALL_CHANCE = 0.16;
+
+/** Chance per interval of seeding an aurora sheet high overhead. */
+const AURORA_CHANCE = 0.22;
+
+/** Chance per interval of spores, when the player is standing in a grove. */
+const SPORE_CHANCE = 0.55;
+
+/** How close to a grove counts as inside it. */
+const GROVE_RANGE = 22;
 
 function spawn(dimension, effect, at) {
   try {
@@ -49,6 +59,34 @@ function ambientFor(player) {
       y: y - 6 + Math.random() * 26,
       z: z + Math.sin(angle) * distance,
     });
+  }
+
+  // Aurora sheets sit far above the play space and drift slowly, so they read
+  // as sky rather than as weather happening around the player.
+  if (Math.random() < AURORA_CHANCE) {
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 18 + Math.random() * 30;
+    spawn(dimension, "voidbound:end_aurora", {
+      x: x + Math.cos(angle) * distance,
+      y: y + 40 + Math.random() * 26,
+      z: z + Math.sin(angle) * distance,
+    });
+  }
+
+  // Groves get their own drift, so walking into one is a visible change.
+  if (Math.random() < SPORE_CHANCE) {
+    for (const site of sitesNear(x, z, 1)) {
+      if (site.blueprint.id !== "grove") continue;
+      if (distanceTo(site, player.location) > GROVE_RANGE) continue;
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 2 + Math.random() * 14;
+      spawn(dimension, "voidbound:grove_spores", {
+        x: x + Math.cos(angle) * distance,
+        y: y + Math.random() * 8,
+        z: z + Math.sin(angle) * distance,
+      });
+      break;
+    }
   }
 
   if (Math.random() < FALL_CHANCE) {

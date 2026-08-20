@@ -1,5 +1,5 @@
 /**
- * Enderveil - entry point.
+ * End Reawakened - entry point.
  *
  * Four systems, started once at load:
  *   sites/generator  places seed-derived structures ahead of the player
@@ -8,7 +8,7 @@
  *   flight control   pulls flyers back when they climb or drift over the void
  *   discovery        acknowledges arriving somewhere new
  *   rift compass     reads the structure map and points at it
- *   armour set       grants the Enderveil set bonus in the End
+ *   armour set       grants the End Reawakened set bonus in the End
  *   rift sovereign   drives the boss fight's phases, attacks and death
  *
  * Everything visual - lighting, atmospherics, colour grading, PBR - is data in
@@ -35,7 +35,7 @@ function start() {
   startRiftCompass();
   startArmorSet();
   startRiftSovereign();
-  console.log("[Enderveil] End systems online");
+  console.log("[End Reawakened] End systems online");
 }
 
 // worldLoad fires once the world is ready for world.seed and player queries.
@@ -44,6 +44,6 @@ world.afterEvents.worldLoad.subscribe(() => {
   try {
     start();
   } catch (error) {
-    console.error(`[Enderveil] failed to start: ${error}`);
+    console.error(`[End Reawakened] failed to start: ${error}`);
   }
 });

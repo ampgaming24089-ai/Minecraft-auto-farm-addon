@@ -2,23 +2,23 @@
   "format_version": "1.10.0",
   "minecraft:client_entity": {
     "description": {
-      "identifier": "voidbound:shard_wraith",
+      "identifier": "voidbound:echo_warden",
       "materials": {
         "default": "entity_alphatest"
       },
       "textures": {
-        "default": "textures/entity/voidbound_shard_wraith"
+        "default": "textures/entity/voidbound_echo_warden"
       },
       "geometry": {
-        "default": "geometry.voidbound.shard_wraith"
+        "default": "geometry.voidbound.echo_sentinel"
       },
       "animations": {
-        "drift": "animation.voidbound.shard_wraith.drift",
-        "move": "animation.voidbound.shard_wraith.move"
+        "idle": "animation.voidbound.echo_sentinel.idle",
+        "move": "animation.voidbound.echo_sentinel.move"
       },
       "scripts": {
         "animate": [
-          "drift",
+          "idle",
           "move"
         ]
       },
@@ -26,8 +26,8 @@
         "controller.render.voidbound.default"
       ],
       "spawn_egg": {
-        "base_color": "#160A22",
-        "overlay_color": "#D9A8FF"
+        "base_color": "#3A3220",
+        "overlay_color": "#FF9C3F"
       }
     }
   }

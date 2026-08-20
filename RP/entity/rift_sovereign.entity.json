@@ -13,11 +13,13 @@
         "default": "geometry.voidbound.rift_sovereign"
       },
       "animations": {
-        "idle": "animation.voidbound.rift_sovereign.idle"
+        "idle": "animation.voidbound.rift_sovereign.idle",
+        "move": "animation.voidbound.rift_sovereign.move"
       },
       "scripts": {
         "animate": [
-          "idle"
+          "idle",
+          "move"
         ]
       },
       "render_controllers": [

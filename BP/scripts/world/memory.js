@@ -43,7 +43,7 @@ export function markBuilt(key) {
   try {
     world.setDynamicProperty(PROPERTY, entries.join(","));
   } catch (error) {
-    console.warn(`[Enderveil] could not persist built sites: ${error}`);
+    console.warn(`[End Reawakened] could not persist built sites: ${error}`);
   }
 }
 

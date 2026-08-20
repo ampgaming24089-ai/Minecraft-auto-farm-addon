@@ -13,11 +13,13 @@
         "default": "geometry.voidbound.chorus_hopper"
       },
       "animations": {
-        "move": "animation.voidbound.chorus_hopper.move"
+        "move": "animation.voidbound.chorus_hopper.move",
+        "idle": "animation.voidbound.chorus_hopper.idle"
       },
       "scripts": {
         "animate": [
-          "move"
+          "move",
+          "idle"
         ]
       },
       "render_controllers": [

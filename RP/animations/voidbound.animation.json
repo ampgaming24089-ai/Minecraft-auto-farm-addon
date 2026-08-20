@@ -466,6 +466,259 @@
           ]
         }
       }
+    },
+    "animation.voidbound.lumen_wisp.move": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "rotation": [
+            "-18 * query.modified_move_speed",
+            0,
+            0
+          ]
+        },
+        "shard_left": {
+          "position": [
+            0,
+            0,
+            "3.5 * query.modified_move_speed"
+          ]
+        },
+        "shard_right": {
+          "position": [
+            0,
+            0,
+            "3.5 * query.modified_move_speed"
+          ]
+        },
+        "shard_top": {
+          "position": [
+            0,
+            "-1.5 * query.modified_move_speed",
+            "2.5 * query.modified_move_speed"
+          ]
+        }
+      }
+    },
+    "animation.voidbound.void_moth.idle": {
+      "loop": true,
+      "animation_length": 4.0,
+      "bones": {
+        "wing_upper_left": {
+          "rotation": [
+            0,
+            0,
+            "22 - 22 * query.modified_move_speed"
+          ]
+        },
+        "wing_upper_right": {
+          "rotation": [
+            0,
+            0,
+            "-22 + 22 * query.modified_move_speed"
+          ]
+        },
+        "head": {
+          "rotation": [
+            "math.sin(query.anim_time * 55) * 5",
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.voidbound.void_moth.move": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "rotation": [
+            "-20 * query.modified_move_speed",
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.voidbound.echo_sentinel.move": {
+      "loop": true,
+      "bones": {
+        "body": {
+          "rotation": [
+            "-12 * query.modified_move_speed",
+            0,
+            0
+          ]
+        },
+        "arm_left": {
+          "position": [
+            "-2 * query.modified_move_speed",
+            0,
+            "3 * query.modified_move_speed"
+          ]
+        },
+        "arm_right": {
+          "position": [
+            "2 * query.modified_move_speed",
+            0,
+            "3 * query.modified_move_speed"
+          ]
+        },
+        "head": {
+          "rotation": [
+            "-8 * query.modified_move_speed",
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.voidbound.chorus_hopper.idle": {
+      "loop": true,
+      "animation_length": 5.0,
+      "bones": {
+        "body": {
+          "scale": [
+            1,
+            "1.0 + math.sin(query.anim_time * 96) * 0.035",
+            1
+          ]
+        },
+        "head": {
+          "rotation": [
+            "math.sin(query.anim_time * 44) * 4",
+            "math.sin(query.anim_time * 27) * 9",
+            0
+          ]
+        },
+        "frond_left": {
+          "rotation": [
+            "math.sin(query.anim_time * 210) * 9",
+            0,
+            "math.sin(query.anim_time * 130) * 11"
+          ]
+        },
+        "frond_right": {
+          "rotation": [
+            "math.sin(query.anim_time * 210 + 90) * 9",
+            0,
+            "-math.sin(query.anim_time * 130) * 11"
+          ]
+        }
+      }
+    },
+    "animation.voidbound.shard_wraith.move": {
+      "loop": true,
+      "bones": {
+        "shroud": {
+          "rotation": [
+            "-14 * query.modified_move_speed",
+            0,
+            0
+          ]
+        },
+        "tatter_left": {
+          "rotation": [
+            "-40 * query.modified_move_speed",
+            0,
+            0
+          ]
+        },
+        "tatter_right": {
+          "rotation": [
+            "-40 * query.modified_move_speed",
+            0,
+            0
+          ]
+        },
+        "hood": {
+          "rotation": [
+            "6 * query.modified_move_speed",
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.voidbound.crystal_crawler.idle": {
+      "loop": true,
+      "animation_length": 5.0,
+      "bones": {
+        "head": {
+          "rotation": [
+            "math.sin(query.anim_time * 52) * 5",
+            "math.sin(query.anim_time * 37) * 8",
+            0
+          ]
+        },
+        "spine_front": {
+          "scale": [
+            1,
+            "1.0 + math.sin(query.anim_time * 120) * 0.14",
+            1
+          ]
+        },
+        "spine_back": {
+          "scale": [
+            1,
+            "1.0 + math.sin(query.anim_time * 120 + 60) * 0.14",
+            1
+          ]
+        },
+        "body": {
+          "position": [
+            0,
+            "math.sin(query.anim_time * 40) * 0.25",
+            0
+          ]
+        }
+      }
+    },
+    "animation.voidbound.rift_sovereign.move": {
+      "loop": true,
+      "bones": {
+        "root": {
+          "rotation": [
+            "-10 * query.modified_move_speed",
+            0,
+            0
+          ]
+        },
+        "mantle": {
+          "rotation": [
+            "-30 * query.modified_move_speed",
+            0,
+            0
+          ]
+        },
+        "shard_a": {
+          "position": [
+            0,
+            0,
+            "4 * query.modified_move_speed"
+          ]
+        },
+        "shard_b": {
+          "position": [
+            0,
+            0,
+            "4 * query.modified_move_speed"
+          ]
+        },
+        "shard_c": {
+          "position": [
+            0,
+            0,
+            "4 * query.modified_move_speed"
+          ]
+        },
+        "shard_d": {
+          "position": [
+            0,
+            0,
+            "4 * query.modified_move_speed"
+          ]
+        }
+      }
     }
   }
 }

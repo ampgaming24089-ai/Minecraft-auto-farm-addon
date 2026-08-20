@@ -29,23 +29,39 @@ export const LuminousGrove = {
       }
     }
 
-    // Crystal trees: a pale trunk under a glowing canopy.
+    // Ender trees: a pale trunk that leans as it climbs, under a violet
+    // canopy. The lean is what stops a stand of them reading as fenceposts.
     const trees = [];
     const canopies = [];
-    const treeCount = rng.int(3, 6);
+    const treeCount = rng.int(4, 7);
     for (let i = 0; i < treeCount; i++) {
       const angle = rng.float(0, Math.PI * 2);
       const reach = rng.float(1.5, spread - 4);
-      const tx = Math.round(Math.cos(angle) * reach);
-      const tz = Math.round(Math.sin(angle) * reach);
-      const height = rng.int(5, 9);
+      let tx = Math.cos(angle) * reach;
+      let tz = Math.sin(angle) * reach;
+      const height = rng.int(6, 11);
+      const leanX = rng.float(-0.18, 0.18);
+      const leanZ = rng.float(-0.18, 0.18);
       for (let y = 1; y <= height; y++) {
-        trees.push({ x: tx, y, z: tz, id: "minecraft:end_bricks" });
+        tx += leanX;
+        tz += leanZ;
+        trees.push({ x: Math.round(tx), y, z: Math.round(tz), id: "voidbound:ender_log" });
       }
+      const crownX = Math.round(tx);
+      const crownZ = Math.round(tz);
+      const crownRadius = rng.float(2.6, 4.0);
       canopies.push(
-        ...blob(tx, height + 2, tz, rng.float(2.4, 3.6), "voidbound:void_crystal_block", undefined, 0.7)
+        ...blob(crownX, height + 2, crownZ, crownRadius, "voidbound:ender_leaves", undefined, 0.62)
       );
-      canopies.push({ x: tx, y: height + 1, z: tz, id: "voidbound:rift_lantern" });
+      // A couple of fruit-bearing bushes at the foot of each trunk.
+      for (let f = 0; f < rng.int(1, 3); f++) {
+        canopies.push({
+          x: crownX + rng.int(-2, 2),
+          y: 1,
+          z: crownZ + rng.int(-2, 2),
+          id: "voidbound:ender_bush",
+        });
+      }
     }
 
     // Undergrowth: bulbs cluster under the trees, blooms wander the edges.

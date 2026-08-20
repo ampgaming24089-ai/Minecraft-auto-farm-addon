@@ -28,6 +28,26 @@
     "voidbound:echo_ore": {
       "light_color": "#5FE8D2",
       "light_type": "static_light"
+    },
+    "voidbound:ender_bush": {
+      "light_color": "#3FE0C4",
+      "light_type": "static_light"
+    },
+    "voidbound:ender_log": {
+      "light_color": "#9A7BD8",
+      "light_type": "static_light"
+    },
+    "voidbound:ender_leaves": {
+      "light_color": "#B57BE8",
+      "light_type": "static_light"
+    },
+    "minecraft:end_crystal": {
+      "light_color": "#E75BE0",
+      "light_type": "point_light"
+    },
+    "minecraft:end_gateway": {
+      "light_color": "#C77BFF",
+      "light_type": "static_light"
     }
   }
 }

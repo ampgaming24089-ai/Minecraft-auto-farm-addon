@@ -1,12 +1,12 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Enderveil [Behavior]",
-    "description": "An End overhaul for Bedrock 26.4 - a living sky, seed-derived structures, a boss, new mobs, food and endgame armour.",
-    "uuid": "89993dc5-feb9-4503-aafc-6dd750ae037a",
+    "name": "End Reawakened [Behavior]",
+    "description": "The End, rebuilt for Bedrock 26.4 - End forests, two bosses, ten mobs, tools, armour, food and a sky that moves.",
+    "uuid": "76c299d2-4096-4d3d-a806-6616b44cc184",
     "version": [
       1,
-      1,
+      0,
       0
     ],
     "min_engine_version": [
@@ -18,10 +18,10 @@
   "metadata": {
     "product_type": "addon",
     "authors": [
-      "Enderveil"
+      "End Reawakened"
     ],
     "generated_with": {
-      "enderveil_tools": [
+      "end_reawakened_tools": [
         "1.0.0"
       ]
     }
@@ -29,20 +29,20 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "5f40acd0-c45d-4e18-9e49-6a21a40d8a41",
+      "uuid": "411ad056-8371-41be-89c5-99ae80fa9f62",
       "version": [
         1,
-        1,
+        0,
         0
       ]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "240624fc-357c-44e7-a600-27bb5c95f226",
+      "uuid": "3549a345-c9e2-44c3-841d-7b2ffb9fb7bb",
       "version": [
         1,
-        1,
+        0,
         0
       ],
       "entry": "scripts/main.js"
@@ -54,10 +54,10 @@
       "version": "2.9.0"
     },
     {
-      "uuid": "31710167-1c8c-4517-99b0-46095188abd1",
+      "uuid": "f578e6a7-6599-4278-b0ea-1c20af4c9cb4",
       "version": [
         1,
-        1,
+        0,
         0
       ]
     }

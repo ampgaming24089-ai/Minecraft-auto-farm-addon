@@ -1,5 +1,5 @@
-pack.name=Enderveil [Resources]
-pack.description=Vibrant Visuals lighting, atmospherics, volumetric fog and PBR art for the Enderveil End.
+pack.name=End Reawakened [Resources]
+pack.description=Vibrant Visuals lighting, atmospherics, volumetric fog and PBR art for the End Reawakened End.
 
 ## Blocks
 tile.voidbound:shattered_end_stone.name=Shattered End Stone
@@ -10,6 +10,9 @@ tile.voidbound:void_glass.name=Void Glass
 tile.voidbound:rift_lantern.name=Rift Lantern
 tile.voidbound:voidbloom.name=Voidbloom
 tile.voidbound:lumen_bulb.name=Lumen Bulb
+tile.voidbound:ender_log.name=Ender Log
+tile.voidbound:ender_leaves.name=Ender Leaves
+tile.voidbound:ender_bush.name=Ender Bush
 
 ## Items
 item.voidbound:echo_shard.name=Echo Shard
@@ -19,19 +22,21 @@ item.voidbound:lumen_berry.name=Lumen Berry
 item.voidbound:raw_haunch.name=Raw Hopper Haunch
 item.voidbound:cooked_haunch.name=Cooked Hopper Haunch
 item.voidbound:echo_bread.name=Echo Bread
+item.voidbound:ender_fruit.name=Ender Fruit
+item.voidbound:sovereign_crown.name=Sovereign Crown
 
 ## Tools
-item.voidbound:void_sword.name=Enderveil Sword
-item.voidbound:void_pickaxe.name=Enderveil Pickaxe
-item.voidbound:void_axe.name=Enderveil Axe
-item.voidbound:void_shovel.name=Enderveil Shovel
-item.voidbound:void_hoe.name=Enderveil Hoe
+item.voidbound:void_sword.name=Ender Sword
+item.voidbound:void_pickaxe.name=Ender Pickaxe
+item.voidbound:void_axe.name=Ender Axe
+item.voidbound:void_shovel.name=Ender Shovel
+item.voidbound:void_hoe.name=Ender Hoe
 
 ## Armor
-item.voidbound:void_helmet.name=Enderveil Helm
-item.voidbound:void_chestplate.name=Enderveil Cuirass
-item.voidbound:void_leggings.name=Enderveil Greaves
-item.voidbound:void_boots.name=Enderveil Sabatons
+item.voidbound:void_helmet.name=Ender Helm
+item.voidbound:void_chestplate.name=Ender Cuirass
+item.voidbound:void_leggings.name=Ender Greaves
+item.voidbound:void_boots.name=Ender Sabatons
 
 ## Entities
 entity.voidbound:lumen_wisp.name=Lumen Wisp
@@ -41,12 +46,14 @@ item.spawn_egg.entity.voidbound:rift_stalker.name=Spawn Rift Stalker
 entity.voidbound:void_moth.name=Void Moth
 entity.voidbound:echo_sentinel.name=Echo Sentinel
 entity.voidbound:rift_sovereign.name=Rift Sovereign
+entity.voidbound:echo_warden.name=Echo Warden
 entity.voidbound:chorus_hopper.name=Chorus Hopper
 entity.voidbound:crystal_crawler.name=Crystal Crawler
 entity.voidbound:shard_wraith.name=Shard Wraith
 item.spawn_egg.entity.voidbound:void_moth.name=Spawn Void Moth
 item.spawn_egg.entity.voidbound:echo_sentinel.name=Spawn Echo Sentinel
 item.spawn_egg.entity.voidbound:rift_sovereign.name=Spawn Rift Sovereign
+item.spawn_egg.entity.voidbound:echo_warden.name=Spawn Echo Warden
 item.spawn_egg.entity.voidbound:chorus_hopper.name=Spawn Chorus Hopper
 item.spawn_egg.entity.voidbound:crystal_crawler.name=Spawn Crystal Crawler
 item.spawn_egg.entity.voidbound:shard_wraith.name=Spawn Shard Wraith

@@ -238,7 +238,7 @@ function tick() {
     try {
       driveBoss(boss);
     } catch (error) {
-      console.warn(`[Enderveil] sovereign tick failed: ${error}`);
+      console.warn(`[End Reawakened] sovereign tick failed: ${error}`);
     }
   }
 }

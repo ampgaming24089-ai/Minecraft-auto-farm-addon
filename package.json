@@ -2,7 +2,7 @@
   "name": "riftborne",
   "version": "1.0.0",
   "private": true,
-  "description": "Enderveil - an End dimension overhaul add-on for Minecraft Bedrock 26.4",
+  "description": "End Reawakened - an End dimension overhaul add-on for Minecraft Bedrock 26.4",
   "scripts": {
     "art": "python3 tools/gen_art.py",
     "preview": "python3 tools/preview.py",

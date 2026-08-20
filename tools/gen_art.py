@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate every Enderveil texture from source.
+"""Regenerate every End Reawakened texture from source.
 
     python3 tools/gen_art.py
 
@@ -1023,6 +1023,190 @@ def entity_crystal_crawler():
 
 
 # --------------------------------------------------------------------------
+# The End forest
+# --------------------------------------------------------------------------
+
+
+def block_ender_log():
+    """Pale, chalky bark with dark rift seams running the grain."""
+    bark = hex_rgba("#6E5F86")
+    bark_lo = mix(bark, PALETTE["void"], 0.55)
+    bark_hi = mix(bark, hex_rgba("#CFC4E2"), 0.45)
+    seam = mix(PALETTE["void_lit"], PALETTE["void"], 0.35)
+
+    side = Canvas(16)
+
+    def grain(x, y, _cur):
+        # Vertical grain: noise stretched hard on x so it reads as fibre.
+        n = fbm(x * 3.4, y * 0.7, 16, 7300, octaves=3, base_period=4)
+        base = mix(bark_lo, bark, n)
+        if n > 0.62:
+            base = mix(base, bark_hi, (n - 0.62) / 0.38 * 0.8)
+        return base
+
+    side.each(grain)
+    veins(side, 7301, 2, seam, 18, wobble=0.25, width=1)
+    emit(side, BLOCKS, "voidbound_ender_log", roughness=236,
+         emissive_from=seam[:3], emissive_gain=0.55, emissive_threshold=0.42)
+
+    top = Canvas(16)
+
+    def rings(x, y, _cur):
+        d = math.hypot(x + 0.5 - 8, y + 0.5 - 8)
+        n = fbm(x * 2, y * 2, 16, 7302, octaves=2, base_period=4)
+        ring = (math.sin(d * 2.1 + n * 1.4) + 1) * 0.5
+        return mix(bark_lo, bark_hi, ring * 0.75)
+
+    top.each(rings)
+    radial(top, 8, 8, 2.2, seam, mix(bark, seam, 0.2), falloff=1.4)
+    emit(top, BLOCKS, "voidbound_ender_log_top", roughness=232,
+         emissive_from=seam[:3], emissive_gain=0.6, emissive_threshold=0.4)
+
+
+def block_ender_leaves():
+    """Airy violet canopy - alpha-tested, so it needs real holes."""
+    c = Canvas(16)
+    leaf = hex_rgba("#7B3FA8")
+    leaf_lo = mix(leaf, PALETTE["void"], 0.5)
+    leaf_hi = mix(leaf, hex_rgba("#D8A8F0"), 0.5)
+
+    def canopy(x, y, _cur):
+        n = fbm(x * 2.6, y * 2.6, 16, 7310, octaves=3, base_period=4)
+        clump = fbm(x * 1.2, y * 1.2, 16, 7311, octaves=2, base_period=4)
+        if clump < 0.36:
+            return TRANSPARENT          # gaps you can see sky through
+        base = mix(leaf_lo, leaf, n)
+        if n > 0.66:
+            return mix(base, leaf_hi, (n - 0.66) / 0.34)
+        return base
+
+    c.each(canopy)
+    speckle(c, 7312, 0.05, [leaf_hi, shade(leaf_lo, -0.25)])
+    emit(c, BLOCKS, "voidbound_ender_leaves", roughness=222,
+         emissive_from=leaf_hi[:3], emissive_gain=0.45, emissive_threshold=0.5)
+
+
+def block_ender_bush():
+    """Low bush carrying ripe fruit - the ground-level source."""
+    c = Canvas(16)
+    stem = mix(PALETTE["void"], hex_rgba("#7B6A92"), 0.55)
+    leaf = hex_rgba("#6E3A96")
+    leaf_hi = mix(leaf, hex_rgba("#C89AE8"), 0.5)
+    fruit = hex_rgba("#3FE0C4")
+
+    rng = Rng(7320)
+    for base_x in (4, 8, 11):
+        px = base_x
+        for y in range(15, 8, -1):
+            px += rng.range(-0.3, 0.3)
+            c.blend(int(round(px)), y, stem)
+    for cx, cy, r in ((5, 8, 3.2), (9, 6, 3.6), (11, 9, 2.8)):
+        for y in range(16):
+            for x in range(16):
+                d = math.hypot(x + 0.5 - cx, y + 0.5 - cy) / r
+                if d <= 1.0 and rng.next() > d * 0.55:
+                    c.blend(x, y, mix(leaf_hi, leaf, min(1.0, d * 1.1)))
+    for fx, fy in ((5, 9), (10, 6), (12, 10)):
+        c.blend(fx, fy, fruit)
+        c.blend(fx + 1, fy, mix(fruit, leaf, 0.4))
+        c.blend(fx, fy + 1, mix(fruit, leaf, 0.55))
+    emit(c, BLOCKS, "voidbound_ender_bush", roughness=200,
+         emissive_from=fruit[:3], emissive_gain=1.15, emissive_threshold=0.2)
+
+
+def item_ender_fruit():
+    """A dense teal fruit with a pale rind seam."""
+    c = Canvas(16)
+    flesh = hex_rgba("#3FE0C4")
+    flesh_deep = mix(flesh, PALETTE["void"], 0.55)
+    rind = hex_rgba("#DFF7F0")
+    radial(c, 7.6, 9.0, 5.6, flesh, flesh_deep, falloff=1.2)
+    radial(c, 5.8, 7.0, 2.2, rind, (63, 224, 196, 0), falloff=1.1)
+    for y in range(5, 14):
+        c.blend(11, y, mix(rind, flesh_deep, 0.45))
+    for y in range(2, 6):
+        c.set(9, y, mix(PALETTE["void"], hex_rgba("#7B6A92"), 0.5))
+    c.set(10, 2, mix(flesh, rind, 0.4))
+    c.set(8, 2, mix(flesh, rind, 0.4))
+    bevel(c)
+    c.outline(mix(PALETTE["void"], (0, 0, 0, 255), 0.55))
+    emit(c, ITEMS, "voidbound_ender_fruit", roughness=140,
+         emissive_from=flesh[:3], emissive_gain=1.2, emissive_threshold=0.18)
+
+
+def item_sovereign_crown():
+    """The Sovereign's crown - the reason to fight it twice."""
+    c = Canvas(16)
+    gold = hex_rgba("#E8C766")
+    gold_lo = hex_rgba("#8A6E28")
+    gem = hex_rgba("#E75BE0")
+    for x in range(2, 14):
+        c.set(x, 10, gold)
+        c.set(x, 11, gold_lo)
+    # Five points, tallest in the centre.
+    for x, height in ((2, 6), (5, 4), (8, 2), (11, 4), (13, 6)):
+        for y in range(height, 10):
+            c.set(x, y, gold if y > height else mix(gold, rind_white(), 0.35))
+            c.set(x + 1, y, gold_lo)
+    for gx, gy in ((3, 8), (8, 5), (12, 8)):
+        c.set(gx, gy, gem)
+        c.blend(gx + 1, gy, mix(gem, gold, 0.5))
+    c.set(8, 4, shade(gem, 0.5))
+    bevel(c, light=0.3, dark=0.28)
+    c.outline(mix(hex_rgba("#3A2A08"), (0, 0, 0, 255), 0.35))
+    emit(c, ITEMS, "voidbound_sovereign_crown", metalness=190, roughness=52,
+         emissive_from=gem[:3], emissive_gain=1.2, emissive_threshold=0.3)
+
+
+def rind_white():
+    return hex_rgba("#FFF4CC")
+
+
+def entity_echo_warden():
+    """The Echo Warden: the sentinel's build in older, gilded stone."""
+    c = Canvas(64, 64)
+    stone = mix(PALETTE["endstone_dark"], PALETTE["void"], 0.72)
+    stone_hi = mix(stone, hex_rgba("#C9B98A"), 0.42)
+    gold = hex_rgba("#D8B45C")
+    core = hex_rgba("#FF9C3F")
+
+    def masonry(seed, gilded=False):
+        def paint(face, fx, fy, fw, fh):
+            n = fbm(fx * 1.4, fy * 1.4, 16, seed, octaves=3, base_period=4)
+            base = mix(stone, stone_hi, n)
+            if fy % 4 == 0:
+                base = shade(base, -0.24)
+            elif (fx + (fy // 4) * 2) % 5 == 0:
+                base = shade(base, -0.18)
+            if gilded and face in ("north", "south") and fy in (2, fh - 3):
+                return gold
+            if gilded and face in ("east", "west") and fx == fw // 2:
+                return mix(base, gold, 0.55)
+            return base
+        return paint
+
+    paint_box(c, 0, 0, 10, 14, 6, masonry(8810, gilded=True))
+    paint_box(c, 0, 22, 8, 8, 8, masonry(8811, gilded=True))
+    paint_box(c, 34, 0, 4, 14, 4, masonry(8812))
+    paint_box(c, 34, 20, 4, 14, 4, masonry(8813))
+    paint_box(c, 0, 40, 4, 12, 4, masonry(8814))
+    paint_box(c, 18, 40, 4, 12, 4, masonry(8815))
+
+    def furnace(_face, fx, fy, fw, fh):
+        dx = (fx + 0.5) / fw - 0.5
+        dy = (fy + 0.5) / fh - 0.5
+        d = min(1.0, math.hypot(dx, dy) * 2.2)
+        return mix(shade(core, 0.6), mix(core, PALETTE["void"], 0.55), d)
+
+    paint_box(c, 36, 40, 4, 4, 1, furnace)
+    for x, y in ((10, 33), (13, 33), (10, 34), (13, 34)):
+        c.set(x, y, shade(core, 0.5))
+
+    emit(c, ENTITY, "voidbound_echo_warden", metalness=60, roughness=228,
+         emissive_from=core[:3], emissive_gain=1.3, emissive_threshold=0.2)
+
+
+# --------------------------------------------------------------------------
 # The Rift Sovereign and its particles
 # --------------------------------------------------------------------------
 
@@ -1315,6 +1499,12 @@ def main():
         entity_shard_wraith,
         entity_crystal_crawler,
         entity_rift_sovereign,
+        entity_echo_warden,
+        block_ender_log,
+        block_ender_leaves,
+        block_ender_bush,
+        item_ender_fruit,
+        item_sovereign_crown,
         particle_atlas,
         armor_layers,
         item_void_helmet,

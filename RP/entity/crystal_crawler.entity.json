@@ -13,11 +13,13 @@
         "default": "geometry.voidbound.crystal_crawler"
       },
       "animations": {
-        "move": "animation.voidbound.crystal_crawler.move"
+        "move": "animation.voidbound.crystal_crawler.move",
+        "idle": "animation.voidbound.crystal_crawler.idle"
       },
       "scripts": {
         "animate": [
-          "move"
+          "move",
+          "idle"
         ]
       },
       "render_controllers": [

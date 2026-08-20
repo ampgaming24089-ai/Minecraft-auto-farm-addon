@@ -4,6 +4,9 @@
  * Built as a complete building and then deliberately ruined: the roof is
  * eaten away from one corner outward, so every instance reads as the same
  * architecture at a different stage of collapse.
+ *
+ * Each sanctum is an Echo Warden's hall - the second boss, and the one you are
+ * likely to meet first, since sanctums sit closer in than rift anchors.
  */
 
 import { at, box, merge, shell } from "../lib/blueprint.js";
@@ -84,6 +87,7 @@ export const ShatteredSanctum = {
       placements: merge(foundation, floor, walls, hollow, pillars, doorway, ruin, rubble, altar),
       chests: [{ x: 0, y: 2, z: halfDepth - 3 }],
       beacon: { x: 0, y: wallHeight, z: 0 },
+      warden: true,
     };
   },
 };

@@ -49,6 +49,12 @@
     },
     "voidbound_void_hoe": {
       "textures": "textures/items/voidbound_void_hoe"
+    },
+    "voidbound_ender_fruit": {
+      "textures": "textures/items/voidbound_ender_fruit"
+    },
+    "voidbound_sovereign_crown": {
+      "textures": "textures/items/voidbound_sovereign_crown"
     }
   }
 }

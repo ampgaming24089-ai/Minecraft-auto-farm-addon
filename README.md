@@ -1,31 +1,40 @@
-# Enderveil — an End overhaul for Minecraft Bedrock
+# End Reawakened — an End overhaul for Minecraft Bedrock
 
-The End has been one biome, one sky and two structures since 1.9. Enderveil
-rebuilds it for Bedrock **26.4** (internal `1.26.40`, current hotfix `26.44`):
-a new sky and lighting model, volumetric fog that changes with where you are,
-four kinds of seed-derived structure scattered across the outer islands, two
-new mobs, an ore, flora, and a compass that works out there.
+The End has been one biome, one sky and two structures since 1.9. End
+Reawakened rebuilds it for Bedrock **26.4** (internal `1.26.40`, current hotfix
+`26.44`): a forest, two bosses, nine mobs, a full tool and armour tier, a food
+chain, four structure types scattered across the outer islands, and an
+atmosphere that moves.
 
 Everything runs on documented, non-experimental APIs. No experiments toggle,
 no world conversion, no commands typed by the player.
 
+| | |
+|---|---|
+| Blocks | 11 |
+| Items | 18 |
+| Mobs | 9, two of them bosses |
+| Recipes | 16 |
+| Structures | 4 kinds, procedurally varied |
+| Particle effects | 9 |
+| Animations | 17 clips across 8 models |
+| Textures | 86, all generated from code |
+
 ```
-./build_addon.sh --check      # validate everything, then build dist/Enderveil.mcaddon
+./build_addon.sh --check      # validate everything, then build the .mcaddon
 ```
 
 Import the `.mcaddon`, enable both packs on a world, and turn **Vibrant
 Visuals** on in video settings for the full lighting treatment. The pack still
-works with Vibrant Visuals off — you get the new fog, sky colour and all the
-content, just not the PBR lighting.
-
----
+works with it off — you get the sky, fog, particles and all the content, just
+not the PBR lighting.
 
 ## What changes
 
 ### The sky and the light
 
 The End's built-in look is a flat purple void: two constant white directional
-lights, a near-black sky, no depth. Enderveil replaces the whole Vibrant
+lights, a near-black sky, no depth. End Reawakened replaces the whole Vibrant
 Visuals stack for `minecraft:the_end`.
 
 | File | What it does |
@@ -44,7 +53,7 @@ through `lighting/global.json`. That is the part most End packs get wrong.
 ### Fog that knows where you are
 
 Bedrock exposes exactly one End biome, so a biome-bound fog can only ever be
-one mood. Enderveil ships four fog definitions and pushes the right one onto
+one mood. End Reawakened ships four fog definitions and pushes the right one onto
 each player's fog stack — the layer that sits above biome fog:
 
 - **`fog_end_open`** — the default, bound to the biome. Thin violet haze that
@@ -145,15 +154,15 @@ the player so they read as depth rather than as dust on the lens.
 - **Rift Compass** — points at the nearest structure by name, distance and
   bearing, and names the runner-up so you can pick a route.
 
-### Enderveil armour
+### End Reawakened armour
 
 The endgame set, a clear step past netherite:
 
 | | Helm | Cuirass | Greaves | Sabatons | Set |
 |---|---|---|---|---|---|
-| Enderveil protection | 4 | 9 | 7 | 4 | **24** |
+| End Reawakened protection | 4 | 9 | 7 | 4 | **24** |
 | Netherite protection | 3 | 8 | 6 | 3 | 20 |
-| Enderveil durability | 561 | 816 | 765 | 663 | |
+| End Reawakened durability | 561 | 816 | 765 | 663 | |
 | Netherite durability | 407 | 592 | 555 | 481 | |
 
 Enchantability is 18 against netherite's 15, and pieces repair with void

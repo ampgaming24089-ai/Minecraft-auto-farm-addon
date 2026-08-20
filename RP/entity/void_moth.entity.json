@@ -13,11 +13,15 @@
         "default": "geometry.voidbound.void_moth"
       },
       "animations": {
-        "fly": "animation.voidbound.void_moth.fly"
+        "fly": "animation.voidbound.void_moth.fly",
+        "idle": "animation.voidbound.void_moth.idle",
+        "move": "animation.voidbound.void_moth.move"
       },
       "scripts": {
         "animate": [
-          "fly"
+          "fly",
+          "idle",
+          "move"
         ]
       },
       "render_controllers": [

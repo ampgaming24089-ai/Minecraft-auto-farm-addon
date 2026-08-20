@@ -13,12 +13,18 @@
         "default": "geometry.voidbound.lumen_wisp"
       },
       "animations": {
-        "idle": "animation.voidbound.lumen_wisp.idle"
+        "idle": "animation.voidbound.lumen_wisp.idle",
+        "move": "animation.voidbound.lumen_wisp.move"
       },
       "scripts": {
-        "animate": [ "idle" ]
+        "animate": [
+          "idle",
+          "move"
+        ]
       },
-      "render_controllers": [ "controller.render.voidbound.default" ],
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
       "spawn_egg": {
         "base_color": "#5FE8D2",
         "overlay_color": "#1E8C7E"

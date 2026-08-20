@@ -12,7 +12,10 @@
  * output is sane, so those failures surface here instead of in a world.
  */
 
-import { mkdtempSync, mkdirSync, writeFileSync, cpSync, rmSync } from "node:fs";
+import {
+  mkdtempSync, mkdirSync, writeFileSync, cpSync, rmSync,
+  existsSync, readdirSync, readFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -35,12 +38,18 @@ for (const [name, table] of Object.entries(vanilla)) {
   if (!name.startsWith("Minecraft") || typeof table !== "object") continue;
   for (const value of Object.values(table)) if (typeof value === "string") KNOWN_IDS.add(value);
 }
-for (const id of [
-  "voidbound:shattered_end_stone", "voidbound:verdant_end_stone", "voidbound:echo_ore",
-  "voidbound:void_crystal_block", "voidbound:void_glass", "voidbound:rift_lantern",
-  "voidbound:voidbloom", "voidbound:lumen_bulb", "voidbound:echo_shard",
-  "voidbound:void_crystal", "voidbound:rift_compass", "voidbound:lumen_berry",
-]) KNOWN_IDS.add(id);
+// Pack-defined ids are read from the pack rather than listed here, so adding
+// a block never silently breaks this test's idea of what exists.
+for (const folder of ["blocks", "items"]) {
+  const dir = join(ROOT, "BP", folder);
+  if (!existsSync(dir)) continue;
+  for (const name of readdirSync(dir)) {
+    if (!name.endsWith(".json")) continue;
+    const data = JSON.parse(readFileSync(join(dir, name), "utf8"));
+    const id = (data["minecraft:block"] ?? data["minecraft:item"])?.description?.identifier;
+    if (id) KNOWN_IDS.add(id);
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Stub workspace

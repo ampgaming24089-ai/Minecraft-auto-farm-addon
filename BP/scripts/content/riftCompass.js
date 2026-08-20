@@ -100,7 +100,7 @@ export function startRiftCompass() {
     try {
       survey(player);
     } catch (error) {
-      console.warn(`[Enderveil] compass survey failed: ${error}`);
+      console.warn(`[End Reawakened] compass survey failed: ${error}`);
     }
   });
 

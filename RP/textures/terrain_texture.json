@@ -30,6 +30,18 @@
     },
     "voidbound_rift_lantern_top": {
       "textures": "textures/blocks/voidbound_rift_lantern_top"
+    },
+    "voidbound_ender_log": {
+      "textures": "textures/blocks/voidbound_ender_log"
+    },
+    "voidbound_ender_log_top": {
+      "textures": "textures/blocks/voidbound_ender_log_top"
+    },
+    "voidbound_ender_leaves": {
+      "textures": "textures/blocks/voidbound_ender_leaves"
+    },
+    "voidbound_ender_bush": {
+      "textures": "textures/blocks/voidbound_ender_bush"
     }
   }
 }

@@ -23,5 +23,14 @@
   },
   "voidbound:lumen_bulb": {
     "sound": "grass"
+  },
+  "voidbound:ender_log": {
+    "sound": "wood"
+  },
+  "voidbound:ender_leaves": {
+    "sound": "grass"
+  },
+  "voidbound:ender_bush": {
+    "sound": "grass"
   }
 }

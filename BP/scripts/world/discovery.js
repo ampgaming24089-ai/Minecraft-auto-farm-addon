@@ -41,7 +41,7 @@ function recordFound(player, key) {
     player.setDynamicProperty(COUNT_PROPERTY, total);
     return total;
   } catch (error) {
-    console.warn(`[Enderveil] could not record discovery: ${error}`);
+    console.warn(`[End Reawakened] could not record discovery: ${error}`);
     return undefined;
   }
 }
