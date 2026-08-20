@@ -5,6 +5,7 @@
  *   sites/generator  places seed-derived structures ahead of the player
  *   atmosphere       swaps fog by region, above what the client biome provides
  *   ambience         drifting motes and falling streaks, so the sky has motion
+ *   flight control   pulls flyers back when they climb or drift over the void
  *   discovery        acknowledges arriving somewhere new
  *   rift compass     reads the structure map and points at it
  *   armour set       grants the Enderveil set bonus in the End
@@ -22,12 +23,14 @@ import { startRiftSovereign } from "./content/riftSovereign.js";
 import { startAmbience } from "./world/ambience.js";
 import { startAtmosphere } from "./world/atmosphere.js";
 import { startDiscovery } from "./world/discovery.js";
+import { startFlightControl } from "./world/flightControl.js";
 import { startGenerator } from "./world/generator.js";
 
 function start() {
   startGenerator();
   startAtmosphere();
   startAmbience();
+  startFlightControl();
   startDiscovery();
   startRiftCompass();
   startArmorSet();

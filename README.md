@@ -156,11 +156,6 @@ The endgame set, a clear step past netherite:
 | Enderveil durability | 561 | 816 | 765 | 663 | |
 | Netherite durability | 407 | 592 | 555 | 481 | |
 
-Each piece is banded the way vanilla armour is — pauldron caps, a belt line, a
-knee band, a boot cuff, gold trim — because a flat wash of one colour over the
-whole body renders as paint rather than plate, which is how the first pass
-looked in game.
-
 Enchantability is 18 against netherite's 15, and pieces repair with void
 crystals. Crafted from void crystals alone — 24 for the full set, which is 12
 crafts of the crystal recipe, so it is a genuine grind rather than an upgrade

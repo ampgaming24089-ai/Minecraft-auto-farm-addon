@@ -34,6 +34,21 @@
     },
     "voidbound_echo_bread": {
       "textures": "textures/items/voidbound_echo_bread"
+    },
+    "voidbound_void_sword": {
+      "textures": "textures/items/voidbound_void_sword"
+    },
+    "voidbound_void_pickaxe": {
+      "textures": "textures/items/voidbound_void_pickaxe"
+    },
+    "voidbound_void_axe": {
+      "textures": "textures/items/voidbound_void_axe"
+    },
+    "voidbound_void_shovel": {
+      "textures": "textures/items/voidbound_void_shovel"
+    },
+    "voidbound_void_hoe": {
+      "textures": "textures/items/voidbound_void_hoe"
     }
   }
 }

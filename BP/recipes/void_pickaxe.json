@@ -1,0 +1,33 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:void_pickaxe"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "CCC",
+      " S ",
+      " S "
+    ],
+    "key": {
+      "C": {
+        "item": "voidbound:void_crystal"
+      },
+      "S": {
+        "item": "minecraft:stick"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:void_crystal"
+      }
+    ],
+    "result": {
+      "item": "voidbound:void_pickaxe",
+      "count": 1
+    }
+  }
+}

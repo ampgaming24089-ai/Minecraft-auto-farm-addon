@@ -28,7 +28,7 @@
         "has_collision": true
       },
       "minecraft:movement": {
-        "value": 0.1
+        "value": 0.07
       },
       "minecraft:can_fly": {},
       "minecraft:breathable": {

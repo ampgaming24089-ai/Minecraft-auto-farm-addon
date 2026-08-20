@@ -23,14 +23,14 @@
           "max": 128
         },
         "minecraft:density_limit": {
-          "surface": 4
+          "surface": 3
         },
         "minecraft:herd": {
           "min_size": 1,
           "max_size": 3
         },
         "minecraft:weight": {
-          "default": 20
+          "default": 6
         },
         "minecraft:spawns_on_block_filter": [
           "minecraft:end_stone",

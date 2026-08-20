@@ -18,6 +18,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from artlib import (  # noqa: E402
     TRANSPARENT,
     Canvas,
+    canvas_from_png,
+    recolour,
     Rng,
     bevel,
     fbm,
@@ -744,156 +746,74 @@ def entity_echo_sentinel():
 
 
 # --------------------------------------------------------------------------
+# Tools and armour: recoloured vanilla art
+# --------------------------------------------------------------------------
+
+VANILLA_REFS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vanilla_refs")
+
+# The brief was "a reskin of the classic sword, tools and armour", and the eye
+# knows those silhouettes far too well for a hand-drawn approximation to pass -
+# an earlier pass tried and every shape read as almost-but-not-quite. So the
+# real vanilla textures are recoloured instead: the shape, shading and outline
+# are Mojang's, only the metal's hue changes.
+#
+# Diamond is the donor. Its metal sits at hue 180 and its wooden handles at
+# hue 30, which separates cleanly, so a hue window over the metal leaves the
+# sticks untouched.
+METAL_HUES = (150.0 / 360.0, 210.0 / 360.0)
+TOOL_METAL = hex_rgba("#9B5FD6")
+ARMOR_METAL = hex_rgba("#7A4CB8")
+
+
+def _require_ref(filename):
+    path = os.path.join(VANILLA_REFS, filename)
+    if not os.path.exists(path):
+        raise SystemExit(
+            "missing %s\n  run: python3 tools/fetch_vanilla_refs.py" % os.path.relpath(path, ROOT)
+        )
+    return path
+
+
+def tool_set():
+    """Five tools, recoloured from vanilla diamond so the shapes are exact."""
+    for vanilla, name in (
+        ("diamond_sword.png", "void_sword"),
+        ("diamond_pickaxe.png", "void_pickaxe"),
+        ("diamond_axe.png", "void_axe"),
+        ("diamond_shovel.png", "void_shovel"),
+        ("diamond_hoe.png", "void_hoe"),
+    ):
+        c = canvas_from_png(_require_ref(vanilla))
+        recolour(c, TOOL_METAL, hue_window=METAL_HUES, value_scale=0.94)
+        emit(
+            c, ITEMS, "voidbound_%s" % name,
+            metalness=96, roughness=84,
+            emissive_from=TOOL_METAL[:3], emissive_gain=0.55, emissive_threshold=0.55,
+        )
+
+
+def armor_layers():
+    """Both armour layers, recoloured from vanilla diamond."""
+    os.makedirs(ARMOR, exist_ok=True)
+    for vanilla, name in (
+        ("diamond_1.png", "voidbound_armor_1"),
+        ("diamond_2.png", "voidbound_armor_2"),
+    ):
+        c = canvas_from_png(_require_ref(vanilla))
+        # No hue window here: armour layers are all metal.
+        recolour(c, ARMOR_METAL, value_scale=0.92)
+        emit(
+            c, ARMOR, name,
+            metalness=72, roughness=104,
+            emissive_from=ARMOR_METAL[:3], emissive_gain=0.5, emissive_threshold=0.62,
+        )
+
+
+# --------------------------------------------------------------------------
 # Armor
 # --------------------------------------------------------------------------
 
 ARMOR = os.path.join(ROOT, "RP", "textures", "models", "armor")
-
-# Vanilla's humanoid.armor UV layout on a 64x32 sheet. Layer 1 carries the
-# helmet, chestplate and boots; layer 2 carries the leggings. Copied from the
-# vanilla netherite attachables so the plates land on the right body parts.
-ARMOR_LAYER_1 = [
-    ("helmet", 0, 0, 8, 8, 8),
-    ("body", 16, 16, 8, 12, 4),
-    ("arm", 40, 16, 4, 12, 4),
-    ("leg", 0, 16, 4, 12, 4),
-]
-ARMOR_LAYER_2 = [
-    ("body", 16, 16, 8, 12, 4),
-    ("leg", 0, 16, 4, 12, 4),
-]
-
-
-def _plate_painter(part, layer, seed):
-    """Paint one armour piece.
-
-    Minecraft armour reads as armour because of its edges: a pauldron cap, a
-    belt line, a knee band, a boot cuff. A flat wash of one colour over the
-    whole body - which is what the first pass did - renders as body paint. So
-    each part gets its own banding, laid out in the box's local face
-    coordinates, with gold as the only trim colour and the rift glow kept to
-    thin accents.
-    """
-    plate = hex_rgba("#1E0E2E")
-    plate_mid = hex_rgba("#3A2452")
-    plate_hi = hex_rgba("#6B4A8C")
-    gold = hex_rgba("#C9A85C")
-    gold_dim = mix(gold, plate, 0.45)
-    glow = PALETTE["void_lit"]
-
-    def grain(fx, fy, base, strength=0.22):
-        n = fbm(fx * 1.7, fy * 1.7, 16, seed, octaves=3, base_period=4)
-        return shade(base, (n - 0.5) * strength)
-
-    def paint(face, fx, fy, fw, fh):
-        top = fy == 0
-        bottom = fy == fh - 1
-
-        if part == "helmet":
-            base = plate_mid if face in ("north", "east", "west", "south") else plate_hi
-            if face == "top":
-                base = plate_hi
-            if face == "bottom":
-                return grain(fx, fy, plate, 0.12)
-            if face == "north" and fy == 3 and 1 < fx < fw - 2:
-                return glow                      # visor slit
-            if face == "north" and fy == 2:
-                return mix(plate_hi, gold, 0.35)  # brow ridge
-            if fy == fh - 2 and face != "top":
-                return gold_dim                   # rim above the neck
-            return grain(fx, fy, base)
-
-        if part == "body" and layer == 1:
-            # Chestplate: pauldron caps, a V-neck, a belt at the hem.
-            if face == "top":
-                return grain(fx, fy, plate_hi, 0.14)
-            if face == "bottom":
-                return grain(fx, fy, plate, 0.12)
-            if fy <= 1:
-                if face == "north" and fw > 4 and 2 < fx < fw - 3:
-                    return grain(fx, fy, plate, 0.14)   # neck opening
-                return mix(plate_hi, gold, 0.22 if fy == 1 else 0.0)
-            if fy == fh - 2:
-                return gold                              # belt
-            if bottom:
-                return grain(fx, fy, plate, 0.12)
-            if face == "north" and fy in (4, 5) and abs(fx - (fw - 1) / 2.0) < 0.6:
-                return glow                              # chest core
-            return grain(fx, fy, plate_mid if fy < fh - 4 else plate)
-
-        if part == "body" and layer == 2:
-            # Leggings waist: heavy belt over a plain skirt.
-            if face in ("top", "bottom"):
-                return grain(fx, fy, plate, 0.12)
-            if fy <= 1:
-                return gold if fy == 0 else gold_dim
-            if fy == 2:
-                return plate_hi
-            if face in ("north", "south") and fx % 3 == 0:
-                return grain(fx, fy, plate, 0.14)        # panel seams
-            return grain(fx, fy, plate_mid)
-
-        if part == "arm":
-            # Pauldron, plain upper arm, bracer.
-            if face == "top":
-                return grain(fx, fy, plate_hi, 0.14)
-            if face == "bottom":
-                return grain(fx, fy, plate, 0.12)
-            if fy <= 2:
-                return gold_dim if fy == 2 else grain(fx, fy, plate_hi)
-            if fy in (9, 10):
-                return gold if fy == 10 else grain(fx, fy, plate_hi)
-            if bottom:
-                return grain(fx, fy, plate, 0.12)
-            return grain(fx, fy, plate_mid)
-
-        if part == "leg" and layer == 1:
-            # Boot: the upper part of this box is hidden by the greaves, so
-            # only the cuff down is detailed.
-            if face == "top":
-                return grain(fx, fy, plate, 0.12)
-            if fy < 6:
-                return grain(fx, fy, plate_mid, 0.14)
-            if fy == 6:
-                return gold                              # cuff
-            if face == "bottom" or bottom:
-                return grain(fx, fy, plate_hi, 0.12)     # sole
-            if fy == fh - 2 and face == "north":
-                return mix(plate_hi, glow, 0.25)         # toe cap
-            return grain(fx, fy, plate)
-
-        # part == "leg" and layer == 2 - greaves.
-        if face in ("top", "bottom"):
-            return grain(fx, fy, plate, 0.12)
-        if fy in (5, 6):
-            return gold if fy == 5 else plate_hi         # knee band
-        if top:
-            return grain(fx, fy, plate_hi, 0.14)
-        return grain(fx, fy, plate_mid)
-
-    return paint
-
-
-def armor_layers():
-    os.makedirs(ARMOR, exist_ok=True)
-    for name, parts, seed, layer in (
-        ("voidbound_armor_1", ARMOR_LAYER_1, 8801, 1),
-        ("voidbound_armor_2", ARMOR_LAYER_2, 8802, 2),
-    ):
-        sheet = Canvas(64, 32)
-        for part, u, v, w, h, d in parts:
-            paint_box(sheet, u, v, w, h, d, _plate_painter(part, layer, seed))
-        emit(
-            sheet,
-            ARMOR,
-            name,
-            metalness=48,
-            roughness=118,
-            emissive_from=PALETTE["void_lit"][:3],
-            emissive_gain=1.15,
-            emissive_threshold=0.22,
-        )
-
 
 def _armor_icon(name, draw):
     """Shared finishing pass for the four armour icons."""
@@ -1271,60 +1191,46 @@ ENVIRONMENT = os.path.join(ROOT, "RP", "textures", "environment")
 def end_sky():
     """Replace the End's skybox tile: textures/environment/end_sky.png.
 
-    Vibrant Visuals will not let a pack supply a cubemap for the End - Mojang
-    restricts that to the Overworld - so overriding this vanilla texture is the
-    only route that reaches the End sky at all.
+    The End sky is a cube, and the game tiles this one texture across all six
+    faces. That creates two failure modes, and this pack hit both:
 
-    Two constraints pull against each other. The tile repeats many times across
-    every face, so large features or strong contrast read as wallpaper. But a
-    near-black sky makes the whole dimension feel dead. The resolution: keep
-    the *colour* variation large and very low contrast, so it never resolves
-    into a repeating shape, and put all the high-frequency detail into stars,
-    which are small enough that repetition is invisible. The base is lifted
-    well off black so the sky glows on its own.
+    - High-contrast, large features turn into visible wallpaper.
+    - *Any* low-frequency variation makes each face average to a slightly
+      different brightness, and the cube's edges become visible as seams.
+
+    So there is no noise here at all. The base is a perfectly flat colour,
+    which means every face averages identically and the corners disappear, and
+    every bit of visible interest comes from stars - small enough that
+    repetition does not read, dense enough that the sky is not empty. Depth
+    comes from four brightness tiers rather than from clouds, and movement
+    comes from particles in front of the sky (see world/ambience.js), because
+    Bedrock gives a pack no way to animate a skybox.
     """
     size = 128
     c = Canvas(size, size)
-
-    deep = hex_rgba("#1C0E38")
-    warm = hex_rgba("#3A1660")
-    cool = hex_rgba("#152A55")
-
-    for y in range(size):
-        for x in range(size):
-            # One low octave each, blended gently. Peak-to-peak brightness
-            # across the tile stays inside roughly 15%, which is under the
-            # threshold where the eye starts picking out a repeat.
-            violet = fbm(x, y, size, 2201, octaves=2, base_period=2, gain=0.5)
-            teal = fbm(x + 61, y + 17, size, 4402, octaves=2, base_period=2, gain=0.5)
-            tone = mix(deep, warm, max(0.0, violet - 0.45) * 1.5)
-            c.set(x, y, mix(tone, cool, max(0.0, teal - 0.5) * 0.9))
+    c.fill(hex_rgba("#120A26"))
 
     rng = Rng(31337)
-    star_tints = [
-        hex_rgba("#FFFFFF"), hex_rgba("#FFF0FF"), hex_rgba("#D8C0FF"),
-        hex_rgba("#A8E8FF"), hex_rgba("#FFC0E8"), hex_rgba("#FFE8C0"),
+    tints = [
+        hex_rgba("#FFFFFF"), hex_rgba("#F4E8FF"), hex_rgba("#D6C2FF"),
+        hex_rgba("#A9D8FF"), hex_rgba("#FFC2E8"), hex_rgba("#FFE7C2"),
     ]
 
-    # Dense faint field - reads as depth rather than as individual stars.
-    for _ in range(900):
-        sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
-        c.set(sx, sy, mix(c.get(sx, sy), rng.pick(star_tints), rng.range(0.14, 0.40)))
+    # Four tiers, faintest first, so brighter stars land on top.
+    for count, low, high in ((1500, 0.06, 0.18), (620, 0.20, 0.42), (200, 0.5, 0.75)):
+        for _ in range(count):
+            sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
+            c.set(sx, sy, mix(c.get(sx, sy), rng.pick(tints), rng.range(low, high)))
 
-    # Mid field.
-    for _ in range(260):
+    # Bright stars, with a halo soft enough that it does not read as a shape
+    # when the tile repeats.
+    for _ in range(38):
         sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
-        c.set(sx, sy, mix(c.get(sx, sy), rng.pick(star_tints), rng.range(0.55, 0.85)))
-
-    # Bright stars with a soft one-pixel halo. No cross flares: at this tile
-    # count a repeating flare is the most obvious tell there is.
-    for _ in range(46):
-        sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
-        tint = rng.pick(star_tints)
+        tint = rng.pick(tints)
         c.set(sx, sy, tint)
         for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
             nx, ny = (sx + dx) % size, (sy + dy) % size
-            c.set(nx, ny, mix(c.get(nx, ny), tint, 0.34))
+            c.set(nx, ny, mix(c.get(nx, ny), tint, 0.30))
 
     os.makedirs(ENVIRONMENT, exist_ok=True)
     out(c, ENVIRONMENT, "end_sky")
@@ -1400,6 +1306,7 @@ def main():
         item_raw_haunch,
         item_cooked_haunch,
         item_echo_bread,
+        tool_set,
         entity_lumen_wisp,
         entity_rift_stalker,
         entity_void_moth,

@@ -119,6 +119,124 @@ def fbm(x, y, size, seed, octaves=3, lacunarity=2.0, gain=0.5, base_period=4):
 
 
 # --------------------------------------------------------------------------
+# PNG input
+# --------------------------------------------------------------------------
+
+
+def _paeth(a, b, c):
+    p = a + b - c
+    pa, pb, pc = abs(p - a), abs(p - b), abs(p - c)
+    if pa <= pb and pa <= pc:
+        return a
+    return b if pb <= pc else c
+
+
+def load_png(path):
+    """Decode an 8-bit PNG to (width, height, [(r, g, b, a), ...]).
+
+    Deliberately more capable than the writer above: the writer only ever
+    emits filter-0 RGBA, but Mojang's own textures use the full filter set and
+    a mix of colour types, and this pack recolours them.
+    """
+    data = open(path, "rb").read()
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        raise ValueError("%s is not a PNG" % path)
+
+    pos = 8
+    width = height = 0
+    depth = color_type = 0
+    idat = bytearray()
+    palette = []
+    trns = []
+    while pos < len(data):
+        (length,) = struct.unpack(">I", data[pos : pos + 4])
+        tag = data[pos + 4 : pos + 8]
+        body = data[pos + 8 : pos + 8 + length]
+        if tag == b"IHDR":
+            width, height, depth, color_type = struct.unpack(">IIBB", body[:10])
+        elif tag == b"PLTE":
+            palette = [tuple(body[i : i + 3]) for i in range(0, len(body), 3)]
+        elif tag == b"tRNS":
+            trns = list(body)
+        elif tag == b"IDAT":
+            idat += body
+        elif tag == b"IEND":
+            break
+        pos += 12 + length
+
+    if depth not in (1, 2, 4, 8):
+        raise ValueError("%s: unsupported bit depth %d" % (path, depth))
+
+    channels = {0: 1, 2: 3, 3: 1, 4: 2, 6: 4}[color_type]
+    bits_per_pixel = channels * depth
+    # Per the PNG spec, filtering works on whole bytes and the "left" offset is
+    # the pixel size rounded up to a byte.
+    filter_step = max(1, bits_per_pixel // 8)
+    stride = (width * bits_per_pixel + 7) // 8
+    raw = zlib.decompress(bytes(idat))
+
+    rows = []
+    previous = bytearray(stride)
+    offset = 0
+    for _ in range(height):
+        filter_type = raw[offset]
+        offset += 1
+        line = bytearray(raw[offset : offset + stride])
+        offset += stride
+        for i in range(stride):
+            left = line[i - filter_step] if i >= filter_step else 0
+            up = previous[i]
+            upleft = previous[i - filter_step] if i >= filter_step else 0
+            if filter_type == 1:
+                line[i] = (line[i] + left) & 255
+            elif filter_type == 2:
+                line[i] = (line[i] + up) & 255
+            elif filter_type == 3:
+                line[i] = (line[i] + ((left + up) >> 1)) & 255
+            elif filter_type == 4:
+                line[i] = (line[i] + _paeth(left, up, upleft)) & 255
+            elif filter_type != 0:
+                raise ValueError("%s: unknown PNG filter %d" % (path, filter_type))
+        rows.append(line)
+        previous = line
+
+    def sample(line, index):
+        """Read sample `index` from a scanline, honouring sub-byte depths."""
+        if depth == 8:
+            return line[index]
+        per_byte = 8 // depth
+        byte = line[index // per_byte]
+        shift = 8 - depth * (index % per_byte + 1)
+        return (byte >> shift) & ((1 << depth) - 1)
+
+    pixels = []
+    for line in rows:
+        for x in range(width):
+            chunk = [sample(line, x * channels + i) for i in range(channels)]
+            if color_type == 0:
+                pixels.append((chunk[0], chunk[0], chunk[0], 255))
+            elif color_type == 4:
+                pixels.append((chunk[0], chunk[0], chunk[0], chunk[1]))
+            elif color_type == 2:
+                pixels.append((chunk[0], chunk[1], chunk[2], 255))
+            elif color_type == 6:
+                pixels.append((chunk[0], chunk[1], chunk[2], chunk[3]))
+            else:
+                index = chunk[0]
+                r, g, b = palette[index]
+                alpha = trns[index] if index < len(trns) else 255
+                pixels.append((r, g, b, alpha))
+    return width, height, pixels
+
+
+def canvas_from_png(path):
+    width, height, pixels = load_png(path)
+    c = Canvas(width, height)
+    c.px = pixels
+    return c
+
+
+# --------------------------------------------------------------------------
 # Colour
 # --------------------------------------------------------------------------
 
@@ -151,6 +269,56 @@ def shade(color, amount):
 
 def luma(color):
     return (0.2126 * color[0] + 0.7152 * color[1] + 0.0722 * color[2]) / 255.0
+
+
+def rgb_to_hsv(color):
+    r, g, b = color[0] / 255.0, color[1] / 255.0, color[2] / 255.0
+    high, low = max(r, g, b), min(r, g, b)
+    span = high - low
+    if span == 0:
+        hue = 0.0
+    elif high == r:
+        hue = ((g - b) / span) % 6
+    elif high == g:
+        hue = (b - r) / span + 2
+    else:
+        hue = (r - g) / span + 4
+    return hue / 6.0, (span / high if high else 0.0), high
+
+
+def recolour(canvas, target, hue_window=None, saturation_floor=0.12,
+             saturation_scale=1.0, value_scale=1.0):
+    """Re-tint a texture while keeping its shading intact.
+
+    Value is what carries a Minecraft texture's form - the highlights and
+    shadows that make a sword look like a sword. So this keeps each pixel's
+    value and only replaces hue and saturation, which is why the result reads
+    as the same object in a different metal rather than as a flat repaint.
+
+    `hue_window` limits the change to a band of source hues, so a tool's wooden
+    handle survives while its head is recoloured.
+    """
+    target_h, target_s, _ = rgb_to_hsv(target)
+
+    def paint(x, y, current):
+        if current[3] == 0:
+            return None
+        h, s, v = rgb_to_hsv(current)
+        if s < saturation_floor:
+            return None  # Near-greyscale pixels (outlines) stay as they are.
+        if hue_window is not None:
+            low, high = hue_window
+            inside = (low <= h <= high) if low <= high else (h >= low or h <= high)
+            if not inside:
+                return None
+        # Blend the source saturation toward the target's, so a washed-out
+        # pixel stays washed out and a vivid one stays vivid.
+        new_s = max(0.0, min(1.0, (s * 0.45 + target_s * 0.55) * saturation_scale))
+        new_v = max(0.0, min(1.0, v * value_scale))
+        return hsv(target_h, new_s, new_v, current[3])
+
+    canvas.each(paint)
+    return canvas
 
 
 # --------------------------------------------------------------------------

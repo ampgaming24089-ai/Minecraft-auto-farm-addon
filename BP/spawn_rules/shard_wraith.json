@@ -34,7 +34,7 @@
           "max_size": 2
         },
         "minecraft:weight": {
-          "default": 12
+          "default": 4
         },
         "minecraft:spawns_on_block_filter": [
           "minecraft:end_stone",

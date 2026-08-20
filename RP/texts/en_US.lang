@@ -20,6 +20,13 @@ item.voidbound:raw_haunch.name=Raw Hopper Haunch
 item.voidbound:cooked_haunch.name=Cooked Hopper Haunch
 item.voidbound:echo_bread.name=Echo Bread
 
+## Tools
+item.voidbound:void_sword.name=Enderveil Sword
+item.voidbound:void_pickaxe.name=Enderveil Pickaxe
+item.voidbound:void_axe.name=Enderveil Axe
+item.voidbound:void_shovel.name=Enderveil Shovel
+item.voidbound:void_hoe.name=Enderveil Hoe
+
 ## Armor
 item.voidbound:void_helmet.name=Enderveil Helm
 item.voidbound:void_chestplate.name=Enderveil Cuirass

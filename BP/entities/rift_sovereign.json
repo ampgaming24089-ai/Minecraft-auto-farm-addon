@@ -39,7 +39,7 @@
       "minecraft:fire_immune": true,
       "minecraft:persistent": {},
       "minecraft:movement": {
-        "value": 0.3
+        "value": 0.22
       },
       "minecraft:movement.fly": {},
       "minecraft:navigation.fly": {

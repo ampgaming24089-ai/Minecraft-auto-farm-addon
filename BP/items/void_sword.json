@@ -1,0 +1,54 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:item": {
+    "description": {
+      "identifier": "voidbound:void_sword",
+      "menu_category": {
+        "category": "equipment"
+      }
+    },
+    "components": {
+      "minecraft:display_name": {
+        "value": "item.voidbound:void_sword.name"
+      },
+      "minecraft:icon": {
+        "textures": {
+          "default": "voidbound_void_sword"
+        }
+      },
+      "minecraft:max_stack_size": 1,
+      "minecraft:hand_equipped": true,
+      "minecraft:rarity": "epic",
+      "minecraft:damage": 9,
+      "minecraft:durability": {
+        "max_durability": 2480
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": [
+              "voidbound:void_crystal"
+            ],
+            "repair_amount": 320
+          }
+        ]
+      },
+      "minecraft:enchantable": {
+        "slot": "sword",
+        "value": 18
+      },
+      "minecraft:digger": {
+        "use_efficiency": true,
+        "destroy_speeds": [
+          {
+            "block": {
+              "tags": "q.any_tag('plant','wood','wool','web')"
+            },
+            "speed": 12.0
+          }
+        ]
+      },
+      "minecraft:should_despawn": false
+    }
+  }
+}

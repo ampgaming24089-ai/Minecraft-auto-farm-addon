@@ -1,0 +1,33 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:void_axe"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "CC",
+      "CS",
+      " S"
+    ],
+    "key": {
+      "C": {
+        "item": "voidbound:void_crystal"
+      },
+      "S": {
+        "item": "minecraft:stick"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:void_crystal"
+      }
+    ],
+    "result": {
+      "item": "voidbound:void_axe",
+      "count": 1
+    }
+  }
+}
