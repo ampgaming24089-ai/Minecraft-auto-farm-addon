@@ -1,0 +1,36 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:rift_charm"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "ECE",
+      "CPC",
+      "ECE"
+    ],
+    "key": {
+      "E": {
+        "item": "voidbound:echo_shard"
+      },
+      "C": {
+        "item": "voidbound:void_crystal"
+      },
+      "P": {
+        "item": "minecraft:ender_eye"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:echo_shard"
+      }
+    ],
+    "result": {
+      "item": "voidbound:rift_charm",
+      "count": 1
+    }
+  }
+}

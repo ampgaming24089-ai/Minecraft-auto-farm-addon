@@ -17,6 +17,9 @@ tile.voidbound:ender_planks.name=Ender Planks
 tile.voidbound:ender_bricks.name=Ender Bricks
 tile.voidbound:void_crystal_bricks.name=Void Crystal Bricks
 tile.voidbound:echo_lamp.name=Echo Lamp
+tile.voidbound:chiseled_ender_bricks.name=Chiselled Ender Bricks
+tile.voidbound:ender_pillar.name=Ender Pillar
+tile.voidbound:ender_tiles.name=Ender Tiles
 
 ## Items
 item.voidbound:echo_shard.name=Echo Shard
@@ -28,6 +31,9 @@ item.voidbound:cooked_haunch.name=Cooked Hopper Haunch
 item.voidbound:echo_bread.name=Echo Bread
 item.voidbound:ender_fruit.name=Ender Fruit
 item.voidbound:sovereign_crown.name=Sovereign Crown
+item.voidbound:rift_charm.name=Rift Charm
+item.voidbound:echo_horn.name=Echo Horn
+item.voidbound:ender_fruit_pie.name=Ender Fruit Pie
 
 ## Tools
 item.voidbound:void_sword.name=Ender Sword
@@ -51,6 +57,9 @@ entity.voidbound:void_moth.name=Void Moth
 entity.voidbound:echo_sentinel.name=Echo Sentinel
 entity.voidbound:rift_sovereign.name=Rift Sovereign
 entity.voidbound:echo_warden.name=Echo Warden
+entity.voidbound:void_serpent.name=Void Serpent
+entity.voidbound:glimmerfin.name=Glimmerfin
+entity.voidbound:endstone_golem.name=End Stone Golem
 entity.voidbound:chorus_hopper.name=Chorus Hopper
 entity.voidbound:crystal_crawler.name=Crystal Crawler
 entity.voidbound:shard_wraith.name=Shard Wraith
@@ -58,9 +67,14 @@ item.spawn_egg.entity.voidbound:void_moth.name=Spawn Void Moth
 item.spawn_egg.entity.voidbound:echo_sentinel.name=Spawn Echo Sentinel
 item.spawn_egg.entity.voidbound:rift_sovereign.name=Spawn Rift Sovereign
 item.spawn_egg.entity.voidbound:echo_warden.name=Spawn Echo Warden
+item.spawn_egg.entity.voidbound:void_serpent.name=Spawn Void Serpent
+item.spawn_egg.entity.voidbound:glimmerfin.name=Spawn Glimmerfin
+item.spawn_egg.entity.voidbound:endstone_golem.name=Spawn End Stone Golem
 item.spawn_egg.entity.voidbound:chorus_hopper.name=Spawn Chorus Hopper
 item.spawn_egg.entity.voidbound:crystal_crawler.name=Spawn Crystal Crawler
 item.spawn_egg.entity.voidbound:shard_wraith.name=Spawn Shard Wraith
 
 ## Interaction prompts
 action.interact.voidbound.survey=Survey
+action.interact.voidbound.recall=Recall
+action.interact.voidbound.sound=Sound

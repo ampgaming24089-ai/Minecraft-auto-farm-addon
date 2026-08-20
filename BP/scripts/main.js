@@ -10,6 +10,7 @@
  *   rift compass     reads the structure map and points at it
  *   armour set       grants the End Reawakened set bonus in the End
  *   rift sovereign   drives the boss fight's phases, attacks and death
+ *   utility items    the Rift Charm's anchor and the Echo Horn's survey
  *
  * Everything visual - lighting, atmospherics, colour grading, PBR - is data in
  * the resource pack and needs no script at all. This file only covers the
@@ -20,6 +21,7 @@ import { world } from "@minecraft/server";
 import { startArmorSet } from "./content/armorSet.js";
 import { startRiftCompass } from "./content/riftCompass.js";
 import { startRiftSovereign } from "./content/riftSovereign.js";
+import { startUtilityItems } from "./content/utilityItems.js";
 import { startAmbience } from "./world/ambience.js";
 import { startAtmosphere } from "./world/atmosphere.js";
 import { startDiscovery } from "./world/discovery.js";
@@ -35,6 +37,7 @@ function start() {
   startRiftCompass();
   startArmorSet();
   startRiftSovereign();
+  startUtilityItems();
   console.log("[End Reawakened] End systems online");
 }
 

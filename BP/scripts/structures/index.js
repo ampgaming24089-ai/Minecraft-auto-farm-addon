@@ -4,12 +4,14 @@ import { LuminousGrove } from "./luminousGrove.js";
 import { RiftAnchor } from "./riftAnchor.js";
 import { ShatteredSanctum } from "./shatteredSanctum.js";
 import { VoidSpire } from "./voidSpire.js";
+import { VoidwatchTower } from "./voidwatchTower.js";
 
 export const STRUCTURES = [
   { blueprint: VoidSpire, weight: 32 },
   { blueprint: ShatteredSanctum, weight: 26 },
   { blueprint: LuminousGrove, weight: 24 },
   { blueprint: RiftAnchor, weight: 18 },
+  { blueprint: VoidwatchTower, weight: 22 },
 ];
 
 export const BY_ID = new Map(STRUCTURES.map((entry) => [entry.blueprint.id, entry.blueprint]));

@@ -55,6 +55,15 @@
     },
     "voidbound_sovereign_crown": {
       "textures": "textures/items/voidbound_sovereign_crown"
+    },
+    "voidbound_rift_charm": {
+      "textures": "textures/items/voidbound_rift_charm"
+    },
+    "voidbound_echo_horn": {
+      "textures": "textures/items/voidbound_echo_horn"
+    },
+    "voidbound_ender_fruit_pie": {
+      "textures": "textures/items/voidbound_ender_fruit_pie"
     }
   }
 }

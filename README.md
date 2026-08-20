@@ -11,14 +11,14 @@ no world conversion, no commands typed by the player.
 
 | | |
 |---|---|
-| Blocks | 15 |
-| Items | 18 |
-| Mobs | 9, two of them bosses |
-| Recipes | 20 |
-| Structures | 4 kinds, procedurally varied |
+| Blocks | 18 |
+| Items | 21 |
+| Mobs | 12, two of them bosses |
+| Recipes | 26 |
+| Structures | 5 kinds, procedurally varied |
 | Particle effects | 9 |
-| Animations | 17 clips across 8 models |
-| Textures | 94, all generated from code |
+| Animations | 23 clips across 11 models |
+| Textures | 114, all generated from code |
 
 ```
 ./build_addon.sh --check      # validate everything, then build the .mcaddon
@@ -81,7 +81,12 @@ island, the obsidian pillars and the gateway are untouched.
 - **Luminous Grove** — verdant crust, crystal trees with glowing canopies,
   bulbs and blooms. The one safe place out there.
 - **Rift Anchor** — an obsidian frame holding a crystal tear open, ringed by
-  broken pillars and guarded by rift stalkers.
+  broken pillars. The Rift Sovereign holds it.
+- **Voidwatch Tower** — the landmark. A 26–38 block shaft with a spiral stair
+  cut into its inner wall, ringed galleries for landings, and the cache on an
+  open deck at the top rather than in a vault at the bottom. The stair is
+  carved as part of the shell, so the erosion pass can never leave it floating
+  or bury it.
 
 Chest contents scale with distance from the origin: the rare pool goes from a
 6% chance near the island to 28% around 30,000 blocks out.
@@ -150,6 +155,12 @@ the player so they read as depth rather than as dust on the lens.
   with chorus fruit, raises young, and drops haunches: the End's meat supply.
 - **Crystal Crawler** — low, fast six-legged swarmer armoured in echo crystal.
 - **Shard Wraith** — a hollow flying shroud that ignores terrain.
+- **Void Serpent** — the End's apex flyer: six segments, each lagging the one
+  ahead by a fixed phase, so one wave expression makes the whole body swim.
+- **Glimmerfin** — a passive ray that drifts between islands in shoals and
+  feeds on ender fruit.
+- **End Stone Golem** — neutral. It ignores you entirely and hunts the End's
+  monsters on sight, which makes a grove worth settling beside.
 - **Rift Sovereign** — the boss, above.
 - **Rift Compass** — points at the nearest structure by name, distance and
   bearing, and names the runner-up so you can pick a route.

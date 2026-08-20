@@ -44,5 +44,14 @@
   },
   "voidbound:echo_lamp": {
     "sound": "glass"
+  },
+  "voidbound:chiseled_ender_bricks": {
+    "sound": "stone"
+  },
+  "voidbound:ender_pillar": {
+    "sound": "stone"
+  },
+  "voidbound:ender_tiles": {
+    "sound": "stone"
   }
 }

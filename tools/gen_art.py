@@ -1038,6 +1038,143 @@ def entity_crystal_crawler():
          emissive_from=crystal[:3], emissive_gain=1.0, emissive_threshold=0.26)
 
 
+def item_gameplay_set():
+    """The three utility items, plus the decorative block variants."""
+    # Rift Charm: a bound loop of crystal on a cord.
+    charm = Canvas(16)
+    cord = mix(PALETTE["void"], hex_rgba("#8A7BA8"), 0.4)
+    ring = PALETTE["void_lit"]
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x + 0.5 - 8, y + 0.5 - 9)
+            if 3.4 <= d <= 5.4:
+                charm.set(x, y, mix(ring, PALETTE["void"], (d - 3.4) / 2.0 * 0.8))
+    for i in range(4):
+        charm.set(8, 2 + i, cord)
+        charm.set(9, 2 + i, shade(cord, -0.25))
+    charm.set(7, 1, cord); charm.set(8, 1, cord); charm.set(9, 1, cord)
+    radial(charm, 8, 9, 3.0, mix(ring, (255, 255, 255, 255), 0.5), (0, 0, 0, 0), falloff=1.6)
+    bevel(charm)
+    charm.outline(mix(PALETTE["void"], (0, 0, 0, 255), 0.65))
+    emit(charm, ITEMS, "voidbound_rift_charm", metalness=120, roughness=70,
+         emissive_from=ring[:3], emissive_gain=1.25, emissive_threshold=0.22)
+
+    # Echo Horn: a curled shell horn with a lit mouth.
+    horn = Canvas(16)
+    shell = hex_rgba("#C6BE94")
+    shell_lo = mix(shell, PALETTE["void"], 0.45)
+    mouth = PALETTE["lumen_lit"]
+    for i in range(11):
+        t = i / 10.0
+        cx = 3 + i * 0.95
+        cy = 12 - i * 0.75
+        width = 1.0 + t * 2.6
+        for dy in range(-int(width), int(width) + 1):
+            for dx in range(-int(width), int(width) + 1):
+                if dx * dx + dy * dy <= width * width:
+                    horn.set(int(cx) + dx, int(cy) + dy, mix(shell_lo, shell, 1.0 - t * 0.5))
+    radial(horn, 12.5, 4.5, 3.2, mouth, mix(shell, mouth, 0.2), falloff=1.5)
+    speckle(horn, 9601, 0.06, [shade(shell, 0.25), shade(shell_lo, -0.2)])
+    bevel(horn)
+    horn.outline(mix(hex_rgba("#3A3418"), (0, 0, 0, 255), 0.35))
+    emit(horn, ITEMS, "voidbound_echo_horn", roughness=170,
+         emissive_from=mouth[:3], emissive_gain=1.1, emissive_threshold=0.28)
+
+    # Ender Fruit Pie.
+    pie = Canvas(16)
+    crust = hex_rgba("#C4A96A")
+    crust_lo = mix(crust, hex_rgba("#6B5730"), 0.5)
+    filling = hex_rgba("#3FE0C4")
+    pie.rect(2, 6, 13, 13, crust)
+    for x in range(2, 14):
+        pie.set(x, 6, mix(crust, (255, 255, 255, 255), 0.25))
+        pie.set(x, 13, crust_lo)
+    pie.rect(3, 7, 12, 10, filling)
+    for x in range(3, 13, 2):
+        pie.set(x, 8, mix(filling, (255, 255, 255, 255), 0.4))
+    for x in range(2, 14, 3):
+        pie.set(x, 11, crust_lo)
+    bevel(pie)
+    pie.outline(mix(hex_rgba("#3A2E16"), (0, 0, 0, 255), 0.35))
+    emit(pie, ITEMS, "voidbound_ender_fruit_pie", roughness=204,
+         emissive_from=filling[:3], emissive_gain=0.8, emissive_threshold=0.3)
+
+
+def block_decor_set():
+    """Chiselled bricks, a pillar and tiles - the finishing blocks."""
+    brick = mix(PALETTE["endstone_dark"], hex_rgba("#CFC8A4"), 0.5)
+    brick_lo = mix(brick, PALETTE["void"], 0.4)
+    mortar = mix(brick_lo, (0, 0, 0, 255), 0.35)
+    lit = PALETTE["void_lit"]
+
+    chiselled = Canvas(16)
+
+    def chisel(x, y, _cur):
+        n = fbm(x * 1.8, y * 1.8, 16, 9610, octaves=3, base_period=4)
+        base = mix(brick_lo, brick, n)
+        if x in (0, 15) or y in (0, 15):
+            return mortar
+        # An inset panel with a rift glyph cut into it.
+        if 2 <= x <= 13 and 2 <= y <= 13:
+            if x in (2, 13) or y in (2, 13):
+                return shade(base, -0.28)
+            on_glyph = abs(x - 8) + abs(y - 8) in (2, 5) or (x == 8 and 4 <= y <= 12)
+            if on_glyph:
+                return mix(base, lit, 0.55)
+        return base
+
+    chiselled.each(chisel)
+    emit(chiselled, BLOCKS, "voidbound_chiseled_ender_bricks", roughness=236,
+         emissive_from=lit[:3], emissive_gain=0.7, emissive_threshold=0.36)
+
+    pillar = Canvas(16)
+
+    def pillar_face(x, y, _cur):
+        n = fbm(x * 2.6, y * 0.9, 16, 9620, octaves=3, base_period=4)
+        base = mix(brick_lo, brick, n)
+        if x in (0, 1, 14, 15):
+            return shade(base, -0.26)             # fluted edges
+        if y in (0, 15):
+            return mortar                          # collar
+        if x in (5, 10):
+            return shade(base, -0.16)
+        return base
+
+    pillar.each(pillar_face)
+    emit(pillar, BLOCKS, "voidbound_ender_pillar", roughness=238)
+
+    pillar_top = Canvas(16)
+
+    def pillar_cap(x, y, _cur):
+        d = max(abs(x - 7.5), abs(y - 7.5))
+        n = fbm(x * 2, y * 2, 16, 9621, octaves=2, base_period=4)
+        base = mix(brick_lo, brick, n)
+        if d > 6.2:
+            return mortar
+        if d > 4.4:
+            return shade(base, -0.2)
+        return mix(base, lit, 0.18)
+
+    pillar_top.each(pillar_cap)
+    emit(pillar_top, BLOCKS, "voidbound_ender_pillar_top", roughness=234,
+         emissive_from=lit[:3], emissive_gain=0.55, emissive_threshold=0.42)
+
+    tiles = Canvas(16)
+
+    def tile_face(x, y, _cur):
+        n = fbm(x * 2.2, y * 2.2, 16, 9630, octaves=3, base_period=4)
+        base = mix(brick_lo, brick, n)
+        if x % 8 == 0 or y % 8 == 0:
+            return mortar
+        if (x // 8 + y // 8) % 2 == 0:
+            return shade(base, 0.12)
+        return shade(base, -0.10)
+
+    tiles.each(tile_face)
+    speckle(tiles, 9631, 0.05, [shade(brick, 0.22), shade(brick_lo, -0.2)])
+    emit(tiles, BLOCKS, "voidbound_ender_tiles", roughness=240)
+
+
 # --------------------------------------------------------------------------
 # The End forest
 # --------------------------------------------------------------------------
@@ -1292,6 +1429,144 @@ def block_building_set():
     speckle(lamp, 9430, 0.06, [shade(glow, 0.6), shade(frame, -0.2)])
     emit(lamp, BLOCKS, "voidbound_echo_lamp", roughness=110,
          emissive_from=glow[:3], emissive_gain=1.5, emissive_threshold=0.1)
+
+
+def entity_void_serpent():
+    """64x64: a segmented eel of the void, dark with a lit dorsal line."""
+    c = Canvas(64, 64)
+    scale_dark = mix(PALETTE["void"], (0, 0, 0, 255), 0.25)
+    scale_lit = mix(PALETTE["void"], PALETTE["void_lit"], 0.55)
+    belly = mix(scale_dark, hex_rgba("#8E7BB0"), 0.45)
+    maw = hex_rgba("#FF6BD8")
+
+    def hide(seed, dorsal=True):
+        def paint(face, fx, fy, fw, fh):
+            n = fbm(fx * 2.1, fy * 2.1, 16, seed, octaves=3, base_period=4)
+            base = mix(scale_dark, mix(scale_dark, scale_lit, 0.5), n)
+            # Diamond scale pattern.
+            if (fx + fy) % 3 == 0:
+                base = shade(base, 0.16)
+            if face == "bottom":
+                return mix(base, belly, 0.7)
+            if dorsal and face == "top" and abs(fx - (fw - 1) / 2.0) < 0.9:
+                return scale_lit
+            return base
+        return paint
+
+    paint_box(c, 0, 0, 6, 5, 6, hide(9501))
+
+    def head(face, fx, fy, fw, fh):
+        base = hide(9502)(face, fx, fy, fw, fh)
+        if face == "north":
+            if fy == 1 and fx in (1, fw - 2):
+                return maw                       # eyes
+            if fy >= fh - 2:
+                return mix(base, maw, 0.45)      # lit throat
+        return base
+
+    paint_box(c, 0, 0, 6, 5, 6, head)
+
+    def jaw(face, fx, fy, fw, fh):
+        base = mix(scale_dark, belly, 0.35)
+        if face == "north" and fy == 0 and fx % 2 == 0:
+            return hex_rgba("#F2E8FF")           # teeth
+        return base
+
+    paint_box(c, 0, 13, 5, 2, 4, jaw)
+    paint_box(c, 26, 0, 5, 5, 5, hide(9503))     # shared by every body segment
+    paint_box(c, 26, 12, 3, 3, 5, hide(9504))    # tail
+
+    def fin(_face, fx, fy, fw, fh):
+        t = fy / float(max(1, fh - 1))
+        return mix(scale_lit, mix(scale_dark, maw, 0.3), t)
+
+    paint_box(c, 0, 21, 1, 4, 6, fin)
+    paint_box(c, 16, 21, 1, 4, 6, fin)
+
+    emit(c, ENTITY, "voidbound_void_serpent", roughness=150,
+         emissive_from=maw[:3], emissive_gain=1.2, emissive_threshold=0.24)
+
+
+def entity_glimmerfin():
+    """64x32: a translucent ray that drifts between islands."""
+    c = Canvas(64, 32)
+    membrane = hex_rgba("#3E7FA8")
+    membrane_hi = hex_rgba("#9FE4F5")
+    core = hex_rgba("#DFF7FF")
+
+    def body(face, fx, fy, fw, fh):
+        n = fbm(fx * 2, fy * 2, 16, 9510, octaves=3, base_period=4)
+        base = mix(membrane, membrane_hi, n * 0.7)
+        if face == "top":
+            return mix(base, core, 0.3)
+        if face == "north" and fy == 1 and fx in (0, fw - 1):
+            return core                          # eyes
+        return base
+
+    paint_box(c, 0, 0, 4, 3, 8, body)
+
+    def wing(face, fx, fy, fw, fh):
+        # Thin toward the trailing edge, and veined along the span.
+        span = fx / float(max(1, fw - 1))
+        n = fbm(fx * 2.4, fy * 2.4, 16, 9511, octaves=2, base_period=4)
+        base = mix(membrane_hi, membrane, min(1.0, span * 1.15 + n * 0.2))
+        if fx % 3 == 0:
+            return mix(base, core, 0.35)
+        if face in ("top", "bottom") and span > 0.82:
+            return mix(base, membrane, 0.6)
+        return base
+
+    paint_box(c, 0, 12, 8, 1, 10, wing)
+
+    def tail(_face, fx, fy, fw, fh):
+        t = fy / float(max(1, fh - 1))
+        return mix(membrane_hi, membrane, t)
+
+    paint_box(c, 38, 0, 1, 1, 6, tail)
+
+    emit(c, ENTITY, "voidbound_glimmerfin", roughness=96,
+         emissive_from=core[:3], emissive_gain=1.0, emissive_threshold=0.3)
+
+
+def entity_endstone_golem():
+    """64x64: quarried end stone bound with crystal - a guardian, not a threat."""
+    c = Canvas(64, 64)
+    rock = mix(PALETTE["endstone"], PALETTE["endstone_dark"], 0.4)
+    rock_lo = mix(rock, PALETTE["void"], 0.32)
+    rock_hi = mix(rock, hex_rgba("#F2EFD0"), 0.4)
+    binding = PALETTE["lumen_lit"]
+
+    def stone(seed, bound=False):
+        def paint(face, fx, fy, fw, fh):
+            n = fbm(fx * 1.5, fy * 1.5, 16, seed, octaves=3, base_period=4)
+            base = mix(rock_lo, rock, n)
+            if n > 0.7:
+                base = mix(base, rock_hi, (n - 0.7) / 0.3 * 0.85)
+            # Cracks, filled with crystal where the stone was rebound.
+            crack = fbm(fx * 3.2, fy * 3.2, 16, seed + 71, octaves=2, base_period=4)
+            if crack > 0.76:
+                return mix(base, binding, 0.75) if bound else shade(base, -0.35)
+            if face == "bottom":
+                return shade(base, -0.2)
+            return base
+        return paint
+
+    paint_box(c, 0, 0, 10, 12, 8, stone(9520, bound=True))
+
+    def head(face, fx, fy, fw, fh):
+        base = stone(9521)(face, fx, fy, fw, fh)
+        if face == "north" and fy in (2, 3) and fx in (1, fw - 2):
+            return shade(binding, 0.45)          # eyes
+        return base
+
+    paint_box(c, 0, 22, 7, 6, 7, head)
+    paint_box(c, 38, 0, 4, 12, 4, stone(9522, bound=True))
+    paint_box(c, 38, 20, 4, 12, 4, stone(9523, bound=True))
+    paint_box(c, 0, 37, 4, 8, 4, stone(9524))
+    paint_box(c, 18, 37, 4, 8, 4, stone(9525))
+
+    emit(c, ENTITY, "voidbound_endstone_golem", roughness=246,
+         emissive_from=binding[:3], emissive_gain=0.95, emissive_threshold=0.3)
 
 
 # --------------------------------------------------------------------------
@@ -1588,10 +1863,15 @@ def main():
         entity_crystal_crawler,
         entity_rift_sovereign,
         entity_echo_warden,
+        entity_void_serpent,
+        entity_glimmerfin,
+        entity_endstone_golem,
         block_ender_log,
         block_ender_leaves,
         block_ender_bush,
         block_building_set,
+        block_decor_set,
+        item_gameplay_set,
         item_ender_fruit,
         item_sovereign_crown,
         particle_atlas,

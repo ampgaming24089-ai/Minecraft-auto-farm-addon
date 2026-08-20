@@ -54,6 +54,18 @@
     },
     "voidbound_echo_lamp": {
       "textures": "textures/blocks/voidbound_echo_lamp"
+    },
+    "voidbound_chiseled_ender_bricks": {
+      "textures": "textures/blocks/voidbound_chiseled_ender_bricks"
+    },
+    "voidbound_ender_pillar": {
+      "textures": "textures/blocks/voidbound_ender_pillar"
+    },
+    "voidbound_ender_pillar_top": {
+      "textures": "textures/blocks/voidbound_ender_pillar_top"
+    },
+    "voidbound_ender_tiles": {
+      "textures": "textures/blocks/voidbound_ender_tiles"
     }
   }
 }
