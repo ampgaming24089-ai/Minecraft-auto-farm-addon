@@ -1,0 +1,32 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:shard_wraith",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_shard_wraith"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.shard_wraith"
+      },
+      "animations": {
+        "drift": "animation.voidbound.shard_wraith.drift"
+      },
+      "scripts": {
+        "animate": [
+          "drift"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#160A22",
+        "overlay_color": "#D9A8FF"
+      }
+    }
+  }
+}

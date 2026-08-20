@@ -1,0 +1,32 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:chorus_hopper",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_chorus_hopper"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.chorus_hopper"
+      },
+      "animations": {
+        "move": "animation.voidbound.chorus_hopper.move"
+      },
+      "scripts": {
+        "animate": [
+          "move"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#8A5FA8",
+        "overlay_color": "#E8D8F2"
+      }
+    }
+  }
+}

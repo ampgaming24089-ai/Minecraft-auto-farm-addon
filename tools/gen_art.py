@@ -688,50 +688,125 @@ ARMOR_LAYER_2 = [
 ]
 
 
-def _plate_painter(part, seed):
-    """Obsidian plate with a lit rift seam running down the centre."""
-    plate = mix(PALETTE["void"], (0, 0, 0, 255), 0.30)
-    plate_hi = mix(plate, PALETTE["void_lit"], 0.22)
-    seam = PALETTE["void_lit"]
-    echo = PALETTE["lumen_lit"]
+def _plate_painter(part, layer, seed):
+    """Paint one armour piece.
+
+    Minecraft armour reads as armour because of its edges: a pauldron cap, a
+    belt line, a knee band, a boot cuff. A flat wash of one colour over the
+    whole body - which is what the first pass did - renders as body paint. So
+    each part gets its own banding, laid out in the box's local face
+    coordinates, with gold as the only trim colour and the rift glow kept to
+    thin accents.
+    """
+    plate = hex_rgba("#1E0E2E")
+    plate_mid = hex_rgba("#3A2452")
+    plate_hi = hex_rgba("#6B4A8C")
+    gold = hex_rgba("#C9A85C")
+    gold_dim = mix(gold, plate, 0.45)
+    glow = PALETTE["void_lit"]
+
+    def grain(fx, fy, base, strength=0.22):
+        n = fbm(fx * 1.7, fy * 1.7, 16, seed, octaves=3, base_period=4)
+        return shade(base, (n - 0.5) * strength)
 
     def paint(face, fx, fy, fw, fh):
-        if face == "bottom":
-            return mix(plate, (0, 0, 0, 255), 0.25)
-        n = fbm(fx * 1.7, fy * 1.7, 16, seed, octaves=3, base_period=4)
-        base = mix(plate, plate_hi, n * 0.8)
+        top = fy == 0
+        bottom = fy == fh - 1
 
-        # Rim light along the top edge of every face reads as a bevelled plate.
-        if fy == 0:
-            base = mix(base, plate_hi, 0.7)
-        elif fy == fh - 1:
-            base = shade(base, -0.22)
+        if part == "helmet":
+            base = plate_mid if face in ("north", "east", "west", "south") else plate_hi
+            if face == "top":
+                base = plate_hi
+            if face == "bottom":
+                return grain(fx, fy, plate, 0.12)
+            if face == "north" and fy == 3 and 1 < fx < fw - 2:
+                return glow                      # visor slit
+            if face == "north" and fy == 2:
+                return mix(plate_hi, gold, 0.35)  # brow ridge
+            if fy == fh - 2 and face != "top":
+                return gold_dim                   # rim above the neck
+            return grain(fx, fy, base)
 
-        centre = abs(fx - (fw - 1) / 2.0)
-        if face in ("north", "south") and centre < 0.6 and fh > 4:
-            # The seam fades out before the hem so it does not look printed on.
-            fade = 1.0 - max(0.0, (fy - (fh - 4)) / 3.0)
-            return mix(base, seam, 0.85 * max(0.0, fade))
-        if part == "helmet" and face == "north" and fy in (3, 4) and fw - 2 > fx > 1:
-            return mix(base, seam, 0.55)  # visor band
-        if part == "body" and face in ("east", "west") and fx == fw // 2 and fy in (3, 7):
-            return mix(base, echo, 0.6)   # echo studs on the flanks
-        if part == "leg" and face == "north" and fy >= fh - 3 and centre < 1.6:
-            return mix(base, echo, 0.45)  # lit boot toe
-        return base
+        if part == "body" and layer == 1:
+            # Chestplate: pauldron caps, a V-neck, a belt at the hem.
+            if face == "top":
+                return grain(fx, fy, plate_hi, 0.14)
+            if face == "bottom":
+                return grain(fx, fy, plate, 0.12)
+            if fy <= 1:
+                if face == "north" and fw > 4 and 2 < fx < fw - 3:
+                    return grain(fx, fy, plate, 0.14)   # neck opening
+                return mix(plate_hi, gold, 0.22 if fy == 1 else 0.0)
+            if fy == fh - 2:
+                return gold                              # belt
+            if bottom:
+                return grain(fx, fy, plate, 0.12)
+            if face == "north" and fy in (4, 5) and abs(fx - (fw - 1) / 2.0) < 0.6:
+                return glow                              # chest core
+            return grain(fx, fy, plate_mid if fy < fh - 4 else plate)
+
+        if part == "body" and layer == 2:
+            # Leggings waist: heavy belt over a plain skirt.
+            if face in ("top", "bottom"):
+                return grain(fx, fy, plate, 0.12)
+            if fy <= 1:
+                return gold if fy == 0 else gold_dim
+            if fy == 2:
+                return plate_hi
+            if face in ("north", "south") and fx % 3 == 0:
+                return grain(fx, fy, plate, 0.14)        # panel seams
+            return grain(fx, fy, plate_mid)
+
+        if part == "arm":
+            # Pauldron, plain upper arm, bracer.
+            if face == "top":
+                return grain(fx, fy, plate_hi, 0.14)
+            if face == "bottom":
+                return grain(fx, fy, plate, 0.12)
+            if fy <= 2:
+                return gold_dim if fy == 2 else grain(fx, fy, plate_hi)
+            if fy in (9, 10):
+                return gold if fy == 10 else grain(fx, fy, plate_hi)
+            if bottom:
+                return grain(fx, fy, plate, 0.12)
+            return grain(fx, fy, plate_mid)
+
+        if part == "leg" and layer == 1:
+            # Boot: the upper part of this box is hidden by the greaves, so
+            # only the cuff down is detailed.
+            if face == "top":
+                return grain(fx, fy, plate, 0.12)
+            if fy < 6:
+                return grain(fx, fy, plate_mid, 0.14)
+            if fy == 6:
+                return gold                              # cuff
+            if face == "bottom" or bottom:
+                return grain(fx, fy, plate_hi, 0.12)     # sole
+            if fy == fh - 2 and face == "north":
+                return mix(plate_hi, glow, 0.25)         # toe cap
+            return grain(fx, fy, plate)
+
+        # part == "leg" and layer == 2 - greaves.
+        if face in ("top", "bottom"):
+            return grain(fx, fy, plate, 0.12)
+        if fy in (5, 6):
+            return gold if fy == 5 else plate_hi         # knee band
+        if top:
+            return grain(fx, fy, plate_hi, 0.14)
+        return grain(fx, fy, plate_mid)
 
     return paint
 
 
 def armor_layers():
     os.makedirs(ARMOR, exist_ok=True)
-    for name, parts, seed in (
-        ("voidbound_armor_1", ARMOR_LAYER_1, 8801),
-        ("voidbound_armor_2", ARMOR_LAYER_2, 8802),
+    for name, parts, seed, layer in (
+        ("voidbound_armor_1", ARMOR_LAYER_1, 8801, 1),
+        ("voidbound_armor_2", ARMOR_LAYER_2, 8802, 2),
     ):
         sheet = Canvas(64, 32)
         for part, u, v, w, h, d in parts:
-            paint_box(sheet, u, v, w, h, d, _plate_painter(part, seed))
+            paint_box(sheet, u, v, w, h, d, _plate_painter(part, layer, seed))
         emit(
             sheet,
             ARMOR,
@@ -816,6 +891,139 @@ def item_void_boots():
         c.set(2, 12, echo)
         c.set(13, 12, echo)
     _armor_icon("voidbound_void_boots", draw)
+
+
+def entity_chorus_hopper():
+    """32x32: a plump chorus-fed grazer, pale purple with darker dapples."""
+    c = Canvas(32, 32)
+    hide = hex_rgba("#8A5FA8")
+    hide_dark = mix(hide, PALETTE["void"], 0.5)
+    belly = mix(hide, hex_rgba("#E8D8F2"), 0.55)
+
+    def body(face, fx, fy, fw, fh):
+        n = fbm(fx * 2.2, fy * 2.2, 16, 4501, octaves=3, base_period=4)
+        base = mix(hide, hide_dark, n * 0.7)
+        if face == "bottom":
+            return belly
+        if n > 0.68:
+            return hide_dark            # dapples
+        return base
+
+    paint_box(c, 0, 0, 6, 5, 8, body)
+
+    def head(face, fx, fy, fw, fh):
+        base = mix(hide, belly, 0.25)
+        if face == "north" and fy == 1 and fx in (0, fw - 1):
+            return PALETTE["void_lit"]  # eyes
+        if face == "north" and fy == 3:
+            return hide_dark            # mouth line
+        return base
+
+    paint_box(c, 0, 14, 4, 4, 3, head)
+
+    def leg(_face, fx, fy, fw, fh):
+        return mix(hide_dark, hide, fy / float(max(1, fh - 1)))
+
+    paint_box(c, 16, 14, 2, 2, 2, leg)
+    paint_box(c, 16, 19, 2, 2, 2, leg)
+
+    def frond(_face, fx, fy, fw, fh):
+        return mix(PALETTE["void_lit"], hide_dark, fy / float(max(1, fh - 1)))
+
+    paint_box(c, 0, 22, 1, 3, 1, frond)
+    paint_box(c, 6, 22, 1, 3, 1, frond)
+
+    emit(c, ENTITY, "voidbound_chorus_hopper", roughness=210,
+         emissive_from=PALETTE["void_lit"][:3], emissive_gain=0.7, emissive_threshold=0.34)
+
+
+def entity_shard_wraith():
+    """64x32: a hollow shroud with nothing inside it but light."""
+    c = Canvas(64, 32)
+    cloth = mix(PALETTE["void"], (0, 0, 0, 255), 0.30)
+    cloth_hi = mix(cloth, hex_rgba("#7B4FA8"), 0.55)
+    inner = hex_rgba("#D9A8FF")
+
+    def hood(face, fx, fy, fw, fh):
+        n = fbm(fx * 2, fy * 2, 16, 7801, octaves=3, base_period=4)
+        base = mix(cloth, cloth_hi, n * 0.8)
+        if face == "north":
+            # A dark void under the hood, with two points of light in it.
+            if 0 < fx < fw - 1 and fy > 1:
+                if fy == 3 and fx in (1, fw - 2):
+                    return inner
+                return mix(cloth, (0, 0, 0, 255), 0.7)
+        if face == "top":
+            return shade(base, 0.16)
+        return base
+
+    paint_box(c, 0, 0, 6, 6, 6, hood)
+
+    def shroud(face, fx, fy, fw, fh):
+        n = fbm(fx * 1.6, fy * 1.6, 16, 7802, octaves=3, base_period=4)
+        base = mix(cloth, cloth_hi, n * 0.6)
+        t = fy / float(max(1, fh - 1))
+        # The hem frays into light.
+        if t > 0.7 and (fx + fy) % 2 == 0:
+            return mix(base, inner, (t - 0.7) / 0.3 * 0.7)
+        if face in ("east", "west") and fx % 3 == 0:
+            return shade(base, -0.2)
+        return base
+
+    paint_box(c, 0, 13, 8, 9, 8, shroud)
+
+    def tatter(_face, fx, fy, fw, fh):
+        t = fy / float(max(1, fh - 1))
+        return mix(cloth_hi, mix(cloth, inner, 0.4), t)
+
+    paint_box(c, 34, 0, 1, 5, 3, tatter)
+    paint_box(c, 44, 0, 1, 5, 3, tatter)
+
+    emit(c, ENTITY, "voidbound_shard_wraith", roughness=176,
+         emissive_from=inner[:3], emissive_gain=1.25, emissive_threshold=0.18)
+
+
+def entity_crystal_crawler():
+    """64x32: a low six-legged thing armoured in echo crystal."""
+    c = Canvas(64, 32)
+    chitin = mix(PALETTE["endstone_dark"], PALETTE["void"], 0.55)
+    chitin_hi = mix(chitin, PALETTE["endstone"], 0.4)
+    crystal = PALETTE["lumen_lit"]
+
+    def body(face, fx, fy, fw, fh):
+        n = fbm(fx * 1.5, fy * 1.5, 16, 3901, octaves=3, base_period=4)
+        base = mix(chitin, chitin_hi, n)
+        if face == "top" and fy % 3 == 1:
+            return shade(base, -0.2)     # segment plates
+        if face in ("east", "west") and fy == fh - 1:
+            return mix(base, crystal, 0.35)
+        return base
+
+    paint_box(c, 0, 0, 8, 4, 12, body)
+
+    def head(face, fx, fy, fw, fh):
+        base = mix(chitin_hi, chitin, 0.3)
+        if face == "north" and fy == 1 and fx in (1, fw - 2):
+            return shade(crystal, 0.5)   # eyes
+        return base
+
+    paint_box(c, 0, 18, 6, 3, 3, head)
+
+    def spine(_face, fx, fy, fw, fh):
+        t = 1.0 - fy / float(max(1, fh - 1))
+        return mix(chitin, crystal, min(1.0, t * 1.15))
+
+    paint_box(c, 20, 18, 4, 4, 1, spine)
+    paint_box(c, 32, 18, 2, 3, 1, spine)
+
+    def leg(_face, fx, fy, fw, fh):
+        return mix(chitin_hi, chitin, fy / float(max(1, fh - 1)))
+
+    for u, v in ((42, 0), (42, 6), (42, 12), (48, 0), (48, 6), (48, 12)):
+        paint_box(c, u, v, 1, 4, 1, leg)
+
+    emit(c, ENTITY, "voidbound_crystal_crawler", roughness=224,
+         emissive_from=crystal[:3], emissive_gain=1.0, emissive_threshold=0.26)
 
 
 # --------------------------------------------------------------------------
@@ -990,51 +1198,52 @@ def end_sky():
     Vibrant Visuals will not let a pack supply a cubemap for the End - Mojang
     restricts that to the Overworld - but the skybox is an ordinary vanilla
     texture, so overriding it changes the End's sky whether or not Vibrant
-    Visuals is switched on. It tiles across all six faces, so the art has to
-    wrap seamlessly and carry no obvious horizon.
+    Visuals is switched on.
+
+    The hard constraint is tiling. The game repeats this 128px tile many times
+    across every face of the skybox, so anything with large features or strong
+    contrast turns into visible wallpaper. Vanilla's own End sky is nearly
+    black for exactly this reason. So: a very dark base, dust variation held
+    under about 8% brightness, and stars doing all the visible work - points
+    small and sparse enough that the eye reads a starfield rather than a
+    repeat.
     """
     size = 128
     c = Canvas(size, size)
 
-    # Layered nebula: three octaves of wrapping noise, coloured from deep void
-    # through violet into a magenta core.
-    deep = hex_rgba("#07030F")
-    mid = hex_rgba("#2A0B44")
-    hot = hex_rgba("#8B1E9E")
-    ember = hex_rgba("#E56BD8")
+    base = hex_rgba("#0A0414")
+    dust = hex_rgba("#241043")
 
     for y in range(size):
         for x in range(size):
-            base = fbm(x, y, size, 2201, octaves=5, base_period=4, gain=0.55)
-            veil = fbm(x + 37, y + 91, size, 5507, octaves=3, base_period=8)
-            cloud = max(0.0, (base * 0.68 + veil * 0.32 - 0.34)) / 0.46
+            # Two low-frequency octaves only, at low amplitude. Enough to stop
+            # the sky reading as flat black, not enough to tile visibly.
+            haze = fbm(x, y, size, 2201, octaves=2, base_period=2, gain=0.5)
+            c.set(x, y, mix(base, dust, max(0.0, (haze - 0.42)) * 0.55))
 
-            color = mix(deep, mid, min(1.0, cloud * 1.9))
-            if cloud > 0.34:
-                color = mix(color, hot, min(1.0, (cloud - 0.34) / 0.34))
-            if cloud > 0.70:
-                color = mix(color, ember, min(1.0, (cloud - 0.70) / 0.30) * 0.85)
-            c.set(x, y, color)
-
-    # Stars, sized by brightness so the field has depth rather than uniform dots.
     rng = Rng(31337)
-    for _ in range(340):
+
+    # Faint background field: many dim points, no halo.
+    for _ in range(620):
         sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
-        brightness = rng.next() ** 2.2
-        tint = mix(hex_rgba("#FFFFFF"), ember, rng.range(0.0, 0.55))
-        core = mix(c.get(sx, sy), tint, 0.35 + brightness * 0.65)
-        c.set(sx, sy, core)
-        if brightness > 0.55:
-            halo = mix(c.get(sx, sy), tint, 0.22)
-            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                nx, ny = (sx + dx) % size, (sy + dy) % size
-                c.set(nx, ny, mix(c.get(nx, ny), halo, 0.5))
-        if brightness > 0.9:
-            # A few bright stars get a cross flare.
-            for reach in (2, 3):
-                for dx, dy in ((reach, 0), (-reach, 0), (0, reach), (0, -reach)):
-                    nx, ny = (sx + dx) % size, (sy + dy) % size
-                    c.set(nx, ny, mix(c.get(nx, ny), tint, 0.28 / reach))
+        v = rng.range(0.10, 0.34)
+        c.set(sx, sy, mix(c.get(sx, sy), hex_rgba("#CBB8E8"), v))
+
+    # Mid field: visible but still small.
+    for _ in range(150):
+        sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
+        tint = mix(hex_rgba("#FFFFFF"), hex_rgba("#E0A8F0"), rng.range(0.0, 0.5))
+        c.set(sx, sy, mix(c.get(sx, sy), tint, rng.range(0.5, 0.8)))
+
+    # A handful of bright stars with a one-pixel halo, no cross flares - flares
+    # repeat conspicuously once the tile is laid out dozens of times.
+    for _ in range(26):
+        sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
+        tint = mix(hex_rgba("#FFFFFF"), hex_rgba("#F0C8FF"), rng.range(0.0, 0.4))
+        c.set(sx, sy, tint)
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            nx, ny = (sx + dx) % size, (sy + dy) % size
+            c.set(nx, ny, mix(c.get(nx, ny), tint, 0.22))
 
     os.makedirs(ENVIRONMENT, exist_ok=True)
     out(c, ENVIRONMENT, "end_sky")
@@ -1111,6 +1320,9 @@ def main():
         entity_rift_stalker,
         entity_void_moth,
         entity_echo_sentinel,
+        entity_chorus_hopper,
+        entity_shard_wraith,
+        entity_crystal_crawler,
         entity_rift_sovereign,
         particle_atlas,
         armor_layers,

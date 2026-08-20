@@ -31,9 +31,15 @@ item.spawn_egg.entity.voidbound:rift_stalker.name=Spawn Rift Stalker
 entity.voidbound:void_moth.name=Void Moth
 entity.voidbound:echo_sentinel.name=Echo Sentinel
 entity.voidbound:rift_sovereign.name=Rift Sovereign
+entity.voidbound:chorus_hopper.name=Chorus Hopper
+entity.voidbound:crystal_crawler.name=Crystal Crawler
+entity.voidbound:shard_wraith.name=Shard Wraith
 item.spawn_egg.entity.voidbound:void_moth.name=Spawn Void Moth
 item.spawn_egg.entity.voidbound:echo_sentinel.name=Spawn Echo Sentinel
 item.spawn_egg.entity.voidbound:rift_sovereign.name=Spawn Rift Sovereign
+item.spawn_egg.entity.voidbound:chorus_hopper.name=Spawn Chorus Hopper
+item.spawn_egg.entity.voidbound:crystal_crawler.name=Spawn Crystal Crawler
+item.spawn_egg.entity.voidbound:shard_wraith.name=Spawn Shard Wraith
 
 ## Interaction prompts
 action.interact.voidbound.survey=Survey

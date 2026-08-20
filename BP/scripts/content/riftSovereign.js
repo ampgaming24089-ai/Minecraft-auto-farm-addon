@@ -156,8 +156,10 @@ function blink(boss, target) {
 /** Call in the guard. Phase 3 sends sentinels instead of stalkers. */
 function summon(boss, phase) {
   const origin = boss.location;
-  const type = phase === 3 ? "voidbound:echo_sentinel" : "voidbound:rift_stalker";
-  const count = phase === 3 ? 2 : 3;
+  const roster = phase === 3
+    ? ["voidbound:echo_sentinel", "voidbound:shard_wraith"]
+    : ["voidbound:rift_stalker", "voidbound:crystal_crawler"];
+  const count = phase === 3 ? 3 : 4;
 
   for (let i = 0; i < count; i++) {
     const angle = (i / count) * Math.PI * 2 + Math.random();
@@ -167,7 +169,7 @@ function summon(boss, phase) {
       z: origin.z + Math.sin(angle) * 6,
     };
     try {
-      boss.dimension.spawnEntity(type, at);
+      boss.dimension.spawnEntity(roster[i % roster.length], at);
       spawnParticle(boss.dimension, "voidbound:rift_burst", at);
     } catch {
       // No room to spawn there; skip this one.

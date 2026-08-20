@@ -1,0 +1,32 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:crystal_crawler",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_crystal_crawler"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.crystal_crawler"
+      },
+      "animations": {
+        "move": "animation.voidbound.crystal_crawler.move"
+      },
+      "scripts": {
+        "animate": [
+          "move"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#6B6A4E",
+        "overlay_color": "#5FE8D2"
+      }
+    }
+  }
+}

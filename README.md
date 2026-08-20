@@ -103,11 +103,20 @@ in one kill — plus a rift compass and two rolls of a rarer pool.
 
 ### The sky
 
-`RP/textures/environment/end_sky.png` replaces the End's skybox with a
-seamless magenta nebula starfield. This is deliberately *not* a Vibrant
-Visuals cubemap: Mojang restricts cubemap customisation to the Overworld, and
-the End keeps its built-in one. Overriding the vanilla texture works either
-way, so the sky changes whether or not Vibrant Visuals is switched on.
+`RP/textures/environment/end_sky.png` replaces the End's skybox. This is
+deliberately *not* a Vibrant Visuals cubemap: Mojang restricts cubemap
+customisation to the Overworld, and the End keeps its built-in one.
+Overriding the vanilla texture works either way, so the sky changes whether or
+not Vibrant Visuals is switched on.
+
+The hard constraint is tiling. The game repeats this 128px tile many times
+across every face, so anything with large features or strong contrast becomes
+visible wallpaper — the first attempt at a magenta nebula did exactly that.
+Vanilla's own End sky is nearly black for the same reason. The current one is
+a very dark base with dust variation held under about 8% brightness, and stars
+doing all the visible work: points small and sparse enough that the eye reads
+a starfield instead of a repeat, and no cross flares, which repeat
+conspicuously at that tile count.
 
 ### Mobs, ore and flora
 
@@ -123,6 +132,10 @@ way, so the sky changes whether or not Vibrant Visuals is switched on.
   berries and phantom membrane.
 - **Echo Sentinel** — a 3-block masonry guardian with an echo core in its
   chest. 60 health, 9 damage, near-immune to knockback. Drops void crystals.
+- **Chorus Hopper** — passive grazer that bolts from anything hostile. Drops
+  chorus fruit.
+- **Crystal Crawler** — low, fast six-legged swarmer armoured in echo crystal.
+- **Shard Wraith** — a hollow flying shroud that ignores terrain.
 - **Rift Sovereign** — the boss, above.
 - **Rift Compass** — points at the nearest structure by name, distance and
   bearing, and names the runner-up so you can pick a route.
@@ -137,6 +150,11 @@ The endgame set, a clear step past netherite:
 | Netherite protection | 3 | 8 | 6 | 3 | 20 |
 | Riftborne durability | 561 | 816 | 765 | 663 | |
 | Netherite durability | 407 | 592 | 555 | 481 | |
+
+Each piece is banded the way vanilla armour is — pauldron caps, a belt line, a
+knee band, a boot cuff, gold trim — because a flat wash of one colour over the
+whole body renders as paint rather than plate, which is how the first pass
+looked in game.
 
 Enchantability is 18 against netherite's 15, and pieces repair with void
 crystals. Crafted from void crystals alone — 24 for the full set, which is 12
