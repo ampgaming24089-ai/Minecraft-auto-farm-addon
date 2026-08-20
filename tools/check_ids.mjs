@@ -64,6 +64,11 @@ const KNOWN_NON_ID = new Set([
   "minecraft:equippable",
   "minecraft:health",
   "minecraft:endrod",
+  // Entity events the engine fires by name; a pack declares handlers for them
+  // rather than defining them.
+  "minecraft:entity_spawned",
+  "minecraft:entity_born",
+  "minecraft:ageable_grow_up",
 ]);
 
 function walk(dir, out = []) {
@@ -100,6 +105,10 @@ function packDefinitions() {
   }
   for (const file of walk(join(ROOT, "BP", "entities"))) {
     readIdentifier(file, "minecraft:entity", "description", "identifier");
+    // Component groups are names this pack invents and refers to from its own
+    // events, so they count as definitions.
+    const entity = JSON.parse(readFileSync(file, "utf8"))["minecraft:entity"] ?? {};
+    for (const group of Object.keys(entity.component_groups ?? {})) add(group);
   }
   for (const file of walk(join(ROOT, "BP", "features"))) {
     const data = JSON.parse(readFileSync(file, "utf8"));

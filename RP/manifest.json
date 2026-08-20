@@ -1,13 +1,13 @@
 {
   "format_version": 2,
   "header": {
-    "name": "Riftborne [Resources]",
-    "description": "Vibrant Visuals lighting, volumetric fog, a rebuilt End sky and PBR art for the Riftborne End.",
-    "uuid": "a43f065f-f856-479e-927f-c871a7b16dcc",
+    "name": "Enderveil [Resources]",
+    "description": "Brighter End lighting, a living starfield sky, volumetric fog and PBR art for Enderveil.",
+    "uuid": "31710167-1c8c-4517-99b0-46095188abd1",
     "version": [
       1,
-      3,
-      1
+      0,
+      0
     ],
     "min_engine_version": [
       1,
@@ -18,17 +18,17 @@
   "metadata": {
     "product_type": "addon",
     "authors": [
-      "Riftborne"
+      "Enderveil"
     ]
   },
   "modules": [
     {
       "type": "resources",
-      "uuid": "dcfcdbd3-1c10-400b-8fab-08e6b56d748c",
+      "uuid": "431a0114-b678-42e6-8dd2-c7fa32b0b8dd",
       "version": [
         1,
-        3,
-        1
+        0,
+        0
       ]
     }
   ],

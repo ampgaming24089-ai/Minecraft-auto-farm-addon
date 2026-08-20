@@ -1,0 +1,28 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:echo_bread"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "BBB"
+    ],
+    "key": {
+      "B": {
+        "item": "voidbound:lumen_berry"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:lumen_berry"
+      }
+    ],
+    "result": {
+      "item": "voidbound:echo_bread",
+      "count": 1
+    }
+  }
+}

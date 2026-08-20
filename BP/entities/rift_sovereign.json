@@ -84,13 +84,13 @@
       },
       "minecraft:behavior.float_wander": {
         "priority": 5,
-        "xz_dist": 10,
-        "y_dist": 6,
+        "xz_dist": 6,
+        "y_dist": 3,
         "y_offset": 1,
         "random_reselect": true,
         "float_duration": [
-          0.2,
-          0.8
+          0.1,
+          0.4
         ]
       },
       "minecraft:behavior.look_at_player": {

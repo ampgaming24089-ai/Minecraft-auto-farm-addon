@@ -238,7 +238,7 @@ function tick() {
     try {
       driveBoss(boss);
     } catch (error) {
-      console.warn(`[Riftborne] sovereign tick failed: ${error}`);
+      console.warn(`[Enderveil] sovereign tick failed: ${error}`);
     }
   }
 }

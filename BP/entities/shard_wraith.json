@@ -28,7 +28,7 @@
         "damage": 6
       },
       "minecraft:movement": {
-        "value": 0.24
+        "value": 0.2
       },
       "minecraft:movement.fly": {},
       "minecraft:navigation.fly": {
@@ -80,14 +80,14 @@
         "track_target": true
       },
       "minecraft:behavior.float_wander": {
-        "priority": 5,
-        "xz_dist": 14,
-        "y_dist": 9,
-        "y_offset": 1,
+        "priority": 6,
+        "xz_dist": 7,
+        "y_dist": 4,
+        "y_offset": 0,
         "random_reselect": true,
         "float_duration": [
-          0.2,
-          0.9
+          0.1,
+          0.4
         ]
       },
       "minecraft:behavior.random_look_around": {
@@ -98,6 +98,17 @@
       },
       "minecraft:loot": {
         "table": "loot_tables/entities/shard_wraith.json"
+      },
+      "minecraft:behavior.random_hover": {
+        "priority": 5,
+        "xz_dist": 6,
+        "y_dist": 3,
+        "y_offset": 0,
+        "interval": 80,
+        "hover_height": [
+          2,
+          6
+        ]
       }
     }
   }

@@ -1,5 +1,5 @@
 /**
- * The Riftborne set bonus.
+ * The Enderveil set bonus.
  *
  * Raw numbers alone would make this armour a slightly better netherite, which
  * is not a reason to grind for it. Wearing the whole set in the End instead
@@ -57,11 +57,11 @@ function check() {
           showParticles: false,
         });
       } catch (error) {
-        console.warn(`[Riftborne] could not apply set bonus: ${error}`);
+        console.warn(`[Enderveil] could not apply set bonus: ${error}`);
       }
       if (!wasActive) {
         try {
-          player.onScreenDisplay.setActionBar("§dRiftborne set §7- slow falling, resistance");
+          player.onScreenDisplay.setActionBar("§dEnderveil set §7- slow falling, resistance");
           player.playSound("beacon.activate", { volume: 0.4, pitch: 1.5 });
         } catch {
           // Cosmetic only.

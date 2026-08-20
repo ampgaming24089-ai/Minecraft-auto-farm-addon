@@ -80,6 +80,97 @@
       },
       "minecraft:loot": {
         "table": "loot_tables/entities/chorus_hopper.json"
+      },
+      "minecraft:ageable": {
+        "duration": 1200,
+        "feed_items": [
+          "minecraft:chorus_fruit"
+        ],
+        "grow_up": {
+          "event": "minecraft:ageable_grow_up",
+          "target": "self"
+        }
+      },
+      "minecraft:breedable": {
+        "require_tame": false,
+        "breed_items": [
+          "minecraft:chorus_fruit"
+        ],
+        "breeds_with": [
+          {
+            "mate_type": "voidbound:chorus_hopper",
+            "baby_type": "voidbound:chorus_hopper",
+            "breed_event": {
+              "event": "minecraft:entity_born",
+              "target": "baby"
+            }
+          }
+        ]
+      },
+      "minecraft:behavior.breed": {
+        "priority": 3,
+        "speed_multiplier": 1.0
+      },
+      "minecraft:behavior.tempt": {
+        "priority": 4,
+        "speed_multiplier": 1.2,
+        "items": [
+          "minecraft:chorus_fruit"
+        ]
+      }
+    },
+    "component_groups": {
+      "voidbound:hopper_baby": {
+        "minecraft:is_baby": {},
+        "minecraft:scale": {
+          "value": 0.55
+        },
+        "minecraft:ageable": {
+          "duration": 1200,
+          "feed_items": [
+            "minecraft:chorus_fruit"
+          ],
+          "grow_up": {
+            "event": "minecraft:ageable_grow_up",
+            "target": "self"
+          }
+        }
+      },
+      "voidbound:hopper_adult": {
+        "minecraft:experience_reward": {
+          "on_bred": "Math.Random(1,7)"
+        },
+        "minecraft:loot": {
+          "table": "loot_tables/entities/chorus_hopper.json"
+        }
+      }
+    },
+    "events": {
+      "minecraft:entity_spawned": {
+        "add": {
+          "component_groups": [
+            "voidbound:hopper_adult"
+          ]
+        }
+      },
+      "minecraft:entity_born": {
+        "add": {
+          "component_groups": [
+            "voidbound:hopper_baby"
+          ]
+        }
+      },
+      "minecraft:ageable_grow_up": {
+        "remove": {
+          "component_groups": [
+            "voidbound:hopper_baby"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "voidbound:hopper_adult"
+          ]
+        }
       }
     }
   }

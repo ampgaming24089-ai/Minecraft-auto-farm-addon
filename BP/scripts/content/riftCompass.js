@@ -100,7 +100,7 @@ export function startRiftCompass() {
     try {
       survey(player);
     } catch (error) {
-      console.warn(`[Riftborne] compass survey failed: ${error}`);
+      console.warn(`[Enderveil] compass survey failed: ${error}`);
     }
   });
 

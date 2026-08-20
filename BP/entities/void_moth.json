@@ -28,14 +28,7 @@
         "has_collision": true
       },
       "minecraft:movement": {
-        "value": 0.18
-      },
-      "minecraft:movement.fly": {},
-      "minecraft:navigation.fly": {
-        "can_path_over_water": true,
-        "can_path_from_air": true,
-        "can_pass_doors": false,
-        "avoid_damage_blocks": true
+        "value": 0.12
       },
       "minecraft:can_fly": {},
       "minecraft:breathable": {
@@ -50,17 +43,6 @@
         "is_pushable_by_piston": true
       },
       "minecraft:conditional_bandwidth_optimization": {},
-      "minecraft:behavior.float_wander": {
-        "priority": 2,
-        "xz_dist": 14,
-        "y_dist": 10,
-        "y_offset": 0,
-        "random_reselect": true,
-        "float_duration": [
-          0.2,
-          0.9
-        ]
-      },
       "minecraft:behavior.look_at_player": {
         "priority": 3,
         "look_distance": 10,
@@ -74,6 +56,26 @@
       },
       "minecraft:loot": {
         "table": "loot_tables/entities/void_moth.json"
+      },
+      "minecraft:movement.hover": {},
+      "minecraft:navigation.hover": {
+        "can_path_over_water": true,
+        "can_sink": false,
+        "can_pass_doors": false,
+        "can_path_from_air": true,
+        "avoid_water": true,
+        "avoid_damage_blocks": true
+      },
+      "minecraft:behavior.random_hover": {
+        "priority": 4,
+        "xz_dist": 6,
+        "y_dist": 4,
+        "y_offset": -1,
+        "interval": 60,
+        "hover_height": [
+          1,
+          5
+        ]
       }
     }
   }

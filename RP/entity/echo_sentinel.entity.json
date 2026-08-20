@@ -13,13 +13,11 @@
         "default": "geometry.voidbound.echo_sentinel"
       },
       "animations": {
-        "idle": "animation.voidbound.echo_sentinel.idle",
-        "walk": "animation.voidbound.echo_sentinel.walk"
+        "idle": "animation.voidbound.echo_sentinel.idle"
       },
       "scripts": {
         "animate": [
-          "idle",
-          "walk"
+          "idle"
         ]
       },
       "render_controllers": [

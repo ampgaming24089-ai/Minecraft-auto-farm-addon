@@ -9,7 +9,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 OUT_DIR="dist"
-OUT_FILE="$OUT_DIR/Riftborne.mcaddon"
+OUT_FILE="$OUT_DIR/Enderveil.mcaddon"
 
 if [[ "${1:-}" == "--check" ]]; then
   echo "==> Regenerating textures"

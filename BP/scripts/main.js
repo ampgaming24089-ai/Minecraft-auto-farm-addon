@@ -1,12 +1,13 @@
 /**
- * Riftborne - entry point.
+ * Enderveil - entry point.
  *
  * Four systems, started once at load:
  *   sites/generator  places seed-derived structures ahead of the player
  *   atmosphere       swaps fog by region, above what the client biome provides
+ *   ambience         drifting motes and falling streaks, so the sky has motion
  *   discovery        acknowledges arriving somewhere new
  *   rift compass     reads the structure map and points at it
- *   armour set       grants the Riftborne set bonus in the End
+ *   armour set       grants the Enderveil set bonus in the End
  *   rift sovereign   drives the boss fight's phases, attacks and death
  *
  * Everything visual - lighting, atmospherics, colour grading, PBR - is data in
@@ -18,6 +19,7 @@ import { world } from "@minecraft/server";
 import { startArmorSet } from "./content/armorSet.js";
 import { startRiftCompass } from "./content/riftCompass.js";
 import { startRiftSovereign } from "./content/riftSovereign.js";
+import { startAmbience } from "./world/ambience.js";
 import { startAtmosphere } from "./world/atmosphere.js";
 import { startDiscovery } from "./world/discovery.js";
 import { startGenerator } from "./world/generator.js";
@@ -25,11 +27,12 @@ import { startGenerator } from "./world/generator.js";
 function start() {
   startGenerator();
   startAtmosphere();
+  startAmbience();
   startDiscovery();
   startRiftCompass();
   startArmorSet();
   startRiftSovereign();
-  console.log("[Riftborne] End systems online");
+  console.log("[Enderveil] End systems online");
 }
 
 // worldLoad fires once the world is ready for world.seed and player queries.
@@ -38,6 +41,6 @@ world.afterEvents.worldLoad.subscribe(() => {
   try {
     start();
   } catch (error) {
-    console.error(`[Riftborne] failed to start: ${error}`);
+    console.error(`[Enderveil] failed to start: ${error}`);
   }
 });

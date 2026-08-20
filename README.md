@@ -1,6 +1,6 @@
-# Riftborne — an End overhaul for Minecraft Bedrock
+# Enderveil — an End overhaul for Minecraft Bedrock
 
-The End has been one biome, one sky and two structures since 1.9. Riftborne
+The End has been one biome, one sky and two structures since 1.9. Enderveil
 rebuilds it for Bedrock **26.4** (internal `1.26.40`, current hotfix `26.44`):
 a new sky and lighting model, volumetric fog that changes with where you are,
 four kinds of seed-derived structure scattered across the outer islands, two
@@ -10,7 +10,7 @@ Everything runs on documented, non-experimental APIs. No experiments toggle,
 no world conversion, no commands typed by the player.
 
 ```
-./build_addon.sh --check      # validate everything, then build dist/Riftborne.mcaddon
+./build_addon.sh --check      # validate everything, then build dist/Enderveil.mcaddon
 ```
 
 Import the `.mcaddon`, enable both packs on a world, and turn **Vibrant
@@ -25,7 +25,7 @@ content, just not the PBR lighting.
 ### The sky and the light
 
 The End's built-in look is a flat purple void: two constant white directional
-lights, a near-black sky, no depth. Riftborne replaces the whole Vibrant
+lights, a near-black sky, no depth. Enderveil replaces the whole Vibrant
 Visuals stack for `minecraft:the_end`.
 
 | File | What it does |
@@ -44,7 +44,7 @@ through `lighting/global.json`. That is the part most End packs get wrong.
 ### Fog that knows where you are
 
 Bedrock exposes exactly one End biome, so a biome-bound fog can only ever be
-one mood. Riftborne ships four fog definitions and pushes the right one onto
+one mood. Enderveil ships four fog definitions and pushes the right one onto
 each player's fog stack — the layer that sits above biome fog:
 
 - **`fog_end_open`** — the default, bound to the biome. Thin violet haze that
@@ -101,24 +101,29 @@ differently from every attack that preceded it.
 Drops 12–20 void crystals and 16–28 echo shards — roughly a full armour set
 in one kill — plus a rift compass and two rolls of a rarer pool.
 
-### The sky
+### The sky, and making it move
 
 `RP/textures/environment/end_sky.png` replaces the End's skybox. This is
 deliberately *not* a Vibrant Visuals cubemap: Mojang restricts cubemap
 customisation to the Overworld, and the End keeps its built-in one.
-Overriding the vanilla texture works either way, so the sky changes whether or
-not Vibrant Visuals is switched on.
+Overriding the vanilla texture works either way.
 
-The hard constraint is tiling. The game repeats this 128px tile many times
-across every face, so anything with large features or strong contrast becomes
-visible wallpaper — the first attempt at a magenta nebula did exactly that.
-Vanilla's own End sky is nearly black for the same reason. The current one is
-a very dark base with dust variation held under about 8% brightness, and stars
-doing all the visible work: points small and sparse enough that the eye reads
-a starfield instead of a repeat, and no cross flares, which repeat
-conspicuously at that tile count.
+Two constraints pull against each other. The game tiles this 128px texture
+many times across every face, so large features or strong contrast read as
+wallpaper — a first attempt at a magenta nebula did exactly that, and a second
+attempt fixed it by going nearly black, which made the dimension feel dead.
+The resolution is to keep the colour variation large but very low contrast, so
+it never resolves into a repeating shape, and put all the high-frequency detail
+into stars, which are small enough that repetition is invisible. The base sits
+well off black so the sky glows on its own.
 
-### Mobs, ore and flora
+Bedrock gives a pack no way to animate a skybox. What it gives is particles,
+and particles in front of a sky do most of the work a moving sky would.
+`BP/scripts/world/ambience.js` spawns motes drifting up past the islands and
+occasional streaks falling through the dark overhead, placed on a ring around
+the player so they read as depth rather than as dust on the lens.
+
+### Mobs, ore and flora### Mobs, ore and flora
 
 - **Lumen Wisp** — passive, floating, shy. Drops lumen berries and the odd echo
   shard.
@@ -132,23 +137,23 @@ conspicuously at that tile count.
   berries and phantom membrane.
 - **Echo Sentinel** — a 3-block masonry guardian with an echo core in its
   chest. 60 health, 9 damage, near-immune to knockback. Drops void crystals.
-- **Chorus Hopper** — passive grazer that bolts from anything hostile. Drops
-  chorus fruit.
+- **Chorus Hopper** — passive grazer that bolts from anything hostile. Breeds
+  with chorus fruit, raises young, and drops haunches: the End's meat supply.
 - **Crystal Crawler** — low, fast six-legged swarmer armoured in echo crystal.
 - **Shard Wraith** — a hollow flying shroud that ignores terrain.
 - **Rift Sovereign** — the boss, above.
 - **Rift Compass** — points at the nearest structure by name, distance and
   bearing, and names the runner-up so you can pick a route.
 
-### Riftborne armour
+### Enderveil armour
 
 The endgame set, a clear step past netherite:
 
 | | Helm | Cuirass | Greaves | Sabatons | Set |
 |---|---|---|---|---|---|
-| Riftborne protection | 4 | 9 | 7 | 4 | **24** |
+| Enderveil protection | 4 | 9 | 7 | 4 | **24** |
 | Netherite protection | 3 | 8 | 6 | 3 | 20 |
-| Riftborne durability | 561 | 816 | 765 | 663 | |
+| Enderveil durability | 561 | 816 | 765 | 663 | |
 | Netherite durability | 407 | 592 | 555 | 481 | |
 
 Each piece is banded the way vanilla armour is — pauldron caps, a belt line, a

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate every Riftborne texture from source.
+"""Regenerate every Enderveil texture from source.
 
     python3 tools/gen_art.py
 
@@ -442,6 +442,82 @@ def item_lumen_berry():
         emissive_gain=1.0,
         emissive_threshold=0.20,
     )
+
+
+def item_raw_haunch():
+    """Pale meat with a violet cast - it came off something from the End."""
+    c = Canvas(16)
+    meat = hex_rgba("#B9668F")
+    meat_dark = mix(meat, PALETTE["void"], 0.45)
+    fat = hex_rgba("#E8C4D8")
+    bone = hex_rgba("#EDE6DC")
+    for y in range(4, 14):
+        for x in range(2, 13):
+            d = math.hypot((x - 7.5) / 5.5, (y - 9) / 4.5)
+            if d > 1.0:
+                continue
+            n = fbm(x * 2, y * 2, 16, 5150, octaves=3, base_period=4)
+            c.set(x, y, mix(meat, meat_dark, min(1.0, d * 0.8 + n * 0.3)))
+    for x in range(4, 11):
+        c.blend(x, 6, mix(fat, meat, 0.3))
+    for y in range(2, 6):
+        c.set(9, y, bone)
+        c.set(10, y, mix(bone, meat_dark, 0.3))
+    c.set(9, 1, bone)
+    c.set(10, 1, bone)
+    bevel(c)
+    c.outline(mix(PALETTE["void"], (0, 0, 0, 255), 0.55))
+    emit(c, ITEMS, "voidbound_raw_haunch", roughness=200)
+
+
+def item_cooked_haunch():
+    """The same cut, seared."""
+    c = Canvas(16)
+    meat = hex_rgba("#8A4A32")
+    meat_dark = mix(meat, (0, 0, 0, 255), 0.4)
+    crust = hex_rgba("#C98A4C")
+    bone = hex_rgba("#EDE6DC")
+    for y in range(4, 14):
+        for x in range(2, 13):
+            d = math.hypot((x - 7.5) / 5.5, (y - 9) / 4.5)
+            if d > 1.0:
+                continue
+            n = fbm(x * 2, y * 2, 16, 5151, octaves=3, base_period=4)
+            base = mix(meat, meat_dark, min(1.0, d * 0.75 + n * 0.35))
+            c.set(x, y, mix(base, crust, max(0.0, 0.55 - d) * 0.9))
+    for y in range(2, 6):
+        c.set(9, y, bone)
+        c.set(10, y, mix(bone, meat_dark, 0.3))
+    c.set(9, 1, bone)
+    c.set(10, 1, bone)
+    bevel(c)
+    c.outline(mix(hex_rgba("#2A1408"), (0, 0, 0, 255), 0.3))
+    emit(c, ITEMS, "voidbound_cooked_haunch", roughness=190)
+
+
+def item_echo_bread():
+    """A dense loaf pressed from lumen berries - the travel ration."""
+    c = Canvas(16)
+    crust = hex_rgba("#8C7A4E")
+    crust_hi = hex_rgba("#C4B075")
+    berry = PALETTE["lumen_lit"]
+    for y in range(5, 13):
+        for x in range(2, 14):
+            d = math.hypot((x - 8) / 6.2, (y - 9) / 4.0)
+            if d > 1.0:
+                continue
+            n = fbm(x * 2.2, y * 2.2, 16, 6262, octaves=3, base_period=4)
+            c.set(x, y, mix(crust_hi, crust, min(1.0, d * 0.7 + n * 0.4)))
+    # Berries showing through the crust.
+    for bx, by in ((5, 8), (9, 7), (11, 10), (7, 11)):
+        c.blend(bx, by, berry)
+        c.blend(bx + 1, by, mix(berry, crust, 0.45))
+    for x in range(4, 12, 3):
+        c.blend(x, 6, mix(crust, (0, 0, 0, 255), 0.25))
+    bevel(c)
+    c.outline(mix(hex_rgba("#3A2E16"), (0, 0, 0, 255), 0.3))
+    emit(c, ITEMS, "voidbound_echo_bread", roughness=214,
+         emissive_from=berry[:3], emissive_gain=0.8, emissive_threshold=0.3)
 
 
 # --------------------------------------------------------------------------
@@ -1196,54 +1272,59 @@ def end_sky():
     """Replace the End's skybox tile: textures/environment/end_sky.png.
 
     Vibrant Visuals will not let a pack supply a cubemap for the End - Mojang
-    restricts that to the Overworld - but the skybox is an ordinary vanilla
-    texture, so overriding it changes the End's sky whether or not Vibrant
-    Visuals is switched on.
+    restricts that to the Overworld - so overriding this vanilla texture is the
+    only route that reaches the End sky at all.
 
-    The hard constraint is tiling. The game repeats this 128px tile many times
-    across every face of the skybox, so anything with large features or strong
-    contrast turns into visible wallpaper. Vanilla's own End sky is nearly
-    black for exactly this reason. So: a very dark base, dust variation held
-    under about 8% brightness, and stars doing all the visible work - points
-    small and sparse enough that the eye reads a starfield rather than a
-    repeat.
+    Two constraints pull against each other. The tile repeats many times across
+    every face, so large features or strong contrast read as wallpaper. But a
+    near-black sky makes the whole dimension feel dead. The resolution: keep
+    the *colour* variation large and very low contrast, so it never resolves
+    into a repeating shape, and put all the high-frequency detail into stars,
+    which are small enough that repetition is invisible. The base is lifted
+    well off black so the sky glows on its own.
     """
     size = 128
     c = Canvas(size, size)
 
-    base = hex_rgba("#0A0414")
-    dust = hex_rgba("#241043")
+    deep = hex_rgba("#1C0E38")
+    warm = hex_rgba("#3A1660")
+    cool = hex_rgba("#152A55")
 
     for y in range(size):
         for x in range(size):
-            # Two low-frequency octaves only, at low amplitude. Enough to stop
-            # the sky reading as flat black, not enough to tile visibly.
-            haze = fbm(x, y, size, 2201, octaves=2, base_period=2, gain=0.5)
-            c.set(x, y, mix(base, dust, max(0.0, (haze - 0.42)) * 0.55))
+            # One low octave each, blended gently. Peak-to-peak brightness
+            # across the tile stays inside roughly 15%, which is under the
+            # threshold where the eye starts picking out a repeat.
+            violet = fbm(x, y, size, 2201, octaves=2, base_period=2, gain=0.5)
+            teal = fbm(x + 61, y + 17, size, 4402, octaves=2, base_period=2, gain=0.5)
+            tone = mix(deep, warm, max(0.0, violet - 0.45) * 1.5)
+            c.set(x, y, mix(tone, cool, max(0.0, teal - 0.5) * 0.9))
 
     rng = Rng(31337)
+    star_tints = [
+        hex_rgba("#FFFFFF"), hex_rgba("#FFF0FF"), hex_rgba("#D8C0FF"),
+        hex_rgba("#A8E8FF"), hex_rgba("#FFC0E8"), hex_rgba("#FFE8C0"),
+    ]
 
-    # Faint background field: many dim points, no halo.
-    for _ in range(620):
+    # Dense faint field - reads as depth rather than as individual stars.
+    for _ in range(900):
         sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
-        v = rng.range(0.10, 0.34)
-        c.set(sx, sy, mix(c.get(sx, sy), hex_rgba("#CBB8E8"), v))
+        c.set(sx, sy, mix(c.get(sx, sy), rng.pick(star_tints), rng.range(0.14, 0.40)))
 
-    # Mid field: visible but still small.
-    for _ in range(150):
+    # Mid field.
+    for _ in range(260):
         sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
-        tint = mix(hex_rgba("#FFFFFF"), hex_rgba("#E0A8F0"), rng.range(0.0, 0.5))
-        c.set(sx, sy, mix(c.get(sx, sy), tint, rng.range(0.5, 0.8)))
+        c.set(sx, sy, mix(c.get(sx, sy), rng.pick(star_tints), rng.range(0.55, 0.85)))
 
-    # A handful of bright stars with a one-pixel halo, no cross flares - flares
-    # repeat conspicuously once the tile is laid out dozens of times.
-    for _ in range(26):
+    # Bright stars with a soft one-pixel halo. No cross flares: at this tile
+    # count a repeating flare is the most obvious tell there is.
+    for _ in range(46):
         sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
-        tint = mix(hex_rgba("#FFFFFF"), hex_rgba("#F0C8FF"), rng.range(0.0, 0.4))
+        tint = rng.pick(star_tints)
         c.set(sx, sy, tint)
         for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
             nx, ny = (sx + dx) % size, (sy + dy) % size
-            c.set(nx, ny, mix(c.get(nx, ny), tint, 0.22))
+            c.set(nx, ny, mix(c.get(nx, ny), tint, 0.34))
 
     os.makedirs(ENVIRONMENT, exist_ok=True)
     out(c, ENVIRONMENT, "end_sky")
@@ -1316,6 +1397,9 @@ def main():
         item_void_crystal,
         item_rift_compass,
         item_lumen_berry,
+        item_raw_haunch,
+        item_cooked_haunch,
+        item_echo_bread,
         entity_lumen_wisp,
         entity_rift_stalker,
         entity_void_moth,

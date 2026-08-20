@@ -1,4 +1,4 @@
-"""Tiny dependency-free imaging toolkit for Riftborne's texture pipeline.
+"""Tiny dependency-free imaging toolkit for Enderveil's texture pipeline.
 
 Everything here is pure standard library: PNGs are encoded by hand with zlib so
 the art can be regenerated on any machine with a bare Python 3, no Pillow, no
@@ -81,6 +81,9 @@ class Rng:
 
     def chance(self, p):
         return self.next() < p
+
+    def pick(self, items):
+        return items[int(self.next() * len(items)) % len(items)]
 
 
 def _smooth(t):

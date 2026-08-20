@@ -1,5 +1,5 @@
-pack.name=Riftborne [Resources]
-pack.description=Vibrant Visuals lighting, atmospherics, volumetric fog and PBR art for the Riftborne End.
+pack.name=Enderveil [Resources]
+pack.description=Vibrant Visuals lighting, atmospherics, volumetric fog and PBR art for the Enderveil End.
 
 ## Blocks
 tile.voidbound:shattered_end_stone.name=Shattered End Stone
@@ -16,12 +16,15 @@ item.voidbound:echo_shard.name=Echo Shard
 item.voidbound:void_crystal.name=Void Crystal
 item.voidbound:rift_compass.name=Rift Compass
 item.voidbound:lumen_berry.name=Lumen Berry
+item.voidbound:raw_haunch.name=Raw Hopper Haunch
+item.voidbound:cooked_haunch.name=Cooked Hopper Haunch
+item.voidbound:echo_bread.name=Echo Bread
 
 ## Armor
-item.voidbound:void_helmet.name=Riftborne Helm
-item.voidbound:void_chestplate.name=Riftborne Cuirass
-item.voidbound:void_leggings.name=Riftborne Greaves
-item.voidbound:void_boots.name=Riftborne Sabatons
+item.voidbound:void_helmet.name=Enderveil Helm
+item.voidbound:void_chestplate.name=Enderveil Cuirass
+item.voidbound:void_leggings.name=Enderveil Greaves
+item.voidbound:void_boots.name=Enderveil Sabatons
 
 ## Entities
 entity.voidbound:lumen_wisp.name=Lumen Wisp
