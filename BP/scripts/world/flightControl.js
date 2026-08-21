@@ -26,6 +26,9 @@ const FLYERS = new Map([
   ["voidbound:echo_sentinel", { ceiling: 7, leash: 24 }],
   ["voidbound:echo_warden", { ceiling: 6, leash: 16 }],
   ["voidbound:rift_sovereign", { ceiling: 9, leash: 20 }],
+  // The whale is the biggest thing in the sky, so it gets the longest
+  // rope - but a higher ceiling would put it out of render range.
+  ["voidbound:astral_whale", { ceiling: 14, leash: 44 }],
 ]);
 
 const CHECK_INTERVAL_TICKS = 10;

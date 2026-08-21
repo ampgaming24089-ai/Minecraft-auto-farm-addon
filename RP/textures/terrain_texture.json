@@ -66,6 +66,24 @@
     },
     "voidbound_ender_tiles": {
       "textures": "textures/blocks/voidbound_ender_tiles"
+    },
+    "voidbound_waystone_side": {
+      "textures": "textures/blocks/voidbound_waystone_side"
+    },
+    "voidbound_waystone_top": {
+      "textures": "textures/blocks/voidbound_waystone_top"
+    },
+    "voidbound_ender_sapling": {
+      "textures": "textures/blocks/voidbound_ender_sapling"
+    },
+    "voidbound_void_chitin_block": {
+      "textures": "textures/blocks/voidbound_void_chitin_block"
+    },
+    "voidbound_polished_end_stone": {
+      "textures": "textures/blocks/voidbound_polished_end_stone"
+    },
+    "voidbound_cracked_ender_bricks": {
+      "textures": "textures/blocks/voidbound_cracked_ender_bricks"
     }
   }
 }

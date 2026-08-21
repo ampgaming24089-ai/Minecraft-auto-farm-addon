@@ -70,7 +70,9 @@ export const ShatteredSanctum = {
       box([-1, 1, halfDepth - 3], [1, 1, halfDepth - 2], PURPUR),
       at(0, 2, halfDepth - 3, "minecraft:chest"),
       at(-2, 1, halfDepth - 2, "voidbound:rift_lantern"),
-      at(2, 1, halfDepth - 2, "voidbound:rift_lantern")
+      at(2, 1, halfDepth - 2, "voidbound:rift_lantern"),
+      // The waystone sits opposite the altar, past the Warden.
+      at(0, 1, -halfDepth + 2, "voidbound:waystone")
     );
 
     const rubble = [];

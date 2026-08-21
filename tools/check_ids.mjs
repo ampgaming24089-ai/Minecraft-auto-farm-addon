@@ -253,10 +253,111 @@ for (const file of [...walk(join(ROOT, "BP", "items")), ...walk(join(ROOT, "BP",
   }
 }
 
+/**
+ * Client entities must resolve every name they mention.
+ *
+ * A client entity is four cross-references held together by string matching -
+ * a geometry identifier, animation identifiers, a render controller and
+ * texture paths. Get any one wrong and the mob renders as a blank white cube
+ * or nothing at all, with no error anywhere in the content log. That is
+ * exactly the failure this whole tool exists to catch, so it is checked here
+ * rather than left to a play session.
+ */
+function collectIdentifiers(dir, topKey, listKey) {
+  const found = new Set();
+  if (!existsSync(dir)) return found;
+  for (const file of walk(dir)) {
+    if (!file.endsWith(".json")) continue;
+    let data;
+    try {
+      data = JSON.parse(readFileSync(file, "utf8"));
+    } catch {
+      continue;
+    }
+    if (listKey) {
+      for (const key of Object.keys(data[listKey] ?? {})) found.add(key);
+      continue;
+    }
+    for (const entry of Array.isArray(data[topKey]) ? data[topKey] : [data[topKey]]) {
+      const id = entry?.description?.identifier;
+      if (id) found.add(id);
+    }
+  }
+  return found;
+}
+
+const GEOMETRIES = new Set();
+for (const file of walk(join(ROOT, "RP", "models"))) {
+  if (!file.endsWith(".json")) continue;
+  let data;
+  try {
+    data = JSON.parse(readFileSync(file, "utf8"));
+  } catch {
+    continue;
+  }
+  for (const entry of data["minecraft:geometry"] ?? []) {
+    const id = entry?.description?.identifier;
+    if (id) GEOMETRIES.add(id);
+  }
+  // The 1.8 format keys geometry by identifier at the top level.
+  for (const key of Object.keys(data)) if (key.startsWith("geometry.")) GEOMETRIES.add(key);
+}
+
+const ANIMATIONS = collectIdentifiers(join(ROOT, "RP", "animations"), null, "animations");
+const CONTROLLERS = new Set([
+  ...collectIdentifiers(join(ROOT, "RP", "render_controllers"), null, "render_controllers"),
+]);
+
+const ENTITY_DIR = join(ROOT, "RP", "entity");
+if (existsSync(ENTITY_DIR)) {
+  for (const file of walk(ENTITY_DIR)) {
+    if (!file.endsWith(".json")) continue;
+    const rel = relative(ROOT, file).split("\\").join("/");
+    let description;
+    try {
+      description = JSON.parse(readFileSync(file, "utf8"))["minecraft:client_entity"]?.description;
+    } catch {
+      continue;
+    }
+    if (!description) continue;
+
+    const note = (what, why) => problems.push({ id: `${rel}: ${what}`, files: new Set([rel]), why });
+
+    for (const geometry of Object.values(description.geometry ?? {})) {
+      if (!GEOMETRIES.has(geometry)) note(geometry, "no such geometry in RP/models");
+    }
+    for (const animation of Object.values(description.animations ?? {})) {
+      // A value that is not an identifier is a Molang expression, not a clip.
+      if (!animation.startsWith("animation.") && !animation.startsWith("controller.")) continue;
+      if (!ANIMATIONS.has(animation) && !CONTROLLERS.has(animation)) {
+        note(animation, "no such animation in RP/animations");
+      }
+    }
+    for (const controller of description.render_controllers ?? []) {
+      const id = typeof controller === "string" ? controller : Object.keys(controller)[0];
+      if (id && !CONTROLLERS.has(id)) note(id, "no such render controller in RP/render_controllers");
+    }
+    for (const texture of Object.values(description.textures ?? {})) {
+      if (!existsSync(join(ROOT, "RP", `${texture}.png`))) {
+        note(texture, "no such texture file under RP/");
+      }
+    }
+    // A clip named in animations but never listed in scripts.animate never plays.
+    const animated = new Set(
+      (description.scripts?.animate ?? []).map((entry) =>
+        typeof entry === "string" ? entry : Object.keys(entry)[0]
+      )
+    );
+    for (const name of Object.keys(description.animations ?? {})) {
+      if (!animated.has(name)) note(`animations.${name}`, "declared but never listed in scripts.animate");
+    }
+  }
+}
+
 console.log(
   `checked ${references.size} distinct identifier(s) ` +
     `against ${VANILLA.size} vanilla ids and ${DEFINED.size} pack definitions, ` +
-    `plus block-reference and integer-field rules`
+    `plus block-reference, client-entity and integer-field rules`
 );
 
 if (problems.length === 0) {

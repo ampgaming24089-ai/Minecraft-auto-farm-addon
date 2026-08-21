@@ -1,0 +1,84 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "voidbound:astral_whale",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "astral_whale",
+          "voidbound",
+          "mob"
+        ]
+      },
+      "minecraft:collision_box": {
+        "width": 2.6,
+        "height": 1.8
+      },
+      "minecraft:health": {
+        "value": 60,
+        "max": 60
+      },
+      "minecraft:physics": {
+        "has_gravity": false,
+        "has_collision": true
+      },
+      "minecraft:movement": {
+        "value": 0.09
+      },
+      "minecraft:movement.hover": {},
+      "minecraft:navigation.hover": {
+        "can_path_over_water": true,
+        "can_sink": false,
+        "can_pass_doors": false,
+        "can_path_from_air": true,
+        "avoid_water": true,
+        "avoid_damage_blocks": true
+      },
+      "minecraft:can_fly": {},
+      "minecraft:knockback_resistance": {
+        "value": 0.8
+      },
+      "minecraft:breathable": {
+        "total_supply": 15,
+        "suffocate_time": 0,
+        "breathes_air": true,
+        "breathes_water": true
+      },
+      "minecraft:nameable": {},
+      "minecraft:pushable": {
+        "is_pushable": false,
+        "is_pushable_by_piston": false
+      },
+      "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:behavior.random_hover": {
+        "priority": 6,
+        "xz_dist": 10,
+        "y_dist": 4,
+        "y_offset": 0,
+        "interval": 120,
+        "hover_height": [
+          4,
+          10
+        ]
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 7,
+        "look_distance": 20
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 8
+      },
+      "minecraft:experience_reward": {
+        "on_death": "query.last_hit_by_player ? 12 : 0"
+      },
+      "minecraft:loot": {
+        "table": "loot_tables/entities/astral_whale.json"
+      }
+    }
+  }
+}

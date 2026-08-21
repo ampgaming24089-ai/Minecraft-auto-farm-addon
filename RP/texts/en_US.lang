@@ -1,5 +1,5 @@
-pack.name=End Reawakened [Resources]
-pack.description=Vibrant Visuals lighting, atmospherics, volumetric fog and PBR art for the End Reawakened End.
+pack.name=End Ascendant [Resources]
+pack.description=Vibrant Visuals lighting, atmospherics, volumetric fog and PBR art for the End Ascendant End.
 
 ## Blocks
 tile.voidbound:shattered_end_stone.name=Shattered End Stone
@@ -48,6 +48,18 @@ item.voidbound:void_chestplate.name=Ender Cuirass
 item.voidbound:void_leggings.name=Ender Greaves
 item.voidbound:void_boots.name=Ender Sabatons
 
+tile.voidbound:waystone.name=Waystone
+tile.voidbound:ender_sapling.name=Ender Sapling
+tile.voidbound:polished_end_stone.name=Polished End Stone
+tile.voidbound:cracked_ender_bricks.name=Cracked Ender Bricks
+tile.voidbound:void_chitin_block.name=Block of Void Chitin
+
+## Materials
+item.voidbound:astral_shard.name=Astral Shard
+item.voidbound:void_chitin.name=Void Chitin
+item.voidbound:voidsteel_ingot.name=Voidsteel Ingot
+item.voidbound:titan_core.name=Titan Core
+
 ## Entities
 entity.voidbound:lumen_wisp.name=Lumen Wisp
 entity.voidbound:rift_stalker.name=Rift Stalker
@@ -73,8 +85,18 @@ item.spawn_egg.entity.voidbound:endstone_golem.name=Spawn End Stone Golem
 item.spawn_egg.entity.voidbound:chorus_hopper.name=Spawn Chorus Hopper
 item.spawn_egg.entity.voidbound:crystal_crawler.name=Spawn Crystal Crawler
 item.spawn_egg.entity.voidbound:shard_wraith.name=Spawn Shard Wraith
+entity.voidbound:astral_whale.name=Astral Whale
+entity.voidbound:voidling.name=Voidling
+entity.voidbound:ender_beetle.name=Ender Beetle
+entity.voidbound:void_titan.name=Void Titan
+item.spawn_egg.entity.voidbound:astral_whale.name=Spawn Astral Whale
+item.spawn_egg.entity.voidbound:voidling.name=Spawn Voidling
+item.spawn_egg.entity.voidbound:ender_beetle.name=Spawn Ender Beetle
+item.spawn_egg.entity.voidbound:void_titan.name=Spawn Void Titan
 
 ## Interaction prompts
 action.interact.voidbound.survey=Survey
 action.interact.voidbound.recall=Recall
 action.interact.voidbound.sound=Sound
+action.interact.voidbound.channel=Channel
+action.interact.voidbound.attune=Attune

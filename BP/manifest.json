@@ -1,12 +1,12 @@
 {
   "format_version": 2,
   "header": {
-    "name": "End Reawakened [Behavior]",
-    "description": "The End, rebuilt for Bedrock 26.4 - End forests, two bosses, ten mobs, tools, armour, food and a sky that moves.",
-    "uuid": "76c299d2-4096-4d3d-a806-6616b44cc184",
+    "name": "End Ascendant [Behavior]",
+    "description": "The End, rebuilt for Bedrock 26.4 - End forests, three bosses, thirteen mobs, a waystone network, tools, armour, food and a sky that moves.",
+    "uuid": "a1975c56-2a91-41f6-8986-92c69cc527d1",
     "version": [
       1,
-      2,
+      3,
       0
     ],
     "min_engine_version": [
@@ -18,10 +18,10 @@
   "metadata": {
     "product_type": "addon",
     "authors": [
-      "End Reawakened"
+      "End Ascendant"
     ],
     "generated_with": {
-      "end_reawakened_tools": [
+      "end_ascendant_tools": [
         "1.0.0"
       ]
     }
@@ -29,20 +29,20 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "411ad056-8371-41be-89c5-99ae80fa9f62",
+      "uuid": "3fce8dc8-58ae-44e6-9564-2a399edb32d0",
       "version": [
         1,
-        2,
+        3,
         0
       ]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "3549a345-c9e2-44c3-841d-7b2ffb9fb7bb",
+      "uuid": "5e25b437-ca1a-447b-bec5-cd20a75bbf2a",
       "version": [
         1,
-        2,
+        3,
         0
       ],
       "entry": "scripts/main.js"
@@ -54,10 +54,14 @@
       "version": "2.9.0"
     },
     {
-      "uuid": "f578e6a7-6599-4278-b0ea-1c20af4c9cb4",
+      "module_name": "@minecraft/server-ui",
+      "version": "2.1.0"
+    },
+    {
+      "uuid": "b8b52755-0def-45dd-9b3a-3fac70019824",
       "version": [
         1,
-        2,
+        3,
         0
       ]
     }

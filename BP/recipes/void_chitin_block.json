@@ -1,0 +1,30 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:void_chitin_block"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "CCC",
+      "CCC",
+      "CCC"
+    ],
+    "key": {
+      "C": {
+        "item": "voidbound:void_chitin"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:void_chitin"
+      }
+    ],
+    "result": {
+      "item": "voidbound:void_chitin_block",
+      "count": 1
+    }
+  }
+}

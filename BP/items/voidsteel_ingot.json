@@ -1,0 +1,23 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:item": {
+    "description": {
+      "identifier": "voidbound:voidsteel_ingot",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:display_name": {
+        "value": "item.voidbound:voidsteel_ingot.name"
+      },
+      "minecraft:icon": {
+        "textures": {
+          "default": "voidbound_voidsteel_ingot"
+        }
+      },
+      "minecraft:max_stack_size": 64,
+      "minecraft:rarity": "rare"
+    }
+  }
+}

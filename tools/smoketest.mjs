@@ -82,14 +82,59 @@ export class ItemStack {
     this.typeId = typeId; this.amount = amount;
   }
 }
+export const EntityDamageCause = new Proxy({}, { get: (_t, name) => String(name) });
+export const EquipmentSlot = new Proxy({}, { get: (_t, name) => String(name) });
+export const dimensionStub = {
+  id: "minecraft:the_end",
+  getPlayers: () => [],
+  getEntities: () => [],
+  spawnParticle: () => {},
+  spawnEntity: () => {},
+  isChunkLoaded: () => false,
+  getTopmostBlock: () => undefined,
+  getBlock: () => undefined,
+};
 export const world = {
   seed: "1234567890",
   getAllPlayers: () => [],
+  getDimension: () => dimensionStub,
+  sendMessage: () => {},
   getDynamicProperty: () => undefined,
   setDynamicProperty: () => {},
   afterEvents: new Proxy({}, { get: () => ({ subscribe() {}, unsubscribe() {} }) }),
+  beforeEvents: new Proxy({}, { get: () => ({ subscribe() {}, unsubscribe() {} }) }),
 };
-export const system = { currentTick: 0, runInterval: () => 0, runJob: () => 0, run: () => 0 };
+export const system = {
+  currentTick: 0,
+  runInterval: () => 0,
+  runTimeout: () => 0,
+  runJob: () => 0,
+  run: () => 0,
+  clearRun: () => {},
+};
+`
+);
+
+// The UI module is only ever constructed inside an interaction, so a stub that
+// records nothing is enough to prove the import resolves.
+const uiStubDir = join(workspace, "node_modules", "@minecraft", "server-ui");
+mkdirSync(uiStubDir, { recursive: true });
+writeFileSync(
+  join(uiStubDir, "package.json"),
+  JSON.stringify({ name: "@minecraft/server-ui", version: "0.0.0-stub", type: "module", main: "index.js" })
+);
+writeFileSync(
+  join(uiStubDir, "index.js"),
+  `
+class Form {
+  title() { return this; }
+  body() { return this; }
+  button() { return this; }
+  show() { return Promise.resolve({ canceled: true }); }
+}
+export class ActionFormData extends Form {}
+export class MessageFormData extends Form {}
+export class ModalFormData extends Form {}
 `
 );
 cpSync(join(ROOT, "BP", "scripts"), join(workspace, "scripts"), { recursive: true });
@@ -250,6 +295,49 @@ try {
       `seed ${seed}`
     );
     check("chest is not empty", items.length > 0, `seed ${seed}`);
+  }
+
+  // --- every system starts without throwing --------------------------------
+  // A module that throws at import or at start takes the entire script pack
+  // offline in game, with nothing in the content log pointing at the cause.
+  const ENTRY_POINTS = [
+    ["content/armorSet.js", "startArmorSet"],
+    ["content/enderSapling.js", "startEnderSapling"],
+    ["content/riftCompass.js", "startRiftCompass"],
+    ["content/riftSovereign.js", "startRiftSovereign"],
+    ["content/utilityItems.js", "startUtilityItems"],
+    ["content/voidTitan.js", "startVoidTitan"],
+    ["content/waystones.js", "startWaystones"],
+    ["world/ambience.js", "startAmbience"],
+    ["world/atmosphere.js", "startAtmosphere"],
+    ["world/discovery.js", "startDiscovery"],
+    ["world/flightControl.js", "startFlightControl"],
+    ["world/generator.js", "startGenerator"],
+  ];
+  for (const [relPath, exportName] of ENTRY_POINTS) {
+    let module;
+    try {
+      module = await load(relPath);
+    } catch (error) {
+      check(`${relPath} imports`, false, String(error));
+      continue;
+    }
+    check(`${relPath} imports`, true);
+    check(`${relPath} exports ${exportName}`, typeof module[exportName] === "function");
+    if (typeof module[exportName] !== "function") continue;
+    try {
+      module[exportName]();
+      check(`${exportName}() runs`, true);
+    } catch (error) {
+      check(`${exportName}() runs`, false, String(error));
+    }
+  }
+
+  // main.js must list every one of them, or a system silently never starts.
+  const mainSource = readFileSync(join(ROOT, "BP", "scripts", "main.js"), "utf8");
+  for (const [, exportName] of ENTRY_POINTS) {
+    check(`main.js imports ${exportName}`, mainSource.includes(`import { ${exportName} }`));
+    check(`main.js calls ${exportName}`, mainSource.includes(`${exportName}();`));
   }
 
   // --- compass bearings ----------------------------------------------------

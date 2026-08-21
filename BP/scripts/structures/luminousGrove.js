@@ -85,7 +85,10 @@ export const LuminousGrove = {
       blob(0, 0, 0, 2.2, "voidbound:verdant_end_stone", undefined, 0.4),
       at(0, 1, 0, "minecraft:barrel"),
       at(1, 1, 1, "voidbound:lumen_bulb"),
-      at(-1, 1, -1, "voidbound:lumen_bulb")
+      at(-1, 1, -1, "voidbound:lumen_bulb"),
+      // Every structure carries a waystone, so the network is something a
+      // player joins by exploring rather than by crafting their way into it.
+      at(2, 1, -2, "voidbound:waystone")
     );
 
     return {

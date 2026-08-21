@@ -1,12 +1,12 @@
 {
   "format_version": 2,
   "header": {
-    "name": "End Reawakened [Resources]",
-    "description": "Lighting, volumetric fog, a living starfield sky and PBR art for End Reawakened.",
-    "uuid": "f578e6a7-6599-4278-b0ea-1c20af4c9cb4",
+    "name": "End Ascendant [Resources]",
+    "description": "Lighting, volumetric fog, a living starfield sky and PBR art for End Ascendant.",
+    "uuid": "b8b52755-0def-45dd-9b3a-3fac70019824",
     "version": [
       1,
-      2,
+      3,
       0
     ],
     "min_engine_version": [
@@ -18,16 +18,16 @@
   "metadata": {
     "product_type": "addon",
     "authors": [
-      "End Reawakened"
+      "End Ascendant"
     ]
   },
   "modules": [
     {
       "type": "resources",
-      "uuid": "c78643b6-5cf6-4b8e-bd4d-815d76890c80",
+      "uuid": "dd0b3e19-ee65-4b80-be88-f1288b1e4113",
       "version": [
         1,
-        2,
+        3,
         0
       ]
     }

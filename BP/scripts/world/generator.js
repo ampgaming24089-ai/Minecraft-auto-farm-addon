@@ -2,7 +2,7 @@
  * Turning sites into actual structures.
  *
  * Bedrock add-ons cannot add structures to the chunk generator itself, so
- * End Reawakened generates them just ahead of the player instead: a scan every two
+ * End Ascendant generates them just ahead of the player instead: a scan every two
  * seconds finds sited structures the player is approaching, checks that the
  * ground under them is untouched natural End, and builds them over a handful
  * of ticks with system.runJob.
@@ -95,7 +95,7 @@ function* buildJob(dimension, site, origin) {
           x: origin.x, y: origin.y + 3, z: origin.z,
         });
       } catch (error) {
-        console.warn(`[End Reawakened] could not place the Warden at ${site.key}: ${error}`);
+        console.warn(`[End Ascendant] could not place the Warden at ${site.key}: ${error}`);
       }
       yield;
     }
@@ -108,7 +108,21 @@ function* buildJob(dimension, site, origin) {
           z: origin.z,
         });
       } catch (error) {
-        console.warn(`[End Reawakened] could not place the Sovereign at ${site.key}: ${error}`);
+        console.warn(`[End Ascendant] could not place the Sovereign at ${site.key}: ${error}`);
+      }
+      yield;
+    }
+
+    if (plan.titan) {
+      const offset = rotate(plan.titan, site.facing);
+      try {
+        dimension.spawnEntity("voidbound:void_titan", {
+          x: origin.x + offset.x,
+          y: origin.y + plan.titan.y,
+          z: origin.z + offset.z,
+        });
+      } catch (error) {
+        console.warn(`[End Ascendant] could not place the Titan at ${site.key}: ${error}`);
       }
       yield;
     }
@@ -130,7 +144,7 @@ function* buildJob(dimension, site, origin) {
 
     markBuilt(site.key);
   } catch (error) {
-    console.warn(`[End Reawakened] build failed at ${site.key}: ${error}`);
+    console.warn(`[End Ascendant] build failed at ${site.key}: ${error}`);
     rejected.add(site.key);
   } finally {
     building.delete(site.key);

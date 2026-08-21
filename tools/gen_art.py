@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate every End Reawakened texture from source.
+"""Regenerate every End Ascendant texture from source.
 
     python3 tools/gen_art.py
 
@@ -1569,6 +1569,165 @@ def entity_endstone_golem():
          emissive_from=binding[:3], emissive_gain=0.95, emissive_threshold=0.3)
 
 
+def entity_astral_whale():
+    """128x128: the End's leviathan - a slow, harmless giant with a lit belly."""
+    c = Canvas(128, 128)
+    hide = mix(PALETTE["void"], hex_rgba("#2E4A78"), 0.55)
+    hide_hi = mix(hide, hex_rgba("#8FA8D8"), 0.4)
+    belly = mix(hex_rgba("#6FD8F0"), hide, 0.35)
+    star = hex_rgba("#EAF6FF")
+
+    def flank(seed, constellations=False):
+        def paint(face, fx, fy, fw, fh):
+            n = fbm(fx * 1.1, fy * 1.1, 32, seed, octaves=4, base_period=4)
+            base = mix(hide, hide_hi, n * 0.7)
+            if face == "bottom":
+                # Bioluminescent underside, brightest along the midline.
+                mid = 1.0 - abs(fx - (fw - 1) / 2.0) / max(1.0, (fw - 1) / 2.0)
+                return mix(base, belly, 0.35 + mid * 0.5)
+            if face == "top":
+                base = shade(base, -0.12)
+            # A scatter of star-points across the flanks, like a night sky.
+            if constellations and face in ("east", "west"):
+                spark = fbm(fx * 4.3, fy * 4.3, 32, seed + 313, octaves=2, base_period=4)
+                if spark > 0.86:
+                    return star
+                if spark > 0.80:
+                    return mix(base, star, 0.5)
+            return base
+        return paint
+
+    paint_box(c, 0, 0, 16, 14, 40, flank(9701, constellations=True))
+    paint_box(c, 0, 56, 14, 12, 14, flank(9702))
+
+    def fin(_face, fx, fy, fw, fh):
+        span = fx / float(max(1, fw - 1))
+        return mix(hide_hi, mix(hide, belly, 0.3), min(1.0, span * 1.2))
+
+    paint_box(c, 0, 84, 10, 2, 12, fin)
+    paint_box(c, 46, 84, 10, 2, 12, fin)
+    paint_box(c, 0, 100, 14, 2, 10, fin)
+
+    emit(c, ENTITY, "voidbound_astral_whale", roughness=196,
+         emissive_from=belly[:3], emissive_gain=0.95, emissive_threshold=0.3)
+
+
+def entity_voidling():
+    """32x32: a small, angry scrap of the void."""
+    c = Canvas(32, 32)
+    skin = mix(PALETTE["void"], (0, 0, 0, 255), 0.2)
+    skin_hi = mix(skin, PALETTE["void_lit"], 0.45)
+    eye = hex_rgba("#FF5BC8")
+
+    def body(face, fx, fy, fw, fh):
+        n = fbm(fx * 2.6, fy * 2.6, 16, 9710, octaves=3, base_period=4)
+        base = mix(skin, skin_hi, n * 0.55)
+        # A ragged lit seam down the spine.
+        if face == "north" and abs(fx - (fw - 1) / 2.0) < 0.7 and fy > 1:
+            return mix(base, PALETTE["void_lit"], 0.5)
+        return base
+
+    paint_box(c, 0, 0, 5, 6, 4, body)
+
+    def head(face, fx, fy, fw, fh):
+        base = mix(skin_hi, skin, 0.35)
+        if face == "north" and fy == 1 and fx in (1, fw - 2):
+            return eye
+        if face == "north" and fy == 3 and fx % 2 == 0:
+            return shade(skin, -0.4)             # gappy teeth
+        return base
+
+    paint_box(c, 0, 12, 5, 4, 4, head)
+
+    def arm(_face, fx, fy, fw, fh):
+        return mix(skin_hi, skin, fy / float(max(1, fh - 1)))
+
+    paint_box(c, 20, 0, 2, 5, 2, arm)
+    paint_box(c, 20, 10, 2, 5, 2, arm)
+
+    emit(c, ENTITY, "voidbound_voidling", roughness=180,
+         emissive_from=eye[:3], emissive_gain=1.3, emissive_threshold=0.22)
+
+
+def entity_ender_beetle():
+    """64x32: armoured grazer - the chitin is the point."""
+    c = Canvas(64, 32)
+    chitin = mix(PALETTE["void"], hex_rgba("#6E5A8C"), 0.6)
+    chitin_hi = mix(chitin, hex_rgba("#C8B4E0"), 0.5)
+    seam = PALETTE["lumen_lit"]
+
+    def shell(face, fx, fy, fw, fh):
+        n = fbm(fx * 1.7, fy * 1.7, 16, 9720, octaves=3, base_period=4)
+        base = mix(chitin, chitin_hi, n)
+        if face == "top":
+            # Split carapace with a lit seam down the join.
+            if abs(fx - (fw - 1) / 2.0) < 0.7:
+                return mix(base, seam, 0.6)
+            if fy % 3 == 0:
+                return shade(base, -0.2)
+            return shade(base, 0.14)
+        if face == "bottom":
+            return shade(base, -0.3)
+        return base
+
+    paint_box(c, 0, 0, 8, 4, 10, shell)
+
+    def head(face, fx, fy, fw, fh):
+        base = mix(chitin_hi, chitin, 0.4)
+        if face == "north" and fy == 1 and fx in (0, fw - 1):
+            return shade(seam, 0.45)
+        return base
+
+    paint_box(c, 0, 16, 5, 3, 4, head)
+
+    def leg(_face, fx, fy, fw, fh):
+        return mix(chitin_hi, chitin, fy / float(max(1, fh - 1)))
+
+    for u, v in ((38, 0), (38, 5), (38, 10), (44, 0), (44, 5), (44, 10)):
+        paint_box(c, u, v, 1, 3, 1, leg)
+
+    emit(c, ENTITY, "voidbound_ender_beetle", roughness=210,
+         emissive_from=seam[:3], emissive_gain=0.9, emissive_threshold=0.3)
+
+
+def entity_void_titan():
+    """64x64: the golem's build in blackened, rift-bound stone."""
+    c = Canvas(64, 64)
+    rock = mix(PALETTE["void"], (0, 0, 0, 255), 0.32)
+    rock_hi = mix(rock, hex_rgba("#9A88C0"), 0.5)
+    core = hex_rgba("#FF4FD0")
+
+    def stone(seed, bound=False):
+        def paint(face, fx, fy, fw, fh):
+            n = fbm(fx * 1.4, fy * 1.4, 16, seed, octaves=3, base_period=4)
+            base = mix(rock, rock_hi, n * 0.8)
+            crack = fbm(fx * 3.0, fy * 3.0, 16, seed + 97, octaves=2, base_period=4)
+            if crack > 0.70:
+                # Where a golem shows crystal, the Titan shows raw rift.
+                return mix(base, core, 0.85) if bound else shade(base, -0.4)
+            if face == "bottom":
+                return shade(base, -0.24)
+            return base
+        return paint
+
+    paint_box(c, 0, 0, 10, 12, 8, stone(9730, bound=True))
+
+    def head(face, fx, fy, fw, fh):
+        base = stone(9731, bound=True)(face, fx, fy, fw, fh)
+        if face == "north" and fy in (1, 2, 3) and fx in (1, fw - 2):
+            return shade(core, 0.55)
+        return base
+
+    paint_box(c, 0, 22, 7, 6, 7, head)
+    paint_box(c, 38, 0, 4, 12, 4, stone(9732, bound=True))
+    paint_box(c, 38, 20, 4, 12, 4, stone(9733, bound=True))
+    paint_box(c, 0, 37, 4, 8, 4, stone(9734))
+    paint_box(c, 18, 37, 4, 8, 4, stone(9735))
+
+    emit(c, ENTITY, "voidbound_void_titan", roughness=214,
+         emissive_from=core[:3], emissive_gain=1.4, emissive_threshold=0.18)
+
+
 # --------------------------------------------------------------------------
 # The Rift Sovereign and its particles
 # --------------------------------------------------------------------------
@@ -1830,6 +1989,238 @@ def pack_icon(path, accent):
     c.save(path)
 
 
+def item_material_set():
+    """The four new crafting materials, drawn as four different kinds of object.
+
+    A shard, a plate, an ingot and a core need to be told apart at 16px in a
+    hotbar, so each gets its own silhouette rather than its own hue.
+    """
+    # Astral Shard - a pale blue splinter, the whale's drop.
+    c = Canvas(16)
+    _shard_silhouette(
+        c,
+        [(9, 1), (13, 6), (10, 15), (6, 14), (4, 6)],
+        hex_rgba("#BFEFFF"),
+        hex_rgba("#3D6FA8"),
+    )
+    veins(c, 8821, 2, hex_rgba("#EAF9FF"), 8, wobble=0.6)
+    bevel(c, light=0.34, dark=0.26)
+    c.outline(hex_rgba("#122238"))
+    emit(c, ITEMS, "voidbound_astral_shard", roughness=58,
+         emissive_from=(191, 239, 255), emissive_gain=1.15, emissive_threshold=0.30)
+
+    # Void Chitin - a curved carapace plate with a ridged spine.
+    c = Canvas(16)
+    plate = hex_rgba("#4A3C62")
+    plate_lo = hex_rgba("#241C34")
+    sheen = hex_rgba("#68E2CC")
+    for y in range(16):
+        for x in range(16):
+            # An ellipse squashed on Y reads as a shell rather than a stone.
+            d = math.hypot((x + 0.5 - 8) / 6.4, (y + 0.5 - 8.5) / 5.2)
+            if d > 1.0:
+                continue
+            c.set(x, y, mix(plate, plate_lo, d * 0.85))
+    for i, x in enumerate(range(3, 14, 2)):
+        for y in range(4, 13):
+            if math.hypot((x + 0.5 - 8) / 6.4, (y + 0.5 - 8.5) / 5.2) > 0.95:
+                continue
+            c.blend(x, y, (sheen[0], sheen[1], sheen[2], 60 + 14 * (i % 3)))
+    for y in range(4, 13):
+        c.blend(8, y, shade(sheen, 0.1))
+    bevel(c, light=0.28, dark=0.3)
+    c.outline(hex_rgba("#120C1E"))
+    emit(c, ITEMS, "voidbound_void_chitin", roughness=118,
+         emissive_from=sheen[:3], emissive_gain=0.7, emissive_threshold=0.42)
+
+    # Voidsteel Ingot - vanilla ingot footprint, violet alloy.
+    c = Canvas(16)
+    metal = hex_rgba("#8E6FC8")
+    metal_lo = hex_rgba("#3E2C63")
+    for y in range(5, 12):
+        # Trapezoid: narrow at the top, wide at the base - the ingot read.
+        inset = 5 - (y - 5) // 2
+        for x in range(inset, 16 - inset):
+            t = (y - 5) / 6.0
+            c.set(x, y, mix(shade(metal, 0.22), metal_lo, t))
+    for x in range(4, 12):
+        c.blend(x, 6, shade(metal, 0.45))
+    for x in range(2, 14):
+        c.blend(x, 11, shade(metal_lo, -0.25))
+    bevel(c, light=0.36, dark=0.3)
+    c.outline(hex_rgba("#1B1230"))
+    emit(c, ITEMS, "voidbound_voidsteel_ingot", metalness=225, roughness=44,
+         emissive_from=(142, 111, 200), emissive_gain=0.5, emissive_threshold=0.55)
+
+    # Titan Core - a caged sphere, unmistakably a boss drop.
+    c = Canvas(16)
+    cage = hex_rgba("#6B5A48")
+    core_hot = hex_rgba("#FFD9A0")
+    core_mid = hex_rgba("#E8703A")
+    radial(c, 8, 8, 5.6, core_hot, mix(core_mid, hex_rgba("#3A1408"), 0.45))
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x + 0.5 - 8, y + 0.5 - 8)
+            if d > 7.0:
+                continue
+            # Two meridians and one equator: a cage, not a ball of paint.
+            if abs(x - 7.5) < 0.9 or abs(y - 7.5) < 0.9 or d > 6.1:
+                c.set(x, y, shade(cage, 0.2 - 0.35 * (d / 7.0)))
+    c.blend(6, 6, (255, 255, 255, 190))
+    bevel(c, light=0.3, dark=0.3)
+    c.outline(hex_rgba("#1A1108"))
+    emit(c, ITEMS, "voidbound_titan_core", metalness=120, roughness=70,
+         emissive_from=core_hot[:3], emissive_gain=1.6, emissive_threshold=0.24)
+
+
+def block_waystone():
+    """A carved travel marker: a rune-cut face, a worn cap, a glowing core.
+
+    Because it is a full block, the *face* has to do all the work of saying
+    "this is a device". So the sides get a deep inset frame with a vertical
+    rune down the middle and a bright node at its heart, and the top gets a
+    socket rather than more brickwork.
+    """
+    stone = mix(PALETTE["endstone_dark"], hex_rgba("#C9C2A0"), 0.42)
+    stone_lo = mix(stone, PALETTE["void"], 0.48)
+    seam = mix(stone_lo, (0, 0, 0, 255), 0.42)
+    rune = hex_rgba("#7CE8FF")
+    core = hex_rgba("#D6FBFF")
+
+    side = Canvas(16)
+
+    def face(x, y, _cur):
+        n = fbm(x * 1.7, y * 1.7, 16, 4413, octaves=3, base_period=5)
+        base = mix(stone_lo, stone, n)
+        if x in (0, 15) or y in (0, 15):
+            return seam
+        # Inset panel.
+        if 2 <= x <= 13 and 1 <= y <= 14:
+            if x in (2, 13) or y in (1, 14):
+                return shade(base, -0.32)
+            # Rune: a spine with three crossbars and a diamond node.
+            spine = x == 8 and 3 <= y <= 12
+            bars = y in (5, 8, 11) and 5 <= x <= 11
+            node = abs(x - 8) + abs(y - 8) <= 1
+            if node:
+                return core
+            if spine or bars:
+                return mix(base, rune, 0.72)
+        return base
+
+    side.each(face)
+    emit(side, BLOCKS, "voidbound_waystone_side", roughness=214,
+         emissive_from=rune[:3], emissive_gain=1.5, emissive_threshold=0.30)
+
+    top = Canvas(16)
+
+    def cap(x, y, _cur):
+        n = fbm(x * 2.1, y * 2.1, 16, 4414, octaves=3, base_period=5)
+        base = mix(stone_lo, stone, n)
+        if x in (0, 15) or y in (0, 15):
+            return seam
+        d = math.hypot(x + 0.5 - 8, y + 0.5 - 8)
+        if d <= 2.2:
+            return mix(core, rune, min(1.0, d / 2.2))   # the socket, lit
+        if d <= 3.4:
+            return shade(base, -0.34)                    # its rim, in shadow
+        # Four spokes running out to the edges, so the cap reads as machined.
+        if (abs(x - 7.5) < 0.9 or abs(y - 7.5) < 0.9) and d <= 6.6:
+            return mix(base, rune, 0.30)
+        return base
+
+    top.each(cap)
+    emit(top, BLOCKS, "voidbound_waystone_top", roughness=210,
+         emissive_from=rune[:3], emissive_gain=1.5, emissive_threshold=0.30)
+
+
+def block_flora_and_stone():
+    """A sapling, a chitin block, polished end stone and cracked bricks."""
+    # Ender sapling: the thicket in miniature, so it reads as the same plant.
+    sap = Canvas(16)
+    stem = mix(PALETTE["void"], hex_rgba("#8A78A4"), 0.6)
+    leaf = hex_rgba("#7B3FA8")
+    leaf_hi = mix(leaf, hex_rgba("#D6A8F0"), 0.55)
+    bud = hex_rgba("#3FE0C4")
+
+    rng = Rng(5150)
+    for y in range(15, 7, -1):
+        sap.set(8, y, stem if y % 3 else shade(stem, 0.18))
+    for dx, dy in ((-1, 11), (1, 12), (-1, 13)):
+        sap.blend(8 + dx, dy, shade(stem, -0.2))
+    for cx, cy, r in ((8, 6, 4.2), (5.5, 8.5, 2.6), (10.5, 8.5, 2.6)):
+        for y in range(16):
+            for x in range(16):
+                d = math.hypot(x + 0.5 - cx, y + 0.5 - cy) / r
+                if d <= 1.0 and rng.next() > d * 0.5:
+                    sap.blend(x, y, mix(leaf_hi, leaf, min(1.0, d * 1.15)))
+    for bx, by in ((6, 6), (10, 5), (8, 9)):
+        sap.blend(bx, by, bud)
+    emit(sap, BLOCKS, "voidbound_ender_sapling", roughness=204,
+         emissive_from=bud[:3], emissive_gain=1.0, emissive_threshold=0.24)
+
+    # Void chitin block: overlapping plates, the beetle's drop stacked up.
+    chitin = Canvas(16)
+    plate = hex_rgba("#4A3C62")
+    plate_lo = mix(plate, PALETTE["void"], 0.55)
+    sheen = hex_rgba("#68E2CC")
+
+    def chitin_face(x, y, _cur):
+        row = y // 4
+        # Offset rows so the plates interlock rather than tile as a grid.
+        col = (x + row * 2) // 4
+        n = fbm(x * 2.4, y * 2.4, 16, 7710 + row * 17 + col * 3, octaves=3, base_period=4)
+        base = mix(plate_lo, plate, n)
+        local_y = y % 4
+        if local_y == 0:
+            return shade(base, -0.36)                    # plate lip
+        if local_y == 1:
+            return mix(base, sheen, 0.20)                # the light catching it
+        if (x + row * 2) % 4 == 0:
+            return shade(base, -0.24)
+        return base
+
+    chitin.each(chitin_face)
+    emit(chitin, BLOCKS, "voidbound_void_chitin_block", roughness=128,
+         emissive_from=sheen[:3], emissive_gain=0.6, emissive_threshold=0.46)
+
+    # Polished end stone: the same substrate, worked flat.
+    polished = stone_base(3311, PALETTE["endstone"], PALETTE["endstone_dark"], contrast=0.12)
+
+    def polish(x, y, cur):
+        # A shallow chamfer reads as "cut and smoothed" at this size.
+        if x == 0 or y == 0:
+            return shade(cur, 0.16)
+        if x == 15 or y == 15:
+            return shade(cur, -0.16)
+        return cur
+
+    polished.each(polish)
+    emit(polished, BLOCKS, "voidbound_polished_end_stone", roughness=170)
+
+    # Cracked ender bricks: the coursed masonry, broken open.
+    brick = mix(PALETTE["endstone_dark"], hex_rgba("#CFC8A4"), 0.5)
+    brick_lo = mix(brick, PALETTE["void"], 0.4)
+    mortar = mix(brick_lo, (0, 0, 0, 255), 0.35)
+    cracked = Canvas(16)
+
+    def cracked_face(x, y, _cur):
+        row = y // 4
+        n = fbm(x * 2.2, y * 2.2, 16, 9440 + row * 13, octaves=3, base_period=4)
+        base = mix(brick_lo, brick, n)
+        if y % 4 == 0:
+            return mortar
+        if (x + row * 6) % 8 == 0:
+            return mortar
+        return shade(base, -0.06)
+
+    cracked.each(cracked_face)
+    # Fracture lines drawn after the masonry, so they cut across the courses.
+    veins(cracked, 4477, 5, shade(mortar, -0.3), 13, wobble=1.5)
+    veins(cracked, 4478, 3, shade(brick_lo, -0.35), 8, wobble=1.9)
+    emit(cracked, BLOCKS, "voidbound_cracked_ender_bricks", roughness=244)
+
+
 # --------------------------------------------------------------------------
 
 
@@ -1866,14 +2257,21 @@ def main():
         entity_void_serpent,
         entity_glimmerfin,
         entity_endstone_golem,
+        entity_astral_whale,
+        entity_voidling,
+        entity_ender_beetle,
+        entity_void_titan,
         block_ender_log,
         block_ender_leaves,
         block_ender_bush,
         block_building_set,
         block_decor_set,
+        block_waystone,
+        block_flora_and_stone,
         item_gameplay_set,
         item_ender_fruit,
         item_sovereign_crown,
+        item_material_set,
         particle_atlas,
         armor_layers,
         item_void_helmet,

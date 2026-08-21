@@ -110,13 +110,20 @@ export const VoidwatchTower = {
       });
     }
 
+    // The waystone goes in last of all, at the foot of the stair, so the
+    // erosion pass cannot chew it out of the wall.
+    const waystone = at(half - 1, 1, -half + 1, "voidbound:waystone");
+
     return {
       // Stairs land after the hollow so the climb is never carved away, and
       // the deck lands last so the cache survives the erosion pass.
-      placements: merge(foundation, walls, hollow, ruin, stairs, galleries, rubble, deck),
+      placements: merge(foundation, walls, hollow, ruin, stairs, galleries, rubble, deck, waystone),
       chests: [{ x: 0, y: height + 2, z: 0 }],
       beacon: { x: 0, y: height + 4, z: 0 },
       guards: rng.int(1, 3),
+      // Outside the shaft, not in it: the Titan is nearly five blocks tall and
+      // would be stuck in its own tower if it spawned on the stair.
+      titan: { x: half + 4, y: 2, z: half + 4 },
     };
   },
 };

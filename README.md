@@ -1,24 +1,24 @@
-# End Reawakened — an End overhaul for Minecraft Bedrock
+# End Ascendant — an End overhaul for Minecraft Bedrock
 
 The End has been one biome, one sky and two structures since 1.9. End
-Reawakened rebuilds it for Bedrock **26.4** (internal `1.26.40`, current hotfix
-`26.44`): a forest, two bosses, nine mobs, a full tool and armour tier, a food
-chain, four structure types scattered across the outer islands, and an
-atmosphere that moves.
+Ascendant rebuilds it for Bedrock **26.4** (internal `1.26.40`, current hotfix
+`26.44`): a forest, three bosses, thirteen mobs, a full tool and armour tier, a
+food chain, a waystone travel network, five structure types scattered across the
+outer islands, and an atmosphere that moves.
 
 Everything runs on documented, non-experimental APIs. No experiments toggle,
 no world conversion, no commands typed by the player.
 
 | | |
 |---|---|
-| Blocks | 18 |
-| Items | 21 |
-| Mobs | 12, two of them bosses |
-| Recipes | 26 |
+| Blocks | 23 |
+| Items | 25 |
+| Mobs | 16, three of them bosses |
+| Recipes | 32 |
 | Structures | 5 kinds, procedurally varied |
-| Particle effects | 9 |
-| Animations | 23 clips across 11 models |
-| Textures | 114, all generated from code |
+| Particle effects | 12 |
+| Animations | 29 clips across 14 models |
+| Textures | 142, all generated from code |
 
 ```
 ./build_addon.sh --check      # validate everything, then build the .mcaddon
@@ -34,7 +34,7 @@ not the PBR lighting.
 ### The sky and the light
 
 The End's built-in look is a flat purple void: two constant white directional
-lights, a near-black sky, no depth. End Reawakened replaces the whole Vibrant
+lights, a near-black sky, no depth. End Ascendant replaces the whole Vibrant
 Visuals stack for `minecraft:the_end`.
 
 | File | What it does |
@@ -53,7 +53,7 @@ through `lighting/global.json`. That is the part most End packs get wrong.
 ### Fog that knows where you are
 
 Bedrock exposes exactly one End biome, so a biome-bound fog can only ever be
-one mood. End Reawakened ships four fog definitions and pushes the right one onto
+one mood. End Ascendant ships four fog definitions and pushes the right one onto
 each player's fog stack — the layer that sits above biome fog:
 
 - **`fog_end_open`** — the default, bound to the biome. Thin violet haze that
@@ -115,6 +115,68 @@ differently from every attack that preceded it.
 Drops 12–20 void crystals and 16–28 echo shards — roughly a full armour set
 in one kill — plus a rift compass and two rolls of a rarer pool.
 
+### The Void Titan
+
+The third boss, and the opposite reading of the same threat. The Sovereign
+fights in the air; the Titan never leaves the ground, and everything it does
+travels along it. 550 health, 16 damage, immune to knockback and to fire, and
+it guards the foot of every Voidwatch Tower.
+
+| Attack | What it does | Counterplay |
+|---|---|---|
+| Slam | 8-block ring, damage falling off toward the edge | Be further out |
+| Fissure | A crack that walks one block at a time toward one player | Step out of the line |
+| Grab | Drags the *furthest* player back in | Do not fight it from a ledge |
+| Quake | Below 40% health: 18 blocks, no safe distance | Be airborne when it lands |
+
+The fissure is drawn on a timer rather than all at once, so it reads as
+travelling and a player who moves escapes it. The quake checks `isOnGround`,
+which makes "get off the floor" a real answer rather than a damage race. Below
+40% every cooldown drops by 40% and the quake unlocks.
+
+It drops a **Titan Core** — a one-of-a-kind item that hands you the Titan's own
+footing for twelve seconds: Resistance III, Strength II, and its slam. It has a
+75-second cooldown and is inert outside the End.
+
+### The waystone network
+
+The End is wide and mostly empty, and once you have found a grove, a sanctum
+and a tower there is no reason to walk between them a second time. Waystones
+close that loop.
+
+Every Luminous Grove, Shattered Sanctum and Voidwatch Tower generates with one.
+Stand at a waystone and interact: it attunes, joins the world's network, and
+opens a menu of every *other* waystone you have personally stood at. Pick one
+and you are there.
+
+Two rules keep it from flattening the dimension:
+
+- **Discovery is per-player.** The network is world-wide, but the menu only
+  lists stones you have visited yourself, so the map still has to be earned
+  once. Placing a waystone attunes it for the placer immediately.
+- **It only reaches inside the End.** Interact with one anywhere else and it
+  stays inert.
+
+Arrival grants five seconds of Slow Falling, which covers the one case the
+destination cannot: a stone that has since been undermined, leaving the arrival
+point over open air. Waystones are craftable from ender bricks, an echo shard
+and a voidsteel ingot, and the network is capped at 40 stones — past that the
+menu stops being something anybody wants to read, so the oldest drops off.
+
+### Ender saplings
+
+Ender leaves drop saplings. Plant one on end stone and it grows into a tree on
+its own in about a minute, or immediately with bone meal.
+
+Bedrock's random-tick plumbing for custom blocks is a moving target, so growth
+is not left to it: a placed sapling is written into a world dynamic property
+with the tick it went in, and a slow pass grows the ones whose time has come
+and whose chunk is loaded. The tree itself is authored in script rather than
+reusing the worldgen feature — a feature cannot be invoked from script, and a
+planted tree wants to be a little smaller than a wild one so a grove you build
+does not swallow whatever you built it next to. Logs and leaves only replace
+air, so a trunk that leans can never carve through something you built.
+
 ### The sky, and making it move
 
 `RP/textures/environment/end_sky.png` replaces the End's skybox. This is
@@ -137,7 +199,7 @@ and particles in front of a sky do most of the work a moving sky would.
 occasional streaks falling through the dark overhead, placed on a ring around
 the player so they read as depth rather than as dust on the lens.
 
-### Mobs, ore and flora### Mobs, ore and flora
+### Mobs, ore and flora
 
 - **Lumen Wisp** — passive, floating, shy. Drops lumen berries and the odd echo
   shard.
@@ -161,19 +223,27 @@ the player so they read as depth rather than as dust on the lens.
   feeds on ender fruit.
 - **End Stone Golem** — neutral. It ignores you entirely and hunts the End's
   monsters on sight, which makes a grove worth settling beside.
-- **Rift Sovereign** — the boss, above.
+- **Astral Whale** — the biggest thing in the End's sky. Sixteen blocks of
+  body drifting in slow arcs at a deliberately low animation frequency, because
+  a whale is only convincing if it is slow. Drops astral shards.
+- **Voidling** — a knee-high scavenger that follows ender fruit and flees
+  anything with teeth. Drops fruit, crystals and the occasional pearl.
+- **Ender Beetle** — a six-legged forager that walks a real tripod gait (legs
+  0/3/4 swing together, 1/2/5 oppose them) and only fights back. Drops void
+  chitin.
+- **Rift Sovereign**, **Echo Warden**, **Void Titan** — the three bosses, below.
 - **Rift Compass** — points at the nearest structure by name, distance and
   bearing, and names the runner-up so you can pick a route.
 
-### End Reawakened armour
+### End Ascendant armour
 
 The endgame set, a clear step past netherite:
 
 | | Helm | Cuirass | Greaves | Sabatons | Set |
 |---|---|---|---|---|---|
-| End Reawakened protection | 4 | 9 | 7 | 4 | **24** |
+| End Ascendant protection | 4 | 9 | 7 | 4 | **24** |
 | Netherite protection | 3 | 8 | 6 | 3 | 20 |
-| End Reawakened durability | 561 | 816 | 765 | 663 | |
+| End Ascendant durability | 561 | 816 | 765 | 663 | |
 | Netherite durability | 407 | 592 | 555 | 481 | |
 
 Enchantability is 18 against netherite's 15, and pieces repair with void
@@ -190,6 +260,13 @@ lapses within two seconds.
 Recipes are in `BP/recipes/`. The chain is: mine echo ore → echo shards →
 void crystals (with an ender pearl) → crystal blocks, glass, lanterns, and the
 compass (with a vanilla compass).
+
+A second chain runs off the new mobs: **void chitin** from ender beetles and
+**astral shards** from astral whales combine with a void crystal into a
+**voidsteel ingot**, which is what a waystone is built around. Chitin also
+stacks into a block, and the End's stone now polishes and cracks — polished end
+stone, cracked ender bricks, and a block of void chitin round out the building
+set.
 
 ---
 
@@ -261,9 +338,9 @@ npm run check
 
 | Check | What it catches |
 |---|---|
-| `check:ids` | Every `minecraft:` and `voidbound:` identifier in every JSON value and JS string, against Mojang's published id tables. This is what caught `minecraft:end_stone_bricks` — Bedrock calls that block `minecraft:end_bricks`. It also checks that `local_lighting` only names blocks (it once named `end_crystal`, which is an entity), and scans the raw file text for whole-number fields written as floats — `"speed": 14.0` is a different literal from `"speed": 14` to the engine, and JSON parsing erases the difference, so this rule has to read the text. |
+| `check:ids` | Every `minecraft:` and `voidbound:` identifier in every JSON value and JS string, against Mojang's published id tables. This is what caught `minecraft:end_stone_bricks` — Bedrock calls that block `minecraft:end_bricks`. It also checks that `local_lighting` only names blocks (it once named `end_crystal`, which is an entity), and scans the raw file text for whole-number fields written as floats — `"speed": 14.0` is a different literal from `"speed": 14` to the engine, and JSON parsing erases the difference, so this rule has to read the text. Client entities get their own pass: a geometry, animation, render controller or texture path that does not resolve renders the mob as a blank cube or as nothing at all, silently, so every one of those four cross-references is resolved against the files actually in the pack. |
 | `check:json` | Every JSON file against `@minecraft/bedrock-schemas` for the target version |
-| `check:scripts` | Runs the siting, blueprint and loot code against a stub of `@minecraft/server` — 10,000+ assertions over 200 seeds per structure |
+| `check:scripts` | Runs the siting, blueprint and loot code against a stub of `@minecraft/server` — 12,000+ assertions over 200 seeds per structure. It also imports and *starts* every system, because a module that throws at load takes the whole script pack offline in game with nothing in the log pointing at the cause, and asserts `main.js` actually calls each one. |
 | `check:types` | TypeScript over the scripts against the real `@minecraft/server` 2.9.0 type definitions |
 
 **On how much the schema check is worth.** The published schemas are a beta and
@@ -330,8 +407,12 @@ half those errors were already fixed. Check the path before chasing one:
 
 ### Still unverified
 
-- Whether the Rift Sovereign fight reads well in play — phase timings, attack
-  cadence and damage are tuned blind.
+- Whether the three boss fights read well in play — phase timings, attack
+  cadence and damage are all tuned blind.
+- Waystone menu behaviour on touch devices, and whether cancelling the form
+  leaves anything stuck.
+- Sapling growth timing; `GROW_TICKS` in `BP/scripts/content/enderSapling.js`
+  is a first guess at one minute.
 - Armour rendering on the player model, and whether the plate art lines up
   with vanilla's armour UV layout.
 - Structure generation timing under elytra — `BUILD_RADIUS` in
@@ -353,20 +434,24 @@ half those errors were already fixed. Check the path before chasing one:
 | Ore and flora density | `BP/feature_rules/*.json` |
 | Mob spawn weights | `BP/spawn_rules/*.json` |
 | Armour stats and set bonus | `BP/items/void_*.json`, `BP/scripts/content/armorSet.js` |
+| Boss health, attacks and cooldowns | `BP/scripts/content/riftSovereign.js`, `voidTitan.js` |
+| Waystone cap and network rules | `MAX_STONES` in `BP/scripts/content/waystones.js` |
+| Sapling growth time | `GROW_TICKS` in `BP/scripts/content/enderSapling.js` |
+| Flyer ceilings and leash lengths | `FLYERS` in `BP/scripts/world/flightControl.js` |
 
 ## Layout
 
 ```
 BP/                     behavior pack
-  blocks/ items/        8 blocks, 8 items (4 of them armour)
+  blocks/ items/        23 blocks, 25 items (4 of them armour, 5 tools)
   entities/ spawn_rules/ loot_tables/
   features/ feature_rules/   ore, shattered stone and flora generation
   recipes/
   scripts/
     lib/                rng, vectors, blueprint placement
-    structures/         the four blueprints
+    structures/         the five blueprints
     world/              siting, generation, atmosphere, discovery, persistence
-    content/            loot tables and the rift compass
+    content/            loot, compass, bosses, waystones, saplings, armour set
 RP/                     resource pack
   lighting/ atmospherics/ color_grading/ pbr/ local_lighting/ fogs/
   biomes/               client biome binding the above to the End
