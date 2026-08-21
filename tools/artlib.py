@@ -106,7 +106,17 @@ def tileable_noise(x, y, period, seed):
 
 
 def fbm(x, y, size, seed, octaves=3, lacunarity=2.0, gain=0.5, base_period=4):
-    """Fractal noise that stays seamless across a `size` x `size` texture."""
+    """Fractal noise that stays seamless across a `size` x `size` texture.
+
+    Seamless *only* if x and y are passed unscaled, or scaled by a whole
+    number. The wrap works because the lattice advances by exactly `period`
+    cells across the tile; `fbm(x * 1.4, ...)` advances by 1.4 of them and the
+    two edges no longer meet. Choose the feature size with `base_period`, which
+    is the knob that keeps the wrap, rather than by multiplying the coordinate.
+
+    On a 16px block texture a broken wrap hides inside the block's own edges.
+    On a tiled skybox it is a line down the middle of every face.
+    """
     total, amplitude, norm = 0.0, 1.0, 0.0
     period = base_period
     for octave in range(octaves):

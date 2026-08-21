@@ -1,4 +1,4 @@
-# End Everlasting — an End overhaul for Minecraft Bedrock
+# End Ascendant — an End overhaul for Minecraft Bedrock
 
 The End has been one biome, one sky and two structures since 1.9. End
 Ascendant rebuilds it for Bedrock **26.4** (internal `1.26.40`, current hotfix
@@ -41,8 +41,25 @@ not the PBR lighting.
 
 ### The sky and the light
 
+The skybox is a nebula: glowing magenta gas along a diagonal arm, dust lanes
+cutting through it, and stars in three tiers of brightness over the top. The
+End sky is one texture tiled across all six faces of a cube, which is what
+makes this hard - a big high-contrast feature becomes wallpaper, and variation
+that does not *wrap* makes each face average differently so the cube's corners
+show as seams. The nebula is built from waves with a whole number of
+wavelengths across the tile and warped by seamless noise, so it wraps exactly
+and every face averages the same. `npm run check:scripts` asserts the wrap.
+
+A planet hangs over it, and that one cannot come from the skybox at all -
+tiled, it would appear dozens of times, and Bedrock draws no sun or moon in the
+End. It is an entity: a flat plate held at a fixed offset from the player and
+turned to face them, close enough to be inside everyone's entity draw distance
+and scaled to look far away. Because the *offset* is fixed rather than the
+position, walking towards it never brings it closer.
+
+
 The End's built-in look is a flat purple void: two constant white directional
-lights, a near-black sky, no depth. End Everlasting replaces the whole Vibrant
+lights, a near-black sky, no depth. End Ascendant replaces the whole Vibrant
 Visuals stack for `minecraft:the_end`.
 
 | File | What it does |
@@ -61,7 +78,7 @@ through `lighting/global.json`. That is the part most End packs get wrong.
 ### Fog that knows where you are
 
 Bedrock exposes exactly one End biome, so a biome-bound fog can only ever be
-one mood. End Everlasting ships four fog definitions and pushes the right one onto
+one mood. End Ascendant ships four fog definitions and pushes the right one onto
 each player's fog stack — the layer that sits above biome fog:
 
 - **`fog_end_open`** — the default, bound to the biome. Thin violet haze that
@@ -477,15 +494,15 @@ the player so they read as depth rather than as dust on the lens.
 - **Rift Compass** — points at the nearest structure by name, distance and
   bearing, and names the runner-up so you can pick a route.
 
-### End Everlasting armour
+### End Ascendant armour
 
 The endgame set, a clear step past netherite:
 
 | | Helm | Cuirass | Greaves | Sabatons | Set |
 |---|---|---|---|---|---|
-| End Everlasting protection | 4 | 9 | 7 | 4 | **24** |
+| End Ascendant protection | 4 | 9 | 7 | 4 | **24** |
 | Netherite protection | 3 | 8 | 6 | 3 | 20 |
-| End Everlasting durability | 561 | 816 | 765 | 663 | |
+| End Ascendant durability | 561 | 816 | 765 | 663 | |
 | Netherite durability | 407 | 592 | 555 | 481 | |
 
 Enchantability is 18 against netherite's 15, and pieces repair with void

@@ -1,12 +1,12 @@
 {
   "format_version": 2,
   "header": {
-    "name": "End Everlasting [Resources]",
-    "description": "Per-biome fog and particles, lighting, a deep starfield sky, 138 animation clips and PBR art for End Everlasting.",
-    "uuid": "07f2ea28-71ea-4e9b-ac3f-1106f8b34d5b",
+    "name": "End Ascendant [Resources]",
+    "description": "Per-biome fog and particles, lighting, a nebula skybox, 224 animation clips and PBR art for End Ascendant.",
+    "uuid": "8072046c-7b29-438a-b3a8-88bee160c18b",
     "version": [
       1,
-      6,
+      7,
       0
     ],
     "min_engine_version": [
@@ -18,16 +18,16 @@
   "metadata": {
     "product_type": "addon",
     "authors": [
-      "End Everlasting"
+      "End Ascendant"
     ]
   },
   "modules": [
     {
       "type": "resources",
-      "uuid": "568aaf87-7f44-4047-8ecf-a6f3d27c1825",
+      "uuid": "b5a8d277-db78-412c-aa5a-c33f0aadbce2",
       "version": [
         1,
-        6,
+        7,
         0
       ]
     }

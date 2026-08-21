@@ -20,6 +20,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createRequire } from "node:module";
+import { inflateSync } from "node:zlib";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, "..");
@@ -31,6 +32,74 @@ try {
 } catch {
   console.error("@minecraft/vanilla-data is not installed.\n  npm install --no-save @minecraft/vanilla-data");
   process.exit(2);
+}
+
+/**
+ * A minimal PNG reader, so a texture can be asserted rather than eyeballed.
+ *
+ * Only what this pack produces: 8-bit RGBA, no interlacing, no palette. Enough
+ * to answer "does this tile wrap", which is the one texture property that is
+ * invisible in the file and glaring in the game.
+ */
+function readPng(path) {
+  const full = join(ROOT, path);
+  if (!existsSync(full)) return null;
+  const buffer = readFileSync(full);
+  let offset = 8;                       // skip the signature
+  let width = 0;
+  let height = 0;
+  let bitDepth = 0;
+  let colourType = 0;
+  const chunks = [];
+  while (offset < buffer.length) {
+    const length = buffer.readUInt32BE(offset);
+    const tag = buffer.toString("ascii", offset + 4, offset + 8);
+    const body = buffer.subarray(offset + 8, offset + 8 + length);
+    if (tag === "IHDR") {
+      width = body.readUInt32BE(0);
+      height = body.readUInt32BE(4);
+      bitDepth = body[8];
+      colourType = body[9];
+    } else if (tag === "IDAT") {
+      chunks.push(body);
+    } else if (tag === "IEND") {
+      break;
+    }
+    offset += 12 + length;
+  }
+  if (bitDepth !== 8 || colourType !== 6) return null;
+
+  const raw = inflateSync(Buffer.concat(chunks));
+  const stride = width * 4;
+  const data = Buffer.alloc(stride * height);
+  let src = 0;
+  for (let y = 0; y < height; y++) {
+    const filter = raw[src++];
+    for (let x = 0; x < stride; x++) {
+      const value = raw[src++];
+      const a = x >= 4 ? data[y * stride + x - 4] : 0;
+      const b = y > 0 ? data[(y - 1) * stride + x] : 0;
+      const c = x >= 4 && y > 0 ? data[(y - 1) * stride + x - 4] : 0;
+      let out;
+      switch (filter) {
+        case 0: out = value; break;
+        case 1: out = value + a; break;
+        case 2: out = value + b; break;
+        case 3: out = value + ((a + b) >> 1); break;
+        case 4: {
+          const p = a + b - c;
+          const pa = Math.abs(p - a);
+          const pb = Math.abs(p - b);
+          const pc = Math.abs(p - c);
+          out = value + (pa <= pb && pa <= pc ? a : pb <= pc ? b : c);
+          break;
+        }
+        default: return null;
+      }
+      data[y * stride + x] = out & 0xff;
+    }
+  }
+  return { width, height, data };
 }
 
 const KNOWN_IDS = new Set();
@@ -421,6 +490,41 @@ try {
     }
   }
 
+  // --- the skybox tile wraps -----------------------------------------------
+  // The End sky is one texture tiled over all six faces of a cube, so a
+  // texture that does not wrap puts a visible line down the middle of every
+  // face. It happened: fbm only wraps when its coordinates are scaled by a
+  // whole number, and the first nebula used 1.4 and 2.2 and 3.6.
+  {
+    const png = readPng("RP/textures/environment/end_sky.png");
+    if (png) {
+      const at = (x, y) => {
+        const i = (y * png.width + x) * 4;
+        return [png.data[i], png.data[i + 1], png.data[i + 2]];
+      };
+      const spread = (a, b, vertical) => {
+        const n = vertical ? png.width : png.height;
+        let total = 0;
+        for (let i = 0; i < n; i++) {
+          const p = vertical ? at(i, a) : at(a, i);
+          const q = vertical ? at(i, b) : at(b, i);
+          total += Math.abs(p[0] - q[0]) + Math.abs(p[1] - q[1]) + Math.abs(p[2] - q[2]);
+        }
+        return total / (n * 3);
+      };
+      // The wrap-around edge must be no more different than two ordinary
+      // neighbouring lines are. A broken wrap is many times worse than this.
+      const seamX = spread(0, png.width - 1, false);
+      const insideX = spread(40, 41, false);
+      const seamY = spread(0, png.height - 1, true);
+      const insideY = spread(40, 41, true);
+      check("the skybox wraps horizontally", seamX < insideX * 2.5 + 2,
+        `seam ${seamX.toFixed(1)} vs interior ${insideX.toFixed(1)}`);
+      check("the skybox wraps vertically", seamY < insideY * 2.5 + 2,
+        `seam ${seamY.toFixed(1)} vs interior ${insideY.toFixed(1)}`);
+    }
+  }
+
   // --- trees ---------------------------------------------------------------
   {
     const { TREES } = await load("world/trees.js");
@@ -588,6 +692,7 @@ try {
     ["world/generator.js", "startGenerator"],
     ["world/painter.js", "startPainter"],
     ["world/skyIslands.js", "startSkyIslands"],
+    ["world/skyBody.js", "startSkyBody"],
   ];
   for (const [relPath, exportName] of ENTRY_POINTS) {
     let module;

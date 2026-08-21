@@ -1,5 +1,5 @@
 /**
- * End Everlasting - entry point.
+ * End Ascendant - entry point.
  *
  * Four systems, started once at load:
  *   sites/generator  places seed-derived structures ahead of the player
@@ -11,7 +11,7 @@
  *   flight control   pulls flyers back when they climb or drift over the void
  *   discovery        acknowledges arriving somewhere new
  *   rift compass     reads the structure map and points at it
- *   armour set       grants the End Everlasting set bonus in the End
+ *   armour set       grants the End Ascendant set bonus in the End
  *   ender sapling    grows planted saplings into End trees
  *   bloomstalk       grows, harvests and replants the End's crop
  *   emotes           one-shot player poses on the moments that earn them
@@ -45,11 +45,13 @@ import { startFlightControl } from "./world/flightControl.js";
 import { startGenerator } from "./world/generator.js";
 import { startPainter } from "./world/painter.js";
 import { startSkyIslands } from "./world/skyIslands.js";
+import { startSkyBody } from "./world/skyBody.js";
 
 function start() {
   startGenerator();
   startPainter();
   startSkyIslands();
+  startSkyBody();
   startBiomeLife();
   startAtmosphere();
   startAmbience();
@@ -65,7 +67,7 @@ function start() {
   startVoidTitan();
   startUtilityItems();
   startWaystones();
-  console.log("[End Everlasting] End systems online");
+  console.log("[End Ascendant] End systems online");
 }
 
 // worldLoad fires once the world is ready for world.seed and player queries.
@@ -74,6 +76,6 @@ world.afterEvents.worldLoad.subscribe(() => {
   try {
     start();
   } catch (error) {
-    console.error(`[End Everlasting] failed to start: ${error}`);
+    console.error(`[End Ascendant] failed to start: ${error}`);
   }
 });
