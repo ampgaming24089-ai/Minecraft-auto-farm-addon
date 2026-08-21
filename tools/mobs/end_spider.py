@@ -1,6 +1,6 @@
 import sys, math
 sys.path.insert(0, "tools")
-from mobkit import UVAtlas, bone, cube, geometry, muzzle, write
+from mobkit import UVAtlas, bone, cube, geometry, muzzle, radial_leg, stand, write
 
 # End Spider: eight legs is the whole silhouette, so they get built properly -
 # three jointed segments each, splayed on a fan, with the front pair raised.
@@ -67,27 +67,20 @@ for side, mirror in ((1, False), (-1, True)):
                       [cube([side * 2 - 1, 6, -12], [2, 6, 2], uv, mirror=mirror)],
                       parent="head", rotation=[18, 0, side * 10]))
 
-# Legs: four a side, each thigh / shin / foot, fanned front to back.
+# Legs: four a side. Out from the body and up to a high knee, then back down
+# past the belly to the floor - the arch is the whole reason a spider reads as
+# a spider, and it only works if the femur goes sideways rather than back.
 for side, mirror in ((1, False), (-1, True)):
     for i in range(4):
         tag = "%s%d" % ("l" if side > 0 else "r", i)
-        yaw = -34 + i * 24
-        hipz = -5 + i * 4
-        uv = atlas.box((3, 3, 14))
-        px = side * 4 if side > 0 else side * 4 - 3
-        bones.append(bone("leg_" + tag, [side * 4, 15, hipz],
-                          [cube([px, 14, hipz], [3, 3, 14], uv, mirror=mirror)],
-                          parent="thorax", rotation=[-38, side * yaw, side * -14]))
-        uv = atlas.box((3, 14, 3))
-        bones.append(bone("shin_" + tag, [side * 4, 15, hipz + 14],
-                          [cube([px, 1, hipz + 13], [3, 14, 3], uv, mirror=mirror)],
-                          parent="leg_" + tag, rotation=[62, 0, 0]))
-        uv = atlas.box((2, 2, 6))
-        bones.append(bone("foot_" + tag, [side * 4, 1, hipz + 14],
-                          [cube([px, 0, hipz + 13], [2, 2, 6], uv, mirror=mirror)],
-                          parent="shin_" + tag, rotation=[24, 0, 0]))
+        bones.extend(radial_leg(atlas, "leg_" + tag, "thorax",
+                                [side * 5, 15, -6 + i * 4],
+                                femur=(11, 3, 3), tibia=(3, 20, 3),
+                                tarsus=(2, 6, 2),
+                                fan=40 - i * 26, lift=36 - i * 3,
+                                drop=18 + i * 2, claw=54, mirrored=mirror))
 
 write("RP/models/entity/end_spider.geo.json",
-      geometry("geometry.voidbound.end_spider", (256, 256), bones,
+      geometry("geometry.voidbound.end_spider", (256, 256), stand(bones),
                bounds=(4, 2, (0, 0.8, 0))))
 print("end_spider: %d bones" % len(bones))

@@ -221,6 +221,55 @@ def limb(atlas, name, parent, hip, upper, lower, foot=None, splay=0.0,
     return bones
 
 
+def radial_leg(atlas, name, parent, hip, femur, tibia, tarsus=None,
+               fan=0.0, lift=34.0, drop=20.0, claw=48.0, mirrored=False):
+    """An arthropod leg: out, up, then down. Spiders, crabs, anything radial.
+
+    `limb()` builds a leg straight down from a hip, which is right for a
+    quadruped and wrong for everything with eight of them. A spider's femur
+    goes *outward* from the body and *up*, the knee is the highest point of
+    the animal, and the tibia comes back down past the belly to the floor.
+    Build it as a limb pitched backwards instead and you get flat splayed
+    flaps, because the segments end up lying in the wrong plane entirely.
+
+    The angles are given in *world* degrees, which is the only way to reason
+    about a leg: `lift` is how far the femur rises above horizontal, `drop`
+    and `claw` are how far the tibia and the foot lean out from vertical. Each
+    bone's own rotation is worked back from those by subtracting what it
+    already inherits from its parent, so changing one segment does not silently
+    swing the two below it.
+    """
+    side = -1 if mirrored else 1
+    hx, hy, hz = hip
+    fl, fh, fd = femur
+    tw, tl, td = tibia
+    bones = []
+
+    uv = atlas.box((fl, fh, fd))
+    origin = [hx if side > 0 else hx - fl, hy - fh / 2.0, hz - fd / 2.0]
+    bones.append(bone(name, [hx, hy, hz],
+                      [cube(origin, [fl, fh, fd], uv, mirror=mirrored)],
+                      parent=parent, rotation=[0, side * fan, side * lift]))
+
+    kx, ky, kz = hx + side * fl, hy, hz
+    uv = atlas.box((tw, tl, td))
+    shin = name + "_shin"
+    bones.append(bone(shin, [kx, ky, kz],
+                      [cube([kx - tw / 2.0, ky - tl, kz - td / 2.0],
+                            [tw, tl, td], uv, mirror=mirrored)],
+                      parent=name, rotation=[0, 0, side * (drop - lift)]))
+
+    if tarsus:
+        sw, sl, sd = tarsus
+        ax, ay, az = kx, ky - tl, kz
+        uv = atlas.box((sw, sl, sd))
+        bones.append(bone(name + "_foot", [ax, ay, az],
+                          [cube([ax - sw / 2.0, ay - sl, az - sd / 2.0],
+                                [sw, sl, sd], uv, mirror=mirrored)],
+                          parent=shin, rotation=[0, 0, side * (claw - drop)]))
+    return bones
+
+
 def geometry(identifier, texture_size, bones, bounds=(3, 3, (0, 1, 0))):
     return {
         "description": {

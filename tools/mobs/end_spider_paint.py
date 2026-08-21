@@ -65,7 +65,7 @@ def painter(bone, face, fx, fy, fw, fh):
             if t < 0.34 + waist * 0.4:
                 return mix(base, MAGENTA, 0.55 - waist * 0.2)
         return edge_light(base, fx, fy, fw, fh)
-    if bone.startswith("leg") or bone.startswith("shin") or bone.startswith("foot"):
+    if bone.startswith("leg"):
         base = carapace(fx, fy, fw, fh, seed)
         # Joint banding, so eight identical limbs still have articulation.
         if fy % 5 == 0:
