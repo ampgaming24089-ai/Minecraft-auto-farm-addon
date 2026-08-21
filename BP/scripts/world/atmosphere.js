@@ -23,6 +23,7 @@
 
 import { system, world } from "@minecraft/server";
 import { distanceTo, sitesNear } from "./sites.js";
+import { biomeAt } from "./biomes.js";
 import { END_DIMENSION } from "./generator.js";
 
 /** Always-on layer while in the End. */
@@ -49,6 +50,14 @@ function stateFor(playerId) {
   return state;
 }
 
+/**
+ * Which fog this player should be under, in priority order.
+ *
+ * Depth beats everything: over the void, nothing else matters. A structure
+ * beats its biome, because standing inside a grove should feel like a grove
+ * whichever region it happens to sit in. Otherwise the biome decides, which
+ * is what makes crossing a border something you see before you look down.
+ */
 function regionFogFor(player) {
   const position = player.location;
   if (position.y < VOID_HEIGHT) return "voidbound:fog_void_deep";
@@ -57,6 +66,11 @@ function regionFogFor(player) {
     if (!site.blueprint.fog) continue;
     if (distanceTo(site, position) < site.blueprint.radius + 24) return site.blueprint.fog;
   }
+
+  const biome = biomeAt(position.x, position.z);
+  // The Barrens use the base fog, which is already pushed underneath, so
+  // pushing it again on the region handle would just be a redundant command.
+  if (biome.fog && biome.fog !== BASE_FOG) return biome.fog;
   return undefined;
 }
 

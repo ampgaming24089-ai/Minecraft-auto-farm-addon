@@ -1,0 +1,29 @@
+{
+  "format_version": "1.21.120",
+  "minecraft:block": {
+    "description": {
+      "identifier": "voidbound:ashen_end_stone",
+      "menu_category": {
+        "category": "nature"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.voidbound:ashen_end_stone.name",
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "voidbound_ashen_end_stone",
+          "render_method": "opaque",
+          "ambient_occlusion": 1.0
+        }
+      },
+      "minecraft:map_color": "#3E3A38",
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 0.9
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 9
+      }
+    }
+  }
+}

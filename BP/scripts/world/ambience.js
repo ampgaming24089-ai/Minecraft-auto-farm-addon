@@ -20,6 +20,7 @@
 
 import { system, world } from "@minecraft/server";
 import { END_DIMENSION } from "./generator.js";
+import { biomeAt, borderProximity } from "./biomes.js";
 import { distanceTo, sitesNear } from "./sites.js";
 
 const INTERVAL_TICKS = 10;
@@ -41,6 +42,10 @@ const SPORE_CHANCE = 0.55;
 
 /** How close to a grove counts as inside it. */
 const GROVE_RANGE = 22;
+
+/** Biome emitters per player per interval, and how far out they scatter. */
+const BIOME_EMITTERS = 3;
+const BIOME_RADIUS = 20;
 
 /**
  * Edge detection: how far out to sample, and the band an island can live in.
@@ -118,6 +123,44 @@ function ambientFor(player) {
   }
 
   edgeDraft(player);
+  biomeAir(player);
+}
+
+/**
+ * The biome's own particles.
+ *
+ * This is the layer that does most of the work of making a region feel like a
+ * place: spores hanging in the Glowspore Basin, frost falling through the
+ * Bonespire Reach, embers climbing out of the Ashen Wastes. Rates come from
+ * the biome table, so a quiet biome stays quiet.
+ *
+ * Emitters are placed on a ring around the player and faded out near a border,
+ * because a biome that switches its air on like a light gives away that it is
+ * a script rather than a place.
+ */
+function biomeAir(player) {
+  const { x, y, z } = player.location;
+  const biome = biomeAt(x, z);
+  if (!biome.particle) return;
+
+  // Near a border the rate halves, so the change reads as a transition.
+  const rate = (biome.particleChance ?? 0.5) * (borderProximity(x, z) ? 1 : 0.45);
+  if (Math.random() > rate) return;
+
+  const dimension = player.dimension;
+  for (let i = 0; i < BIOME_EMITTERS; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 4 + Math.random() * BIOME_RADIUS;
+    const at = {
+      x: x + Math.cos(angle) * distance,
+      y: y + biome.particleLift + Math.random() * 10,
+      z: z + Math.sin(angle) * distance,
+    };
+    // A particle spawned in a biome the player is not standing in reads as a
+    // leak across the border, so each emitter checks its own footing.
+    if (biomeAt(at.x, at.z).id !== biome.id) continue;
+    spawn(dimension, biome.particle, at);
+  }
 }
 
 /**

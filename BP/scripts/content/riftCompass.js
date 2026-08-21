@@ -100,7 +100,7 @@ export function startRiftCompass() {
     try {
       survey(player);
     } catch (error) {
-      console.warn(`[End Unbound] compass survey failed: ${error}`);
+      console.warn(`[End Divided] compass survey failed: ${error}`);
     }
   });
 

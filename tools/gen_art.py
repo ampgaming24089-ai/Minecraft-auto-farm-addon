@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate every End Unbound texture from source.
+"""Regenerate every End Divided texture from source.
 
     python3 tools/gen_art.py
 
@@ -2324,6 +2324,151 @@ def block_end_detail():
          emissive_from=cap[:3], emissive_gain=1.2, emissive_threshold=0.42)
 
 
+def block_biome_set():
+    """Surfaces and accents for the six painted biomes.
+
+    Each biome has to be recognisable from the air in one glance, which means
+    the *surface* block carries the identity and everything else agrees with
+    it. So these are built as one family: the same end-stone substrate under
+    every one, retinted and re-textured, so a border between two of them reads
+    as the same world changing rather than as two packs meeting.
+    """
+    # --- Glowspore Basin: hot magenta fungal ground ------------------------
+    spore_base = hex_rgba("#B0407E")
+    spore_dark = hex_rgba("#5A1840")
+    soil = stone_base(4101, spore_base, spore_dark, contrast=0.34)
+
+    def spore_speck(x, y, cur):
+        n = fbm(x * 2.2, y * 2.2, 16, 4102, octaves=3, base_period=5)
+        if n > 0.68:
+            return mix(cur, hex_rgba("#FF9AD8"), (n - 0.68) / 0.32 * 0.7)
+        return cur
+
+    soil.each(spore_speck)
+    speckle(soil, 4103, 0.05, [hex_rgba("#FFC2E8"), shade(spore_dark, -0.2)])
+    emit(soil, BLOCKS, "voidbound_glowspore_soil", roughness=216,
+         emissive_from=(255, 154, 216), emissive_gain=0.85, emissive_threshold=0.5)
+
+    # The cap: concentric rings, so a giant mushroom does not tile as a grid.
+    cap = Canvas(16)
+    cap_hi = hex_rgba("#FF6FB4")
+    cap_lo = hex_rgba("#7A2050")
+
+    def cap_face(x, y, _cur):
+        d = math.hypot(x + 0.5 - 8, y + 0.5 - 8)
+        ring = math.sin(d * 1.5) * 0.5 + 0.5
+        n = fbm(x * 1.6, y * 1.6, 16, 4104, octaves=3, base_period=6)
+        base = mix(cap_lo, cap_hi, min(1.0, ring * 0.7 + n * 0.4))
+        if d > 7.2:
+            return shade(base, -0.3)
+        return base
+
+    cap.each(cap_face)
+    emit(cap, BLOCKS, "voidbound_sporelight_cap", roughness=190,
+         emissive_from=cap_hi[:3], emissive_gain=1.35, emissive_threshold=0.34)
+
+    # The fungus: a slim stalk under a wide glowing cap.
+    fungus = Canvas(16)
+    stalk = hex_rgba("#F0D8E8")
+    glow = hex_rgba("#FF8FD0")
+    for y in range(8, 16):
+        fungus.set(7, y, stalk)
+        fungus.set(8, y, shade(stalk, -0.22))
+    for y in range(3, 9):
+        spread = 6 - abs(y - 6)
+        for x in range(8 - spread, 9 + spread):
+            if not 0 <= x < 16:
+                continue
+            fungus.blend(x, y, glow if y < 7 else mix(glow, spore_dark, 0.45))
+    for x in range(3, 13, 2):
+        fungus.blend(x, 8, shade(glow, 0.4))
+    emit(fungus, BLOCKS, "voidbound_sporelight_fungus", roughness=168,
+         emissive_from=glow[:3], emissive_gain=1.6, emissive_threshold=0.26)
+
+    # --- Bonespire Reach: pale bone under a cold sky ----------------------
+    bone = hex_rgba("#DDD6C0")
+    bone_dark = hex_rgba("#7E7866")
+    spire = stone_base(4201, bone, bone_dark, contrast=0.30)
+
+    def grain(x, y, cur):
+        # Vertical striation, so a spire reads as grown rather than quarried.
+        n = fbm(x * 3.4, y * 0.7, 16, 4202, octaves=3, base_period=4)
+        return shade(cur, (n - 0.5) * 0.34)
+
+    spire.each(grain)
+    veins(spire, 4203, 4, shade(bone_dark, -0.28), 12, wobble=0.7)
+    emit(spire, BLOCKS, "voidbound_bonespire_stone", roughness=228)
+
+    frost = Canvas(16)
+    petal = hex_rgba("#CFE8FF")
+    petal_lo = hex_rgba("#5F7FA8")
+    heart = hex_rgba("#FFFFFF")
+    for i in range(6):
+        angle = i * math.pi / 3
+        for t in range(1, 7):
+            fx = 8 + math.cos(angle) * t * 0.95
+            fy = 9 - math.sin(angle) * t * 0.95
+            frost.blend(int(round(fx)), int(round(fy)), mix(petal, petal_lo, t / 7.0))
+            if t < 4:
+                frost.blend(int(round(fx)) + 1, int(round(fy)), mix(petal_lo, petal, 0.4))
+    for y in range(10, 16):
+        frost.set(8, y, mix(petal_lo, bone_dark, 0.4))
+    frost.blend(8, 9, heart)
+    emit(frost, BLOCKS, "voidbound_frost_bloom", roughness=110,
+         emissive_from=petal[:3], emissive_gain=1.25, emissive_threshold=0.4)
+
+    # --- Crystalline Expanse: end stone shot through with violet ----------
+    crystal = stone_base(4301, PALETTE["endstone"], PALETTE["endstone_dark"], contrast=0.22)
+    seam = hex_rgba("#A768F0")
+    veins(crystal, 4302, 6, seam, 14, wobble=1.4)
+    veins(crystal, 4303, 4, shade(seam, 0.45), 9, wobble=1.8)
+    speckle(crystal, 4304, 0.035, [hex_rgba("#DCC0FF"), shade(seam, -0.3)])
+    emit(crystal, BLOCKS, "voidbound_crystalline_end_stone", roughness=140,
+         emissive_from=seam[:3], emissive_gain=1.1, emissive_threshold=0.4)
+
+    # --- Ashen Wastes: burnt stone, and the vents that burnt it -----------
+    ash = hex_rgba("#3E3A38")
+    ash_dark = hex_rgba("#1C1A19")
+    ashen = stone_base(4401, ash, ash_dark, contrast=0.36)
+    speckle(ashen, 4402, 0.05, [hex_rgba("#6B6360"), shade(ash_dark, -0.3)])
+    emit(ashen, BLOCKS, "voidbound_ashen_end_stone", roughness=248)
+
+    vent = Canvas(16)
+    ember_hot = hex_rgba("#FFD08A")
+    ember_mid = hex_rgba("#E8621E")
+
+    def vent_face(x, y, _cur):
+        n = fbm(x * 1.9, y * 1.9, 16, 4403, octaves=3, base_period=5)
+        base = mix(ash_dark, ash, n)
+        # Cracks running with heat: hottest at the centre of each fissure.
+        crack = fbm(x * 3.1, y * 3.1, 16, 4404, octaves=2, base_period=7)
+        if crack > 0.62:
+            heat = (crack - 0.62) / 0.38
+            return mix(mix(base, ember_mid, 0.8), ember_hot, heat)
+        return base
+
+    vent.each(vent_face)
+    emit(vent, BLOCKS, "voidbound_ember_vent", roughness=226,
+         emissive_from=ember_hot[:3], emissive_gain=1.7, emissive_threshold=0.28)
+
+    # --- Aurora Shelf: pale iridescent stone under the lights -------------
+    aurora_a = hex_rgba("#8FC6C0")
+    aurora_b = hex_rgba("#3A5E74")
+    shelf = stone_base(4501, aurora_a, aurora_b, contrast=0.24)
+
+    def iridescent(x, y, cur):
+        # Two offset fields at different periods, so the sheen shifts across
+        # the face instead of sitting in one place.
+        a = fbm(x * 1.3, y * 1.3, 16, 4502, octaves=3, base_period=7)
+        b = fbm(x * 1.3 + 40, y * 1.3 + 40, 16, 4503, octaves=3, base_period=5)
+        tint = hex_rgba("#C8F0E4") if a > b else hex_rgba("#9AB4F0")
+        return mix(cur, tint, abs(a - b) * 0.6)
+
+    shelf.each(iridescent)
+    emit(shelf, BLOCKS, "voidbound_aurora_stone", roughness=126,
+         emissive_from=(200, 240, 228), emissive_gain=0.6, emissive_threshold=0.56)
+
+
 # --------------------------------------------------------------------------
 
 
@@ -2372,6 +2517,7 @@ def main():
         block_waystone,
         block_flora_and_stone,
         block_end_detail,
+        block_biome_set,
         item_gameplay_set,
         item_ender_fruit,
         item_sovereign_crown,

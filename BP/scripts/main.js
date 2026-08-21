@@ -1,14 +1,16 @@
 /**
- * End Unbound - entry point.
+ * End Divided - entry point.
  *
  * Four systems, started once at load:
  *   sites/generator  places seed-derived structures ahead of the player
+ *   painter          repaints the ground in its region's palette
+ *   biome life       announces regions and tops up their mob rosters
  *   atmosphere       swaps fog by region, above what the client biome provides
  *   ambience         drifting motes and falling streaks, so the sky has motion
  *   flight control   pulls flyers back when they climb or drift over the void
  *   discovery        acknowledges arriving somewhere new
  *   rift compass     reads the structure map and points at it
- *   armour set       grants the End Unbound set bonus in the End
+ *   armour set       grants the End Divided set bonus in the End
  *   ender sapling    grows planted saplings into End trees
  *   emotes           one-shot player poses on the moments that earn them
  *   mob actions      attack swings and hurt recoils for the pack's mobs
@@ -34,12 +36,16 @@ import { startUtilityItems } from "./content/utilityItems.js";
 import { startWaystones } from "./content/waystones.js";
 import { startAmbience } from "./world/ambience.js";
 import { startAtmosphere } from "./world/atmosphere.js";
+import { startBiomeLife } from "./world/biomeLife.js";
 import { startDiscovery } from "./world/discovery.js";
 import { startFlightControl } from "./world/flightControl.js";
 import { startGenerator } from "./world/generator.js";
+import { startPainter } from "./world/painter.js";
 
 function start() {
   startGenerator();
+  startPainter();
+  startBiomeLife();
   startAtmosphere();
   startAmbience();
   startFlightControl();
@@ -53,7 +59,7 @@ function start() {
   startVoidTitan();
   startUtilityItems();
   startWaystones();
-  console.log("[End Unbound] End systems online");
+  console.log("[End Divided] End systems online");
 }
 
 // worldLoad fires once the world is ready for world.seed and player queries.
@@ -62,6 +68,6 @@ world.afterEvents.worldLoad.subscribe(() => {
   try {
     start();
   } catch (error) {
-    console.error(`[End Unbound] failed to start: ${error}`);
+    console.error(`[End Divided] failed to start: ${error}`);
   }
 });

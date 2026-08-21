@@ -1,26 +1,28 @@
-# End Unbound — an End overhaul for Minecraft Bedrock
+# End Divided — an End overhaul for Minecraft Bedrock
 
 The End has been one biome, one sky and two structures since 1.9. End
 Ascendant rebuilds it for Bedrock **26.4** (internal `1.26.40`, current hotfix
-`26.44`): a forest, three bosses, thirteen mobs, a full tool and armour tier, a
-food chain, a waystone travel network, five structure types scattered across the
-outer islands, an animation pack for the player and every mob in it, and an
-atmosphere that moves.
+`26.44`): **seven biomes** in a dimension the engine says has one, three bosses,
+thirteen mobs, a full tool and armour tier, a food chain, a waystone travel
+network, five structure types scattered across the outer islands, an animation
+pack for the player and every mob in it, and an atmosphere that moves.
 
 Everything runs on documented, non-experimental APIs. No experiments toggle,
 no world conversion, no commands typed by the player.
 
 | | |
 |---|---|
-| Blocks | 27 |
+| Biomes | 7, seed-derived, with their own terrain, fog, light and air |
+| Blocks | 36 |
 | Items | 25 |
 | Mobs | 16, three of them bosses |
 | Recipes | 32 |
 | Structures | 5 kinds, procedurally varied |
 | Worldgen features | 15, across 9 placement rules |
-| Particle effects | 13 |
+| Fog definitions | 9, one per biome plus depth and structures |
+| Particle effects | 18 |
 | Animations | 108 clips, including a player animation pack |
-| Textures | 150, all generated from code |
+| Textures | 168, all generated from code |
 
 ```
 ./build_addon.sh --check      # validate everything, then build the .mcaddon
@@ -36,7 +38,7 @@ not the PBR lighting.
 ### The sky and the light
 
 The End's built-in look is a flat purple void: two constant white directional
-lights, a near-black sky, no depth. End Unbound replaces the whole Vibrant
+lights, a near-black sky, no depth. End Divided replaces the whole Vibrant
 Visuals stack for `minecraft:the_end`.
 
 | File | What it does |
@@ -55,7 +57,7 @@ through `lighting/global.json`. That is the part most End packs get wrong.
 ### Fog that knows where you are
 
 Bedrock exposes exactly one End biome, so a biome-bound fog can only ever be
-one mood. End Unbound ships four fog definitions and pushes the right one onto
+one mood. End Divided ships four fog definitions and pushes the right one onto
 each player's fog stack — the layer that sits above biome fog:
 
 - **`fog_end_open`** — the default, bound to the biome. Thin violet haze that
@@ -178,6 +180,66 @@ reusing the worldgen feature — a feature cannot be invoked from script, and a
 planted tree wants to be a little smaller than a wild one so a grove you build
 does not swallow whatever you built it next to. Logs and leaves only replace
 air, so a trunk that leans can never carve through something you built.
+
+### Seven biomes, in a dimension that has one
+
+Bedrock gives the End exactly one biome and no way for an add-on to add
+another. Every End pack that appears to have biomes is doing what this does:
+dividing the dimension into regions in script, then changing everything a
+player can actually perceive — the ground under them, the fog, the light, the
+particles, what spawns, and a name on screen when they cross a border. The
+engine still thinks it is all `minecraft:the_end`. Nobody flying over it does.
+
+| Biome | Ground | Air | Reads as |
+|---|---|---|---|
+| **Voidfall Barrens** | untouched End stone | the base haze | the End you already know — a quarter of the dimension, and what makes the other six feel like somewhere else |
+| **Glowspore Basin** | magenta fungal soil, sporelight caps on stalks | thick, hot, close | a basin you are down inside rather than looking across |
+| **Bonespire Reach** | pale striated bone, frost blooms | cold and very wide, almost no absorption | somewhere the haze carries to the horizon |
+| **Crystalline Expanse** | violet-veined stone, echo clusters | thin and bright, hard glints | air that glitters rather than obscures |
+| **Verdant Canopy** | verdant crust over moss, bushes and saplings | teal, strong forward scattering | the one safe-feeling place out there |
+| **Ashen Wastes** | burnt charcoal stone, ember vents at light 14 | short draw, heavy absorption, warm | the only biome that hides things from you |
+| **Aurora Shelf** | pale iridescent stone | nothing at eye level, everything up high | somewhere you look up |
+
+**Where a biome is** is a pure function of the world seed and position — no
+storage, identical for every player on a seed, and answerable for a place
+nobody has ever been. A plain grid of cells would give square biomes with
+ruler-straight borders, so the lookup **warps its own input** before quantising
+it, by an amount that itself comes from smooth value noise. The cells stay
+square; the borders stop being. Regions are 640 blocks across, which is big
+enough that you fly into one, watch the light change, and are still in it a
+minute later.
+
+**Painting the ground** is `BP/scripts/world/painter.js`, and it is the one
+system in the pack that rewrites terrain a player might care about, so it is
+deliberately timid:
+
+- Only *worldgen* ground is ever replaced — end stone and the three variants
+  this pack's features scatter through it. The biome surfaces the painter
+  itself lays down are **not** on that list, which is what makes a player's
+  build safe: the only way glowspore soil exists is that the painter put it
+  there (and that patch is already marked done) or that somebody placed it
+  (and it must not be touched).
+- Flora only ever goes into air, directly on top of ground the painter just
+  laid.
+- A patch whose chunks were not loaded stays **unmarked**, so it is picked up
+  again later rather than being left plain for the rest of the world's life.
+- Work runs in `system.runJob`, which yields between columns — a first arrival
+  in a region is a few thousand block reads.
+
+**Everything else follows the region.** Fog resolves in priority order: depth
+beats everything, a structure beats its biome (a grove should feel like a grove
+whichever region it sits in), and otherwise the biome decides. Particles come
+from the biome table with their own vertical lift, because frost has to fall
+from somewhere and embers have to climb out of something — and each emitter
+re-checks its own footing, so nothing leaks across a border. Rates halve near
+an edge, because a biome that switches its air on like a light gives away that
+it is a script rather than a place.
+
+Spawning is region-gated too, since spawn rules can only filter on the
+*engine's* idea of biome. Each region's roster is topped up from script at a
+rate low enough to supplement natural spawning rather than replace it —
+vanilla endermen keep their share of the spawn budget, which was a specific
+thing to protect.
 
 ### The animation pack
 
@@ -330,15 +392,15 @@ the player so they read as depth rather than as dust on the lens.
 - **Rift Compass** — points at the nearest structure by name, distance and
   bearing, and names the runner-up so you can pick a route.
 
-### End Unbound armour
+### End Divided armour
 
 The endgame set, a clear step past netherite:
 
 | | Helm | Cuirass | Greaves | Sabatons | Set |
 |---|---|---|---|---|---|
-| End Unbound protection | 4 | 9 | 7 | 4 | **24** |
+| End Divided protection | 4 | 9 | 7 | 4 | **24** |
 | Netherite protection | 3 | 8 | 6 | 3 | 20 |
-| End Unbound durability | 561 | 816 | 765 | 663 | |
+| End Divided durability | 561 | 816 | 765 | 663 | |
 | Netherite durability | 407 | 592 | 555 | 481 | |
 
 Enchantability is 18 against netherite's 15, and pieces repair with void
@@ -369,10 +431,14 @@ set.
 
 Bedrock add-ons cannot add biomes to the End, cannot add structures to the
 chunk generator, and cannot ship custom shaders. Three constraints, three
-answers:
+answers — and in every case the answer is to stop trying to change what the
+engine believes and change what the player perceives instead:
 
-**Biomes → the fog stack.** Covered above: one biome, four moods, swapped by
-proximity.
+**Biomes → regions in script.** Covered above. Seed-derived, noise-warped
+regions decide the ground, the fog, the air, the spawns and the name on screen.
+The engine's answer to "what biome is this" never changes; everything a player
+can see does. Fog is one part of that rather than the whole trick, and there
+are nine definitions now rather than four.
 
 **Structures → generate ahead of the player.** Siting is a pure function of
 `(world seed, cell x, cell z)` — a hash decides whether a cell holds a
@@ -521,6 +587,11 @@ half those errors were already fixed. Check the path before chasing one:
   cadence and damage are all tuned blind.
 - Waystone menu behaviour on touch devices, and whether cancelling the form
   leaves anything stuck.
+- How the painter feels in play: whether `PATCHES_PER_SCAN` at 3 keeps up with
+  a player on an elytra, and whether the first arrival in a region is a visible
+  wave of ground changing or reads as always having been there.
+- Whether the biome fogs are too strong at their borders. Rates fade but the
+  fog swap itself is a hard cut, because Bedrock's fog stack has no crossfade.
 - Whether the player clips read as offsets or as fights with vanilla's own
   poses. The amplitudes are conservative for exactly this reason, but they are
   tuned blind and the sneak and fall poses are the two most likely to need
@@ -545,6 +616,11 @@ half those errors were already fixed. Check the path before chasing one:
 | Sky colours and scattering | `RP/atmospherics/end.json` |
 | Fog density, colour and shaft hardness | `RP/fogs/*.json` — `henyey_greenstein_g` is the beam-width dial |
 | Star density | `end_sky()` in `tools/gen_art.py` — coverage above ~5% reads as grain |
+| Biome mix, terrain, flora, rosters | `BIOMES` in `BP/scripts/world/biomes.js` |
+| Biome size and border wander | `BIOME_CELL`, `WARP_STRENGTH`, `WARP_PERIOD` in `biomes.js` |
+| What the painter may overwrite | `NATURAL` in `BP/scripts/world/painter.js` |
+| Painting radius and rate | `PAINT_RADIUS`, `PATCHES_PER_SCAN` in `painter.js` |
+| Region spawn cap and rate | `NEARBY_CAP`, `SPAWN_CHANCE` in `BP/scripts/world/biomeLife.js` |
 | Structure spacing and rarity | `CELL_SIZE`, `SITE_CHANCE`, `INNER_CLEARANCE` in `BP/scripts/world/sites.js` |
 | Which structures, how often | `STRUCTURES` weights in `BP/scripts/structures/index.js` |
 | Chest contents and rarity curve | `BP/scripts/content/loot.js` |
@@ -565,14 +641,15 @@ half those errors were already fixed. Check the path before chasing one:
 
 ```
 BP/                     behavior pack
-  blocks/ items/        27 blocks, 25 items (4 of them armour, 5 tools)
+  blocks/ items/        36 blocks, 25 items (4 of them armour, 5 tools)
   entities/ spawn_rules/ loot_tables/
   features/ feature_rules/   ore, shattered stone and flora generation
   recipes/
   scripts/
     lib/                rng, vectors, blueprint placement
     structures/         the five blueprints
-    world/              siting, generation, atmosphere, discovery, persistence
+    world/              biomes, painter, siting, generation, atmosphere,
+                        discovery, flight control, persistence
     content/            loot, compass, bosses, waystones, saplings, armour set
 RP/                     resource pack
   lighting/ atmospherics/ color_grading/ pbr/ local_lighting/ fogs/

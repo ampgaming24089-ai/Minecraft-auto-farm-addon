@@ -1,13 +1,13 @@
 {
   "format_version": 2,
   "header": {
-    "name": "End Unbound [Behavior]",
-    "description": "The End, rebuilt for Bedrock 26.4 - three bosses, thirteen mobs, a waystone network, custom player and mob animations, tools, armour and a sky that moves.",
-    "uuid": "3af1a1a8-14d7-4964-abf5-a715c989ea3e",
+    "name": "End Divided [Behavior]",
+    "description": "Seven biomes for a dimension that has one - painted terrain, per-region fog, light and particles, three bosses, thirteen mobs, a waystone network and a full player animation pack. Bedrock 26.4.",
+    "uuid": "6620440a-5485-4dab-9cae-dff56d3c17a3",
     "version": [
       1,
-      4,
-      1
+      5,
+      0
     ],
     "min_engine_version": [
       1,
@@ -18,10 +18,10 @@
   "metadata": {
     "product_type": "addon",
     "authors": [
-      "End Unbound"
+      "End Divided"
     ],
     "generated_with": {
-      "end_unbound_tools": [
+      "end_divided_tools": [
         "1.0.0"
       ]
     }
@@ -29,21 +29,21 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "8adf1602-8d03-4338-9090-f375f4fe42ab",
+      "uuid": "9f4f7ba0-b6d5-439a-8dd3-2c225f2a9b7d",
       "version": [
         1,
-        4,
-        1
+        5,
+        0
       ]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "1f896da1-b48f-4da0-bf88-5e9c09dfade0",
+      "uuid": "2ee44d5d-5cc3-4508-88fc-3d3931d5730c",
       "version": [
         1,
-        4,
-        1
+        5,
+        0
       ],
       "entry": "scripts/main.js"
     }
@@ -58,11 +58,11 @@
       "version": "2.1.0"
     },
     {
-      "uuid": "27fa419a-327a-457d-b4b5-00862fab62f6",
+      "uuid": "0d7084c1-bebb-467e-a25b-f38a38cd8840",
       "version": [
         1,
-        4,
-        1
+        5,
+        0
       ]
     }
   ]

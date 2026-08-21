@@ -2,7 +2,7 @@
  * Turning sites into actual structures.
  *
  * Bedrock add-ons cannot add structures to the chunk generator itself, so
- * End Unbound generates them just ahead of the player instead: a scan every two
+ * End Divided generates them just ahead of the player instead: a scan every two
  * seconds finds sited structures the player is approaching, checks that the
  * ground under them is untouched natural End, and builds them over a handful
  * of ticks with system.runJob.
@@ -95,7 +95,7 @@ function* buildJob(dimension, site, origin) {
           x: origin.x, y: origin.y + 3, z: origin.z,
         });
       } catch (error) {
-        console.warn(`[End Unbound] could not place the Warden at ${site.key}: ${error}`);
+        console.warn(`[End Divided] could not place the Warden at ${site.key}: ${error}`);
       }
       yield;
     }
@@ -108,7 +108,7 @@ function* buildJob(dimension, site, origin) {
           z: origin.z,
         });
       } catch (error) {
-        console.warn(`[End Unbound] could not place the Sovereign at ${site.key}: ${error}`);
+        console.warn(`[End Divided] could not place the Sovereign at ${site.key}: ${error}`);
       }
       yield;
     }
@@ -122,7 +122,7 @@ function* buildJob(dimension, site, origin) {
           z: origin.z + offset.z,
         });
       } catch (error) {
-        console.warn(`[End Unbound] could not place the Titan at ${site.key}: ${error}`);
+        console.warn(`[End Divided] could not place the Titan at ${site.key}: ${error}`);
       }
       yield;
     }
@@ -144,7 +144,7 @@ function* buildJob(dimension, site, origin) {
 
     markBuilt(site.key);
   } catch (error) {
-    console.warn(`[End Unbound] build failed at ${site.key}: ${error}`);
+    console.warn(`[End Divided] build failed at ${site.key}: ${error}`);
     rejected.add(site.key);
   } finally {
     building.delete(site.key);

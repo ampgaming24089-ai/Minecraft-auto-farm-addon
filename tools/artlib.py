@@ -1,4 +1,4 @@
-"""Tiny dependency-free imaging toolkit for End Unbound's texture pipeline.
+"""Tiny dependency-free imaging toolkit for End Divided's texture pipeline.
 
 Everything here is pure standard library: PNGs are encoded by hand with zlib so
 the art can be regenerated on any machine with a bare Python 3, no Pillow, no

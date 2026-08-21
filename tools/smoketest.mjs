@@ -297,6 +297,151 @@ try {
     check("chest is not empty", items.length > 0, `seed ${seed}`);
   }
 
+  // --- biomes --------------------------------------------------------------
+  // The whole illusion rests on biomeAt being a pure function of the seed: if
+  // it drifts, two players on one world stand in different biomes, the fog
+  // disagrees with the ground, and the painter repaints the same patch twice.
+  {
+    const { biomeAt, BIOMES, BIOME_CELL, borderProximity } = await load("world/biomes.js");
+
+    check("biomeAt is deterministic", (() => {
+      for (let i = 0; i < 400; i++) {
+        const x = (i * 977) % 40000 - 20000;
+        const z = (i * 1483) % 40000 - 20000;
+        if (biomeAt(x, z).id !== biomeAt(x, z).id) return false;
+      }
+      return true;
+    })());
+
+    check("biomeAt always returns a table entry", (() => {
+      for (let i = 0; i < 2000; i++) {
+        const x = (i * 613) % 60000 - 30000;
+        const z = (i * 8117) % 60000 - 30000;
+        const biome = biomeAt(x, z);
+        if (!biome || BIOMES[biome.id] !== biome) return false;
+      }
+      return true;
+    })());
+
+    // Vanilla's island, the pillars and the gateway have to stay untouched,
+    // and the Barrens are the biome that paints nothing.
+    check("the origin stays vanilla", (() => {
+      for (let a = 0; a < 32; a++) {
+        const angle = (a / 32) * Math.PI * 2;
+        for (const r of [0, 200, 500, 850]) {
+          const biome = biomeAt(Math.cos(angle) * r, Math.sin(angle) * r);
+          if (biome.id !== "barrens" || biome.surface !== undefined) return false;
+        }
+      }
+      return true;
+    })());
+
+    // Every biome must be reachable, or a whole set of art ships unseen.
+    {
+      const seen = new Set();
+      for (let i = 0; i < 20000; i++) {
+        seen.add(biomeAt((i * 1301) % 90000 - 45000, (i * 7919) % 90000 - 45000).id);
+      }
+      for (const id of Object.keys(BIOMES)) {
+        check(`biome ${id} actually occurs`, seen.has(id));
+      }
+    }
+
+    // Regions have to be big enough to stand in. Walking a straight line, a
+    // biome that changes every few steps is a patchwork, not a place.
+    {
+      let runs = 0;
+      let previous;
+      for (let x = 2000; x < 42000; x += 16) {
+        const id = biomeAt(x, 3000).id;
+        if (id !== previous) runs += 1;
+        previous = id;
+      }
+      const averageRun = 40000 / Math.max(1, runs);
+      check("biome runs are region-sized", averageRun > BIOME_CELL * 0.4,
+        `average run ${Math.round(averageRun)} blocks over 40k`);
+    }
+
+    // Borders must not be straight: a warp that fails silently gives square
+    // biomes, which look exactly as generated as they are.
+    {
+      let straight = 0;
+      let checked = 0;
+      for (let z = 4000; z < 20000; z += 64) {
+        let edgeX;
+        let previous = biomeAt(4000, z).id;
+        for (let x = 4000; x < 12000; x += 16) {
+          const id = biomeAt(x, z).id;
+          if (id !== previous) { edgeX = x; break; }
+          previous = id;
+        }
+        if (edgeX === undefined) continue;
+        checked += 1;
+        // A square grid would put every border on a multiple of the cell size.
+        if (Math.abs(edgeX % BIOME_CELL) < 32) straight += 1;
+      }
+      check("biome borders are warped, not gridded",
+        checked > 8 && straight / checked < 0.3, `${straight}/${checked} on the grid`);
+    }
+
+    check("borderProximity flags a border", (() => {
+      // Somewhere inside a region it should read 1; the sweep below must find
+      // at least one spot where it reads 0, or the fade never fires.
+      let sawEdge = false;
+      let sawInside = false;
+      for (let i = 0; i < 3000; i++) {
+        const value = borderProximity((i * 613) % 40000 - 20000, (i * 1471) % 40000 - 20000);
+        if (value === 0) sawEdge = true;
+        if (value === 1) sawInside = true;
+      }
+      return sawEdge && sawInside;
+    })());
+
+    // Every id the table names has to exist, or the painter places nothing
+    // and the fog push silently fails.
+    for (const biome of Object.values(BIOMES)) {
+      for (const id of [biome.surface, biome.filler].filter(Boolean)) {
+        check(`${biome.id} surface ${id} exists`, KNOWN_IDS.has(id));
+      }
+      for (const entry of biome.flora ?? []) {
+        check(`${biome.id} flora ${entry.id} exists`, KNOWN_IDS.has(entry.id));
+        check(`${biome.id} flora ${entry.id} has weight`, entry.weight > 0);
+      }
+      check(`${biome.id} has a name`, typeof biome.name === "string" && biome.name.length > 0);
+      check(`${biome.id} has a colour code`, /^§[0-9a-fk-or]$/.test(biome.colour));
+      if (biome.particle) {
+        check(`${biome.id} sets particleLift`, typeof biome.particleLift === "number");
+      }
+    }
+  }
+
+  // --- the painter only ever replaces worldgen ------------------------------
+  // The painter is the one system that rewrites ground a player might care
+  // about, so what it is willing to overwrite is worth asserting rather than
+  // trusting. A biome surface appearing in NATURAL would mean a player's own
+  // glowspore floor could be repainted out from under them.
+  {
+    const source = readFileSync(join(ROOT, "BP", "scripts", "world", "painter.js"), "utf8");
+    const listed = new Set(
+      [...source.matchAll(/const NATURAL = new Set\(\[([^\]]*)\]/gs)]
+        .flatMap((match) => [...match[1].matchAll(/"([^"]+)"/g)].map((entry) => entry[1]))
+    );
+    check("painter has a NATURAL list", listed.size > 0);
+    for (const id of listed) {
+      check(`painter replaceable ${id} exists`, KNOWN_IDS.has(id));
+    }
+    const { BIOMES } = await load("world/biomes.js");
+    for (const biome of Object.values(BIOMES)) {
+      if (!biome.surface) continue;
+      // verdant and mossy end stone predate the biomes and are placed by
+      // worldgen features, so those two are legitimately in both lists.
+      if (biome.surface === "voidbound:verdant_end_stone") continue;
+      check(`painter will not overwrite ${biome.surface}`, !listed.has(biome.surface));
+    }
+    check("painter marks a patch only when it completed",
+      /if \(report\.complete\) markPainted/.test(source));
+  }
+
   // --- every system starts without throwing --------------------------------
   // A module that throws at import or at start takes the entire script pack
   // offline in game, with nothing in the content log pointing at the cause.
@@ -312,9 +457,11 @@ try {
     ["content/waystones.js", "startWaystones"],
     ["world/ambience.js", "startAmbience"],
     ["world/atmosphere.js", "startAtmosphere"],
+    ["world/biomeLife.js", "startBiomeLife"],
     ["world/discovery.js", "startDiscovery"],
     ["world/flightControl.js", "startFlightControl"],
     ["world/generator.js", "startGenerator"],
+    ["world/painter.js", "startPainter"],
   ];
   for (const [relPath, exportName] of ENTRY_POINTS) {
     let module;

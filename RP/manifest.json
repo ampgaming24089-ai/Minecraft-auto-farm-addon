@@ -1,13 +1,13 @@
 {
   "format_version": 2,
   "header": {
-    "name": "End Unbound [Resources]",
-    "description": "Lighting, volumetric fog, a starfield sky, 108 animation clips and PBR art for End Unbound.",
-    "uuid": "27fa419a-327a-457d-b4b5-00862fab62f6",
+    "name": "End Divided [Resources]",
+    "description": "Per-biome fog and particles, lighting, a starfield sky, 108 animation clips and PBR art for End Divided.",
+    "uuid": "0d7084c1-bebb-467e-a25b-f38a38cd8840",
     "version": [
       1,
-      4,
-      1
+      5,
+      0
     ],
     "min_engine_version": [
       1,
@@ -18,17 +18,17 @@
   "metadata": {
     "product_type": "addon",
     "authors": [
-      "End Unbound"
+      "End Divided"
     ]
   },
   "modules": [
     {
       "type": "resources",
-      "uuid": "9ad52fbb-7386-4947-a0b0-c5b983534cd9",
+      "uuid": "5e0c3bbd-9c14-4732-a2f0-2de4e523f3d2",
       "version": [
         1,
-        4,
-        1
+        5,
+        0
       ]
     }
   ],

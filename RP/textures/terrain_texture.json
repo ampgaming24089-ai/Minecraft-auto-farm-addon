@@ -96,6 +96,33 @@
     },
     "voidbound_pale_shroom": {
       "textures": "textures/blocks/voidbound_pale_shroom"
+    },
+    "voidbound_glowspore_soil": {
+      "textures": "textures/blocks/voidbound_glowspore_soil"
+    },
+    "voidbound_sporelight_cap": {
+      "textures": "textures/blocks/voidbound_sporelight_cap"
+    },
+    "voidbound_sporelight_fungus": {
+      "textures": "textures/blocks/voidbound_sporelight_fungus"
+    },
+    "voidbound_bonespire_stone": {
+      "textures": "textures/blocks/voidbound_bonespire_stone"
+    },
+    "voidbound_frost_bloom": {
+      "textures": "textures/blocks/voidbound_frost_bloom"
+    },
+    "voidbound_crystalline_end_stone": {
+      "textures": "textures/blocks/voidbound_crystalline_end_stone"
+    },
+    "voidbound_ashen_end_stone": {
+      "textures": "textures/blocks/voidbound_ashen_end_stone"
+    },
+    "voidbound_ember_vent": {
+      "textures": "textures/blocks/voidbound_ember_vent"
+    },
+    "voidbound_aurora_stone": {
+      "textures": "textures/blocks/voidbound_aurora_stone"
     }
   }
 }
