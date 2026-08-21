@@ -1906,11 +1906,17 @@ def end_sky():
 
     So there is no noise here at all. The base is a perfectly flat colour,
     which means every face averages identically and the corners disappear, and
-    every bit of visible interest comes from stars - small enough that
-    repetition does not read, dense enough that the sky is not empty. Depth
-    comes from four brightness tiers rather than from clouds, and movement
-    comes from particles in front of the sky (see world/ambience.js), because
-    Bedrock gives a pack no way to animate a skybox.
+    every bit of visible interest comes from stars. Movement comes from
+    particles in front of the sky (see world/ambience.js), because Bedrock
+    gives a pack no way to animate a skybox.
+
+    Density is the whole game, and the first version got it badly wrong: 2358
+    stars in a 128px tile is fourteen percent of every pixel, and at the
+    distance a skybox is actually viewed that stops reading as stars and starts
+    reading as film grain. A real night sky is mostly empty. So this is sparse
+    - about three percent coverage - and it buys back the lost interest with
+    *contrast* instead of count: a few genuinely bright stars with halos, over
+    a scattering of faint ones, rather than a uniform wash of dim ones.
     """
     size = 128
     c = Canvas(size, size)
@@ -1922,21 +1928,25 @@ def end_sky():
         hex_rgba("#A9D8FF"), hex_rgba("#FFC2E8"), hex_rgba("#FFE7C2"),
     ]
 
-    # Four tiers, faintest first, so brighter stars land on top.
-    for count, low, high in ((1500, 0.06, 0.18), (620, 0.20, 0.42), (200, 0.5, 0.75)):
+    # Three tiers, faintest first so brighter stars land on top. The faint tier
+    # is the one that turns into grain, so it is the one kept smallest.
+    for count, low, high in ((300, 0.10, 0.24), (110, 0.30, 0.52), (34, 0.60, 0.86)):
         for _ in range(count):
             sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
             c.set(sx, sy, mix(c.get(sx, sy), rng.pick(tints), rng.range(low, high)))
 
-    # Bright stars, with a halo soft enough that it does not read as a shape
-    # when the tile repeats.
-    for _ in range(38):
+    # The handful that carry the sky. Full brightness with a soft halo, few
+    # enough that the halo never reads as a repeating shape across the tile.
+    for _ in range(14):
         sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
         tint = rng.pick(tints)
         c.set(sx, sy, tint)
         for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
             nx, ny = (sx + dx) % size, (sy + dy) % size
-            c.set(nx, ny, mix(c.get(nx, ny), tint, 0.30))
+            c.set(nx, ny, mix(c.get(nx, ny), tint, 0.34))
+        for dx, dy in ((1, 1), (1, -1), (-1, 1), (-1, -1)):
+            nx, ny = (sx + dx) % size, (sy + dy) % size
+            c.set(nx, ny, mix(c.get(nx, ny), tint, 0.12))
 
     os.makedirs(ENVIRONMENT, exist_ok=True)
     out(c, ENVIRONMENT, "end_sky")

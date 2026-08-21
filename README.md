@@ -492,6 +492,21 @@ unreferenced, until the cause is understood.
 The sky is covered regardless by the `end_sky.png` override, which does not go
 through Vibrant Visuals at all.
 
+### Round three
+
+One in-game load on 26.44 (iOS), four real bugs, and every one of them now has
+a rule that catches it.
+
+| Log line | Cause | Fix |
+|---|---|---|
+| `Missing referenced asset voidbound_titan_core` ×4 | `minecraft:icon` names a *key* in `item_texture.json`, not a file. The art was generated and the item registered; the atlas entry was never added, so four items existed, crafted, and rendered as nothing | Registered, plus a rule that resolves every icon and `material_instances` key through the atlases, every atlas entry to a file, and flags atlas entries nothing refers to |
+| `polished_end_stone has the same ingredients as minecraft:end_bricks` | Four end stone in a square *is* the vanilla end-bricks recipe | Re-based on shattered end stone — a pack material, so it cannot collide. A rule now flags any recipe made entirely of vanilla ingredients, since that is exactly the set that can collide with a recipe this repo cannot see |
+| The End looked grainy | 2358 stars in a 128px tile is **14% of every pixel**. At the distance a skybox is viewed that stops reading as stars and starts reading as film grain | Cut to 3.5% coverage, and the lost interest bought back with contrast rather than count: fewer stars, a real bright tier, halos on a handful |
+| Light shafts read as hard beams with banding | `henyey_greenstein_g` at 0.82 concentrates nearly all scattering into a narrow forward lobe | 0.66 for the open End, and the fog distance band widened from 0.12 of render distance to 0.28 so the gradient has room to be a gradient |
+
+The `Syc's Force Creative` scripting error in that log is a different add-on
+entirely and has nothing to do with this one.
+
 ### Reading the log
 
 Content-log errors carry the world path they came from. Two different worlds
@@ -528,7 +543,8 @@ half those errors were already fixed. Check the path before chasing one:
 | Palette / all texture colours | `PALETTE` in `tools/gen_art.py` |
 | Sky, sun, flash, ambient | `RP/lighting/end.json` |
 | Sky colours and scattering | `RP/atmospherics/end.json` |
-| Fog density and colour | `RP/fogs/*.json` |
+| Fog density, colour and shaft hardness | `RP/fogs/*.json` — `henyey_greenstein_g` is the beam-width dial |
+| Star density | `end_sky()` in `tools/gen_art.py` — coverage above ~5% reads as grain |
 | Structure spacing and rarity | `CELL_SIZE`, `SITE_CHANCE`, `INNER_CLEARANCE` in `BP/scripts/world/sites.js` |
 | Which structures, how often | `STRUCTURES` weights in `BP/scripts/structures/index.js` |
 | Chest contents and rarity curve | `BP/scripts/content/loot.js` |

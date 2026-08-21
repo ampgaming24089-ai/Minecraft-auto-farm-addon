@@ -628,10 +628,167 @@ if (existsSync(OVERRIDE) && existsSync(REFERENCE)) {
   }
 }
 
+/**
+ * Texture atlases: the gap that shipped four invisible items.
+ *
+ * `minecraft:icon` and a block's `material_instances` do not name a file. They
+ * name a *key* in item_texture.json or terrain_texture.json, and that key is
+ * what points at the file. Generate the art, register the block, forget the
+ * atlas entry, and the item exists, crafts, and renders as nothing - with the
+ * reason sitting in a content log as "Missing referenced asset".
+ *
+ * Three ways that goes wrong, all checked here: a key with no atlas entry, an
+ * atlas entry pointing at a file that is not there, and an atlas entry nothing
+ * refers to (harmless, but always a sign something was renamed by halves).
+ */
+function readAtlas(file) {
+  const entries = new Map();
+  const full = join(ROOT, "RP", "textures", file);
+  if (!existsSync(full)) return entries;
+  let data;
+  try {
+    data = JSON.parse(readFileSync(full, "utf8"));
+  } catch {
+    return entries;
+  }
+  for (const [key, value] of Object.entries(data.texture_data ?? {})) {
+    // Single-variant entries use a bare string; multi-variant use a list.
+    const raw = value?.textures ?? value;
+    const paths = Array.isArray(raw)
+      ? raw.map((entry) => (typeof entry === "string" ? entry : entry?.path))
+      : [typeof raw === "string" ? raw : raw?.path];
+    entries.set(key, paths.filter(Boolean));
+  }
+  return entries;
+}
+
+const ITEM_ATLAS = readAtlas("item_texture.json");
+const TERRAIN_ATLAS = readAtlas("terrain_texture.json");
+const usedAtlasKeys = new Set();
+
+for (const [atlas, file] of [[ITEM_ATLAS, "item_texture.json"], [TERRAIN_ATLAS, "terrain_texture.json"]]) {
+  for (const [key, paths] of atlas) {
+    for (const path of paths) {
+      if (existsSync(join(ROOT, "RP", `${path}.png`))) continue;
+      if (existsSync(join(ROOT, "RP", path))) continue;
+      problems.push({
+        id: `RP/textures/${file}: ${key} -> ${path}`,
+        files: new Set([`RP/textures/${file}`]),
+        why: "the atlas points at a texture file that is not in the pack",
+      });
+    }
+  }
+}
+
+for (const [folder, atlas, atlasName] of [
+  ["items", ITEM_ATLAS, "item_texture.json"],
+  ["blocks", TERRAIN_ATLAS, "terrain_texture.json"],
+]) {
+  const dir = join(ROOT, "BP", folder);
+  if (!existsSync(dir)) continue;
+  for (const file of walk(dir)) {
+    if (!file.endsWith(".json")) continue;
+    const rel = relative(ROOT, file).split("\\").join("/");
+    let components;
+    try {
+      const data = JSON.parse(readFileSync(file, "utf8"));
+      components = (data["minecraft:item"] ?? data["minecraft:block"])?.components;
+    } catch {
+      continue;
+    }
+    if (!components) continue;
+
+    const keys = [];
+    const icon = components["minecraft:icon"];
+    if (typeof icon === "string") keys.push(icon);
+    else for (const value of Object.values(icon?.textures ?? {})) keys.push(value);
+    for (const instance of Object.values(components["minecraft:material_instances"] ?? {})) {
+      if (typeof instance?.texture === "string") keys.push(instance.texture);
+    }
+
+    for (const key of keys) {
+      usedAtlasKeys.add(key);
+      if (atlas.has(key)) continue;
+      problems.push({
+        id: `${rel}: ${key}`,
+        files: new Set([rel]),
+        why: `not registered in RP/textures/${atlasName}, so the game renders nothing for it`,
+      });
+    }
+  }
+}
+
+for (const [atlas, file] of [[ITEM_ATLAS, "item_texture.json"], [TERRAIN_ATLAS, "terrain_texture.json"]]) {
+  for (const key of atlas.keys()) {
+    if (usedAtlasKeys.has(key)) continue;
+    problems.push({
+      id: `RP/textures/${file}: ${key}`,
+      files: new Set([`RP/textures/${file}`]),
+      why: "registered in the atlas but named by no block or item - a rename finished by halves",
+    });
+  }
+}
+
+/**
+ * Recipes that can collide with a vanilla one.
+ *
+ * Bedrock resolves a duplicate crafting shape by picking one and logging a
+ * warning, which is how `polished_end_stone` - four end stone in a square -
+ * quietly fought `minecraft:end_bricks` for the same grid. The vanilla recipe
+ * set is not available to check against here, but the rule that matters is
+ * simple: a recipe made *entirely* of vanilla ingredients is a recipe that can
+ * collide with one, and a recipe that uses anything from this pack cannot.
+ *
+ * Anything genuinely checked against vanilla by hand goes in the allowlist,
+ * with the reason, the same way tools/validate.mjs records schema defects.
+ */
+const VANILLA_INGREDIENT_ALLOWLIST = new Map([
+  // ["voidbound:something", "why this shape is known not to collide"],
+]);
+
+const RECIPE_DIR = join(ROOT, "BP", "recipes");
+if (existsSync(RECIPE_DIR)) {
+  for (const file of walk(RECIPE_DIR)) {
+    if (!file.endsWith(".json")) continue;
+    const rel = relative(ROOT, file).split("\\").join("/");
+    let data;
+    try {
+      data = JSON.parse(readFileSync(file, "utf8"));
+    } catch {
+      continue;
+    }
+    for (const [kind, recipe] of Object.entries(data)) {
+      if (!kind.startsWith("minecraft:recipe")) continue;
+      // Furnace recipes take one input and cannot share a grid with anything.
+      if (kind === "minecraft:recipe_furnace") continue;
+
+      const ingredients = new Set();
+      for (const value of Object.values(recipe.key ?? {})) {
+        if (typeof value?.item === "string") ingredients.add(value.item);
+      }
+      for (const value of recipe.ingredients ?? []) {
+        if (typeof value?.item === "string") ingredients.add(value.item);
+      }
+      if (ingredients.size === 0) continue;
+
+      const id = recipe.description?.identifier ?? rel;
+      if (VANILLA_INGREDIENT_ALLOWLIST.has(id)) continue;
+      if ([...ingredients].every((item) => item.startsWith("minecraft:"))) {
+        problems.push({
+          id: `${rel}: ${id}`,
+          files: new Set([rel]),
+          why: "every ingredient is vanilla, so this shape can collide with a vanilla recipe - "
+            + "use a pack material, or add it to VANILLA_INGREDIENT_ALLOWLIST with the reason",
+        });
+      }
+    }
+  }
+}
+
 console.log(
   `checked ${references.size} distinct identifier(s) ` +
     `against ${VANILLA.size} vanilla ids and ${DEFINED.size} pack definitions, ` +
-    `plus block-reference, client-entity, animation, script-animation, override-drift and integer-field rules`
+    `plus block-reference, client-entity, animation, script-animation, override-drift, texture-atlas, recipe-collision and integer-field rules`
 );
 
 if (problems.length === 0) {

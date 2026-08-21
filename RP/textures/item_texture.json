@@ -64,6 +64,18 @@
     },
     "voidbound_ender_fruit_pie": {
       "textures": "textures/items/voidbound_ender_fruit_pie"
+    },
+    "voidbound_astral_shard": {
+      "textures": "textures/items/voidbound_astral_shard"
+    },
+    "voidbound_void_chitin": {
+      "textures": "textures/items/voidbound_void_chitin"
+    },
+    "voidbound_voidsteel_ingot": {
+      "textures": "textures/items/voidbound_voidsteel_ingot"
+    },
+    "voidbound_titan_core": {
+      "textures": "textures/items/voidbound_titan_core"
     }
   }
 }

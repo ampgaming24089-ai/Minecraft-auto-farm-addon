@@ -6,7 +6,7 @@
     },
     "distance": {
       "air": {
-        "fog_start": 0.88,
+        "fog_start": 0.62,
         "fog_end": 1.0,
         "fog_color": "#14424C",
         "render_distance_type": "render"
@@ -37,7 +37,7 @@
       },
       "henyey_greenstein_g": {
         "air": {
-          "henyey_greenstein_g": 0.88
+          "henyey_greenstein_g": 0.8
         }
       }
     }

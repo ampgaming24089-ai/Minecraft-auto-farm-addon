@@ -8,17 +8,17 @@
       "crafting_table"
     ],
     "pattern": [
-      "EE",
-      "EE"
+      "SS",
+      "SS"
     ],
     "key": {
-      "E": {
-        "item": "minecraft:end_stone"
+      "S": {
+        "item": "voidbound:shattered_end_stone"
       }
     },
     "unlock": [
       {
-        "item": "minecraft:end_stone"
+        "item": "voidbound:shattered_end_stone"
       }
     ],
     "result": {
