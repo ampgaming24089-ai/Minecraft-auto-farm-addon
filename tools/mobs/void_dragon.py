@@ -1,6 +1,7 @@
 import sys
 sys.path.insert(0, "tools")
-from mobkit import UVAtlas, bone, cube, geometry, taper_chain, spine_row, limb, write
+from mobkit import (UVAtlas, bone, cube, geometry, taper_chain, spine_row,
+                    limb, muzzle, write)
 
 # Void Dragon. The flagship, so everything that reads at silhouette gets built
 # properly: a neck that curves, a skull with a real jaw and horns, wings that
@@ -24,21 +25,11 @@ for b in neck:
     b["rotation"] = [-9, 0, 0]
 bones.extend(neck)
 
-uv = atlas.box((9, 8, 13))
-bones.append(bone("skull", [0, 41, -46], [cube([-4.5, 37, -58], [9, 8, 13], uv)],
-                  parent=neck_tip))
-uv = atlas.box((8, 4, 11))
-bones.append(bone("jaw", [0, 38, -46], [cube([-4, 34, -56], [8, 4, 11], uv)],
-                  parent="skull", rotation=[9, 0, 0]))
-# Teeth, a browplate, and a pair of swept horns.
-for i in range(4):
-    uv = atlas.box((1, 2, 1))
-    bones.append(bone("tooth_%d" % i, [0, 38, -55 + i * 3],
-                      [cube([-3.5 + i * 2.2, 36, -55 + i * 3], [1, 2, 1], uv)],
-                      parent="skull"))
-uv = atlas.box((11, 3, 8))
-bones.append(bone("brow", [0, 45, -50], [cube([-5.5, 44, -56], [11, 3, 8], uv)],
-                  parent="skull"))
+# A proper head: braincase, a snout that comes forward off it, a hinged lower
+# jaw with a dark maw behind the teeth, nostrils and an overhanging brow.
+bones.extend(muzzle(atlas, "skull", neck_tip, [0, 41, -44],
+                    skull=(11, 10, 12), snout=(8, 7, 11),
+                    jaw_drop=13.0, teeth=5, tooth_size=(1, 3, 1)))
 for side, mirror in ((1, False), (-1, True)):
     tag = "horn_" + ("left" if side > 0 else "right")
     prev = "skull"
@@ -59,10 +50,10 @@ for i in range(3):
     for side, mirror in ((1, False), (-1, True)):
         uv = atlas.box((2, 6 - i, 2))
         bones.append(bone("frill_%s_%d" % ("l" if side > 0 else "r", i),
-                          [side * 5, 40, -44 + i * 4],
-                          [cube([side * 5 - 1, 40, -44 + i * 4], [2, 6 - i, 2],
+                          [side * 5.5, 41, -38 + i * 4],
+                          [cube([side * 5.5 - 1, 41, -38 + i * 4], [2, 7 - i, 2],
                                 uv, mirror=mirror)],
-                          parent="skull", rotation=[0, 0, side * (28 + i * 8)]))
+                          parent="skull", rotation=[0, 0, side * (30 + i * 10)]))
 
 # --- Wings ---------------------------------------------------------------
 for side, mirror in ((1, False), (-1, True)):

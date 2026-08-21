@@ -60,19 +60,32 @@ def painter(bone, face, fx, fy, fw, fh):
     if "finger" in bone or bone.endswith("_fore") or bone.startswith("wing"):
         return edge_light(scaled(fx, fy, fw, fh, seed, VOID, ROYAL), fx, fy, fw, fh)
 
-    if bone.startswith("tooth"):
+    if "_tooth_" in bone or bone.startswith("tooth"):
+        # Teeth are the brightest thing on the animal; they have to read at
+        # distance or an open mouth just looks like a hole.
         return WHITE if fy == 0 else ICE
 
-    if bone.startswith("horn") or bone.startswith("frill") or bone == "brow":
+    if bone.endswith("_maw"):
+        # The roof of the mouth: near-black, with heat toward the throat.
+        t = 1.0 - fy / max(1.0, fh - 1.0)
+        return mix(hex_rgba("#0A0308"), MAGENTA, t * 0.35)
+
+    if "_eye_" in bone:
+        # A lit iris with a dark rim, so the socket reads as a socket.
+        if fy in (0, fh - 1) or fx in (0, fw - 1):
+            return shade(VOID, -0.35)
+        return mix(MAGENTA, WHITE, 0.45)
+
+    if "_nostril" in bone:
+        return shade(VOID, -0.4)
+
+    if bone.startswith("horn") or bone.startswith("frill") or bone.endswith("_brow"):
         t = fy / max(1.0, fh - 1.0)
         return mix(mix(DEEP, ROYAL, 0.4), ORCHID, max(0.0, 0.45 - t * 0.45))
 
-    if bone == "skull" or bone == "jaw":
-        if bone == "skull" and face == "north":
-            if fy in (2, 3) and fx in (1, 2, fw - 3, fw - 2):
-                return MAGENTA if fy == 2 else WHITE
-        if bone == "jaw" and top:
-            return mix(MAGENTA, WHITE, 0.4)    # lit maw
+    if bone in ("skull", "skull_snout", "skull_jaw"):
+        if bone == "skull_jaw" and top:
+            return mix(MAGENTA, WHITE, 0.35)   # lit gumline
         return edge_light(scaled(fx, fy, fw, fh, seed, VOID, ROYAL), fx, fy, fw, fh)
 
     if bone.startswith("spine") or bone.startswith("hipspine") or bone.startswith("tailfin"):

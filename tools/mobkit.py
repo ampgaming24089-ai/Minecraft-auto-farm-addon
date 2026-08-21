@@ -241,3 +241,106 @@ def write(path, *geometries):
         json.dump({"format_version": "1.12.0",
                    "minecraft:geometry": list(geometries)}, handle, indent=2)
         handle.write("\n")
+
+
+def muzzle(atlas, name, parent, anchor, skull, snout, jaw_drop=7.0, teeth=4,
+           tooth_size=(1, 2, 1), nostrils=True, brow=True, cavity=True):
+    """A head with a mouth that reads as a mouth.
+
+    A face painted onto the flat front of a cube is the single thing that made
+    every model here look wrong, and no amount of texture fixes it: what the
+    eye is looking for is *geometry*. A snout that comes forward off the skull,
+    an upper and a lower jaw with a dark gap between them, teeth that break the
+    line of that gap, a brow that overhangs the eyes, and nostrils.
+
+    So this builds all of it, and every mob in the pack gets its head from
+    here rather than from a box with eyes drawn on.
+
+    `anchor` is where the head joins its parent. `skull` and `snout` are
+    (w, h, d). The snout is deliberately narrower and shallower than the skull
+    - a muzzle that matches the braincase reads as a brick.
+    """
+    ax, ay, az = anchor
+    sw, sh, sd = skull
+    nw, nh, nd = snout
+    bones = []
+
+    uv = atlas.box((sw, sh, sd))
+    bones.append(bone(name, [ax, ay, az],
+                      [cube([ax - sw / 2.0, ay - sh / 2.0, az - sd], [sw, sh, sd], uv)],
+                      parent=parent))
+
+    # The snout sits forward of the skull and slightly high, so the mouth line
+    # falls below the middle of the face where a real one does.
+    snout_z = az - sd
+    snout_y = ay - sh / 2.0 + (sh - nh) * 0.62
+    uv = atlas.box((nw, nh, nd))
+    bones.append(bone(name + "_snout", [ax, snout_y + nh / 2.0, snout_z],
+                      [cube([ax - nw / 2.0, snout_y, snout_z - nd], [nw, nh, nd], uv)],
+                      parent=name))
+
+    # A black box behind the teeth. Without it a parted jaw shows sky through
+    # the head, which is worse than no mouth at all.
+    if cavity:
+        # The palate: a thin dark plate on the underside of the snout, so a
+        # parted jaw shows the roof of a mouth rather than sky through the
+        # head. It belongs to the snout, not the skull - hung off the skull it
+        # stays put while the jaw swings and pokes out through the chin.
+        cw, ch, cd = nw - 2, 2, nd - 1
+        uv = atlas.box((cw, ch, cd))
+        bones.append(bone(name + "_maw", [ax, snout_y, snout_z],
+                          [cube([ax - cw / 2.0, snout_y - ch, snout_z - cd],
+                                [cw, ch, cd], uv)], parent=name + "_snout"))
+
+    # Lower jaw: hinged at the back of the skull, dropped so the mouth is open.
+    jw, jh, jd = nw, max(2, int(nh * 0.7)), nd + 1
+    uv = atlas.box((jw, jh, jd))
+    bones.append(bone(name + "_jaw", [ax, snout_y, az - sd * 0.4],
+                      [cube([ax - jw / 2.0, snout_y - jh, snout_z - jd + 1],
+                            [jw, jh, jd], uv)],
+                      parent=name, rotation=[jaw_drop, 0, 0]))
+
+    tw, th, td = tooth_size
+    for i in range(teeth):
+        t = (i + 0.5) / teeth
+        tx = ax - nw / 2.0 + 1 + t * (nw - 2)
+        # Upper teeth point down from the snout, lower teeth up from the jaw.
+        uv = atlas.box((tw, th, td))
+        bones.append(bone("%s_tooth_u%d" % (name, i), [tx, snout_y, snout_z - nd + 1],
+                          [cube([tx - tw / 2.0, snout_y - th, snout_z - nd + 1],
+                                [tw, th, td], uv)], parent=name + "_snout"))
+        uv = atlas.box((tw, th, td))
+        bones.append(bone("%s_tooth_l%d" % (name, i), [tx, snout_y - jh, snout_z - nd + 1],
+                          [cube([tx - tw / 2.0, snout_y - jh, snout_z - nd + 1],
+                                [tw, th, td], uv)], parent=name + "_jaw"))
+
+    if nostrils:
+        for side in (1, -1):
+            uv = atlas.box((2, 2, 2))
+            nx = ax + side * nw * 0.24
+            bones.append(bone("%s_nostril_%s" % (name, "l" if side > 0 else "r"),
+                              [nx, snout_y + nh - 1, snout_z - nd],
+                              [cube([nx - 1, snout_y + nh - 2.5, snout_z - nd - 0.5],
+                                    [2, 2, 2], uv)], parent=name + "_snout"))
+
+    for side in (1, -1):
+        ew, eh, ed = 2, 3, 4
+        ex = ax + side * (sw / 2.0 - 0.5)
+        ey = ay + sh * 0.12
+        uv = atlas.box((ew, eh, ed))
+        bones.append(bone("%s_eye_%s" % (name, "l" if side > 0 else "r"),
+                          [ex, ey, snout_z + 2],
+                          [cube([ex - (0 if side > 0 else ew - 1), ey - eh / 2.0,
+                                 snout_z + 1], [ew, eh, ed], uv,
+                                mirror=side < 0)], parent=name))
+
+    if brow:
+        # An overhanging ridge. It is what puts the eyes in shadow, and eyes in
+        # shadow are most of what makes a face look like it is looking at you.
+        bw, bh, bd = sw + 1, 3, max(3, int(sd * 0.45))
+        uv = atlas.box((bw, bh, bd))
+        bones.append(bone(name + "_brow", [ax, ay + sh / 2.0 - 2, snout_z],
+                          [cube([ax - bw / 2.0, ay + sh / 2.0 - 3.5, snout_z - bd + 1],
+                                [bw, bh, bd], uv)], parent=name))
+
+    return bones

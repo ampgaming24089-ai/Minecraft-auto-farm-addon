@@ -1,6 +1,7 @@
 import sys
 sys.path.insert(0, "tools")
-from mobkit import UVAtlas, bone, cube, geometry, taper_chain, spine_row, write
+from mobkit import (UVAtlas, bone, cube, geometry, taper_chain, spine_row,
+                    muzzle, write)
 
 # Astral Whale: a sky-leviathan that something once harnessed. The body is the
 # easy half; what makes it a *design* rather than a shape is the ironmongery -
@@ -26,23 +27,41 @@ for i, (w, h, d) in enumerate(BODY):
 core = "body_2"
 
 # --- Head: skull, brow ridge, lower jaw, and a blowhole -------------------
-uv = atlas.box((22, 18, 14))
-bones.append(bone("head", [0, 26, -34], [cube([-11, 18, -48], [22, 18, 14], uv)],
-                  parent="body_0"))
-uv = atlas.box((24, 4, 10))
-bones.append(bone("brow", [0, 36, -44], [cube([-12, 34, -50], [24, 4, 10], uv)],
-                  parent="head"))
-uv = atlas.box((20, 6, 13))
-bones.append(bone("jaw", [0, 20, -35], [cube([-10, 14, -47], [20, 6, 13], uv)],
-                  parent="head", rotation=[4, 0, 0]))
+# A whale's head is the same problem as a dragon's - a flat front is a flat
+# front whatever it belongs to - so it gets the same treatment: a braincase, a
+# rostrum forward of it, a hinged lower jaw with a dark palate, and eyes in
+# sockets. No teeth: it filters, so the gap carries baleen instead.
+bones.extend(muzzle(atlas, "head", "body_0", [0, 28, -34],
+                    skull=(22, 18, 14), snout=(17, 12, 15),
+                    jaw_drop=9.0, teeth=0, nostrils=False))
+
+# Baleen plates hanging from the palate down into the gap.
+for i in range(6):
+    uv = atlas.box((14, 5, 2))
+    bones.append(bone("baleen_%d" % i, [0, 25, -60 + i * 3],
+                      [cube([-7, 20, -60 + i * 3], [14, 5, 2], uv)],
+                      parent="head_snout"))
+
+# The rostrum: two more segments forward of the snout, each narrower and
+# shallower, so the head comes to a point instead of ending in a wall.
+prev_r = "head_snout"
+rx_w, rx_h, rx_d = 14, 9, 12
+rz = -63
+for i in range(2):
+    uv = atlas.box((rx_w, rx_h, rx_d))
+    name = "rostrum_%d" % i
+    bones.append(bone(name, [0, 26, rz],
+                      [cube([-rx_w / 2.0, 26 - rx_h / 2.0 + 1, rz - rx_d],
+                            [rx_w, rx_h, rx_d], uv)], parent=prev_r))
+    prev_r = name
+    rz -= rx_d - 1
+    rx_w *= 0.72
+    rx_h *= 0.78
+
+# Blowhole on top of the braincase, where a whale actually breathes.
 uv = atlas.box((6, 3, 6))
-bones.append(bone("blowhole", [0, 36, -36], [cube([-3, 35, -39], [6, 3, 6], uv)],
+bones.append(bone("blowhole", [0, 37, -40], [cube([-3, 36, -43], [6, 3, 6], uv)],
                   parent="head"))
-# Baleen plates hanging inside the jawline.
-for i in range(5):
-    uv = atlas.box((16, 4, 2))
-    bones.append(bone("baleen_%d" % i, [0, 20, -46 + i * 3],
-                      [cube([-8, 17, -46 + i * 3], [16, 4, 2], uv)], parent="jaw"))
 
 # --- Gold strapping: three bands around the hull, each with buckles -------
 # (segment index, how far along that segment the band sits)

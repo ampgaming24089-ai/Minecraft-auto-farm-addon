@@ -79,15 +79,37 @@ def painter(bone, face, fx, fy, fw, fh):
             return mix(mix(DEEP, CYAN, 0.5 + n * 0.2), ICE, band * 0.5)
         return edge_light(mix(DEEP, ROYAL, n * 0.7), fx, fy, fw, fh)
 
-    if bone in ("head", "brow", "jaw", "blowhole"):
-        if bone == "head" and face == "north":
-            if fy in (5, 6) and fx in (3, 4, fw - 5, fw - 4):
-                return CYAN if fy == 5 else ICE
-        if bone == "brow":
-            return mix(metal(fx, fy, fw, fh, seed), ROYAL, 0.25)   # gold browplate
+    if "_eye_" in bone:
+        if fy in (0, fh - 1) or fx in (0, fw - 1):
+            return shade(VOID, -0.3)
+        return mix(CYAN, WHITE, 0.4)
+
+    if bone.endswith("_maw"):
+        t = 1.0 - fy / max(1.0, fh - 1.0)
+        return mix(hex_rgba("#08040E"), CYAN, t * 0.3)
+
+    if bone.endswith("_brow"):
+        return mix(metal(fx, fy, fw, fh, seed), ROYAL, 0.2)        # gold browplate
+
+    if bone.startswith("head") or bone.startswith("rostrum") or bone == "blowhole":
         base = mix(VOID, ROYAL, 0.3 + n * 0.5)
         if bone == "blowhole":
             return mix(base, CYAN, 0.5)
+        if bone == "head_jaw" and face == "up":
+            return mix(base, CYAN, 0.3)                            # lit gumline
+        if belly:
+            # Throat pleats, the way a rorqual's underside is grooved. Whales
+            # are not smooth underneath and a smooth one looks like a bath toy.
+            return mix(base, CYAN, 0.18 + (0.3 if fx % 3 == 0 else 0.0))
+        # The head carries the same constellation flecks as the flanks, or it
+        # reads as a different animal bolted onto the front.
+        star = fbm(fx * 4.0, fy * 4.0, 16, seed + 77, octaves=2, base_period=3)
+        if star > 0.89:
+            return WHITE
+        if star > 0.84:
+            return mix(base, ICE, 0.55)
+        if face in ("east", "west") and fy == fh // 2:
+            base = mix(base, CYAN, 0.4)
         return edge_light(base, fx, fy, fw, fh)
 
     if bone.startswith("tail"):

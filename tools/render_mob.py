@@ -305,11 +305,23 @@ def main():
     parser.add_argument("--out", help="output png")
     parser.add_argument("--turnaround", type=int, default=0,
                         help="render N views around the model into one sheet")
+    parser.add_argument("--only", action="append", default=None,
+                        help="render only bones whose name starts with this; "
+                             "repeatable. Framing follows the selection, so "
+                             "--only skull fills the frame with the head.")
     args = parser.parse_args()
 
     geo_path = os.path.join(ROOT, "RP", "models", "entity", args.name + ".geo.json")
     geometry = load_geometry(geo_path)
     quads = collect_quads(geometry)
+    if args.only:
+        # Judging a face on a whole dragon is hopeless - the head is forty
+        # pixels wide. Filtering to a subtree and letting the framing follow
+        # it is the difference between guessing and looking.
+        prefixes = tuple(args.only)
+        quads = [q for q in quads if q[3].startswith(prefixes)]
+        if not quads:
+            raise SystemExit("no bones matched %s" % (prefixes,))
 
     tex_name = args.texture or ("voidbound_" + args.name)
     tex_path = os.path.join(ROOT, "RP", "textures", "entity", tex_name + ".png")
