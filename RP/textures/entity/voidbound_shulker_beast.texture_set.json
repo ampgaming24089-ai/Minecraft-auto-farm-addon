@@ -1,0 +1,7 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:texture_set": {
+    "color": "voidbound_shulker_beast",
+    "metalness_emissive_roughness": "voidbound_shulker_beast_mer"
+  }
+}

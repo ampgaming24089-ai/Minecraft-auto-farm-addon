@@ -1,0 +1,7 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:texture_set": {
+    "color": "voidbound_purpur_golem",
+    "metalness_emissive_roughness": "voidbound_purpur_golem_mer"
+  }
+}
