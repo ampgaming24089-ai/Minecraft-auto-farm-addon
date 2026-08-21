@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:ender_deer",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_ender_deer"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.ender_deer"
+      },
+      "animations": {
+        "idle": "animation.voidbound.ender_deer.idle",
+        "move": "animation.voidbound.ender_deer.move",
+        "death": "animation.voidbound.ender_deer.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#1A0C31",
+        "overlay_color": "#8AF3FF"
+      }
+    }
+  }
+}

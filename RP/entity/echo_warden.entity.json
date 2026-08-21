@@ -10,19 +10,16 @@
         "default": "textures/entity/voidbound_echo_warden"
       },
       "geometry": {
-        "default": "geometry.voidbound.echo_sentinel"
+        "default": "geometry.voidbound.echo_warden"
       },
       "animations": {
-        "idle": "animation.voidbound.echo_sentinel.idle",
-        "move": "animation.voidbound.echo_sentinel.move",
-        "vb_alert": "animation.voidbound.echo_warden.alert",
-        "vb_death": "animation.voidbound.echo_warden.death",
-        "vb_state": "controller.animation.voidbound.mob.state"
+        "idle": "animation.voidbound.echo_warden.idle",
+        "move": "animation.voidbound.echo_warden.move",
+        "death": "animation.voidbound.echo_warden.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
       },
       "scripts": {
         "animate": [
-          "idle",
-          "move",
           "vb_state"
         ]
       },

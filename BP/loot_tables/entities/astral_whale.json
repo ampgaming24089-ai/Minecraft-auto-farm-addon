@@ -6,29 +6,29 @@
         {
           "type": "item",
           "name": "voidbound:astral_shard",
+          "weight": 4,
           "functions": [
-            { "function": "set_count", "count": { "min": 2, "max": 4 } }
-          ]
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
-        {
-          "type": "item",
-          "name": "voidbound:raw_haunch",
-          "weight": 5,
-          "functions": [
-            { "function": "set_count", "count": { "min": 2, "max": 4 } }
+            {
+              "function": "set_count",
+              "count": {
+                "min": 1,
+                "max": 3
+              }
+            }
           ]
         },
         {
           "type": "item",
-          "name": "voidbound:echo_shard",
-          "weight": 3,
+          "name": "voidbound:void_crystal",
+          "weight": 2,
           "functions": [
-            { "function": "set_count", "count": { "min": 1, "max": 2 } }
+            {
+              "function": "set_count",
+              "count": {
+                "min": 1,
+                "max": 2
+              }
+            }
           ]
         }
       ]

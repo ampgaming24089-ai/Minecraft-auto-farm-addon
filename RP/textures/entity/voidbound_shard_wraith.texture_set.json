@@ -1,7 +1,0 @@
-{
-  "format_version": "1.16.100",
-  "minecraft:texture_set": {
-    "color": "voidbound_shard_wraith",
-    "metalness_emissive_roughness": "voidbound_shard_wraith_mer"
-  }
-}

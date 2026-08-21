@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:shulker_beast",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_shulker_beast"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.shulker_beast"
+      },
+      "animations": {
+        "idle": "animation.voidbound.shulker_beast.idle",
+        "move": "animation.voidbound.shulker_beast.move",
+        "death": "animation.voidbound.shulker_beast.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#2A1140",
+        "overlay_color": "#B27BFF"
+      }
+    }
+  }
+}

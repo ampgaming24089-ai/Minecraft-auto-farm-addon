@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:end_spider",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_end_spider"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.end_spider"
+      },
+      "animations": {
+        "idle": "animation.voidbound.end_spider.idle",
+        "move": "animation.voidbound.end_spider.move",
+        "death": "animation.voidbound.end_spider.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#140828",
+        "overlay_color": "#A640FF"
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:sky_ray",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_sky_ray"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.sky_ray"
+      },
+      "animations": {
+        "idle": "animation.voidbound.sky_ray.idle",
+        "move": "animation.voidbound.sky_ray.move",
+        "death": "animation.voidbound.sky_ray.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#150B26",
+        "overlay_color": "#8AF3FF"
+      }
+    }
+  }
+}

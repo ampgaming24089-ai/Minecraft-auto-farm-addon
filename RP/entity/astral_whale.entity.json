@@ -15,14 +15,11 @@
       "animations": {
         "idle": "animation.voidbound.astral_whale.idle",
         "move": "animation.voidbound.astral_whale.move",
-        "vb_alert": "animation.voidbound.astral_whale.alert",
-        "vb_death": "animation.voidbound.astral_whale.death",
-        "vb_state": "controller.animation.voidbound.mob.state"
+        "death": "animation.voidbound.astral_whale.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
       },
       "scripts": {
         "animate": [
-          "idle",
-          "move",
           "vb_state"
         ]
       },
@@ -30,8 +27,8 @@
         "controller.render.voidbound.default"
       ],
       "spawn_egg": {
-        "base_color": "#2E4A78",
-        "overlay_color": "#6FD8F0"
+        "base_color": "#0E0A1C",
+        "overlay_color": "#FFC65A"
       }
     }
   }

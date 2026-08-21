@@ -1,7 +1,0 @@
-{
-  "format_version": "1.16.100",
-  "minecraft:texture_set": {
-    "color": "voidbound_drift_jelly",
-    "metalness_emissive_roughness": "voidbound_drift_jelly_mer"
-  }
-}

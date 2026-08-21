@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:void_stalker",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_void_stalker"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.void_stalker"
+      },
+      "animations": {
+        "idle": "animation.voidbound.void_stalker.idle",
+        "move": "animation.voidbound.void_stalker.move",
+        "death": "animation.voidbound.void_stalker.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#0D0718",
+        "overlay_color": "#C77BFF"
+      }
+    }
+  }
+}

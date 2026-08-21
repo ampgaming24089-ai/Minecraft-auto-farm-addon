@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:corrupted_enderman",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_corrupted_enderman"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.corrupted_enderman"
+      },
+      "animations": {
+        "idle": "animation.voidbound.corrupted_enderman.idle",
+        "move": "animation.voidbound.corrupted_enderman.move",
+        "death": "animation.voidbound.corrupted_enderman.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#0A0612",
+        "overlay_color": "#FF3DFF"
+      }
+    }
+  }
+}

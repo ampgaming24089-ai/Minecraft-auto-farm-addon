@@ -146,7 +146,7 @@ function* buildJob(dimension, site, origin) {
       const angle = rng.float(0, Math.PI * 2);
       const reach = rng.float(4, site.blueprint.radius);
       try {
-        dimension.spawnEntity("voidbound:rift_stalker", {
+        dimension.spawnEntity("voidbound:void_stalker", {
           x: origin.x + Math.cos(angle) * reach,
           y: origin.y + 2,
           z: origin.z + Math.sin(angle) * reach,

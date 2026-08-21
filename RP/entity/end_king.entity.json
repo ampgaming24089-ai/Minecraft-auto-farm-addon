@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:end_king",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_end_king"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.end_king"
+      },
+      "animations": {
+        "idle": "animation.voidbound.end_king.idle",
+        "move": "animation.voidbound.end_king.move",
+        "death": "animation.voidbound.end_king.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#1A0A2E",
+        "overlay_color": "#FFC65A"
+      }
+    }
+  }
+}

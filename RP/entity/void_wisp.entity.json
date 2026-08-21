@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:void_wisp",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_void_wisp"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.void_wisp"
+      },
+      "animations": {
+        "idle": "animation.voidbound.void_wisp.idle",
+        "move": "animation.voidbound.void_wisp.move",
+        "death": "animation.voidbound.void_wisp.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#070510",
+        "overlay_color": "#6FF0FF"
+      }
+    }
+  }
+}

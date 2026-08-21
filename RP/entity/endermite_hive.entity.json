@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:endermite_hive",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_endermite_hive"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.endermite_hive"
+      },
+      "animations": {
+        "idle": "animation.voidbound.endermite_hive.idle",
+        "move": "animation.voidbound.endermite_hive.move",
+        "death": "animation.voidbound.endermite_hive.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#170A2B",
+        "overlay_color": "#FF3DFF"
+      }
+    }
+  }
+}

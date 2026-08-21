@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:purpur_golem",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_purpur_golem"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.purpur_golem"
+      },
+      "animations": {
+        "idle": "animation.voidbound.purpur_golem.idle",
+        "move": "animation.voidbound.purpur_golem.move",
+        "death": "animation.voidbound.purpur_golem.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#3A1152",
+        "overlay_color": "#E0A8FF"
+      }
+    }
+  }
+}

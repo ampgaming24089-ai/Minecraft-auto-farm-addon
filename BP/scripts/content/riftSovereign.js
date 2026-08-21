@@ -157,8 +157,8 @@ function blink(boss, target) {
 function summon(boss, phase) {
   const origin = boss.location;
   const roster = phase === 3
-    ? ["voidbound:echo_sentinel", "voidbound:shard_wraith"]
-    : ["voidbound:rift_stalker", "voidbound:crystal_crawler"];
+    ? ["voidbound:ender_ghost", "voidbound:void_wisp"]
+    : ["voidbound:void_stalker", "voidbound:end_spider"];
   const count = phase === 3 ? 3 : 4;
 
   for (let i = 0; i < count; i++) {

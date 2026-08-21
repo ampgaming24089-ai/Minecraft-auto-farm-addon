@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:ender_overlord",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_ender_overlord"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.ender_overlord"
+      },
+      "animations": {
+        "idle": "animation.voidbound.ender_overlord.idle",
+        "move": "animation.voidbound.ender_overlord.move",
+        "death": "animation.voidbound.ender_overlord.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#120826",
+        "overlay_color": "#FF6BFF"
+      }
+    }
+  }
+}

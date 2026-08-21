@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:chorus_cow",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_chorus_cow"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.chorus_cow"
+      },
+      "animations": {
+        "idle": "animation.voidbound.chorus_cow.idle",
+        "move": "animation.voidbound.chorus_cow.move",
+        "death": "animation.voidbound.chorus_cow.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#37294A",
+        "overlay_color": "#C060E8"
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:ender_bird",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_ender_bird"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.ender_bird"
+      },
+      "animations": {
+        "idle": "animation.voidbound.ender_bird.idle",
+        "move": "animation.voidbound.ender_bird.move",
+        "death": "animation.voidbound.ender_bird.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#150B26",
+        "overlay_color": "#7BEEFF"
+      }
+    }
+  }
+}

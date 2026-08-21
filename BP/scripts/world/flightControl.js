@@ -17,22 +17,23 @@
 
 import { system, world } from "@minecraft/server";
 import { END_DIMENSION } from "./generator.js";
+import { FLIGHT_TRAILS } from "../content/mobActions.js";
 
 /** typeId -> { ceiling, leash } in blocks. */
 const FLYERS = new Map([
-  ["voidbound:lumen_wisp", { ceiling: 8, leash: 28 }],
-  ["voidbound:void_moth", { ceiling: 9, leash: 32 }],
-  ["voidbound:shard_wraith", { ceiling: 10, leash: 30 }],
-  ["voidbound:echo_sentinel", { ceiling: 7, leash: 24 }],
+  ["voidbound:void_wisp", { ceiling: 8, leash: 26 }],
+  ["voidbound:ender_ghost", { ceiling: 7, leash: 22 }],
+  ["voidbound:ender_bird", { ceiling: 12, leash: 40 }],
+  ["voidbound:sky_ray", { ceiling: 13, leash: 46 }],
   ["voidbound:echo_warden", { ceiling: 6, leash: 16 }],
   ["voidbound:rift_sovereign", { ceiling: 9, leash: 20 }],
+  ["voidbound:ender_overlord", { ceiling: 11, leash: 26 }],
   // The whale is the biggest thing in the sky, so it gets the longest
   // rope - but a higher ceiling would put it out of render range.
   ["voidbound:astral_whale", { ceiling: 14, leash: 44 }],
-  // The Leviathan gets the most rope of anything, because it is meant to be
+  // The dragon gets the most rope of anything, because it is meant to be
   // seen crossing the sky - but the ceiling is what stops it becoming a dot.
-  ["voidbound:void_leviathan", { ceiling: 18, leash: 60 }],
-  ["voidbound:drift_jelly", { ceiling: 11, leash: 26 }],
+  ["voidbound:void_dragon", { ceiling: 18, leash: 60 }],
 ]);
 
 const CHECK_INTERVAL_TICKS = 10;
@@ -119,7 +120,29 @@ function correct(entity, limits) {
   }
 }
 
+/**
+ * How often a flier leaves a puff behind it.
+ *
+ * The sweep runs every ten ticks, and a trail on every pass is a solid tube
+ * of particles following the mob around. One pass in four gives a broken
+ * dotted line, which is what actually reads as a wake.
+ */
+const TRAIL_EVERY = 4;
+let sweeps = 0;
+
+function trail(entity, effect) {
+  if (!effect) return;
+  const at = entity.location;
+  try {
+    entity.dimension.spawnParticle(effect, { x: at.x, y: at.y + 0.5, z: at.z });
+  } catch {
+    // Unloaded chunk, or a client that has not got the effect yet.
+  }
+}
+
 function tick() {
+  sweeps += 1;
+  const laying = sweeps % TRAIL_EVERY === 0;
   let dimension;
   try {
     dimension = world.getDimension(END_DIMENSION);
@@ -137,6 +160,7 @@ function tick() {
       if (!entity.isValid) continue;
       try {
         correct(entity, limits);
+        if (laying) trail(entity, FLIGHT_TRAILS.get(typeId));
       } catch {
         // Entity died or unloaded mid-pass.
       }

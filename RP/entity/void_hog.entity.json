@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:void_hog",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_void_hog"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.void_hog"
+      },
+      "animations": {
+        "idle": "animation.voidbound.void_hog.idle",
+        "move": "animation.voidbound.void_hog.move",
+        "death": "animation.voidbound.void_hog.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#1B1229",
+        "overlay_color": "#FF5CE8"
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:end_crab",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_end_crab"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.end_crab"
+      },
+      "animations": {
+        "idle": "animation.voidbound.end_crab.idle",
+        "move": "animation.voidbound.end_crab.move",
+        "death": "animation.voidbound.end_crab.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#0B0714",
+        "overlay_color": "#5BE9FF"
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:teleporter",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_teleporter"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.teleporter"
+      },
+      "animations": {
+        "idle": "animation.voidbound.teleporter.idle",
+        "move": "animation.voidbound.teleporter.move",
+        "death": "animation.voidbound.teleporter.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#080611",
+        "overlay_color": "#63E8FF"
+      }
+    }
+  }
+}

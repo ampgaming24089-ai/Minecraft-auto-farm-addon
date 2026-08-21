@@ -41,6 +41,50 @@
           ]
         }
       }
+    },
+    "controller.animation.voidbound.mob.full": {
+      "initial_state": "idle",
+      "states": {
+        "idle": {
+          "animations": [
+            "idle"
+          ],
+          "blend_transition": 0.25,
+          "transitions": [
+            {
+              "dying": "!query.is_alive"
+            },
+            {
+              "moving": "query.modified_move_speed > 0.05"
+            }
+          ]
+        },
+        "moving": {
+          "animations": [
+            "move"
+          ],
+          "blend_transition": 0.25,
+          "transitions": [
+            {
+              "dying": "!query.is_alive"
+            },
+            {
+              "idle": "query.modified_move_speed <= 0.05"
+            }
+          ]
+        },
+        "dying": {
+          "animations": [
+            "death"
+          ],
+          "blend_transition": 0.1,
+          "transitions": [
+            {
+              "idle": "query.is_alive"
+            }
+          ]
+        }
+      }
     }
   }
 }

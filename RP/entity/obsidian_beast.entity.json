@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:obsidian_beast",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_obsidian_beast"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.obsidian_beast"
+      },
+      "animations": {
+        "idle": "animation.voidbound.obsidian_beast.idle",
+        "move": "animation.voidbound.obsidian_beast.move",
+        "death": "animation.voidbound.obsidian_beast.death",
+        "vb_state": "controller.animation.voidbound.mob.full"
+      },
+      "scripts": {
+        "animate": [
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#08060E",
+        "overlay_color": "#FF7A2E"
+      }
+    }
+  }
+}

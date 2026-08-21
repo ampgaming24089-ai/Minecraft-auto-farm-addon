@@ -1,0 +1,212 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "voidbound:ender_deer",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "ender_deer",
+          "voidbound",
+          "passive",
+          "mob"
+        ]
+      },
+      "minecraft:collision_box": {
+        "width": 1.2,
+        "height": 2.0
+      },
+      "minecraft:health": {
+        "value": 24,
+        "max": 24
+      },
+      "minecraft:physics": {},
+      "minecraft:nameable": {},
+      "minecraft:pushable": {
+        "is_pushable": true,
+        "is_pushable_by_piston": true
+      },
+      "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:movement": {
+        "value": 0.32
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:navigation.walk": {
+        "can_path_over_water": false,
+        "avoid_water": true,
+        "can_pass_doors": false,
+        "avoid_damage_blocks": true
+      },
+      "minecraft:jump.static": {},
+      "minecraft:behavior.random_stroll": {
+        "priority": 6,
+        "speed_multiplier": 0.8
+      },
+      "minecraft:despawn": {
+        "despawn_from_distance": {}
+      },
+      "minecraft:behavior.panic": {
+        "priority": 1,
+        "speed_multiplier": 1.4
+      },
+      "minecraft:behavior.avoid_mob_type": {
+        "priority": 2,
+        "entity_types": [
+          {
+            "filters": {
+              "test": "is_family",
+              "subject": "other",
+              "value": "monster"
+            },
+            "max_dist": 10,
+            "walk_speed_multiplier": 1.5,
+            "sprint_speed_multiplier": 1.5
+          }
+        ]
+      },
+      "minecraft:breedable": {
+        "require_tame": false,
+        "breeds_with": [
+          {
+            "mate_type": "voidbound:ender_deer",
+            "baby_type": "voidbound:ender_deer",
+            "breed_event": {
+              "event": "minecraft:entity_born"
+            }
+          }
+        ],
+        "love_filters": {
+          "test": "has_component",
+          "subject": "self",
+          "operator": "!=",
+          "value": "minecraft:is_baby"
+        },
+        "food": [
+          {
+            "item": "voidbound:lumen_berry"
+          }
+        ]
+      },
+      "minecraft:behavior.breed": {
+        "priority": 3,
+        "speed_multiplier": 1.0
+      },
+      "minecraft:behavior.follow_parent": {
+        "priority": 4,
+        "speed_multiplier": 1.1
+      },
+      "minecraft:behavior.tempt": {
+        "priority": 4,
+        "speed_multiplier": 1.2,
+        "items": [
+          "voidbound:lumen_berry"
+        ]
+      },
+      "minecraft:interact": {
+        "interactions": [
+          {
+            "on_interact": {
+              "filters": {
+                "all_of": [
+                  {
+                    "test": "is_family",
+                    "subject": "other",
+                    "value": "player"
+                  },
+                  {
+                    "test": "has_equipment",
+                    "subject": "other",
+                    "domain": "hand",
+                    "value": "voidbound:lumen_berry"
+                  }
+                ]
+              },
+              "event": "voidbound:fed"
+            },
+            "use_item": true,
+            "hurt_item": 0,
+            "play_sounds": "eat",
+            "particle_on_start": {
+              "particle_type": "heart",
+              "particle_y_offset": 1.0
+            }
+          }
+        ]
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 7,
+        "look_distance": 10
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 8
+      },
+      "minecraft:experience_reward": {
+        "on_death": "query.last_hit_by_player ? 3 : 0"
+      },
+      "minecraft:loot": {
+        "table": "loot_tables/entities/ender_deer.json"
+      }
+    },
+    "component_groups": {
+      "voidbound:baby": {
+        "minecraft:is_baby": {},
+        "minecraft:scale": {
+          "value": 0.55
+        },
+        "minecraft:ageable": {
+          "duration": 1200,
+          "feed_items": [
+            "voidbound:lumen_berry"
+          ],
+          "grow_up": {
+            "event": "minecraft:ageable_grow_up"
+          }
+        }
+      },
+      "voidbound:adult": {
+        "minecraft:scale": {
+          "value": 1.0
+        }
+      }
+    },
+    "events": {
+      "minecraft:entity_spawned": {
+        "add": {
+          "component_groups": [
+            "voidbound:adult"
+          ]
+        }
+      },
+      "minecraft:entity_born": {
+        "add": {
+          "component_groups": [
+            "voidbound:baby"
+          ]
+        }
+      },
+      "minecraft:ageable_grow_up": {
+        "remove": {
+          "component_groups": [
+            "voidbound:baby"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "voidbound:adult"
+          ]
+        }
+      },
+      "voidbound:fed": {
+        "add": {
+          "component_groups": [
+            "voidbound:adult"
+          ]
+        }
+      }
+    }
+  }
+}
