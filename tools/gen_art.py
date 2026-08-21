@@ -9,6 +9,7 @@ changed. Each recipe below is authored as "what is this material made of",
 and the matching MER map is derived from the albedo rather than painted twice.
 """
 
+import json
 import math
 import os
 import sys
@@ -57,10 +58,27 @@ def out(canvas, folder, name):
 
 
 def emit(albedo, folder, name, **mer_kwargs):
-    """Write an albedo texture plus its derived MER companion."""
+    """Write an albedo texture, its MER companion, and the set that binds them.
+
+    The texture set is the part that is easy to forget and impossible to see
+    missing: a `_mer.png` with no `.texture_set.json` beside it is a file the
+    game never opens. Everything still renders - just flat, with no metalness,
+    no roughness and, most visibly, no glow at all. Writing all three here
+    means that cannot drift apart again.
+    """
     out(albedo, folder, name)
-    if mer_kwargs.pop("mer", True):
-        make_mer(albedo, **mer_kwargs).save(os.path.join(folder, name + "_mer.png"))
+    if not mer_kwargs.pop("mer", True):
+        return
+    make_mer(albedo, **mer_kwargs).save(os.path.join(folder, name + "_mer.png"))
+    with open(os.path.join(folder, name + ".texture_set.json"), "w") as handle:
+        json.dump({
+            "format_version": "1.16.100",
+            "minecraft:texture_set": {
+                "color": name,
+                "metalness_emissive_roughness": name + "_mer",
+            },
+        }, handle, indent=2)
+        handle.write("\n")
 
 
 # --------------------------------------------------------------------------
@@ -2873,59 +2891,195 @@ def entity_glowmite():
 
 
 def entity_end_villager():
-    """64x64: an enderman's build wearing a trader's habit.
-
-    It has to read as *related to* the endermen without being one, so the
-    proportions are theirs - narrow, long-limbed - and everything else is not:
-    a heavy hooded robe, a sash in the profession's colour, and the pale eyes
-    turned down rather than staring.
-    """
+    """64x64 on geometry.villager_v2: an End trader in a hooded robe."""
     c = Canvas(64, 64)
-    robe = mix(PALETTE["void"], hex_rgba("#4A3A6E"), 0.7)
-    robe_hi = mix(robe, hex_rgba("#9C86C8"), 0.45)
-    skin = mix(PALETTE["void"], hex_rgba("#1A1428"), 0.5)
+    robe = hex_rgba("#3E3060")
+    robe_hi = hex_rgba("#6E5C96")
+    robe_lo = hex_rgba("#241A3A")
+    skin = hex_rgba("#5A4E74")
+    skin_hi = hex_rgba("#7A6E96")
     eyes = hex_rgba("#C8F0FF")
-    sash = hex_rgba("#E8C766")
+    trim = hex_rgba("#E0B85C")
 
-    def cloth(face, fx, fy, fw, fh):
-        n = fbm(fx * 1.6, fy * 1.6, 16, 9901, octaves=3, base_period=4)
-        base = mix(robe, robe_hi, n * 0.6)
-        # A sash across the chest, which is where the profession colour goes.
-        if face == "north" and 3 <= fy <= 5:
-            return mix(sash, base, 0.25 + abs(fx - fw / 2.0) / max(1.0, fw) * 0.5)
-        if face == "bottom":
-            return shade(base, -0.3)
-        # Vertical folds, heavier toward the hem.
-        if int(fx) % 3 == 0:
-            return shade(base, -0.14 - (fy / max(1.0, fh)) * 0.12)
-        return base
-
-    paint_box(c, 0, 0, 8, 14, 5, cloth)
-
-    def hood(face, fx, fy, fw, fh):
-        n = fbm(fx * 1.9, fy * 1.9, 16, 9902, octaves=3, base_period=4)
-        base = mix(shade(robe, -0.12), robe_hi, n * 0.5)
-        if face == "north":
-            # The hood's opening: dark, with two low eyes inside it.
-            if 2 <= fy <= 6 and 1 <= fx <= fw - 2:
-                if fy in (4, 5) and fx in (2, fw - 3):
-                    return eyes
-                return skin
+    def head(face, fx, fy, fw, fh):
         if face == "top":
-            return shade(base, 0.16)
-        return base
+            return robe_lo                       # hood crown
+        if face == "north":
+            # A dark hood opening with two lit eyes set into it - the whole
+            # read of the face at 8px is those two pixels.
+            if fy <= 2:
+                return robe_lo
+            if 1 <= fx <= fw - 2 and 3 <= fy <= 7:
+                if fy == 5 and fx in (2, fw - 3):
+                    return eyes
+                if fy == 6 and fx in (2, fw - 3):
+                    return mix(eyes, skin, 0.55)
+                return mix(skin, robe_lo, 0.45 + (fy - 3) * 0.06)
+            return robe
+        if face == "bottom":
+            return skin
+        # Side and back of the hood, with a fold running down each side.
+        return robe_lo if fx in (0, fw - 1) else mix(robe, robe_hi, 0.25)
 
-    paint_box(c, 0, 38, 8, 8, 8, hood)
+    paint_box(c, 0, 0, 8, 10, 8, head)
 
-    def limb(face, _fx, fy, _fw, fh):
-        t = fy / float(max(1, fh - 1))
-        # Sleeves to the elbow, bare from there down.
-        return mix(robe_hi, robe, 0.4) if t < 0.55 else mix(skin, robe, 0.25)
+    def nose(face, _fx, _fy, _fw, _fh):
+        return skin_hi if face in ("north", "top") else skin
 
-    paint_box(c, 34, 38, 2, 16, 2, limb)
+    paint_box(c, 24, 0, 2, 4, 2, nose)
+
+    def body(face, fx, fy, fw, fh):
+        if face == "north":
+            # The sash: a diagonal band of trim across the chest, which is
+            # what tells one profession from another at a glance.
+            if abs((fx / max(1.0, fw - 1.0)) - (fy / max(1.0, fh - 1.0))) < 0.18:
+                return trim
+            if fy >= fh - 3:
+                return robe_lo                  # hem
+            return robe
+        if face == "top":
+            return robe_lo
+        if fy >= fh - 3:
+            return robe_lo
+        # Vertical folds down the robe.
+        return shade(robe, -0.16) if int(fx) % 3 == 0 else robe
+
+    paint_box(c, 16, 20, 8, 12, 6, body)
+    # The over-robe layer, one shade lighter so it separates from the body.
+    paint_box(c, 0, 38, 8, 18, 6,
+              lambda face, fx, fy, fw, fh: (robe_lo if fy >= fh - 4 else
+                                            mix(robe, robe_hi, 0.3 if int(fx) % 4 else 0.0)))
+
+    def arms(face, _fx, fy, _fw, fh):
+        return mix(robe, robe_hi, 0.2) if fy < fh - 2 else skin
+
+    paint_box(c, 40, 38, 8, 4, 4, arms)
+    paint_box(c, 44, 22, 4, 8, 4, arms)
+
+    def legs(face, _fx, fy, _fw, fh):
+        return robe_lo if fy < fh - 3 else mix(skin, robe_lo, 0.4)
+
+    paint_box(c, 0, 22, 4, 12, 4, legs)
 
     emit(c, ENTITY, "voidbound_end_villager", roughness=214,
-         emissive_from=eyes[:3], emissive_gain=1.2, emissive_threshold=0.45)
+         emissive_from=eyes[:3], emissive_gain=1.4, emissive_threshold=0.5)
+
+
+def enderman_skin(name, body_rgb, limb_rgb, eye_rgb, mark_rgb, mark_style):
+    """64x32 on geometry.enderman.v1.8 - one biome's enderman.
+
+    Every one of these has to still read as an enderman, so the body stays
+    near-black and only the *markings* change: the shape they take, and the
+    colour of the eyes. That is the difference between a variant and a
+    different mob wearing the wrong skeleton.
+    """
+    c = Canvas(64, 32)
+    body = hex_rgba(body_rgb)
+    body_hi = shade(body, 0.22)
+    limb = hex_rgba(limb_rgb)
+    eyes = hex_rgba(eye_rgb)
+    mark = hex_rgba(mark_rgb)
+
+    def marked(face, fx, fy, fw, fh, base, zone="body"):
+        """Apply this variant's marking pattern to one face.
+
+        Only the head and torso are ever marked. An enderman's limbs are two
+        pixels wide and thirty tall, so *any* repeating pattern on them tiles
+        into obvious stripes - and the eye reads a striped enderman as a
+        different creature rather than a variant of one. Keeping the limbs
+        plain is what holds all six of these together as endermen.
+        """
+        if zone == "limb":
+            return base
+        # These are markings on near-black skin, seen at the distance an
+        # enderman is usually seen from. Every threshold here is set so only a
+        # handful of pixels per face are touched: enough to tell the variants
+        # apart, not enough to stop reading as skin.
+        if mark_style == "veins":
+            n = fbm(fx * 3.4, fy * 3.4, 16, 771, octaves=2, base_period=5)
+            if n > 0.80:
+                return mix(base, mark, (n - 0.80) / 0.20 * 0.75)
+        elif mark_style == "bands":
+            # Broken, not continuous. A solid stripe every fourth row turned
+            # the whole creature into a bandaged mummy.
+            if int(fy) % 6 == 2 and (int(fx) + int(fy)) % 3 != 0:
+                return mix(base, mark, 0.20)
+        elif mark_style == "speckle":
+            n = fbm(fx * 5.1, fy * 5.1, 16, 772, octaves=2, base_period=3)
+            if n > 0.90:
+                return mix(base, mark, 0.85)
+            if n > 0.85:
+                return mix(base, mark, 0.35)
+        elif mark_style == "frost":
+            t = 1.0 - fy / max(1.0, fh - 1.0)
+            n = fbm(fx * 4.0, fy * 4.0, 16, 773, octaves=2, base_period=4)
+            if n > 0.90 - t * 0.05:
+                return mix(base, mark, 0.25 + t * 0.25)
+        elif mark_style == "ember":
+            n = fbm(fx * 3.0, fy * 3.0, 16, 774, octaves=2, base_period=6)
+            if n > 0.84:
+                return mix(base, mark, (n - 0.84) / 0.16 * 0.7)
+        elif mark_style == "sheen":
+            wave = math.sin((fx / max(1.0, fw)) * math.pi * 2 + fy * 0.42) * 0.5 + 0.5
+            if wave > 0.88:
+                return mix(base, mark, (wave - 0.88) / 0.12 * 0.35)
+        return base
+
+    def head(face, fx, fy, fw, fh):
+        base = body if face != "top" else shade(body, -0.15)
+        if face == "north":
+            # The eyes, and the pale bar between them: an enderman's whole
+            # face is that horizontal streak, so it stays exactly where
+            # vanilla puts it.
+            if fy == 3 and 1 <= fx <= fw - 2:
+                return mix(eyes, base, 0.62)
+            if fy == 3 and fx in (1, 2, fw - 3, fw - 2):
+                return eyes
+            if fy == 2 and fx in (1, 2, fw - 3, fw - 2):
+                return eyes
+        return marked(face, fx, fy, fw, fh, base)
+
+    paint_box(c, 0, 0, 8, 8, 8, head)
+    # The hat layer sits half a pixel proud; used here as a shadow pass so the
+    # head has depth rather than being one flat colour.
+    paint_box(c, 0, 16, 8, 8, 8,
+              lambda face, fx, fy, fw, fh: None if face == "north" and fy in (2, 3)
+              else shade(body, -0.28))
+
+    def torso(face, fx, fy, fw, fh):
+        base = body_hi if face in ("north", "south") else body
+        return marked(face, fx, fy, fw, fh, base)
+
+    paint_box(c, 32, 16, 8, 12, 4, torso)
+
+    def spindle(face, fx, fy, fw, fh):
+        # Long thin limbs, darkening toward the extremities. Unmarked, and a
+        # faint edge highlight so they still have form against a dark sky.
+        t = fy / max(1.0, fh - 1.0)
+        base = mix(limb, shade(limb, -0.4), t * 0.7)
+        if fx == 0:
+            base = shade(base, 0.20)
+        return marked(face, fx, fy, fw, fh, base, zone="limb")
+
+    paint_box(c, 56, 0, 2, 30, 2, spindle)
+
+    emit(c, ENTITY, name, roughness=206,
+         emissive_from=eyes[:3], emissive_gain=1.6, emissive_threshold=0.34)
+
+
+def entity_biome_endermen():
+    """One enderman per painted biome, plus the vanilla-dark Barrens variant."""
+    # body, limb, eyes, marking, style
+    VARIANTS = [
+        ("voidbound_enderman_glowspore", "#241028", "#180A1C", "#FF6FD0", "#C4308E", "veins"),
+        ("voidbound_enderman_bonespire", "#1A1E28", "#101318", "#DCEEFF", "#CFC6A8", "bands"),
+        ("voidbound_enderman_crystalline", "#1C1230", "#120C20", "#C89AFF", "#8E4CE0", "speckle"),
+        ("voidbound_enderman_verdant", "#101E18", "#0A140F", "#7FF0C0", "#3EA870", "frost"),
+        ("voidbound_enderman_ashen", "#1A1614", "#0E0C0B", "#FFB070", "#E8621E", "ember"),
+        ("voidbound_enderman_aurora", "#101C24", "#0A1218", "#8FF0DC", "#5EA8D8", "sheen"),
+    ]
+    for name, bodyc, limbc, eyec, markc, style in VARIANTS:
+        enderman_skin(name, bodyc, limbc, eyec, markc, style)
 
 
 # --------------------------------------------------------------------------
@@ -2973,6 +3127,7 @@ def main():
         entity_cinder_stag,
         entity_glowmite,
         entity_end_villager,
+        entity_biome_endermen,
         block_ender_log,
         block_ender_leaves,
         block_ender_bush,

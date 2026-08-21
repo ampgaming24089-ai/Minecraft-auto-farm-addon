@@ -99,6 +99,12 @@ MOBS = {
         body="body", head="head",
         limbs=["arm_left", "arm_right"],
         legs=["leg_left", "leg_right"], kind="biped", scale=0.9),
+    # All six biome endermen wear Mojang's geometry, so one set of action
+    # clips covers every one of them - the bone names are vanilla's.
+    "enderman": dict(
+        body="body", head="head",
+        limbs=["rightArm", "leftArm"],
+        legs=["rightLeg", "leftLeg"], kind="biped", scale=1.15),
     # The Warden wears the Sentinel's skeleton. Same bones, more weight behind
     # every one of them, which is what makes it read as the boss version.
     "echo_warden": dict(

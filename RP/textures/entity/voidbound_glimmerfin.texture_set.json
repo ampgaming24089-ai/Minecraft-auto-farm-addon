@@ -1,0 +1,7 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:texture_set": {
+    "color": "voidbound_glimmerfin",
+    "metalness_emissive_roughness": "voidbound_glimmerfin_mer"
+  }
+}

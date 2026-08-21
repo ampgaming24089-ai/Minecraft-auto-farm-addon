@@ -1,0 +1,7 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:texture_set": {
+    "color": "voidbound_pale_shroom",
+    "metalness_emissive_roughness": "voidbound_pale_shroom_mer"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:texture_set": {
+    "color": "voidbound_echo_horn",
+    "metalness_emissive_roughness": "voidbound_echo_horn_mer"
+  }
+}

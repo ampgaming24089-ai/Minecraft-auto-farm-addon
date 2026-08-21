@@ -793,10 +793,60 @@ if (existsSync(RECIPE_DIR)) {
   }
 }
 
+/**
+ * MER maps must be bound by a texture set, or they are files nobody opens.
+ *
+ * This shipped wrong for five versions: 102 metalness/emissive/roughness maps
+ * were being generated and only 17 had a `.texture_set.json` beside them. The
+ * pack rendered, nothing errored, and 85 textures were simply flat - no
+ * metalness, no roughness, and no glow, which is the one a player notices.
+ * Nothing in the game or the schemas says a word about it.
+ */
+for (const folder of ["blocks", "items", "entity", "environment", "particle"]) {
+  const dir = join(ROOT, "RP", "textures", folder);
+  if (!existsSync(dir)) continue;
+  const rel = `RP/textures/${folder}`;
+
+  const names = readdirSync(dir);
+  const mers = names.filter((n) => n.endsWith("_mer.png"));
+  const sets = new Set(names.filter((n) => n.endsWith(".texture_set.json")));
+
+  for (const mer of mers) {
+    const base = mer.slice(0, -"_mer.png".length);
+    if (sets.has(`${base}.texture_set.json`)) continue;
+    problems.push({
+      id: `${rel}/${mer}`,
+      files: new Set([rel]),
+      why: "no .texture_set.json binds this MER map, so the game never loads it - "
+        + "the texture renders flat with no glow",
+    });
+  }
+
+  for (const setName of sets) {
+    let data;
+    try {
+      data = JSON.parse(readFileSync(join(dir, setName), "utf8"))["minecraft:texture_set"];
+    } catch (error) {
+      problems.push({ id: `${rel}/${setName}`, files: new Set([rel]),
+        why: `not valid JSON: ${error}` });
+      continue;
+    }
+    for (const [field, value] of Object.entries(data ?? {})) {
+      if (typeof value !== "string") continue;
+      if (names.includes(`${value}.png`)) continue;
+      problems.push({
+        id: `${rel}/${setName}: ${field} -> ${value}`,
+        files: new Set([rel]),
+        why: "the texture set points at a file that is not in this folder",
+      });
+    }
+  }
+}
+
 console.log(
   `checked ${references.size} distinct identifier(s) ` +
     `against ${VANILLA.size} vanilla ids and ${DEFINED.size} pack definitions, ` +
-    `plus block-reference, client-entity, animation, script-animation, override-drift, texture-atlas, recipe-collision and integer-field rules`
+    `plus block-reference, client-entity, animation, script-animation, override-drift, texture-atlas, recipe-collision, texture-set and integer-field rules`
 );
 
 if (problems.length === 0) {

@@ -1,0 +1,7 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:texture_set": {
+    "color": "voidbound_cracked_ender_bricks",
+    "metalness_emissive_roughness": "voidbound_cracked_ender_bricks_mer"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:texture_set": {
+    "color": "voidbound_spore_tendril",
+    "metalness_emissive_roughness": "voidbound_spore_tendril_mer"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:texture_set": {
+    "color": "voidbound_ender_fruit",
+    "metalness_emissive_roughness": "voidbound_ender_fruit_mer"
+  }
+}
