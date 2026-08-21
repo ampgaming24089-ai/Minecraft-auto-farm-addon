@@ -1,0 +1,25 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "voidbound:shardwood_planks"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "voidbound:shardwood_log"
+      }
+    ],
+    "unlock": [
+      {
+        "item": "voidbound:shardwood_log"
+      }
+    ],
+    "result": {
+      "item": "voidbound:shardwood_planks",
+      "count": 4
+    }
+  }
+}

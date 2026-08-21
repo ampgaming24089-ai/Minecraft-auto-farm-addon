@@ -1,0 +1,101 @@
+{
+  "format_version": "1.21.120",
+  "minecraft:block": {
+    "description": {
+      "identifier": "voidbound:auralwood_sapling",
+      "menu_category": {
+        "category": "nature"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.voidbound:auralwood_sapling.name",
+      "minecraft:geometry": "minecraft:geometry.cross",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "voidbound_auralwood_sapling",
+          "render_method": "alpha_test",
+          "ambient_occlusion": 0.0,
+          "face_dimming": false
+        }
+      },
+      "minecraft:map_color": "#3FB8D8",
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 0.0
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 0
+      },
+      "minecraft:light_emission": 2,
+      "minecraft:light_dampening": 0,
+      "minecraft:collision_box": false,
+      "minecraft:selection_box": {
+        "origin": [
+          -6,
+          0,
+          -6
+        ],
+        "size": [
+          12,
+          14,
+          12
+        ]
+      },
+      "minecraft:replaceable": {},
+      "minecraft:flower_pottable": {},
+      "minecraft:random_offset": {
+        "x": {
+          "range": {
+            "min": -0.25,
+            "max": 0.25
+          },
+          "steps": 4
+        },
+        "z": {
+          "range": {
+            "min": -0.25,
+            "max": 0.25
+          },
+          "steps": 4
+        }
+      },
+      "minecraft:placement_filter": {
+        "conditions": [
+          {
+            "allowed_faces": [
+              "up"
+            ],
+            "block_filter": [
+              {
+                "name": "minecraft:end_stone"
+              },
+              {
+                "name": "voidbound:shattered_end_stone"
+              },
+              {
+                "name": "voidbound:verdant_end_stone"
+              },
+              {
+                "name": "voidbound:mossy_end_stone"
+              },
+              {
+                "name": "voidbound:glowspore_soil"
+              },
+              {
+                "name": "voidbound:crystalline_end_stone"
+              },
+              {
+                "name": "voidbound:ashen_end_stone"
+              },
+              {
+                "name": "voidbound:bonespire_stone"
+              },
+              {
+                "name": "voidbound:aurora_stone"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

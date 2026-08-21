@@ -1,0 +1,25 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "voidbound:auralwood_planks"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "voidbound:auralwood_log"
+      }
+    ],
+    "unlock": [
+      {
+        "item": "voidbound:auralwood_log"
+      }
+    ],
+    "result": {
+      "item": "voidbound:auralwood_planks",
+      "count": 4
+    }
+  }
+}

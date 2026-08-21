@@ -156,6 +156,96 @@
     },
     "voidbound_bloomstalk_stage_2": {
       "textures": "textures/blocks/voidbound_bloomstalk_stage_2"
+    },
+    "voidbound_sporewood_log": {
+      "textures": "textures/blocks/voidbound_sporewood_log"
+    },
+    "voidbound_sporewood_log_top": {
+      "textures": "textures/blocks/voidbound_sporewood_log_top"
+    },
+    "voidbound_sporewood_leaves": {
+      "textures": "textures/blocks/voidbound_sporewood_leaves"
+    },
+    "voidbound_sporewood_sapling": {
+      "textures": "textures/blocks/voidbound_sporewood_sapling"
+    },
+    "voidbound_sporewood_planks": {
+      "textures": "textures/blocks/voidbound_sporewood_planks"
+    },
+    "voidbound_bonewood_log": {
+      "textures": "textures/blocks/voidbound_bonewood_log"
+    },
+    "voidbound_bonewood_log_top": {
+      "textures": "textures/blocks/voidbound_bonewood_log_top"
+    },
+    "voidbound_bonewood_leaves": {
+      "textures": "textures/blocks/voidbound_bonewood_leaves"
+    },
+    "voidbound_bonewood_sapling": {
+      "textures": "textures/blocks/voidbound_bonewood_sapling"
+    },
+    "voidbound_bonewood_planks": {
+      "textures": "textures/blocks/voidbound_bonewood_planks"
+    },
+    "voidbound_shardwood_log": {
+      "textures": "textures/blocks/voidbound_shardwood_log"
+    },
+    "voidbound_shardwood_log_top": {
+      "textures": "textures/blocks/voidbound_shardwood_log_top"
+    },
+    "voidbound_shardwood_leaves": {
+      "textures": "textures/blocks/voidbound_shardwood_leaves"
+    },
+    "voidbound_shardwood_sapling": {
+      "textures": "textures/blocks/voidbound_shardwood_sapling"
+    },
+    "voidbound_shardwood_planks": {
+      "textures": "textures/blocks/voidbound_shardwood_planks"
+    },
+    "voidbound_cinderwood_log": {
+      "textures": "textures/blocks/voidbound_cinderwood_log"
+    },
+    "voidbound_cinderwood_log_top": {
+      "textures": "textures/blocks/voidbound_cinderwood_log_top"
+    },
+    "voidbound_cinderwood_leaves": {
+      "textures": "textures/blocks/voidbound_cinderwood_leaves"
+    },
+    "voidbound_cinderwood_sapling": {
+      "textures": "textures/blocks/voidbound_cinderwood_sapling"
+    },
+    "voidbound_cinderwood_planks": {
+      "textures": "textures/blocks/voidbound_cinderwood_planks"
+    },
+    "voidbound_auralwood_log": {
+      "textures": "textures/blocks/voidbound_auralwood_log"
+    },
+    "voidbound_auralwood_log_top": {
+      "textures": "textures/blocks/voidbound_auralwood_log_top"
+    },
+    "voidbound_auralwood_leaves": {
+      "textures": "textures/blocks/voidbound_auralwood_leaves"
+    },
+    "voidbound_auralwood_sapling": {
+      "textures": "textures/blocks/voidbound_auralwood_sapling"
+    },
+    "voidbound_auralwood_planks": {
+      "textures": "textures/blocks/voidbound_auralwood_planks"
+    },
+    "voidbound_voidwood_log": {
+      "textures": "textures/blocks/voidbound_voidwood_log"
+    },
+    "voidbound_voidwood_log_top": {
+      "textures": "textures/blocks/voidbound_voidwood_log_top"
+    },
+    "voidbound_voidwood_leaves": {
+      "textures": "textures/blocks/voidbound_voidwood_leaves"
+    },
+    "voidbound_voidwood_sapling": {
+      "textures": "textures/blocks/voidbound_voidwood_sapling"
+    },
+    "voidbound_voidwood_planks": {
+      "textures": "textures/blocks/voidbound_voidwood_planks"
     }
   }
 }

@@ -4,7 +4,8 @@
  * The region system decides where a biome is; this is what makes it visible.
  * As a player moves, the patches of ground around them that have not been
  * painted yet get repainted in their region's palette - surface block, the
- * two layers under it, and whatever flora that biome grows.
+ * two layers under it, the region's trees, and whatever flora that biome
+ * grows.
  *
  * This is the one system in the pack that rewrites terrain a player might
  * care about, so it is deliberately timid:
@@ -27,6 +28,7 @@
 
 import { BlockPermutation, system, world } from "@minecraft/server";
 import { Rng, hash } from "../lib/rng.js";
+import { SPECIES, growTree } from "../lib/tree.js";
 import { biomeAt } from "./biomes.js";
 import { END_DIMENSION } from "./generator.js";
 import { worldSeedHash } from "./sites.js";
@@ -69,6 +71,11 @@ const NATURAL = new Set([
 /** Ground has to be inside this band to count as an island. */
 const GROUND_MIN_Y = 4;
 const GROUND_MAX_Y = 128;
+
+/** Trees per patch. A cap rather than a spacing rule: two full canopies in an
+ *  eight-by-eight patch already touch, and a third would just be overwriting
+ *  the second's leaves. */
+const TREES_PER_PATCH = 2;
 
 /** How often a column grows something off its underside, and how far it hangs. */
 const UNDERSIDE_CHANCE = 0.34;
@@ -175,8 +182,10 @@ function* paintPatch(dimension, patchX, patchZ, report) {
       const x = originX + dx;
       const z = originZ + dz;
       const biome = biomeAt(x, z);
-      // The Barrens paint nothing, which is what keeps them the Barrens.
-      if (!biome.surface) {
+      // The Barrens paint nothing, which is what keeps them the Barrens - but
+      // a region with no surface of its own can still have trees, and the one
+      // dead Voidwood on an otherwise bare island is the whole point of it.
+      if (!biome.surface && !biome.tree) {
         yield;
         continue;
       }
@@ -215,7 +224,7 @@ function* paintPatch(dimension, patchX, patchZ, report) {
       // if its patch is evicted from memory and painted again later.
       const rng = new Rng(hash(worldSeedHash(), 0x9e11, x, z));
 
-      const surface = cachedPermutation(biome.surface);
+      const surface = biome.surface && cachedPermutation(biome.surface);
       if (surface) {
         try {
           top.setPermutation(surface);
@@ -262,6 +271,19 @@ function* paintPatch(dimension, patchX, patchZ, report) {
         }
       }
 
+      // Trees. Grown before the low flora so a canopy is never fighting a
+      // bush for the same column, and capped per patch so a region with a
+      // generous tree chance still has ground you can walk on.
+      if (biome.tree && report.trees < TREES_PER_PATCH
+          && rng.next() < (biome.treeChance ?? 0)) {
+        const species = SPECIES[biome.tree];
+        if (species && growTree(dimension, { x, y: top.y + 1, z }, species, rng)) {
+          report.trees += 1;
+          yield;
+          continue;
+        }
+      }
+
       if (rng.next() < (biome.floraChance ?? 0)) {
         const entry = pickFlora(biome, rng);
         const plant = entry && cachedPermutation(entry.id);
@@ -303,7 +325,8 @@ function scanFor(player) {
       if (distance > reach) continue;
       // Skip patches whose whole area is Barrens - there is nothing to do and
       // marking them painted would waste the FIFO on empty work.
-      if (!biomeAt(patchX * PATCH + PATCH / 2, patchZ * PATCH + PATCH / 2).surface) continue;
+      const patchBiome = biomeAt(patchX * PATCH + PATCH / 2, patchZ * PATCH + PATCH / 2);
+      if (!patchBiome.surface && !patchBiome.tree) continue;
       candidates.push({ key, patchX, patchZ, distance });
     }
   }
@@ -349,7 +372,7 @@ function scan() {
  * closer and the chunks are there.
  */
 function* finish(dimension, patch) {
-  const report = { complete: true };
+  const report = { complete: true, trees: 0 };
   try {
     yield* paintPatch(dimension, patch.patchX, patch.patchZ, report);
     if (report.complete) markPainted(patch.key);

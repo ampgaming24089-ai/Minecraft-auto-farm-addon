@@ -47,7 +47,10 @@ const WARP_PERIOD = 352;
  * `weight` is relative frequency. `surface` is what the painter lays down and
  * `filler` what it puts underneath; `flora` is scattered on top by weight.
  * `hanging` is what grows on the underside of that biome's islands, which is
- * what stops an island edge simply stopping. `fog` and `particle` are
+ * what stops an island edge simply stopping. `tree` names the region's wood
+ * from the shared species table and `treeChance` is how often a surface column
+ * grows one - the single biggest thing that makes one region look unlike
+ * another from the air. `fog` and `particle` are
  * identifiers in the resource pack, `particleLift`
  * is how far above the player its emitters start - the difference between
  * weather and a ground effect, since frost has to fall from somewhere and
@@ -67,6 +70,8 @@ export const BIOMES = {
     filler: undefined,
     flora: [],
     fog: "voidbound:fog_end_open",
+    tree: "voidwood",
+    treeChance: 0.0016,
     particle: undefined,
     mobs: ["voidbound:lumen_wisp", "voidbound:rift_stalker", "voidbound:crystal_crawler",
            "eternal_end:void_stalker", "eternal_end:corrupted_enderman",
@@ -87,6 +92,8 @@ export const BIOMES = {
     floraChance: 0.16,
     hanging: "voidbound:spore_tendril",
     fog: "voidbound:fog_glowspore",
+    tree: "sporewood",
+    treeChance: 0.009,
     particle: "voidbound:spore_drift",
     particleLift: -1,
     particleChance: 0.9,
@@ -108,6 +115,8 @@ export const BIOMES = {
     floraChance: 0.10,
     hanging: "voidbound:frost_icicle",
     fog: "voidbound:fog_bonespire",
+    tree: "bonewood",
+    treeChance: 0.0055,
     particle: "voidbound:frost_fall",
     particleLift: 9,
     particleChance: 0.75,
@@ -130,6 +139,8 @@ export const BIOMES = {
     floraChance: 0.13,
     hanging: "voidbound:crystal_dripstone",
     fog: "voidbound:fog_crystalline",
+    tree: "shardwood",
+    treeChance: 0.005,
     particle: "voidbound:crystal_glint",
     particleLift: 0,
     particleChance: 0.7,
@@ -153,6 +164,8 @@ export const BIOMES = {
     floraChance: 0.18,
     hanging: "voidbound:ender_vines",
     fog: "voidbound:fog_luminous_grove",
+    tree: "ender",
+    treeChance: 0.012,
     particle: "voidbound:grove_spores",
     particleLift: 1,
     particleChance: 0.8,
@@ -175,6 +188,8 @@ export const BIOMES = {
     floraChance: 0.07,
     hanging: "voidbound:ash_stalactite",
     fog: "voidbound:fog_ashen",
+    tree: "cinderwood",
+    treeChance: 0.0035,
     particle: "voidbound:ember_rise",
     particleLift: -2,
     particleChance: 0.85,
@@ -197,6 +212,8 @@ export const BIOMES = {
     floraChance: 0.09,
     hanging: "voidbound:aurora_veil",
     fog: "voidbound:fog_aurora",
+    tree: "auralwood",
+    treeChance: 0.006,
     particle: "voidbound:aurora_shimmer",
     particleLift: 22,
     particleChance: 0.6,

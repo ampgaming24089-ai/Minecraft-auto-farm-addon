@@ -53,5 +53,77 @@
   },
   "voidbound:ender_tiles": {
     "sound": "stone"
+  },
+  "voidbound:sporewood_log": {
+    "sound": "wood"
+  },
+  "voidbound:sporewood_planks": {
+    "sound": "wood"
+  },
+  "voidbound:sporewood_leaves": {
+    "sound": "grass"
+  },
+  "voidbound:sporewood_sapling": {
+    "sound": "grass"
+  },
+  "voidbound:bonewood_log": {
+    "sound": "wood"
+  },
+  "voidbound:bonewood_planks": {
+    "sound": "wood"
+  },
+  "voidbound:bonewood_leaves": {
+    "sound": "grass"
+  },
+  "voidbound:bonewood_sapling": {
+    "sound": "grass"
+  },
+  "voidbound:shardwood_log": {
+    "sound": "wood"
+  },
+  "voidbound:shardwood_planks": {
+    "sound": "wood"
+  },
+  "voidbound:shardwood_leaves": {
+    "sound": "grass"
+  },
+  "voidbound:shardwood_sapling": {
+    "sound": "grass"
+  },
+  "voidbound:cinderwood_log": {
+    "sound": "wood"
+  },
+  "voidbound:cinderwood_planks": {
+    "sound": "wood"
+  },
+  "voidbound:cinderwood_leaves": {
+    "sound": "grass"
+  },
+  "voidbound:cinderwood_sapling": {
+    "sound": "grass"
+  },
+  "voidbound:auralwood_log": {
+    "sound": "wood"
+  },
+  "voidbound:auralwood_planks": {
+    "sound": "wood"
+  },
+  "voidbound:auralwood_leaves": {
+    "sound": "grass"
+  },
+  "voidbound:auralwood_sapling": {
+    "sound": "grass"
+  },
+  "voidbound:voidwood_log": {
+    "sound": "wood"
+  },
+  "voidbound:voidwood_planks": {
+    "sound": "wood"
+  },
+  "voidbound:voidwood_leaves": {
+    "sound": "grass"
+  },
+  "voidbound:voidwood_sapling": {
+    "sound": "grass"
   }
 }

@@ -12,7 +12,7 @@
  *   discovery        acknowledges arriving somewhere new
  *   rift compass     reads the structure map and points at it
  *   armour set       grants the End Everlasting set bonus in the End
- *   ender sapling    grows planted saplings into End trees
+ *   saplings         grows a planted sapling into its region's tree
  *   bloomstalk       grows, harvests and replants the End's crop
  *   emotes           one-shot player poses on the moments that earn them
  *   mob actions      attack swings and hurt recoils for the pack's mobs
@@ -32,7 +32,7 @@ import { startArmorSet } from "./content/armorSet.js";
 import { startBloomstalk } from "./content/bloomstalk.js";
 import { startEmotes } from "./content/emotes.js";
 import { startMobActions } from "./content/mobActions.js";
-import { startEnderSapling } from "./content/enderSapling.js";
+import { startSaplings } from "./content/saplings.js";
 import { startRiftCompass } from "./content/riftCompass.js";
 import { startRiftSovereign } from "./content/riftSovereign.js";
 import { startSkyRay } from "./content/skyRay.js";
@@ -59,7 +59,7 @@ function start() {
   startDiscovery();
   startRiftCompass();
   startArmorSet();
-  startEnderSapling();
+  startSaplings();
   startBloomstalk();
   startEmotes();
   startMobActions();
