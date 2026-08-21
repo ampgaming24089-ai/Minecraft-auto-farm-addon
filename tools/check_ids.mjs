@@ -208,6 +208,55 @@ for (const file of walk(join(ROOT, "BP", "blocks"))) {
   if (id) BLOCK_IDS.add(id);
 }
 
+/**
+ * Blocks named by other blocks: placement filters, and the `name` of any
+ * block_filter entry anywhere in a definition.
+ *
+ * A sapling whose placement_filter names a block that does not exist is a
+ * sapling that cannot be placed on anything, and the game says nothing at all
+ * about it - it simply refuses every block the player tries. This shipped
+ * once, as `voidbound:aurora_end_stone` against a block actually called
+ * `voidbound:aurora_stone`, and nothing in the harness saw it.
+ */
+for (const file of walk(join(ROOT, "BP", "blocks"))) {
+  const rel = relative(ROOT, file).split("\\").join("/");
+  let definition;
+  try {
+    definition = JSON.parse(readFileSync(file, "utf8"));
+  } catch {
+    continue;
+  }
+  const named = [];
+  const visit = (node) => {
+    if (Array.isArray(node)) {
+      for (const item of node) visit(item);
+      return;
+    }
+    if (!node || typeof node !== "object") return;
+    for (const [key, value] of Object.entries(node)) {
+      if (key === "block_filter" && Array.isArray(value)) {
+        for (const entry of value) {
+          const id = typeof entry === "string" ? entry : entry?.name;
+          if (typeof id === "string") named.push(id);
+        }
+      } else {
+        visit(value);
+      }
+    }
+  };
+  visit(definition);
+  for (const id of named) {
+    // A tag filter is a tag, not a block id.
+    if (id.startsWith("#") || !id.includes(":")) continue;
+    if (BLOCK_IDS.has(id)) continue;
+    problems.push({
+      id,
+      files: new Set([rel]),
+      why: "a block_filter names this block, and no such block exists",
+    });
+  }
+}
+
 const localLighting = join(ROOT, "RP", "local_lighting", "local_lighting.json");
 if (existsSync(localLighting)) {
   const settings =

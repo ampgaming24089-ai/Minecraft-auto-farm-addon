@@ -16,11 +16,26 @@
 import { BlockPermutation, EquipmentSlot, system, world } from "@minecraft/server";
 import { Rng } from "../lib/rng.js";
 import { END_DIMENSION } from "../world/generator.js";
+import { TREES } from "../world/trees.js";
 
-const SAPLING = "voidbound:ender_sapling";
-const LOG = "voidbound:ender_log";
-const LEAVES = "voidbound:ender_leaves";
 const BUSH = "voidbound:ender_bush";
+
+/**
+ * Every sapling in the pack, keyed by block id.
+ *
+ * The original tree is folded in here as one more species rather than kept as
+ * a special case, so there is one growth path: a sapling knows its own log,
+ * leaves, height range and crown shape, and nothing downstream has to ask
+ * which kind of tree this is.
+ */
+const SPECIES = new Map();
+SPECIES.set("voidbound:ender_sapling", {
+  log: "voidbound:ender_log",
+  leaves: "voidbound:ender_leaves",
+  canopy: "dome",
+  height: [5, 8],
+});
+for (const tree of Object.values(TREES)) SPECIES.set(tree.sapling, tree);
 
 const PENDING_KEY = "voidbound.saplings";
 
@@ -31,13 +46,15 @@ const GROW_TICKS = 1200;
 /** Beyond this the list is doing no useful work, so the oldest drops off. */
 const MAX_PENDING = 64;
 
-/** What a sapling may grow through - anything else blocks the trunk. */
+/** What a sapling may grow through - anything else blocks the trunk. Every
+ *  species' own sapling and leaves are in here, so a tree can grow up through
+ *  a neighbour's canopy instead of stopping dead under it. */
 const PASSABLE = new Set([
   "minecraft:air",
-  SAPLING,
-  LEAVES,
   BUSH,
   "voidbound:voidbloom",
+  ...SPECIES.keys(),
+  ...[...SPECIES.values()].map((tree) => tree.leaves),
 ]);
 
 function readPending() {
@@ -102,13 +119,74 @@ function isPassable(dimension, x, y, z) {
 }
 
 /**
+ * The crowns.
+ *
+ * Colour alone does not distinguish a species - a violet canopy and a green
+ * one are the same tree tinted, and from any distance that is exactly what
+ * they look like. The silhouette is what tells them apart, so each species
+ * names one of these and they are deliberately different shapes rather than
+ * different radii of the same shape.
+ *
+ * Each returns a list of {dy, radius, ragged} discs relative to the trunk top.
+ */
+const CROWNS = {
+  // Rounded, widest in the middle: an ordinary tree.
+  dome: () => [
+    { dy: -2, radius: 2.2, ragged: 0.35 },
+    { dy: -1, radius: 2.8, ragged: 0.45 },
+    { dy: 0, radius: 2.4, ragged: 0.45 },
+    { dy: 1, radius: 1.5, ragged: 0.3 },
+    { dy: 2, radius: 0.8, ragged: 0.0 },
+  ],
+  // A narrow cone. Tall and thin, so a spire forest reads as a spire forest.
+  spire: () => [
+    { dy: -4, radius: 2.0, ragged: 0.3 },
+    { dy: -3, radius: 1.9, ragged: 0.3 },
+    { dy: -2, radius: 1.7, ragged: 0.25 },
+    { dy: -1, radius: 1.4, ragged: 0.25 },
+    { dy: 0, radius: 1.2, ragged: 0.2 },
+    { dy: 1, radius: 0.9, ragged: 0.0 },
+    { dy: 2, radius: 0.6, ragged: 0.0 },
+  ],
+  // A flat plate on a bare trunk - a mushroom, essentially.
+  parasol: () => [
+    { dy: 0, radius: 3.6, ragged: 0.2 },
+    { dy: 1, radius: 2.6, ragged: 0.35 },
+  ],
+  // Loose blobs hung off the top, with gaps between them.
+  cluster: () => [
+    { dy: -2, radius: 1.6, ragged: 0.6 },
+    { dy: 0, radius: 2.4, ragged: 0.55 },
+    { dy: 2, radius: 1.8, ragged: 0.6 },
+  ],
+  // A crown that hangs down past where the branches are.
+  weeping: () => [
+    { dy: -4, radius: 1.4, ragged: 0.7 },
+    { dy: -3, radius: 2.0, ragged: 0.6 },
+    { dy: -2, radius: 2.6, ragged: 0.4 },
+    { dy: -1, radius: 3.0, ragged: 0.3 },
+    { dy: 0, radius: 2.6, ragged: 0.3 },
+    { dy: 1, radius: 1.4, ragged: 0.2 },
+  ],
+  // Short, wide and gnarled.
+  scrub: () => [
+    { dy: -1, radius: 3.0, ragged: 0.55 },
+    { dy: 0, radius: 3.2, ragged: 0.5 },
+    { dy: 1, radius: 1.8, ragged: 0.5 },
+  ],
+};
+
+/**
  * Grow one tree from a base block.
  *
  * Returns false when the spot cannot hold a tree, so the caller can leave the
  * sapling in place rather than deleting it into nothing.
  */
-export function growTree(dimension, base, rng) {
-  const height = rng.int(5, 8);
+export function growTree(dimension, base, rng, species) {
+  const tree = species ?? SPECIES.get("voidbound:ender_sapling");
+  const LOG = tree.log;
+  const LEAVES = tree.leaves;
+  const height = rng.int(tree.height[0], tree.height[1]);
 
   // Headroom first. A tree that grows into a ceiling looks like a bug.
   for (let dy = 1; dy <= height; dy++) {
@@ -132,26 +210,20 @@ export function growTree(dimension, base, rng) {
     setBlock(dimension, tipX, base.y + dy, tipZ, LOG);
   }
 
-  // Canopy: three stacked discs, narrowing upwards, thinned at the corners.
+  // Canopy: the species' own crown, laid as discs around the trunk top.
   const top = base.y + height;
-  const discs = [
-    { dy: -1, radius: 2.6 },
-    { dy: 0, radius: 2.2 },
-    { dy: 1, radius: 1.4 },
-  ];
-  for (const disc of discs) {
+  for (const disc of (CROWNS[tree.canopy] ?? CROWNS.dome)()) {
     const r = Math.ceil(disc.radius);
     for (let dx = -r; dx <= r; dx++) {
       for (let dz = -r; dz <= r; dz++) {
         const distance = Math.hypot(dx, dz);
         if (distance > disc.radius) continue;
         // Corners drop out at random so the canopy is not a cylinder.
-        if (distance > disc.radius - 0.8 && rng.chance(0.45)) continue;
+        if (distance > disc.radius - 0.9 && rng.next() < disc.ragged) continue;
         setBlock(dimension, tipX + dx, top + disc.dy, tipZ + dz, LEAVES);
       }
     }
   }
-  setBlock(dimension, tipX, top + 2, tipZ, LEAVES);
 
   try {
     dimension.spawnParticle("voidbound:grove_spores", {
@@ -171,8 +243,10 @@ function tryGrow(dimension, entry, rng) {
     const block = dimension.getBlock({ x: entry.x, y: entry.y, z: entry.z });
     if (!block) return false;
     // Broken or replaced since it was planted: drop it from the list.
-    if (block.typeId !== SAPLING) return true;
-    return growTree(dimension, { x: entry.x, y: entry.y, z: entry.z }, rng);
+    const species = SPECIES.get(block.typeId);
+    if (!species) return true;
+    return growTree(dimension, { x: entry.x, y: entry.y, z: entry.z }, rng,
+                    species);
   } catch {
     return false;
   }
@@ -213,18 +287,19 @@ export function startEnderSapling() {
   system.runInterval(sweep, SWEEP_INTERVAL);
 
   world.afterEvents.playerPlaceBlock.subscribe((event) => {
-    if (event.block?.typeId !== SAPLING) return;
+    if (!SPECIES.has(event.block?.typeId)) return;
     remember(event.block.location);
   });
 
   world.afterEvents.playerBreakBlock.subscribe((event) => {
-    if (event.brokenBlockPermutation?.type?.id !== SAPLING) return;
+    if (!SPECIES.has(event.brokenBlockPermutation?.type?.id)) return;
     forget(event.block.location);
   });
 
   // Bone meal, as it works on every other sapling in the game.
   world.beforeEvents.playerInteractWithBlock.subscribe((event) => {
-    if (event.block?.typeId !== SAPLING) return;
+    const species = SPECIES.get(event.block?.typeId);
+    if (!species) return;
     if (event.itemStack?.typeId !== "minecraft:bone_meal") return;
     event.cancel = true;
 
@@ -234,7 +309,7 @@ export function startEnderSapling() {
 
     system.run(() => {
       const rng = new Rng(((location.x * 73856093) ^ (location.z * 19349663) ^ system.currentTick) >>> 0);
-      if (!growTree(dimension, location, rng)) {
+      if (!growTree(dimension, location, rng, species)) {
         try {
           player?.onScreenDisplay?.setActionBar("§7There is no room for it to grow.");
         } catch {

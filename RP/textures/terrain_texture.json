@@ -156,6 +156,78 @@
     },
     "voidbound_bloomstalk_stage_2": {
       "textures": "textures/blocks/voidbound_bloomstalk_stage_2"
+    },
+    "voidbound_verdant_log": {
+      "textures": "textures/blocks/voidbound_verdant_log"
+    },
+    "voidbound_verdant_log_top": {
+      "textures": "textures/blocks/voidbound_verdant_log_top"
+    },
+    "voidbound_verdant_leaves": {
+      "textures": "textures/blocks/voidbound_verdant_leaves"
+    },
+    "voidbound_verdant_sapling": {
+      "textures": "textures/blocks/voidbound_verdant_sapling"
+    },
+    "voidbound_bonespire_log": {
+      "textures": "textures/blocks/voidbound_bonespire_log"
+    },
+    "voidbound_bonespire_log_top": {
+      "textures": "textures/blocks/voidbound_bonespire_log_top"
+    },
+    "voidbound_bonespire_leaves": {
+      "textures": "textures/blocks/voidbound_bonespire_leaves"
+    },
+    "voidbound_bonespire_sapling": {
+      "textures": "textures/blocks/voidbound_bonespire_sapling"
+    },
+    "voidbound_glowspore_log": {
+      "textures": "textures/blocks/voidbound_glowspore_log"
+    },
+    "voidbound_glowspore_log_top": {
+      "textures": "textures/blocks/voidbound_glowspore_log_top"
+    },
+    "voidbound_glowspore_leaves": {
+      "textures": "textures/blocks/voidbound_glowspore_leaves"
+    },
+    "voidbound_glowspore_sapling": {
+      "textures": "textures/blocks/voidbound_glowspore_sapling"
+    },
+    "voidbound_crystalline_log": {
+      "textures": "textures/blocks/voidbound_crystalline_log"
+    },
+    "voidbound_crystalline_log_top": {
+      "textures": "textures/blocks/voidbound_crystalline_log_top"
+    },
+    "voidbound_crystalline_leaves": {
+      "textures": "textures/blocks/voidbound_crystalline_leaves"
+    },
+    "voidbound_crystalline_sapling": {
+      "textures": "textures/blocks/voidbound_crystalline_sapling"
+    },
+    "voidbound_aurora_log": {
+      "textures": "textures/blocks/voidbound_aurora_log"
+    },
+    "voidbound_aurora_log_top": {
+      "textures": "textures/blocks/voidbound_aurora_log_top"
+    },
+    "voidbound_aurora_leaves": {
+      "textures": "textures/blocks/voidbound_aurora_leaves"
+    },
+    "voidbound_aurora_sapling": {
+      "textures": "textures/blocks/voidbound_aurora_sapling"
+    },
+    "voidbound_ashen_log": {
+      "textures": "textures/blocks/voidbound_ashen_log"
+    },
+    "voidbound_ashen_log_top": {
+      "textures": "textures/blocks/voidbound_ashen_log_top"
+    },
+    "voidbound_ashen_leaves": {
+      "textures": "textures/blocks/voidbound_ashen_leaves"
+    },
+    "voidbound_ashen_sapling": {
+      "textures": "textures/blocks/voidbound_ashen_sapling"
     }
   }
 }

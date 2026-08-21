@@ -1,0 +1,36 @@
+{
+  "format_version": "1.21.120",
+  "minecraft:block": {
+    "description": {
+      "identifier": "voidbound:glowspore_leaves",
+      "menu_category": {
+        "category": "nature"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.voidbound:glowspore_leaves.name",
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "voidbound_glowspore_leaves",
+          "render_method": "alpha_test",
+          "ambient_occlusion": 0.0,
+          "face_dimming": false
+        }
+      },
+      "minecraft:map_color": "#E86BD8",
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 0.25
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 0.6
+      },
+      "minecraft:light_emission": 8,
+      "minecraft:light_dampening": 1,
+      "minecraft:flammable": {
+        "catch_chance_modifier": 0,
+        "destroy_chance_modifier": 0
+      }
+    }
+  }
+}

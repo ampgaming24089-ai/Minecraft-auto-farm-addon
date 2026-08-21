@@ -51,7 +51,9 @@ const WARP_PERIOD = 352;
  * identifiers in the resource pack, `particleLift`
  * is how far above the player its emitters start - the difference between
  * weather and a ground effect, since frost has to fall from somewhere and
- * embers have to climb out of something. `mobs` is the roster the region-gated
+ * embers have to climb out of something. `tree` names the species that grows
+ * here and `treeChance` how thickly, which is what turns a painted floor into
+ * somewhere with a horizon. `mobs` is the roster the region-gated
  * spawner draws from, and `colour` is the section sign code the entry
  * announcement is drawn in.
  */
@@ -87,6 +89,8 @@ export const BIOMES = {
     ],
     floraChance: 0.16,
     hanging: "voidbound:spore_tendril",
+    tree: "glowspore",
+    treeChance: 0.04,
     fog: "voidbound:fog_glowspore",
     particle: "voidbound:spore_drift",
     particleLift: -1,
@@ -109,6 +113,8 @@ export const BIOMES = {
     ],
     floraChance: 0.10,
     hanging: "voidbound:frost_icicle",
+    tree: "bonespire",
+    treeChance: 0.03,
     fog: "voidbound:fog_bonespire",
     particle: "voidbound:frost_fall",
     particleLift: 9,
@@ -132,6 +138,8 @@ export const BIOMES = {
     ],
     floraChance: 0.13,
     hanging: "voidbound:crystal_dripstone",
+    tree: "crystalline",
+    treeChance: 0.025,
     fog: "voidbound:fog_crystalline",
     particle: "voidbound:crystal_glint",
     particleLift: 0,
@@ -156,6 +164,8 @@ export const BIOMES = {
     ],
     floraChance: 0.18,
     hanging: "voidbound:ender_vines",
+    tree: "verdant",
+    treeChance: 0.055,
     fog: "voidbound:fog_luminous_grove",
     particle: "voidbound:grove_spores",
     particleLift: 1,
@@ -178,6 +188,8 @@ export const BIOMES = {
     ],
     floraChance: 0.07,
     hanging: "voidbound:ash_stalactite",
+    tree: "ashen",
+    treeChance: 0.03,
     fog: "voidbound:fog_ashen",
     particle: "voidbound:ember_rise",
     particleLift: -2,
@@ -201,6 +213,8 @@ export const BIOMES = {
     ],
     floraChance: 0.09,
     hanging: "voidbound:aurora_veil",
+    tree: "aurora",
+    treeChance: 0.03,
     fog: "voidbound:fog_aurora",
     particle: "voidbound:aurora_shimmer",
     particleLift: 22,

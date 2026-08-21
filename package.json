@@ -4,14 +4,15 @@
   "private": true,
   "description": "End Everlasting - an End dimension overhaul add-on for Minecraft Bedrock 26.4",
   "scripts": {
-    "art": "python3 tools/gen_art.py && python3 tools/gen_mob_actions.py",
+    "art": "python3 tools/gen_art.py && python3 tools/gen_trees.py && python3 tools/gen_particles.py && python3 tools/gen_mob_actions.py",
     "preview": "python3 tools/preview.py",
     "check:ids": "node tools/check_ids.mjs",
     "check:json": "node tools/validate.mjs",
     "check:scripts": "node tools/smoketest.mjs",
     "check:types": "tsc -p tsconfig.check.json",
     "check": "npm run check:ids && npm run check:json && npm run check:scripts && npm run check:types",
-    "build": "./build_addon.sh --check"
+    "build": "./build_addon.sh --check",
+    "mobs": "python3 tools/build_mobs.py && python3 tools/gen_entities.py && python3 tools/gen_mob_anims.py"
   },
   "devDependencies": {
     "@minecraft/bedrock-schemas": "1.26.40-beta.26",

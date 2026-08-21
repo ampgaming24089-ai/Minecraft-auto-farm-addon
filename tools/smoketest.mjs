@@ -421,11 +421,43 @@ try {
     }
   }
 
+  // --- trees ---------------------------------------------------------------
+  {
+    const { TREES } = await load("world/trees.js");
+    const { BIOMES } = await load("world/biomes.js");
+
+    // A biome naming a species that does not exist grows nothing at all, and
+    // silently: the painter's try/catch swallows it and the ground still gets
+    // painted, so the region just never has any trees.
+    for (const biome of Object.values(BIOMES)) {
+      if (!biome.tree) continue;
+      check(`biome ${biome.id} names a real tree species`,
+        Boolean(TREES[biome.tree]), biome.tree);
+      check(`biome ${biome.id} plants at a sane rate`,
+        biome.treeChance > 0 && biome.treeChance < 0.2, `${biome.treeChance}`);
+    }
+
+    // Colour alone does not distinguish a species - a violet canopy and a
+    // green one are the same tree tinted. The crowns have to be different
+    // shapes, so assert the shapes are actually distinct.
+    const crowns = new Set(Object.values(TREES).map((tree) => tree.canopy));
+    check("every species has a distinct crown", crowns.size === Object.keys(TREES).length,
+      `${crowns.size} of ${Object.keys(TREES).length}`);
+
+    for (const [key, tree] of Object.entries(TREES)) {
+      check(`${key} names its own log and leaves`,
+        tree.log.includes(key) && tree.leaves.includes(key));
+      check(`${key} has a sane height range`,
+        tree.height[0] >= 3 && tree.height[1] <= 16 && tree.height[0] < tree.height[1],
+        `${tree.height}`);
+    }
+  }
+
   // --- sky islands -----------------------------------------------------------
   // These hang in air a player will fly through, so the two things that matter
   // are that siting is stable and that nothing lands on vanilla's island.
   {
-    const { islandInCell, islandsNear } = await load("world/skyIslands.js");
+    const { islandInCell, islandsNear, shape } = await load("world/skyIslands.js");
 
     check("island siting is deterministic", (() => {
       for (let i = -200; i < 200; i++) {
@@ -452,7 +484,7 @@ try {
           if (island.y < 96) tooLow += 1;
           if (island.y > 210) tooHigh += 1;
           if (Math.hypot(island.x, island.z) < 900) nearOrigin += 1;
-          if (!(island.radius >= 4 && island.radius <= 12)) badRadius += 1;
+          if (!(island.radius >= 9 && island.radius <= 32)) badRadius += 1;
         }
       }
       const rate = sited / cells;
@@ -463,6 +495,41 @@ try {
       // The main island, the pillars, the gateway and the arena all live here.
       check("no island generates near the origin", nearOrigin === 0, `${nearOrigin} inside`);
       check("island radii are sane", badRadius === 0, `${badRadius} out of range`);
+      // The cubed roll is what makes most islands middling and a few enormous.
+      // A flat distribution here would mean the sky is all landmasses.
+      {
+        let big = 0;
+        for (let cx = -14; cx <= 14; cx++) {
+          for (let cz = -14; cz <= 14; cz++) {
+            const island = islandInCell(cx, cz);
+            if (island && island.radius > 20) big += 1;
+          }
+        }
+        check("large islands are the exception", big < sited * 0.25,
+          `${big} of ${sited} over radius 20`);
+      }
+    }
+
+    // The islands were asked to be bigger and deeper, and "deeper" is the half
+    // that is easy to lose: a wider saucer is still a saucer. So the profile
+    // itself is asserted, not just the radius that feeds it.
+    {
+      const rng = { next: () => 0.5, chance: () => false, int: (a) => a,
+                    float: (a) => a };
+      const island = { radius: 20, x: 0, y: 120, z: 0 };
+      let low = 0;
+      let high = 0;
+      let count = 0;
+      for (const cell of shape(island, rng)) {
+        low = Math.min(low, cell.dy);
+        high = Math.max(high, cell.dy);
+        count += 1;
+      }
+      check("an island hangs well below its own surface", low <= -40, `${low}`);
+      check("an island has a domed top", high >= 3, `+${high}`);
+      // A solid island of this size is ~24k block writes and the runJob would
+      // still be laying it down long after the player has flown past.
+      check("a large island is built as a shell", count < 14000, `${count} blocks`);
     }
 
     check("islandsNear finds what islandInCell sites", (() => {

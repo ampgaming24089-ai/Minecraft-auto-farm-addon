@@ -29,8 +29,10 @@ import { isBuilt, markBuilt } from "./memory.js";
 import { worldSeedHash } from "./sites.js";
 
 /** Siting grid. Tighter than the structure grid - these are scenery, and the
- *  sky should have several in view rather than one every few minutes. */
-const CELL = 96;
+ *  sky should have several in view rather than one every few minutes. Widened
+ *  along with the islands themselves: a 96-block cell that was comfortable for
+ *  a 22-block island puts two 60-block ones shoulder to shoulder. */
+const CELL = 128;
 
 /** Fraction of cells that hold an island. */
 const CHANCE = 0.36;
@@ -44,7 +46,7 @@ const MIN_Y = 96;
 const MAX_Y = 210;
 
 /** How far ahead of a player islands are built, and how often we look. */
-const BUILD_RADIUS = 132;
+const BUILD_RADIUS = 168;
 const SCAN_INTERVAL_TICKS = 60;
 const BUILDS_PER_SCAN = 1;
 
@@ -69,7 +71,10 @@ export function islandInCell(cellX, cellZ) {
     x,
     y: rng.int(MIN_Y, MAX_Y),
     z,
-    radius: rng.float(4.5, 11.0),
+    // Most islands are middling and a few are landmasses. Cubing the roll is
+    // what does that - a flat range gives a sky full of identical lumps, and
+    // raising the top of a flat range just makes them all enormous.
+    radius: 9.0 + Math.pow(rng.next(), 3) * 17.0,
     seed,
   };
 }
@@ -101,25 +106,61 @@ function cachedPermutation(id) {
 }
 
 /**
- * The shape of an island: a squashed ellipsoid, thicker in the middle and
- * tapering to nothing underneath, which is the profile a floating rock reads
- * as. Returned as offsets so the caller can test the space before filling it.
+ * The shape of an island: a domed top, a body that thickens toward the middle,
+ * and a keel hanging under it.
+ *
+ * The old profile was a squashed ellipsoid three quarters as deep as it was
+ * wide, which from below is a saucer - and from below is how these are mostly
+ * seen, because they hang above the player. What reads as a floating rock is
+ * mass: a deep body and a root trailing off the underside, so the eye can tell
+ * the top of one from the bottom of another at a distance.
+ *
+ * Returned as offsets so the caller can test the space before filling it.
  */
-function* shape(island, rng) {
+export function* shape(island, rng) {
   const r = Math.ceil(island.radius);
-  const depth = Math.ceil(island.radius * 0.75);
+  // Depth now runs *past* the radius rather than short of it, and the keel
+  // adds a spike under the middle on top of that.
+  const body = island.radius * 1.5;
+  const keel = island.radius * 1.3;
+
   for (let dx = -r; dx <= r; dx++) {
     for (let dz = -r; dz <= r; dz++) {
       const flat = Math.hypot(dx, dz);
       if (flat > island.radius) continue;
       // Edges wobble, so the outline is not a circle from above.
-      const wobble = 1.0 + (rng.next() - 0.5) * 0.28;
+      const wobble = 1.0 + (rng.next() - 0.5) * 0.32;
       if (flat > island.radius * wobble) continue;
 
       const rim = 1.0 - flat / island.radius;
-      const below = Math.max(1, Math.round(depth * rim * rim));
-      const above = flat < island.radius * 0.55 && rng.chance(0.4) ? 1 : 0;
+
+      // Underside: the ellipsoid body, plus a keel that only the middle gets.
+      let below = Math.max(1, Math.round(body * Math.sqrt(Math.max(0, rim))));
+      if (rim > 0.45) {
+        const core = (rim - 0.45) / 0.55;
+        below += Math.round(keel * core * core * (0.75 + rng.next() * 0.5));
+      }
+
+      // Top: a low dome rather than a flat table, with the odd boulder on it.
+      let above = Math.round(island.radius * 0.22 * rim * rim);
+      if (rim > 0.25 && rng.chance(0.08)) above += rng.int(1, 2);
+
+      // Fill a shell rather than the whole column. Nobody ever sees the
+      // middle of an island, and a solid one at this size is a hundred
+      // thousand block writes for a shape that looks identical from outside -
+      // the runJob would still be laying it down long after the player has
+      // flown past. Short columns stay solid so thin rims are not lace, and
+      // the hollow that is left inside the big ones reads as a cave.
+      const height = below + above + 1;
+      const SHELL_TOP = 4;
+      const SHELL_BOTTOM = 3;
       for (let dy = -below; dy <= above; dy++) {
+        const fromTop = above - dy;
+        const fromBottom = dy + below;
+        if (height > SHELL_TOP + SHELL_BOTTOM + 2
+            && fromTop >= SHELL_TOP && fromBottom >= SHELL_BOTTOM) {
+          continue;
+        }
         yield { dx, dy, dz, surface: dy === above };
       }
     }
@@ -140,9 +181,21 @@ function* buildIsland(dimension, island) {
     // worse than no island at all.
     const cells = [...shape(island, new Rng(island.seed ^ 0x2f1d))];
 
+    // Islands are now large enough that reading every cell of one is tens of
+    // thousands of getBlock calls before a single block is placed. So the
+    // surface is read in full - that is where a player's build would be, and
+    // missing one there is the failure that matters - and the mass underneath
+    // is sampled. A tower buried entirely inside the keel of an island, with
+    // nothing of it breaking the surface, is not a case worth the other
+    // ninety per cent of the reads.
+    const stride = cells.length > 6000 ? 5 : 1;
     let clear = true;
     let checked = 0;
+    let index = 0;
     for (const cell of cells) {
+      const sample = cell.surface || cell.dy >= -1 || index % stride === 0;
+      index += 1;
+      if (!sample) continue;
       const at = { x: island.x + cell.dx, y: island.y + cell.dy, z: island.z + cell.dz };
       try {
         if (!dimension.isChunkLoaded(at)) return; // Come back when it is loaded.
@@ -174,10 +227,11 @@ function* buildIsland(dimension, island) {
       } catch {
         // Chunk went away mid-build; the rest simply does not get placed.
       }
-      if (++placed % 48 === 0) yield;
+      if (++placed % 64 === 0) yield;
     }
 
     // Flora and hanging growth, so a sky island is not a bare lump of rock.
+    let planted = 0;
     for (const cell of cells) {
       if (!cell.surface) continue;
       const x = island.x + cell.dx;
@@ -198,7 +252,7 @@ function* buildIsland(dimension, island) {
           }
         }
       }
-      yield;
+      if (++planted % 32 === 0) yield;
     }
 
     markBuilt(island.key);

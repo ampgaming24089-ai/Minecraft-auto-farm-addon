@@ -1,0 +1,44 @@
+{
+  "format_version": "1.21.120",
+  "minecraft:block": {
+    "description": {
+      "identifier": "voidbound:bonespire_log",
+      "menu_category": {
+        "category": "construction"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.voidbound:bonespire_log.name",
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "voidbound_bonespire_log",
+          "render_method": "opaque",
+          "ambient_occlusion": 1.0
+        },
+        "up": {
+          "texture": "voidbound_bonespire_log_top",
+          "render_method": "opaque",
+          "ambient_occlusion": 1.0
+        },
+        "down": {
+          "texture": "voidbound_bonespire_log_top",
+          "render_method": "opaque",
+          "ambient_occlusion": 1.0
+        }
+      },
+      "minecraft:map_color": "#B9B2A4",
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1.4
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 6
+      },
+      "minecraft:light_emission": 1,
+      "minecraft:flammable": {
+        "catch_chance_modifier": 0,
+        "destroy_chance_modifier": 0
+      }
+    }
+  }
+}

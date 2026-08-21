@@ -28,6 +28,8 @@
 import { BlockPermutation, system, world } from "@minecraft/server";
 import { Rng, hash } from "../lib/rng.js";
 import { biomeAt } from "./biomes.js";
+import { TREES } from "./trees.js";
+import { growTree } from "../content/enderSapling.js";
 import { END_DIMENSION } from "./generator.js";
 import { worldSeedHash } from "./sites.js";
 
@@ -258,6 +260,25 @@ function* paintPatch(dimension, patchX, patchZ, report) {
                 break;
               }
             }
+          }
+        }
+      }
+
+      // Trees, before the ground cover: a trunk wants the column it is going
+      // into to be empty, and a flower placed there first would stop it.
+      //
+      // Spaced on a lattice rather than rolled per block. A pure per-column
+      // roll at this rate puts trunks two apart as often as ten, and a wood
+      // where every trunk is touching its neighbour reads as a wall, not a
+      // wood.
+      if (biome.tree && ((x * 31 + z * 17) & 3) === 0
+          && rng.next() < (biome.treeChance ?? 0) * 4) {
+        const species = TREES[biome.tree];
+        if (species) {
+          try {
+            growTree(dimension, { x, y: top.y + 1, z }, rng, species);
+          } catch {
+            // No room, or the chunk went away. The ground is still painted.
           }
         }
       }
