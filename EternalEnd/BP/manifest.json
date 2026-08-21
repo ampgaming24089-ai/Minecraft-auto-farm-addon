@@ -1,12 +1,12 @@
 {
   "format_version": 2,
   "header": {
-    "name": "End Everlasting [Behavior]",
-    "description": "Seven biomes with floating islands stacked through the world height, End villages with traders, crops, a tameable companion, three bosses, seventeen mobs and a full player animation pack. Bedrock 26.4.",
-    "uuid": "2e8978d0-b53f-432b-8a52-62d8ba2d5798",
+    "name": "Eternal End [Behavior]",
+    "description": "Seven regions of the End, stacked through the world height, with their own wood, trees and weather. End villages and traders, forty-one mobs across five bosses, tameable herds and flying mounts, and a full player animation pack.",
+    "uuid": "63c42afb-e06e-4c01-b7e6-92db0c2e6970",
     "version": [
-      1,
-      6,
+      2,
+      0,
       0
     ],
     "min_engine_version": [
@@ -18,7 +18,7 @@
   "metadata": {
     "product_type": "addon",
     "authors": [
-      "End Everlasting"
+      "Eternal End"
     ],
     "generated_with": {
       "end_everlasting_tools": [
@@ -29,20 +29,20 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "c47c5b4b-2e16-4878-b467-e6ab52b4597f",
+      "uuid": "fead627e-da8c-4b47-bd0b-d33aaf2f9033",
       "version": [
-        1,
-        6,
+        2,
+        0,
         0
       ]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "eebf73b0-440d-41f3-b5a9-b2f59a55a8db",
+      "uuid": "cb10ae38-f7cd-4494-9759-d99265e51eff",
       "version": [
-        1,
-        6,
+        2,
+        0,
         0
       ],
       "entry": "scripts/main.js"
@@ -58,10 +58,10 @@
       "version": "2.1.0"
     },
     {
-      "uuid": "07f2ea28-71ea-4e9b-ac3f-1106f8b34d5b",
+      "uuid": "f653efbe-1701-4f9c-8abd-7b99cdd76c89",
       "version": [
-        1,
-        6,
+        2,
+        0,
         0
       ]
     }

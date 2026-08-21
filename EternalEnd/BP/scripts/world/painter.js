@@ -18,8 +18,10 @@
  *     painter itself just laid down.
  *   - The Voidfall Barrens have no surface block at all, so a quarter of the
  *     End is never touched by any of this.
- *   - Every patch is painted at most once, tracked in a bounded FIFO, so
- *     walking back and forth does not re-stamp over anything.
+ *   - A column already wearing its region's surface is left alone, so walking
+ *     back and forth cannot re-stamp over anything. A bounded in-memory set of
+ *     finished patches keeps the scan from re-walking them, but it is an
+ *     optimisation: the world itself is the record.
  *
  * Work is done in `system.runJob`, which yields between columns, because a
  * first arrival in a region is a few thousand block reads and doing that in
@@ -45,10 +47,17 @@ const SCAN_INTERVAL_TICKS = 40;
 /** Patches queued per player per scan, so arriving somewhere new is gradual. */
 const PATCHES_PER_SCAN = 3;
 
-/** Painted-patch memory. Bounded: an evicted patch simply repaints the same
- *  way, because the biome and the RNG are both pure functions of the seed. */
-const PROPERTY = "voidbound.painted";
-const MAX_PATCHES = 4000;
+/**
+ * Painted-patch memory.
+ *
+ * Session-scoped, and deliberately so. It exists only to stop the scan
+ * re-walking patches it has already finished this session; whether a *column*
+ * is painted is answered by looking at the column, which is what makes it safe
+ * to forget all of this on restart. The previous version kept it in a world
+ * dynamic property, which meant tens of kilobytes of save data and a FIFO that
+ * evicted, to cache an answer the world already had.
+ */
+const MAX_PATCHES = 6000;
 
 /**
  * The only blocks the painter will ever replace.
@@ -84,33 +93,18 @@ const UNDERSIDE_LENGTH = 5;
 /** How far down to look for the bottom of an island before giving up. */
 const UNDERSIDE_SEARCH = 24;
 
-let cache;
+const painted = new Set();
 const inFlight = new Set();
 
 function load() {
-  if (cache) return cache;
-  let raw = "";
-  try {
-    const stored = world.getDynamicProperty(PROPERTY);
-    if (typeof stored === "string") raw = stored;
-  } catch {
-    raw = "";
-  }
-  cache = new Set(raw ? raw.split(",") : []);
-  return cache;
+  return painted;
 }
 
 function markPainted(key) {
-  const painted = load();
   painted.add(key);
   if (painted.size > MAX_PATCHES) {
     // Sets keep insertion order, so the first key out is the oldest.
     painted.delete(painted.values().next().value);
-  }
-  try {
-    world.setDynamicProperty(PROPERTY, [...painted].join(","));
-  } catch (error) {
-    console.warn(`[End Everlasting] could not persist painted patches: ${error}`);
   }
 }
 
@@ -214,6 +208,15 @@ function* paintPatch(dimension, patchX, patchZ, report) {
           yield;
           continue;
         }
+        // Verdant end stone is both a worldgen feature *and* the Verdant
+        // Canopy's own surface, so it is in NATURAL and would be repainted -
+        // and re-flowered, and re-treed - every time the patch memory evicted
+        // it. A column already wearing this region's surface is finished,
+        // whatever the memory says, and asking the world costs one comparison.
+        if (top.typeId === biome.surface) {
+          yield;
+          continue;
+        }
       } catch {
         report.complete = false;
         yield;
@@ -237,7 +240,8 @@ function* paintPatch(dimension, patchX, patchZ, report) {
 
       // Two layers of filler under the surface, so a cliff face shows the
       // biome rather than a one-block skin over plain end stone.
-      const filler = cachedPermutation(biome.filler ?? biome.surface);
+      const fillerId = biome.filler ?? biome.surface;
+      const filler = fillerId && cachedPermutation(fillerId);
       if (filler) {
         for (let depth = 1; depth <= 2; depth++) {
           try {

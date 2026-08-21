@@ -1,0 +1,38 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Eternal End [Resources]",
+    "description": "A clean teal End sky, per-region fog, lighting and particles, seven wood sets, and the models, textures and animation for forty-one mobs.",
+    "uuid": "f653efbe-1701-4f9c-8abd-7b99cdd76c89",
+    "version": [
+      2,
+      0,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      40
+    ]
+  },
+  "metadata": {
+    "product_type": "addon",
+    "authors": [
+      "Eternal End"
+    ]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "f2ae8894-cb6c-4072-9330-6412ff9ae864",
+      "version": [
+        2,
+        0,
+        0
+      ]
+    }
+  ],
+  "capabilities": [
+    "pbr"
+  ]
+}

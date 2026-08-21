@@ -318,12 +318,15 @@ function* dress(dimension, island, biome, cells, rng) {
   for (const cell of cells) {
     if (!cell.surface) continue;
     if (cell.flat < island.radius * 0.35) continue;
-    if (!rng.chance(0.34)) continue;
+    // A rim cell in five. Higher than this and the curtain stops reading as
+    // growth hanging off an island and starts reading as the island having a
+    // beard - and every strand costs a downward search for the underside.
+    if (!rng.chance(0.2)) continue;
     const x = island.x + cell.dx;
     const z = island.z + cell.dz;
     const floor = bottomOf(dimension, island, x, z);
     if (floor === undefined) continue;
-    const length = rng.int(2, 7);
+    const length = rng.int(1, 6);
     for (let down = 1; down <= length; down++) {
       try {
         const block = dimension.getBlock({ x, y: floor - down, z });
