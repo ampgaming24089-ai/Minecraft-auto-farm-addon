@@ -1,7 +1,0 @@
-{
-  "format_version": "1.16.100",
-  "minecraft:texture_set": {
-    "color": "voidbound_void_moth",
-    "metalness_emissive_roughness": "voidbound_void_moth_mer"
-  }
-}

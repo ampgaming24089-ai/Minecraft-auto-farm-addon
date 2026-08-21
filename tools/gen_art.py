@@ -9,6 +9,7 @@ changed. Each recipe below is authored as "what is this material made of",
 and the matching MER map is derived from the albedo rather than painted twice.
 """
 
+import inspect
 import json
 import math
 import os
@@ -57,6 +58,31 @@ def out(canvas, folder, name):
     return path
 
 
+def _mobkit_owned():
+    """Entity textures produced by the mob pipeline, not by this file.
+
+    Two generators writing the same PNG is a bug with no symptom until you
+    look at a render: whichever ran last wins, silently. It happened - a
+    retired `entity_echo_warden` recipe in here kept overwriting the one
+    tools/mobs/echo_warden_paint.py had just produced, and the boss was
+    wearing a flat texture painted for a body it no longer had.
+
+    So ownership is asserted rather than remembered. Every tools/mobs/*_paint.py
+    claims `voidbound_<name>`, and emit() refuses to write over the claim.
+    """
+    owned = set()
+    mobs = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mobs")
+    if not os.path.isdir(mobs):
+        return owned
+    for entry in os.listdir(mobs):
+        if entry.endswith("_paint.py"):
+            owned.add("voidbound_" + entry[: -len("_paint.py")])
+    return owned
+
+
+MOBKIT_OWNED = _mobkit_owned()
+
+
 def emit(albedo, folder, name, **mer_kwargs):
     """Write an albedo texture, its MER companion, and the set that binds them.
 
@@ -66,6 +92,17 @@ def emit(albedo, folder, name, **mer_kwargs):
     no roughness and, most visibly, no glow at all. Writing all three here
     means that cannot drift apart again.
     """
+    if folder == ENTITY and name in MOBKIT_OWNED:
+        # The owner itself is of course allowed to write it; what is being
+        # caught is any *other* caller doing so.
+        caller = inspect.currentframe().f_back.f_globals.get("__file__", "")
+        expected = "%s_paint.py" % name[len("voidbound_"):]
+        if os.path.basename(caller) != expected:
+            raise SystemExit(
+                "%s tried to write %s, which tools/mobs/%s owns.\n"
+                "  Two generators writing one texture means the last to run\n"
+                "  wins and nothing says so. Delete the other recipe."
+                % (os.path.basename(caller) or "something", name, expected))
     out(albedo, folder, name)
     if not mer_kwargs.pop("mer", True):
         return
@@ -568,217 +605,6 @@ def paint_box(c, u, v, w, h, d, painter):
                     c.set(ox + fx, oy + fy, color)
 
 
-def entity_lumen_wisp():
-    """32x32 sheet for the wisp: a glowing core plus three orbiting shards."""
-    c = Canvas(32, 32)
-    core_in = shade(PALETTE["lumen_lit"], 0.55)
-    core_out = mix(PALETTE["lumen"], PALETTE["void"], 0.30)
-
-    def core(_face, fx, fy, fw, fh):
-        dx = (fx + 0.5) / fw - 0.5
-        dy = (fy + 0.5) / fh - 0.5
-        d = min(1.0, math.hypot(dx, dy) * 2.0)
-        n = fbm(fx * 2, fy * 2, 12, 1234, octaves=2, base_period=4)
-        return mix(core_in, core_out, min(1.0, d * 0.85 + n * 0.2))
-
-    paint_box(c, 0, 0, 6, 6, 6, core)
-
-    def shard(_face, fx, fy, fw, fh):
-        t = (fx + fy) / float(max(1, fw + fh - 2))
-        return mix(shade(PALETTE["lumen_lit"], 0.3), mix(PALETTE["lumen"], PALETTE["void"], 0.5), t)
-
-    for u, v in ((0, 14), (12, 14), (0, 20)):
-        paint_box(c, u, v, 2, 2, 2, shard)
-
-    emit(
-        c,
-        ENTITY,
-        "voidbound_lumen_wisp",
-        roughness=90,
-        emissive_from=PALETTE["lumen_lit"][:3],
-        emissive_gain=1.35,
-        emissive_threshold=0.10,
-    )
-
-
-def entity_rift_stalker():
-    """64x32 sheet: obsidian carapace with violet rift light in the seams."""
-    c = Canvas(64, 32)
-    hide = mix(PALETTE["void"], (0, 0, 0, 255), 0.12)
-    hide_lit = mix(PALETTE["void"], PALETTE["void_lit"], 0.55)
-
-    def carapace(face, fx, fy, fw, fh):
-        n = fbm(fx * 1.5, fy * 1.5, 16, 5150, octaves=3, base_period=4)
-        base = mix(hide, shade(hide, 0.42), n)
-        # A bright ridge runs down the spine and along each flank seam.
-        if face == "top" and abs(fx - (fw - 1) / 2.0) < 0.9:
-            return mix(base, PALETTE["void_lit"], 0.55)
-        if face in ("east", "west") and fy in (1, fh - 2):
-            return mix(base, hide_lit, 0.6)
-        return base
-
-    paint_box(c, 0, 0, 8, 6, 12, carapace)
-
-    def skull(face, fx, fy, fw, fh):
-        n = fbm(fx * 2, fy * 2, 12, 6160, octaves=2, base_period=4)
-        base = mix(hide, shade(hide, 0.38), n)
-        if face == "north" and fy in (1, 2) and fx in (1, fw - 2):
-            return shade(PALETTE["void_lit"], 0.5)  # eyes
-        return base
-
-    paint_box(c, 0, 20, 6, 5, 5, skull)
-
-    def crest(_face, fx, fy, fw, fh):
-        t = fy / float(max(1, fh - 1))
-        return mix(PALETTE["void_lit"], hide, min(1.0, t * 1.3))
-
-    paint_box(c, 24, 20, 2, 4, 6, crest)
-
-    def jaw(face, fx, fy, fw, fh):
-        n = fbm(fx * 2, fy * 2, 12, 6161, octaves=2, base_period=4)
-        base = mix(shade(hide, -0.12), hide_lit, n * 0.3)
-        # Teeth along the lower edge of the muzzle.
-        if face == "north" and fy == fh - 1 and fx % 2 == 0:
-            return hex_rgba("#E8E0F0")
-        return base
-
-    paint_box(c, 40, 19, 6, 2, 4, jaw)
-
-    def tail(_face, fx, fy, fw, fh):
-        t = fy / float(max(1, fh - 1))
-        return mix(hide_lit, hide, min(1.0, t * 1.4))
-
-    paint_box(c, 40, 26, 2, 2, 4, tail)
-
-    def limb(_face, fx, fy, fw, fh):
-        t = fy / float(max(1, fh - 1))
-        return mix(shade(hide, 0.1), mix(hide, PALETTE["void_lit"], 0.25), t)
-
-    for u, v in ((44, 0), (44, 10), (52, 0), (52, 10)):
-        paint_box(c, u, v, 2, 6, 2, limb)
-
-    emit(
-        c,
-        ENTITY,
-        "voidbound_rift_stalker",
-        roughness=150,
-        emissive_from=PALETTE["void_lit"][:3],
-        emissive_gain=1.1,
-        emissive_threshold=0.22,
-    )
-
-
-def entity_void_moth():
-    """64x32 sheet: a dusty violet body under four translucent-looking wings."""
-    c = Canvas(64, 32)
-    fur = mix(PALETTE["void"], PALETTE["endstone_dark"], 0.22)
-    fur_hi = mix(fur, PALETTE["void_lit"], 0.35)
-    wing = mix(PALETTE["void_lit"], PALETTE["void"], 0.45)
-    wing_edge = shade(PALETTE["void_lit"], 0.35)
-
-    def body(face, fx, fy, fw, fh):
-        n = fbm(fx * 2, fy * 2, 12, 4310, octaves=3, base_period=4)
-        base = mix(fur, fur_hi, n * 0.55)
-        # Banding along the abdomen.
-        if face in ("east", "west", "top") and fy % 2 == 0:
-            return shade(base, -0.12)
-        return base
-
-    paint_box(c, 0, 0, 4, 4, 6, body)
-
-    def head(face, fx, fy, fw, fh):
-        base = mix(fur_hi, fur, 0.3)
-        if face == "north" and fy == 1 and fx in (1, fw - 2):
-            return shade(PALETTE["lumen_lit"], 0.4)  # eyes
-        return base
-
-    paint_box(c, 22, 0, 4, 3, 2, head)
-
-    def make_wing(scale):
-        def paint(face, fx, fy, fw, fh):
-            # Veins run outward from the wing root; the trailing edge glows.
-            t = fx / float(max(1, fw - 1))
-            n = fbm(fx * 3, fy * 3, 16, 4311, octaves=2, base_period=4)
-            base = mix(wing, mix(wing, PALETTE["void"], 0.55), t * scale)
-            if fx % 3 == 0:
-                base = mix(base, wing_edge, 0.45)
-            if face == "top" or face == "bottom":
-                return mix(base, wing_edge, 0.15 + n * 0.2)
-            return base
-        return paint
-
-    paint_box(c, 0, 12, 7, 1, 5, make_wing(0.9))
-    paint_box(c, 0, 19, 7, 1, 5, make_wing(0.9))
-    paint_box(c, 26, 12, 5, 1, 4, make_wing(1.1))
-    paint_box(c, 26, 18, 5, 1, 4, make_wing(1.1))
-
-    def antenna(_face, fx, fy, fw, fh):
-        return mix(fur_hi, PALETTE["lumen_lit"], 1.0 - fy / float(max(1, fh - 1)))
-
-    paint_box(c, 46, 0, 1, 3, 1, antenna)
-
-    emit(
-        c,
-        ENTITY,
-        "voidbound_void_moth",
-        roughness=190,
-        emissive_from=PALETTE["void_lit"][:3],
-        emissive_gain=0.85,
-        emissive_threshold=0.28,
-    )
-
-
-def entity_echo_sentinel():
-    """64x64 sheet: quarried end stone bound around a burning echo core."""
-    c = Canvas(64, 64)
-    stone = mix(PALETTE["endstone_dark"], PALETTE["void"], 0.42)
-    stone_hi = mix(stone, PALETTE["endstone"], 0.35)
-    seam = PALETTE["lumen_lit"]
-
-    def masonry(seed, seam_faces=()):
-        def paint(face, fx, fy, fw, fh):
-            n = fbm(fx * 1.4, fy * 1.4, 16, seed, octaves=3, base_period=4)
-            base = mix(stone, stone_hi, n)
-            # Brick courses, offset every other row.
-            if fy % 4 == 0:
-                base = shade(base, -0.22)
-            elif (fx + (fy // 4) * 2) % 5 == 0:
-                base = shade(base, -0.16)
-            if face in seam_faces and abs(fx - (fw - 1) / 2.0) < 0.6:
-                return mix(base, seam, 0.5)
-            return base
-        return paint
-
-    paint_box(c, 0, 0, 10, 14, 6, masonry(7710, ("north",)))
-    paint_box(c, 0, 22, 8, 8, 8, masonry(7711))
-    paint_box(c, 34, 0, 4, 14, 4, masonry(7712))
-    paint_box(c, 34, 20, 4, 14, 4, masonry(7713))
-    paint_box(c, 0, 40, 4, 12, 4, masonry(7714))
-    paint_box(c, 18, 40, 4, 12, 4, masonry(7715))
-
-    def core(_face, fx, fy, fw, fh):
-        dx = (fx + 0.5) / fw - 0.5
-        dy = (fy + 0.5) / fh - 0.5
-        d = min(1.0, math.hypot(dx, dy) * 2.2)
-        return mix(shade(seam, 0.6), mix(seam, PALETTE["void"], 0.6), d)
-
-    paint_box(c, 36, 40, 4, 4, 1, core)
-
-    # Eyes on the head's north face.
-    for x, y in ((10, 33), (13, 33), (10, 34), (13, 34)):
-        c.set(x, y, shade(seam, 0.55))
-
-    emit(
-        c,
-        ENTITY,
-        "voidbound_echo_sentinel",
-        roughness=232,
-        emissive_from=PALETTE["lumen_lit"][:3],
-        emissive_gain=1.2,
-        emissive_threshold=0.22,
-    )
-
-
 # --------------------------------------------------------------------------
 # Tools and armour: recoloured vanilla art
 # --------------------------------------------------------------------------
@@ -921,139 +747,6 @@ def item_void_boots():
         c.set(2, 12, echo)
         c.set(13, 12, echo)
     _armor_icon("voidbound_void_boots", draw)
-
-
-def entity_chorus_hopper():
-    """32x32: a plump chorus-fed grazer, pale purple with darker dapples."""
-    c = Canvas(32, 32)
-    hide = hex_rgba("#8A5FA8")
-    hide_dark = mix(hide, PALETTE["void"], 0.5)
-    belly = mix(hide, hex_rgba("#E8D8F2"), 0.55)
-
-    def body(face, fx, fy, fw, fh):
-        n = fbm(fx * 2.2, fy * 2.2, 16, 4501, octaves=3, base_period=4)
-        base = mix(hide, hide_dark, n * 0.7)
-        if face == "bottom":
-            return belly
-        if n > 0.68:
-            return hide_dark            # dapples
-        return base
-
-    paint_box(c, 0, 0, 6, 5, 8, body)
-
-    def head(face, fx, fy, fw, fh):
-        base = mix(hide, belly, 0.25)
-        if face == "north" and fy == 1 and fx in (0, fw - 1):
-            return PALETTE["void_lit"]  # eyes
-        if face == "north" and fy == 3:
-            return hide_dark            # mouth line
-        return base
-
-    paint_box(c, 0, 14, 4, 4, 3, head)
-
-    def leg(_face, fx, fy, fw, fh):
-        return mix(hide_dark, hide, fy / float(max(1, fh - 1)))
-
-    paint_box(c, 16, 14, 2, 2, 2, leg)
-    paint_box(c, 16, 19, 2, 2, 2, leg)
-
-    def frond(_face, fx, fy, fw, fh):
-        return mix(PALETTE["void_lit"], hide_dark, fy / float(max(1, fh - 1)))
-
-    paint_box(c, 0, 22, 1, 3, 1, frond)
-    paint_box(c, 6, 22, 1, 3, 1, frond)
-
-    emit(c, ENTITY, "voidbound_chorus_hopper", roughness=210,
-         emissive_from=PALETTE["void_lit"][:3], emissive_gain=0.7, emissive_threshold=0.34)
-
-
-def entity_shard_wraith():
-    """64x32: a hollow shroud with nothing inside it but light."""
-    c = Canvas(64, 32)
-    cloth = mix(PALETTE["void"], (0, 0, 0, 255), 0.30)
-    cloth_hi = mix(cloth, hex_rgba("#7B4FA8"), 0.55)
-    inner = hex_rgba("#D9A8FF")
-
-    def hood(face, fx, fy, fw, fh):
-        n = fbm(fx * 2, fy * 2, 16, 7801, octaves=3, base_period=4)
-        base = mix(cloth, cloth_hi, n * 0.8)
-        if face == "north":
-            # A dark void under the hood, with two points of light in it.
-            if 0 < fx < fw - 1 and fy > 1:
-                if fy == 3 and fx in (1, fw - 2):
-                    return inner
-                return mix(cloth, (0, 0, 0, 255), 0.7)
-        if face == "top":
-            return shade(base, 0.16)
-        return base
-
-    paint_box(c, 0, 0, 6, 6, 6, hood)
-
-    def shroud(face, fx, fy, fw, fh):
-        n = fbm(fx * 1.6, fy * 1.6, 16, 7802, octaves=3, base_period=4)
-        base = mix(cloth, cloth_hi, n * 0.6)
-        t = fy / float(max(1, fh - 1))
-        # The hem frays into light.
-        if t > 0.7 and (fx + fy) % 2 == 0:
-            return mix(base, inner, (t - 0.7) / 0.3 * 0.7)
-        if face in ("east", "west") and fx % 3 == 0:
-            return shade(base, -0.2)
-        return base
-
-    paint_box(c, 0, 13, 8, 9, 8, shroud)
-
-    def tatter(_face, fx, fy, fw, fh):
-        t = fy / float(max(1, fh - 1))
-        return mix(cloth_hi, mix(cloth, inner, 0.4), t)
-
-    paint_box(c, 34, 0, 1, 5, 3, tatter)
-    paint_box(c, 44, 0, 1, 5, 3, tatter)
-
-    emit(c, ENTITY, "voidbound_shard_wraith", roughness=176,
-         emissive_from=inner[:3], emissive_gain=1.25, emissive_threshold=0.18)
-
-
-def entity_crystal_crawler():
-    """64x32: a low six-legged thing armoured in echo crystal."""
-    c = Canvas(64, 32)
-    chitin = mix(PALETTE["endstone_dark"], PALETTE["void"], 0.55)
-    chitin_hi = mix(chitin, PALETTE["endstone"], 0.4)
-    crystal = PALETTE["lumen_lit"]
-
-    def body(face, fx, fy, fw, fh):
-        n = fbm(fx * 1.5, fy * 1.5, 16, 3901, octaves=3, base_period=4)
-        base = mix(chitin, chitin_hi, n)
-        if face == "top" and fy % 3 == 1:
-            return shade(base, -0.2)     # segment plates
-        if face in ("east", "west") and fy == fh - 1:
-            return mix(base, crystal, 0.35)
-        return base
-
-    paint_box(c, 0, 0, 8, 4, 12, body)
-
-    def head(face, fx, fy, fw, fh):
-        base = mix(chitin_hi, chitin, 0.3)
-        if face == "north" and fy == 1 and fx in (1, fw - 2):
-            return shade(crystal, 0.5)   # eyes
-        return base
-
-    paint_box(c, 0, 18, 6, 3, 3, head)
-
-    def spine(_face, fx, fy, fw, fh):
-        t = 1.0 - fy / float(max(1, fh - 1))
-        return mix(chitin, crystal, min(1.0, t * 1.15))
-
-    paint_box(c, 20, 18, 4, 4, 1, spine)
-    paint_box(c, 32, 18, 2, 3, 1, spine)
-
-    def leg(_face, fx, fy, fw, fh):
-        return mix(chitin_hi, chitin, fy / float(max(1, fh - 1)))
-
-    for u, v in ((42, 0), (42, 6), (42, 12), (48, 0), (48, 6), (48, 12)):
-        paint_box(c, u, v, 1, 4, 1, leg)
-
-    emit(c, ENTITY, "voidbound_crystal_crawler", roughness=224,
-         emissive_from=crystal[:3], emissive_gain=1.0, emissive_threshold=0.26)
 
 
 def item_gameplay_set():
@@ -1333,50 +1026,6 @@ def rind_white():
     return hex_rgba("#FFF4CC")
 
 
-def entity_echo_warden():
-    """The Echo Warden: the sentinel's build in older, gilded stone."""
-    c = Canvas(64, 64)
-    stone = mix(PALETTE["endstone_dark"], PALETTE["void"], 0.72)
-    stone_hi = mix(stone, hex_rgba("#C9B98A"), 0.42)
-    gold = hex_rgba("#D8B45C")
-    core = hex_rgba("#FF9C3F")
-
-    def masonry(seed, gilded=False):
-        def paint(face, fx, fy, fw, fh):
-            n = fbm(fx * 1.4, fy * 1.4, 16, seed, octaves=3, base_period=4)
-            base = mix(stone, stone_hi, n)
-            if fy % 4 == 0:
-                base = shade(base, -0.24)
-            elif (fx + (fy // 4) * 2) % 5 == 0:
-                base = shade(base, -0.18)
-            if gilded and face in ("north", "south") and fy in (2, fh - 3):
-                return gold
-            if gilded and face in ("east", "west") and fx == fw // 2:
-                return mix(base, gold, 0.55)
-            return base
-        return paint
-
-    paint_box(c, 0, 0, 10, 14, 6, masonry(8810, gilded=True))
-    paint_box(c, 0, 22, 8, 8, 8, masonry(8811, gilded=True))
-    paint_box(c, 34, 0, 4, 14, 4, masonry(8812))
-    paint_box(c, 34, 20, 4, 14, 4, masonry(8813))
-    paint_box(c, 0, 40, 4, 12, 4, masonry(8814))
-    paint_box(c, 18, 40, 4, 12, 4, masonry(8815))
-
-    def furnace(_face, fx, fy, fw, fh):
-        dx = (fx + 0.5) / fw - 0.5
-        dy = (fy + 0.5) / fh - 0.5
-        d = min(1.0, math.hypot(dx, dy) * 2.2)
-        return mix(shade(core, 0.6), mix(core, PALETTE["void"], 0.55), d)
-
-    paint_box(c, 36, 40, 4, 4, 1, furnace)
-    for x, y in ((10, 33), (13, 33), (10, 34), (13, 34)):
-        c.set(x, y, shade(core, 0.5))
-
-    emit(c, ENTITY, "voidbound_echo_warden", metalness=60, roughness=228,
-         emissive_from=core[:3], emissive_gain=1.3, emissive_threshold=0.2)
-
-
 def block_building_set():
     """Four worked blocks, so the End's materials can actually be built with."""
     # Planks: milled ender log, grain running one way.
@@ -1449,103 +1098,6 @@ def block_building_set():
          emissive_from=glow[:3], emissive_gain=1.5, emissive_threshold=0.1)
 
 
-def entity_void_serpent():
-    """64x64: a segmented eel of the void, dark with a lit dorsal line."""
-    c = Canvas(64, 64)
-    scale_dark = mix(PALETTE["void"], (0, 0, 0, 255), 0.25)
-    scale_lit = mix(PALETTE["void"], PALETTE["void_lit"], 0.55)
-    belly = mix(scale_dark, hex_rgba("#8E7BB0"), 0.45)
-    maw = hex_rgba("#FF6BD8")
-
-    def hide(seed, dorsal=True):
-        def paint(face, fx, fy, fw, fh):
-            n = fbm(fx * 2.1, fy * 2.1, 16, seed, octaves=3, base_period=4)
-            base = mix(scale_dark, mix(scale_dark, scale_lit, 0.5), n)
-            # Diamond scale pattern.
-            if (fx + fy) % 3 == 0:
-                base = shade(base, 0.16)
-            if face == "bottom":
-                return mix(base, belly, 0.7)
-            if dorsal and face == "top" and abs(fx - (fw - 1) / 2.0) < 0.9:
-                return scale_lit
-            return base
-        return paint
-
-    paint_box(c, 0, 0, 6, 5, 6, hide(9501))
-
-    def head(face, fx, fy, fw, fh):
-        base = hide(9502)(face, fx, fy, fw, fh)
-        if face == "north":
-            if fy == 1 and fx in (1, fw - 2):
-                return maw                       # eyes
-            if fy >= fh - 2:
-                return mix(base, maw, 0.45)      # lit throat
-        return base
-
-    paint_box(c, 0, 0, 6, 5, 6, head)
-
-    def jaw(face, fx, fy, fw, fh):
-        base = mix(scale_dark, belly, 0.35)
-        if face == "north" and fy == 0 and fx % 2 == 0:
-            return hex_rgba("#F2E8FF")           # teeth
-        return base
-
-    paint_box(c, 0, 13, 5, 2, 4, jaw)
-    paint_box(c, 26, 0, 5, 5, 5, hide(9503))     # shared by every body segment
-    paint_box(c, 26, 12, 3, 3, 5, hide(9504))    # tail
-
-    def fin(_face, fx, fy, fw, fh):
-        t = fy / float(max(1, fh - 1))
-        return mix(scale_lit, mix(scale_dark, maw, 0.3), t)
-
-    paint_box(c, 0, 21, 1, 4, 6, fin)
-    paint_box(c, 16, 21, 1, 4, 6, fin)
-
-    emit(c, ENTITY, "voidbound_void_serpent", roughness=150,
-         emissive_from=maw[:3], emissive_gain=1.2, emissive_threshold=0.24)
-
-
-def entity_glimmerfin():
-    """64x32: a translucent ray that drifts between islands."""
-    c = Canvas(64, 32)
-    membrane = hex_rgba("#3E7FA8")
-    membrane_hi = hex_rgba("#9FE4F5")
-    core = hex_rgba("#DFF7FF")
-
-    def body(face, fx, fy, fw, fh):
-        n = fbm(fx * 2, fy * 2, 16, 9510, octaves=3, base_period=4)
-        base = mix(membrane, membrane_hi, n * 0.7)
-        if face == "top":
-            return mix(base, core, 0.3)
-        if face == "north" and fy == 1 and fx in (0, fw - 1):
-            return core                          # eyes
-        return base
-
-    paint_box(c, 0, 0, 4, 3, 8, body)
-
-    def wing(face, fx, fy, fw, fh):
-        # Thin toward the trailing edge, and veined along the span.
-        span = fx / float(max(1, fw - 1))
-        n = fbm(fx * 2.4, fy * 2.4, 16, 9511, octaves=2, base_period=4)
-        base = mix(membrane_hi, membrane, min(1.0, span * 1.15 + n * 0.2))
-        if fx % 3 == 0:
-            return mix(base, core, 0.35)
-        if face in ("top", "bottom") and span > 0.82:
-            return mix(base, membrane, 0.6)
-        return base
-
-    paint_box(c, 0, 12, 8, 1, 10, wing)
-
-    def tail(_face, fx, fy, fw, fh):
-        t = fy / float(max(1, fh - 1))
-        return mix(membrane_hi, membrane, t)
-
-    paint_box(c, 38, 0, 1, 1, 6, tail)
-
-    emit(c, ENTITY, "voidbound_glimmerfin", roughness=96,
-         emissive_from=core[:3], emissive_gain=1.0, emissive_threshold=0.3)
-
-
 def entity_endstone_golem():
     """64x64: quarried end stone bound with crystal - a guardian, not a threat."""
     c = Canvas(64, 64)
@@ -1585,127 +1137,6 @@ def entity_endstone_golem():
 
     emit(c, ENTITY, "voidbound_endstone_golem", roughness=246,
          emissive_from=binding[:3], emissive_gain=0.95, emissive_threshold=0.3)
-
-
-def entity_astral_whale():
-    """128x128: the End's leviathan - a slow, harmless giant with a lit belly."""
-    c = Canvas(128, 128)
-    hide = mix(PALETTE["void"], hex_rgba("#2E4A78"), 0.55)
-    hide_hi = mix(hide, hex_rgba("#8FA8D8"), 0.4)
-    belly = mix(hex_rgba("#6FD8F0"), hide, 0.35)
-    star = hex_rgba("#EAF6FF")
-
-    def flank(seed, constellations=False):
-        def paint(face, fx, fy, fw, fh):
-            n = fbm(fx * 1.1, fy * 1.1, 32, seed, octaves=4, base_period=4)
-            base = mix(hide, hide_hi, n * 0.7)
-            if face == "bottom":
-                # Bioluminescent underside, brightest along the midline.
-                mid = 1.0 - abs(fx - (fw - 1) / 2.0) / max(1.0, (fw - 1) / 2.0)
-                return mix(base, belly, 0.35 + mid * 0.5)
-            if face == "top":
-                base = shade(base, -0.12)
-            # A scatter of star-points across the flanks, like a night sky.
-            if constellations and face in ("east", "west"):
-                spark = fbm(fx * 4.3, fy * 4.3, 32, seed + 313, octaves=2, base_period=4)
-                if spark > 0.86:
-                    return star
-                if spark > 0.80:
-                    return mix(base, star, 0.5)
-            return base
-        return paint
-
-    paint_box(c, 0, 0, 16, 14, 40, flank(9701, constellations=True))
-    paint_box(c, 0, 56, 14, 12, 14, flank(9702))
-
-    def fin(_face, fx, fy, fw, fh):
-        span = fx / float(max(1, fw - 1))
-        return mix(hide_hi, mix(hide, belly, 0.3), min(1.0, span * 1.2))
-
-    paint_box(c, 0, 84, 10, 2, 12, fin)
-    paint_box(c, 46, 84, 10, 2, 12, fin)
-    paint_box(c, 0, 100, 14, 2, 10, fin)
-
-    emit(c, ENTITY, "voidbound_astral_whale", roughness=196,
-         emissive_from=belly[:3], emissive_gain=0.95, emissive_threshold=0.3)
-
-
-def entity_voidling():
-    """32x32: a small, angry scrap of the void."""
-    c = Canvas(32, 32)
-    skin = mix(PALETTE["void"], (0, 0, 0, 255), 0.2)
-    skin_hi = mix(skin, PALETTE["void_lit"], 0.45)
-    eye = hex_rgba("#FF5BC8")
-
-    def body(face, fx, fy, fw, fh):
-        n = fbm(fx * 2.6, fy * 2.6, 16, 9710, octaves=3, base_period=4)
-        base = mix(skin, skin_hi, n * 0.55)
-        # A ragged lit seam down the spine.
-        if face == "north" and abs(fx - (fw - 1) / 2.0) < 0.7 and fy > 1:
-            return mix(base, PALETTE["void_lit"], 0.5)
-        return base
-
-    paint_box(c, 0, 0, 5, 6, 4, body)
-
-    def head(face, fx, fy, fw, fh):
-        base = mix(skin_hi, skin, 0.35)
-        if face == "north" and fy == 1 and fx in (1, fw - 2):
-            return eye
-        if face == "north" and fy == 3 and fx % 2 == 0:
-            return shade(skin, -0.4)             # gappy teeth
-        return base
-
-    paint_box(c, 0, 12, 5, 4, 4, head)
-
-    def arm(_face, fx, fy, fw, fh):
-        return mix(skin_hi, skin, fy / float(max(1, fh - 1)))
-
-    paint_box(c, 20, 0, 2, 5, 2, arm)
-    paint_box(c, 20, 10, 2, 5, 2, arm)
-
-    emit(c, ENTITY, "voidbound_voidling", roughness=180,
-         emissive_from=eye[:3], emissive_gain=1.3, emissive_threshold=0.22)
-
-
-def entity_ender_beetle():
-    """64x32: armoured grazer - the chitin is the point."""
-    c = Canvas(64, 32)
-    chitin = mix(PALETTE["void"], hex_rgba("#6E5A8C"), 0.6)
-    chitin_hi = mix(chitin, hex_rgba("#C8B4E0"), 0.5)
-    seam = PALETTE["lumen_lit"]
-
-    def shell(face, fx, fy, fw, fh):
-        n = fbm(fx * 1.7, fy * 1.7, 16, 9720, octaves=3, base_period=4)
-        base = mix(chitin, chitin_hi, n)
-        if face == "top":
-            # Split carapace with a lit seam down the join.
-            if abs(fx - (fw - 1) / 2.0) < 0.7:
-                return mix(base, seam, 0.6)
-            if fy % 3 == 0:
-                return shade(base, -0.2)
-            return shade(base, 0.14)
-        if face == "bottom":
-            return shade(base, -0.3)
-        return base
-
-    paint_box(c, 0, 0, 8, 4, 10, shell)
-
-    def head(face, fx, fy, fw, fh):
-        base = mix(chitin_hi, chitin, 0.4)
-        if face == "north" and fy == 1 and fx in (0, fw - 1):
-            return shade(seam, 0.45)
-        return base
-
-    paint_box(c, 0, 16, 5, 3, 4, head)
-
-    def leg(_face, fx, fy, fw, fh):
-        return mix(chitin_hi, chitin, fy / float(max(1, fh - 1)))
-
-    for u, v in ((38, 0), (38, 5), (38, 10), (44, 0), (44, 5), (44, 10)):
-        paint_box(c, u, v, 1, 3, 1, leg)
-
-    emit(c, ENTITY, "voidbound_ender_beetle", roughness=210,
-         emissive_from=seam[:3], emissive_gain=0.9, emissive_threshold=0.3)
 
 
 def entity_void_titan():
@@ -2804,173 +2235,6 @@ def item_farm_and_trade():
          emissive_from=mark[:3], emissive_gain=1.1, emissive_threshold=0.42)
 
 
-def entity_void_leviathan():
-    """128x128: the colossus of the End sky.
-
-    Everything about it is built to be read from a long way off, because that
-    is where it will usually be: a vivid magenta hide against the violet sky,
-    huge wing membranes with visible ribbing so the shape stays legible in
-    silhouette, and a lit underside so it is still something rather than a
-    black shape when it passes overhead.
-    """
-    c = Canvas(128, 128)
-    hide = hex_rgba("#8E2A6E")
-    hide_hi = hex_rgba("#F06AC0")
-    hide_lo = mix(hide, PALETTE["void"], 0.55)
-    membrane = hex_rgba("#D64AA0")
-    lit = hex_rgba("#FFB8E8")
-
-    def body(face, fx, fy, fw, fh):
-        n = fbm(fx * 1.2, fy * 1.2, 32, 9801, octaves=4, base_period=5)
-        base = mix(hide_lo, hide, n * 0.85)
-        if face == "bottom":
-            mid = 1.0 - abs(fx - (fw - 1) / 2.0) / max(1.0, (fw - 1) / 2.0)
-            return mix(base, lit, 0.3 + mid * 0.55)
-        if face == "top":
-            # Banding along the spine, which is what reads at distance.
-            if int(fy) % 4 < 2:
-                return mix(shade(base, -0.16), hide_hi, 0.28)
-            return shade(base, -0.16)
-        return base
-
-    paint_box(c, 0, 0, 18, 12, 30, body)          # body
-    paint_box(c, 0, 46, 14, 10, 12, body)         # head
-
-    def wing(_face, fx, fy, fw, fh):
-        span = fx / float(max(1, fw - 1))
-        drop = fy / float(max(1, fh - 1))
-        # Ribs every few pixels across the membrane, fading outboard.
-        if int(fx) % 5 == 0 and span < 0.9:
-            return mix(hide, hide_hi, 0.5)
-        base = mix(membrane, mix(hide_lo, membrane, 0.4), drop * 0.6)
-        return mix(base, lit, max(0.0, 0.35 - span * 0.35))
-
-    paint_box(c, 0, 74, 26, 2, 14, wing)
-    paint_box(c, 62, 74, 26, 2, 14, wing)
-
-    def tail(_face, fx, fy, fw, fh):
-        t = fy / float(max(1, fh - 1))
-        return mix(hide, hide_lo, t)
-
-    paint_box(c, 0, 104, 6, 6, 18, tail)
-
-    emit(c, ENTITY, "voidbound_void_leviathan", roughness=178,
-         emissive_from=lit[:3], emissive_gain=1.25, emissive_threshold=0.3)
-
-
-def entity_drift_jelly():
-    """32x32: a bell and a curtain of trailing filaments."""
-    c = Canvas(32, 32)
-    bell = hex_rgba("#7FE8E0")
-    bell_lo = mix(bell, PALETTE["void"], 0.6)
-    core = hex_rgba("#EAFFFC")
-
-    def dome(face, fx, fy, fw, fh):
-        n = fbm(fx * 2.0, fy * 2.0, 16, 9811, octaves=3, base_period=4)
-        base = mix(bell_lo, bell, n)
-        if face == "top":
-            d = math.hypot(fx - (fw - 1) / 2.0, fy - (fh - 1) / 2.0)
-            return mix(core, base, min(1.0, d / max(1.0, fw / 2.0)))
-        # A lit rim around the lower edge of the bell.
-        if fy >= fh - 2:
-            return mix(base, core, 0.55)
-        return base
-
-    paint_box(c, 0, 0, 8, 6, 8, dome)
-
-    def strand(_face, _fx, fy, _fw, fh):
-        t = fy / float(max(1, fh - 1))
-        return mix(core, (bell_lo[0], bell_lo[1], bell_lo[2], 90), t)
-
-    paint_box(c, 0, 20, 6, 6, 2, strand)
-
-    emit(c, ENTITY, "voidbound_drift_jelly", roughness=88,
-         emissive_from=core[:3], emissive_gain=1.5, emissive_threshold=0.28)
-
-
-def entity_cinder_stag():
-    """64x64: charcoal hide, ember cracks, and antlers that carry the fire."""
-    c = Canvas(64, 64)
-    hide = hex_rgba("#3A3230")
-    hide_hi = hex_rgba("#6A5C55")
-    ember = hex_rgba("#FF7A2E")
-    ember_hot = hex_rgba("#FFD79A")
-
-    def coat(face, fx, fy, fw, fh):
-        n = fbm(fx * 1.8, fy * 1.8, 16, 9821, octaves=4, base_period=4)
-        base = mix(hide, hide_hi, n * 0.7)
-        # Heat running in the cracks of the hide, hottest along the back.
-        crack = fbm(fx * 3.2, fy * 3.2, 16, 9822, octaves=2, base_period=6)
-        if crack > 0.74:
-            heat = (crack - 0.74) / 0.26
-            weight = 0.8 if face == "top" else 0.5
-            return mix(base, mix(ember, ember_hot, heat), weight)
-        if face == "bottom":
-            return shade(base, -0.2)
-        return base
-
-    paint_box(c, 0, 0, 10, 10, 18, coat)      # body
-    paint_box(c, 0, 40, 7, 8, 8, coat)        # head
-
-    def limb(_face, _fx, fy, _fw, fh):
-        t = fy / float(max(1, fh - 1))
-        return mix(hide_hi, hide, 0.3 + t * 0.6)
-
-    paint_box(c, 30, 40, 3, 12, 3, limb)
-
-    def horn(_face, _fx, fy, _fw, fh):
-        t = fy / float(max(1, fh - 1))
-        # The antler is the light source: hot at the tip, dark at the skull.
-        return mix(hide, mix(ember, ember_hot, 1.0 - t), (1.0 - t) * 0.85)
-
-    paint_box(c, 44, 40, 2, 9, 2, horn)
-
-    emit(c, ENTITY, "voidbound_cinder_stag", roughness=222,
-         emissive_from=ember_hot[:3], emissive_gain=1.5, emissive_threshold=0.3)
-
-
-def entity_glowmite():
-    """32x32: small, round and warm - the one thing in the End to keep."""
-    c = Canvas(32, 32)
-    fluff = hex_rgba("#E8D8F4")
-    fluff_lo = hex_rgba("#8A76A8")
-    glow = hex_rgba("#FFE9A0")
-
-    def coat(face, fx, fy, fw, fh):
-        n = fbm(fx * 2.6, fy * 2.6, 16, 9831, octaves=4, base_period=3)
-        base = mix(fluff_lo, fluff, n)
-        if face == "top":
-            return mix(base, hex_rgba("#FFFFFF"), 0.22)
-        if face == "bottom":
-            # Lit underside, so it glows on whatever it is standing on.
-            return mix(base, glow, 0.5)
-        return base
-
-    paint_box(c, 0, 0, 8, 6, 8, coat)
-
-    def face_paint(face, fx, fy, fw, fh):
-        base = mix(fluff_lo, fluff, fbm(fx * 2.2, fy * 2.2, 16, 9832, octaves=3, base_period=3))
-        if face == "north":
-            # Two big eyes and a lit snout - the whole appeal of the thing.
-            if fy in (2, 3) and fx in (1, 2, 5, 6):
-                return hex_rgba("#241832")
-            if fy in (2,) and fx in (1, 5):
-                return hex_rgba("#FFFFFF")
-            if fy >= 4 and 3 <= fx <= 4:
-                return glow
-        return base
-
-    paint_box(c, 0, 16, 8, 6, 6, face_paint)
-
-    def leg(_face, _fx, fy, _fw, fh):
-        return mix(fluff, fluff_lo, fy / float(max(1, fh - 1)))
-
-    paint_box(c, 20, 22, 2, 3, 2, leg)
-
-    emit(c, ENTITY, "voidbound_glowmite", roughness=234,
-         emissive_from=glow[:3], emissive_gain=1.3, emissive_threshold=0.38)
-
-
 def entity_end_villager():
     """64x64 on geometry.villager_v2: an End trader in a hooded robe."""
     c = Canvas(64, 64)
@@ -3187,26 +2451,9 @@ def main():
         item_cooked_haunch,
         item_echo_bread,
         tool_set,
-        entity_lumen_wisp,
-        entity_rift_stalker,
-        entity_void_moth,
-        entity_echo_sentinel,
-        entity_chorus_hopper,
-        entity_shard_wraith,
-        entity_crystal_crawler,
         entity_rift_sovereign,
-        entity_echo_warden,
-        entity_void_serpent,
-        entity_glimmerfin,
         entity_endstone_golem,
-        entity_astral_whale,
-        entity_voidling,
-        entity_ender_beetle,
         entity_void_titan,
-        entity_void_leviathan,
-        entity_drift_jelly,
-        entity_cinder_stag,
-        entity_glowmite,
         entity_end_villager,
         entity_biome_endermen,
         block_ender_log,

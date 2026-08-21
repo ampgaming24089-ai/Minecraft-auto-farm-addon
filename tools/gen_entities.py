@@ -360,10 +360,13 @@ def spawn_rule(name, spec):
         "minecraft:spawns_on_block_filter": VOID_STONE,
     }
     if spec["move"] in ("fly", "hover"):
-        # A flier that has to stand on a block to spawn never spawns over the
-        # gaps between islands, which is the only place it should be.
+        # A flier that has to stand on a block to spawn never appears over the
+        # gaps between islands, which is where it should be - so the block
+        # filter comes off and the band is raised into the air.
+        #
+        # Not `spawns_underground`: that is a below-sea-level test, and in a
+        # dimension with no sea it is a filter that mostly says no.
         condition.pop("minecraft:spawns_on_block_filter")
-        condition["minecraft:spawns_underground"] = {}
         condition["minecraft:height_filter"] = {"min": 40, "max": 200}
     return {
         "format_version": "1.8.0",

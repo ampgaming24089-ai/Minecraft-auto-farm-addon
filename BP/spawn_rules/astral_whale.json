@@ -35,8 +35,7 @@
         },
         "minecraft:weight": {
           "default": 2
-        },
-        "minecraft:spawns_underground": {}
+        }
       }
     ]
   }

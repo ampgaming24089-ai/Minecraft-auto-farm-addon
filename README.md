@@ -4,10 +4,10 @@ The End has been one biome, one sky and two structures since 1.9. End
 Ascendant rebuilds it for Bedrock **26.4** (internal `1.26.40`, current hotfix
 `26.44`): **seven biomes** in a dimension the engine says has one, floating
 islands stacked through the whole world height, **End villages** with traders
-who deal in three professions, crops, a tameable companion, three bosses,
-eighteen other mobs, a full tool and armour tier, a waystone travel network,
-an animation pack for the player and every mob in it, and an atmosphere that
-moves.
+who deal in three professions, crops, four breedable companions, **23 mobs**
+built and animated from the ground up, a tree species for every region, a full
+tool and armour tier, a waystone travel network, an animation pack for the
+player and every mob in it, and an atmosphere that moves.
 
 Everything runs on documented, non-experimental APIs. No experiments toggle,
 no world conversion, no commands typed by the player.
@@ -15,17 +15,18 @@ no world conversion, no commands typed by the player.
 | | |
 |---|---|
 | Biomes | 7, seed-derived, with their own terrain, fog, light and air |
-| Blocks | 44 |
+| Blocks | 62 |
 | Items | 28 |
-| Mobs | 21, three of them bosses, one tameable |
+| Mobs | 23 in the roster, four of them bosses, four breedable |
+| Trees | 6 species, one per region, each a different crown |
 | Recipes | 36 |
 | Structures | 6 kinds, procedurally varied |
 | Trades | 3 professions across 2 tiers each |
 | Worldgen features | 15, across 9 placement rules |
 | Fog definitions | 9, one per biome plus depth and structures |
-| Particle effects | 18 |
-| Animations | 138 clips, including a player animation pack |
-| Textures | 206, all generated from code |
+| Particle effects | 27 |
+| Animations | 224 clips, including a player animation pack |
+| Textures | 141, all generated from code |
 
 ```
 ./build_addon.sh --check      # validate everything, then build the .mcaddon
@@ -735,7 +736,7 @@ half those errors were already fixed. Check the path before chasing one:
 
 ```
 BP/                     behavior pack
-  blocks/ items/        44 blocks, 28 items (4 of them armour, 5 tools)
+  blocks/ items/        62 blocks, 28 items (4 of them armour, 5 tools)
   trading/              three villager professions
   entities/ spawn_rules/ loot_tables/
   features/ feature_rules/   ore, shattered stone and flora generation
@@ -753,7 +754,32 @@ RP/                     resource pack
   models/ animations/ animation_controllers/ entity/
   render_controllers/ attachables/
 tools/                  art generation and the four checks
+  artlib.py             dependency-free imaging: noise, blending, PNG io
+  mobkit.py             model primitives - bones, cubes, muzzles, limbs, wings
+  mobpaint.py           paints a texture *from* a model's own UV allocation
+  render_mob.py         software rasteriser: see a model before the game does
+  mobs/<name>.py        one builder and one painter per mob
+  gen_entities.py       the roster table -> behaviour, spawn, loot, client, lang
+  gen_mob_anims.py      clips generated from each rig's own bone names
+  gen_trees.py          a tree species -> textures, blocks, atlas, script table
+  sheet.py roster_sheet.py   labelled progress sheets of the models
 ```
+
+### Why the models are generated
+
+Six of the shipped mobs had a structural fault that only turned up when it was
+possible to *look* at them: the End King's greatsword ran sixty blocks through
+the floor, the whale's gold bands floated a block off a hull that tapered away
+under them, the Corrupted Enderman's ten tatter chains all stacked in one place
+on its shoulder, and three mobs stood six to eight pixels below the ground they
+were on. None of that is visible in a JSON diff.
+
+So `tools/render_mob.py` is a software rasteriser - bone tree, pivots, cube
+rotations, inflate, mirroring, per-face UVs, a z-buffer, one key light and
+emissive read from the MER map's green channel. It renders any model in the
+pack to a PNG, with `--turnaround` for several angles and `--only` to isolate a
+limb. Every model here was iterated against it, and every fault above was found
+that way rather than in game.
 
 ## Two names, and why they differ
 
