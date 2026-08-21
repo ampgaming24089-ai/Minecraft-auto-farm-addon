@@ -1,0 +1,69 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "End Everlasting [Behavior]",
+    "description": "Seven biomes with floating islands stacked through the world height, End villages with traders, crops, a tameable companion, three bosses, seventeen mobs and a full player animation pack. Bedrock 26.4.",
+    "uuid": "2e8978d0-b53f-432b-8a52-62d8ba2d5798",
+    "version": [
+      1,
+      6,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      40
+    ]
+  },
+  "metadata": {
+    "product_type": "addon",
+    "authors": [
+      "End Everlasting"
+    ],
+    "generated_with": {
+      "end_everlasting_tools": [
+        "1.0.0"
+      ]
+    }
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "c47c5b4b-2e16-4878-b467-e6ab52b4597f",
+      "version": [
+        1,
+        6,
+        0
+      ]
+    },
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "eebf73b0-440d-41f3-b5a9-b2f59a55a8db",
+      "version": [
+        1,
+        6,
+        0
+      ],
+      "entry": "scripts/main.js"
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.9.0"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "2.1.0"
+    },
+    {
+      "uuid": "07f2ea28-71ea-4e9b-ac3f-1106f8b34d5b",
+      "version": [
+        1,
+        6,
+        0
+      ]
+    }
+  ]
+}

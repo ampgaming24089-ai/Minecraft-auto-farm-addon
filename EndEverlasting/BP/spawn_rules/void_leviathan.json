@@ -1,0 +1,44 @@
+{
+  "format_version": "1.8.0",
+  "minecraft:spawn_rules": {
+    "description": {
+      "identifier": "voidbound:void_leviathan",
+      "population_control": "animal"
+    },
+    "conditions": [
+      {
+        "minecraft:spawns_on_surface": {},
+        "minecraft:brightness_filter": {
+          "min": 0,
+          "max": 15,
+          "adjust_for_weather": false
+        },
+        "minecraft:biome_filter": {
+          "test": "has_biome_tag",
+          "operator": "==",
+          "value": "the_end"
+        },
+        "minecraft:height_filter": {
+          "min": 0,
+          "max": 160
+        },
+        "minecraft:density_limit": {
+          "surface": 1
+        },
+        "minecraft:weight": {
+          "default": 1
+        },
+        "minecraft:spawns_on_block_filter": [
+          "minecraft:end_stone",
+          "voidbound:shattered_end_stone",
+          "voidbound:verdant_end_stone",
+          "voidbound:ashen_end_stone",
+          "voidbound:aurora_stone",
+          "voidbound:glowspore_soil",
+          "voidbound:bonespire_stone",
+          "voidbound:crystalline_end_stone"
+        ]
+      }
+    ]
+  }
+}

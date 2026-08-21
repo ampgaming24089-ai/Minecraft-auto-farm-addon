@@ -1,0 +1,31 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:void_glass"
+    },
+    "tags": [ "crafting_table" ],
+    "pattern": [
+      "GGG",
+      "GCG",
+      "GGG"
+    ],
+    "key": {
+      "G": {
+        "item": "minecraft:glass"
+      },
+      "C": {
+        "item": "voidbound:void_crystal"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:void_crystal"
+      }
+    ],
+    "result": {
+      "item": "voidbound:void_glass",
+      "count": 8
+    }
+  }
+}

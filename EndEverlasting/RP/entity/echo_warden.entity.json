@@ -1,0 +1,38 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:echo_warden",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_echo_warden"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.echo_sentinel"
+      },
+      "animations": {
+        "idle": "animation.voidbound.echo_sentinel.idle",
+        "move": "animation.voidbound.echo_sentinel.move",
+        "vb_alert": "animation.voidbound.echo_warden.alert",
+        "vb_death": "animation.voidbound.echo_warden.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
+      },
+      "scripts": {
+        "animate": [
+          "idle",
+          "move",
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#3A3220",
+        "overlay_color": "#FF9C3F"
+      }
+    }
+  }
+}

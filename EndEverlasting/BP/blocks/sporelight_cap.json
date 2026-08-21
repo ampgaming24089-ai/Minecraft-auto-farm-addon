@@ -1,0 +1,30 @@
+{
+  "format_version": "1.21.120",
+  "minecraft:block": {
+    "description": {
+      "identifier": "voidbound:sporelight_cap",
+      "menu_category": {
+        "category": "nature"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.voidbound:sporelight_cap.name",
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "voidbound_sporelight_cap",
+          "render_method": "opaque",
+          "ambient_occlusion": 1.0
+        }
+      },
+      "minecraft:map_color": "#FF6FB4",
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 0.4
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 2
+      },
+      "minecraft:light_emission": 12
+    }
+  }
+}

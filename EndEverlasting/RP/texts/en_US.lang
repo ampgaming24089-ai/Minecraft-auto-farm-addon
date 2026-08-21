@@ -1,0 +1,150 @@
+pack.name=End Everlasting [Resources]
+pack.description=Vibrant Visuals lighting, atmospherics, volumetric fog and PBR art for the End Everlasting End.
+
+## Blocks
+tile.voidbound:shattered_end_stone.name=Shattered End Stone
+tile.voidbound:verdant_end_stone.name=Verdant End Stone
+tile.voidbound:echo_ore.name=Echo Ore
+tile.voidbound:void_crystal_block.name=Void Crystal Block
+tile.voidbound:void_glass.name=Void Glass
+tile.voidbound:rift_lantern.name=Rift Lantern
+tile.voidbound:voidbloom.name=Voidbloom
+tile.voidbound:lumen_bulb.name=Lumen Bulb
+tile.voidbound:ender_log.name=Ender Log
+tile.voidbound:ender_leaves.name=Ender Leaves
+tile.voidbound:ender_bush.name=Ender Bush
+tile.voidbound:ender_planks.name=Ender Planks
+tile.voidbound:ender_bricks.name=Ender Bricks
+tile.voidbound:void_crystal_bricks.name=Void Crystal Bricks
+tile.voidbound:echo_lamp.name=Echo Lamp
+tile.voidbound:chiseled_ender_bricks.name=Chiselled Ender Bricks
+tile.voidbound:ender_pillar.name=Ender Pillar
+tile.voidbound:ender_tiles.name=Ender Tiles
+
+## Items
+item.voidbound:echo_shard.name=Echo Shard
+item.voidbound:void_crystal.name=Void Crystal
+item.voidbound:rift_compass.name=Rift Compass
+item.voidbound:lumen_berry.name=Lumen Berry
+item.voidbound:raw_haunch.name=Raw Hopper Haunch
+item.voidbound:cooked_haunch.name=Cooked Hopper Haunch
+item.voidbound:echo_bread.name=Echo Bread
+item.voidbound:ender_fruit.name=Ender Fruit
+item.voidbound:sovereign_crown.name=Sovereign Crown
+item.voidbound:rift_charm.name=Rift Charm
+item.voidbound:echo_horn.name=Echo Horn
+item.voidbound:ender_fruit_pie.name=Ender Fruit Pie
+
+## Tools
+item.voidbound:void_sword.name=Ender Sword
+item.voidbound:void_pickaxe.name=Ender Pickaxe
+item.voidbound:void_axe.name=Ender Axe
+item.voidbound:void_shovel.name=Ender Shovel
+item.voidbound:void_hoe.name=Ender Hoe
+
+## Armor
+item.voidbound:void_helmet.name=Ender Helm
+item.voidbound:void_chestplate.name=Ender Cuirass
+item.voidbound:void_leggings.name=Ender Greaves
+item.voidbound:void_boots.name=Ender Sabatons
+
+tile.voidbound:waystone.name=Waystone
+tile.voidbound:spore_tendril.name=Spore Tendril
+tile.voidbound:frost_icicle.name=Frost Icicle
+tile.voidbound:crystal_dripstone.name=Crystal Dripstone
+tile.voidbound:ash_stalactite.name=Ash Stalactite
+tile.voidbound:aurora_veil.name=Aurora Veil
+tile.voidbound:dressed_end_stone.name=Dressed End Stone
+tile.voidbound:lantern_post.name=Lantern Post
+tile.voidbound:bloomstalk.name=Bloomstalk
+tile.voidbound:glowspore_soil.name=Glowspore Soil
+tile.voidbound:sporelight_cap.name=Sporelight Cap
+tile.voidbound:sporelight_fungus.name=Sporelight Fungus
+tile.voidbound:bonespire_stone.name=Bonespire Stone
+tile.voidbound:frost_bloom.name=Frost Bloom
+tile.voidbound:crystalline_end_stone.name=Crystalline End Stone
+tile.voidbound:ashen_end_stone.name=Ashen End Stone
+tile.voidbound:ember_vent.name=Ember Vent
+tile.voidbound:aurora_stone.name=Aurora Stone
+
+## Biomes
+biome.voidbound.barrens=Voidfall Barrens
+biome.voidbound.glowspore=Glowspore Basin
+biome.voidbound.bonespire=Bonespire Reach
+biome.voidbound.crystalline=Crystalline Expanse
+biome.voidbound.verdant=Verdant Canopy
+biome.voidbound.ashen=Ashen Wastes
+biome.voidbound.aurora=Aurora Shelf
+tile.voidbound:ender_vines.name=Ender Vines
+tile.voidbound:echo_cluster.name=Echo Cluster
+tile.voidbound:pale_shroom.name=Pale Shroom
+tile.voidbound:mossy_end_stone.name=Mossy End Stone
+tile.voidbound:ender_sapling.name=Ender Sapling
+tile.voidbound:polished_end_stone.name=Polished End Stone
+tile.voidbound:cracked_ender_bricks.name=Cracked Ender Bricks
+tile.voidbound:void_chitin_block.name=Block of Void Chitin
+
+## Farming and trade
+item.voidbound:bloomstalk_seed.name=Bloomstalk Seed
+item.voidbound:bloom_pod.name=Bloom Pod
+item.voidbound:void_sigil.name=Void Sigil
+
+## Materials
+item.voidbound:astral_shard.name=Astral Shard
+item.voidbound:void_chitin.name=Void Chitin
+item.voidbound:voidsteel_ingot.name=Voidsteel Ingot
+item.voidbound:titan_core.name=Titan Core
+
+## Entities
+entity.voidbound:lumen_wisp.name=Lumen Wisp
+entity.voidbound:rift_stalker.name=Rift Stalker
+item.spawn_egg.entity.voidbound:lumen_wisp.name=Spawn Lumen Wisp
+item.spawn_egg.entity.voidbound:rift_stalker.name=Spawn Rift Stalker
+entity.voidbound:void_moth.name=Void Moth
+entity.voidbound:echo_sentinel.name=Echo Sentinel
+entity.voidbound:rift_sovereign.name=Rift Sovereign
+entity.voidbound:echo_warden.name=Echo Warden
+entity.voidbound:void_serpent.name=Void Serpent
+entity.voidbound:glimmerfin.name=Glimmerfin
+entity.voidbound:endstone_golem.name=End Stone Golem
+entity.voidbound:chorus_hopper.name=Chorus Hopper
+entity.voidbound:crystal_crawler.name=Crystal Crawler
+entity.voidbound:shard_wraith.name=Shard Wraith
+item.spawn_egg.entity.voidbound:void_moth.name=Spawn Void Moth
+item.spawn_egg.entity.voidbound:echo_sentinel.name=Spawn Echo Sentinel
+item.spawn_egg.entity.voidbound:rift_sovereign.name=Spawn Rift Sovereign
+item.spawn_egg.entity.voidbound:echo_warden.name=Spawn Echo Warden
+item.spawn_egg.entity.voidbound:void_serpent.name=Spawn Void Serpent
+item.spawn_egg.entity.voidbound:glimmerfin.name=Spawn Glimmerfin
+item.spawn_egg.entity.voidbound:endstone_golem.name=Spawn End Stone Golem
+item.spawn_egg.entity.voidbound:chorus_hopper.name=Spawn Chorus Hopper
+item.spawn_egg.entity.voidbound:crystal_crawler.name=Spawn Crystal Crawler
+item.spawn_egg.entity.voidbound:shard_wraith.name=Spawn Shard Wraith
+entity.voidbound:astral_whale.name=Astral Whale
+entity.voidbound:voidling.name=Voidling
+entity.voidbound:ender_beetle.name=Ender Beetle
+entity.voidbound:void_titan.name=Void Titan
+item.spawn_egg.entity.voidbound:astral_whale.name=Spawn Astral Whale
+item.spawn_egg.entity.voidbound:voidling.name=Spawn Voidling
+item.spawn_egg.entity.voidbound:ender_beetle.name=Spawn Ender Beetle
+item.spawn_egg.entity.voidbound:void_titan.name=Spawn Void Titan
+entity.voidbound:void_leviathan.name=Void Leviathan
+entity.voidbound:drift_jelly.name=Drift Jelly
+entity.voidbound:cinder_stag.name=Cinder Stag
+entity.voidbound:glowmite.name=Glowmite
+item.spawn_egg.entity.voidbound:void_leviathan.name=Spawn Void Leviathan
+item.spawn_egg.entity.voidbound:drift_jelly.name=Spawn Drift Jelly
+item.spawn_egg.entity.voidbound:cinder_stag.name=Spawn Cinder Stag
+item.spawn_egg.entity.voidbound:glowmite.name=Spawn Glowmite
+entity.voidbound:end_villager.name=End Villager
+entity.voidbound:end_villager.merchant=Void Merchant
+entity.voidbound:end_villager.smith=Shard Smith
+entity.voidbound:end_villager.herbalist=Spore Herbalist
+item.spawn_egg.entity.voidbound:end_villager.name=Spawn End Villager
+
+## Interaction prompts
+action.interact.voidbound.survey=Survey
+action.interact.voidbound.recall=Recall
+action.interact.voidbound.sound=Sound
+action.interact.voidbound.channel=Channel
+action.interact.voidbound.attune=Attune

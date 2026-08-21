@@ -1,0 +1,38 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:void_titan",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_void_titan"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.endstone_golem"
+      },
+      "animations": {
+        "idle": "animation.voidbound.endstone_golem.idle",
+        "walk": "animation.voidbound.endstone_golem.walk",
+        "vb_alert": "animation.voidbound.void_titan.alert",
+        "vb_death": "animation.voidbound.void_titan.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
+      },
+      "scripts": {
+        "animate": [
+          "idle",
+          "walk",
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#150A20",
+        "overlay_color": "#FF4FD0"
+      }
+    }
+  }
+}

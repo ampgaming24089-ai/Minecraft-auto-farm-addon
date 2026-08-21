@@ -1,0 +1,32 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:item": {
+    "description": {
+      "identifier": "voidbound:raw_haunch",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:display_name": {
+        "value": "item.voidbound:raw_haunch.name"
+      },
+      "minecraft:icon": {
+        "textures": {
+          "default": "voidbound_raw_haunch"
+        }
+      },
+      "minecraft:max_stack_size": 64,
+      "minecraft:food": {
+        "can_always_eat": false,
+        "nutrition": 3,
+        "saturation_modifier": 0.3
+      },
+      "minecraft:use_modifiers": {
+        "use_duration": 1.6,
+        "movement_modifier": 0.35
+      },
+      "minecraft:use_animation": "eat"
+    }
+  }
+}

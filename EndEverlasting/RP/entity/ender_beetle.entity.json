@@ -1,0 +1,38 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:ender_beetle",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_ender_beetle"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.ender_beetle"
+      },
+      "animations": {
+        "idle": "animation.voidbound.ender_beetle.idle",
+        "move": "animation.voidbound.ender_beetle.move",
+        "vb_alert": "animation.voidbound.ender_beetle.alert",
+        "vb_death": "animation.voidbound.ender_beetle.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
+      },
+      "scripts": {
+        "animate": [
+          "idle",
+          "move",
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#6E5A8C",
+        "overlay_color": "#5FE8D2"
+      }
+    }
+  }
+}

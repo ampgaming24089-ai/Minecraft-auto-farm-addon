@@ -1,0 +1,29 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:ender_bricks"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "SS",
+      "SS"
+    ],
+    "key": {
+      "S": {
+        "item": "voidbound:shattered_end_stone"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:shattered_end_stone"
+      }
+    ],
+    "result": {
+      "item": "voidbound:ender_bricks",
+      "count": 4
+    }
+  }
+}

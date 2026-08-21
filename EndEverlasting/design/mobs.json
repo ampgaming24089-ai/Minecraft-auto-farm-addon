@@ -1,0 +1,28 @@
+{
+  "pack_name": "Eternal End",
+  "version": "1.0",
+  "total_mobs": 20,
+  "categories": {"bosses": 3, "hostile": 12, "passive_tame": 5},
+  "mobs": [
+    {"id":"void_dragon","name":"Void Dragon","category":"boss","texture":"01_void_dragon.png","role":"final aerial boss","size":"huge","notes":"Purple-black void dragon; glowing violet eyes and wing membranes; heavy melee plus void breath."},
+    {"id":"ender_overlord","name":"Ender Overlord","category":"boss","texture":"02_ender_overlord.png","role":"cosmic tentacle boss","size":"huge","notes":"Floating multi-tentacled entity with a giant central violet eye; ranged void attacks and teleporting."},
+    {"id":"end_king","name":"The End King","category":"boss","texture":"03_end_king.png","role":"royal humanoid boss","size":"huge","notes":"Armored End ruler with crown, glowing purple cape, and large energy weapon."},
+    {"id":"void_stalker","name":"Void Stalker","category":"hostile","texture":"04_void_stalker.png","role":"ambush hunter","size":"large","notes":"Dark quadruped with violet crystal growths; fast melee predator."},
+    {"id":"endermite_hive","name":"Endermite Hive","category":"hostile","texture":"05_endermite_hive.png","role":"swarm mob","size":"medium","notes":"Cluster/hive of Endermite-like creatures; spawns or releases small attackers."},
+    {"id":"purpur_golem","name":"Purpur Golem","category":"hostile","texture":"06_purpur_golem.png","role":"tank","size":"large","notes":"Heavy purpur construct with glowing core; slow, durable melee attacker."},
+    {"id":"shulker_beast","name":"Shulker Beast","category":"hostile","texture":"07_shulker_beast.png","role":"flying attacker","size":"large","notes":"Winged shulker-inspired predator; projectile attacks and aerial movement."},
+    {"id":"void_wisp","name":"Void Wisp","category":"hostile","texture":"08_void_wisp.png","role":"floating caster","size":"medium","notes":"Ghostly violet flame creature; ranged projectile attacker."},
+    {"id":"end_spider","name":"End Spider","category":"hostile","texture":"09_end_spider.png","role":"climber","size":"medium","notes":"Eight-legged End spider with glowing eyes; fast wall-climbing melee mob."},
+    {"id":"corrupted_enderman","name":"Corrupted Enderman","category":"hostile","texture":"10_corrupted_enderman.png","role":"teleporting melee","size":"large","notes":"Corrupted Enderman variant with violet cracks and particles; teleporting melee attacks."},
+    {"id":"chorus_fiend","name":"Chorus Fiend","category":"hostile","texture":"11_chorus_fiend.png","role":"bruiser","size":"large","notes":"Chorus-infused beast with purple growths; aggressive melee and short teleport."},
+    {"id":"void_slime","name":"Void Slime","category":"hostile","texture":"12_void_slime.png","role":"jumper","size":"medium","notes":"Dark cubic slime with bright violet core; jumps and splits if desired."},
+    {"id":"teleporter","name":"Teleporter","category":"hostile","texture":"13_teleporter.png","role":"ranged teleport attacker","size":"medium","notes":"Humanoid void caster surrounded by a teleport ring; attacks from range and repositions frequently."},
+    {"id":"end_crab","name":"End Crab","category":"hostile","texture":"14_end_crab.png","role":"armored melee","size":"medium","notes":"Purple crystal crab with armored shell and strong claw attacks."},
+    {"id":"obsidian_beast","name":"Obsidian Beast","category":"hostile","texture":"15_obsidian_beast.png","role":"heavy tank","size":"large","notes":"Massive horned obsidian animal covered in purple crystals; slow but very durable."},
+    {"id":"ender_deer","name":"Ender Deer","category":"passive_tame","texture":"16_ender_deer.png","role":"passive meat animal","size":"medium","tame":true,"meat":"ender_venison","notes":"Elegant dark deer with cyan-violet antlers; calm until attacked."},
+    {"id":"chorus_cow","name":"Chorus Cow","category":"passive_tame","texture":"17_chorus_cow.png","role":"passive meat animal","size":"large","tame":true,"meat":"chorus_beef","notes":"Cow covered in chorus growths; tameable livestock for a renewable meat source."},
+    {"id":"void_hog","name":"Void Hog","category":"passive_tame","texture":"18_void_hog.png","role":"passive meat animal","size":"medium","tame":true,"meat":"void_pork","notes":"Dark tusked hog with violet crystal spikes; tameable livestock."},
+    {"id":"sky_ray","name":"Sky Ray","category":"passive_tame","texture":"19_sky_ray.png","role":"flying passive animal","size":"large","tame":true,"meat":"ray_meat","notes":"Blue-violet manta/ray-like flying creature; tameable and rideable only if practical."},
+    {"id":"ender_bird","name":"Ender Bird","category":"passive_tame","texture":"20_ender_bird.png","role":"flying passive animal","size":"medium","tame":true,"meat":"ender_poultry","notes":"Purple-blue bird with bright cyan accents; tameable companion and renewable meat source."}
+  ]
+}

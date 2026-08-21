@@ -1,0 +1,197 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "voidbound:end_villager",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "component_groups": {
+      "voidbound:merchant": {
+        "minecraft:trade_table": {
+          "display_name": "entity.voidbound:end_villager.merchant",
+          "table": "trading/end_merchant.json",
+          "new_screen": true,
+          "persist_trades": true,
+          "convert_trades_economy": false
+        },
+        "minecraft:type_family": {
+          "family": [
+            "end_villager",
+            "merchant",
+            "voidbound",
+            "villager",
+            "mob"
+          ]
+        }
+      },
+      "voidbound:smith": {
+        "minecraft:trade_table": {
+          "display_name": "entity.voidbound:end_villager.smith",
+          "table": "trading/end_smith.json",
+          "new_screen": true,
+          "persist_trades": true,
+          "convert_trades_economy": false
+        },
+        "minecraft:type_family": {
+          "family": [
+            "end_villager",
+            "smith",
+            "voidbound",
+            "villager",
+            "mob"
+          ]
+        }
+      },
+      "voidbound:herbalist": {
+        "minecraft:trade_table": {
+          "display_name": "entity.voidbound:end_villager.herbalist",
+          "table": "trading/end_herbalist.json",
+          "new_screen": true,
+          "persist_trades": true,
+          "convert_trades_economy": false
+        },
+        "minecraft:type_family": {
+          "family": [
+            "end_villager",
+            "herbalist",
+            "voidbound",
+            "villager",
+            "mob"
+          ]
+        }
+      }
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "end_villager",
+          "voidbound",
+          "villager",
+          "mob"
+        ]
+      },
+      "minecraft:collision_box": {
+        "width": 0.6,
+        "height": 2.4
+      },
+      "minecraft:health": {
+        "value": 24,
+        "max": 24
+      },
+      "minecraft:movement": {
+        "value": 0.24
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:navigation.walk": {
+        "can_path_over_water": false,
+        "avoid_water": true,
+        "can_pass_doors": true,
+        "can_open_doors": true,
+        "avoid_damage_blocks": true
+      },
+      "minecraft:jump.static": {},
+      "minecraft:physics": {},
+      "minecraft:nameable": {},
+      "minecraft:persistent": {},
+      "minecraft:pushable": {
+        "is_pushable": true,
+        "is_pushable_by_piston": true
+      },
+      "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:breathable": {
+        "total_supply": 15,
+        "suffocate_time": 0
+      },
+      "minecraft:interact": {
+        "interactions": [
+          {
+            "on_interact": {
+              "filters": {
+                "all_of": [
+                  {
+                    "test": "is_family",
+                    "subject": "other",
+                    "value": "player"
+                  }
+                ]
+              }
+            },
+            "use_item": false,
+            "interact_text": "action.interact.trade"
+          }
+        ]
+      },
+      "minecraft:behavior.panic": {
+        "priority": 1,
+        "speed_multiplier": 1.7
+      },
+      "minecraft:behavior.avoid_mob_type": {
+        "priority": 2,
+        "entity_types": [
+          {
+            "filters": {
+              "test": "is_family",
+              "subject": "other",
+              "value": "monster"
+            },
+            "max_dist": 12,
+            "walk_speed_multiplier": 1.6,
+            "sprint_speed_multiplier": 1.6
+          }
+        ]
+      },
+      "minecraft:behavior.trade_with_player": {
+        "priority": 3
+      },
+      "minecraft:behavior.look_at_trading_player": {
+        "priority": 4
+      },
+      "minecraft:behavior.random_stroll": {
+        "priority": 6,
+        "speed_multiplier": 0.7
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 7,
+        "look_distance": 8
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 8
+      },
+      "minecraft:experience_reward": {
+        "on_death": "0"
+      }
+    },
+    "events": {
+      "minecraft:entity_spawned": {
+        "randomize": [
+          {
+            "weight": 1,
+            "add": {
+              "component_groups": [
+                "voidbound:merchant"
+              ]
+            }
+          },
+          {
+            "weight": 1,
+            "add": {
+              "component_groups": [
+                "voidbound:smith"
+              ]
+            }
+          },
+          {
+            "weight": 1,
+            "add": {
+              "component_groups": [
+                "voidbound:herbalist"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

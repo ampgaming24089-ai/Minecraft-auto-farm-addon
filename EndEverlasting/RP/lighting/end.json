@@ -1,0 +1,65 @@
+{
+  "format_version": "1.21.80",
+  "minecraft:lighting_settings": {
+    "description": {
+      "identifier": "voidbound:end_lighting"
+    },
+    "directional_lights": {
+      "orbital": {
+        "sun": {
+          "illuminance": {
+            "0.000000": 165.0,
+            "1.000000": 165.0
+          },
+          "color": {
+            "0.000000": [
+              255,
+              232,
+              248
+            ],
+            "1.000000": [
+              255,
+              232,
+              248
+            ]
+          }
+        },
+        "moon": {
+          "illuminance": {
+            "0.000000": 140.0,
+            "1.000000": 140.0
+          },
+          "color": {
+            "0.000000": [
+              214,
+              226,
+              255
+            ],
+            "1.000000": [
+              214,
+              226,
+              255
+            ]
+          }
+        },
+        "orbital_offset_degrees": 0.0
+      },
+      "flash": {
+        "illuminance": 18.0,
+        "color": [
+          255,
+          120,
+          236
+        ]
+      }
+    },
+    "ambient": {
+      "color": [
+        186,
+        162,
+        216
+      ],
+      "illuminance": 0.42
+    }
+  }
+}

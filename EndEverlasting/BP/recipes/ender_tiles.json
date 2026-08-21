@@ -1,0 +1,29 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:ender_tiles"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "BB",
+      "BB"
+    ],
+    "key": {
+      "B": {
+        "item": "voidbound:ender_bricks"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:ender_bricks"
+      }
+    ],
+    "result": {
+      "item": "voidbound:ender_tiles",
+      "count": 4
+    }
+  }
+}

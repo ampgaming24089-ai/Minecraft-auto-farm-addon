@@ -1,0 +1,38 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:end_villager",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_end_villager"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.end_villager"
+      },
+      "animations": {
+        "idle": "animation.voidbound.end_villager.idle",
+        "walk": "animation.voidbound.end_villager.walk",
+        "vb_alert": "animation.voidbound.end_villager.alert",
+        "vb_death": "animation.voidbound.end_villager.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
+      },
+      "scripts": {
+        "animate": [
+          "idle",
+          "walk",
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#241832",
+        "overlay_color": "#E8C766"
+      }
+    }
+  }
+}

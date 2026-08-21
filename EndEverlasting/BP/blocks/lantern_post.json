@@ -1,0 +1,30 @@
+{
+  "format_version": "1.21.120",
+  "minecraft:block": {
+    "description": {
+      "identifier": "voidbound:lantern_post",
+      "menu_category": {
+        "category": "construction"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.voidbound:lantern_post.name",
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "voidbound_lantern_post",
+          "render_method": "opaque",
+          "ambient_occlusion": 1.0
+        }
+      },
+      "minecraft:map_color": "#8C7AA4",
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1.0
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 6
+      },
+      "minecraft:light_emission": 14
+    }
+  }
+}

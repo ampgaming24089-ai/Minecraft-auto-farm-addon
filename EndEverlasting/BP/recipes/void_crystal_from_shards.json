@@ -1,0 +1,31 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:void_crystal_from_shards"
+    },
+    "tags": [ "crafting_table" ],
+    "pattern": [
+      " S ",
+      "SPS",
+      " S "
+    ],
+    "key": {
+      "S": {
+        "item": "voidbound:echo_shard"
+      },
+      "P": {
+        "item": "minecraft:ender_pearl"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:echo_shard"
+      }
+    ],
+    "result": {
+      "item": "voidbound:void_crystal",
+      "count": 2
+    }
+  }
+}

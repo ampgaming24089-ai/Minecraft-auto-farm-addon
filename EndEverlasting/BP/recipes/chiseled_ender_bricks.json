@@ -1,0 +1,29 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:chiseled_ender_bricks"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "B",
+      "B"
+    ],
+    "key": {
+      "B": {
+        "item": "voidbound:ender_bricks"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:ender_bricks"
+      }
+    ],
+    "result": {
+      "item": "voidbound:chiseled_ender_bricks",
+      "count": 1
+    }
+  }
+}

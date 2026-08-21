@@ -1,0 +1,38 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:glimmerfin",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_glimmerfin"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.glimmerfin"
+      },
+      "animations": {
+        "idle": "animation.voidbound.glimmerfin.idle",
+        "move": "animation.voidbound.glimmerfin.move",
+        "vb_alert": "animation.voidbound.glimmerfin.alert",
+        "vb_death": "animation.voidbound.glimmerfin.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
+      },
+      "scripts": {
+        "animate": [
+          "idle",
+          "move",
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#3E7FA8",
+        "overlay_color": "#DFF7FF"
+      }
+    }
+  }
+}

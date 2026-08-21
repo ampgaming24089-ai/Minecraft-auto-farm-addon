@@ -1,0 +1,87 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "voidbound:cinder_stag",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "cinder_stag",
+          "voidbound",
+          "mob"
+        ]
+      },
+      "minecraft:collision_box": {
+        "width": 1.2,
+        "height": 2.0
+      },
+      "minecraft:health": {
+        "value": 26,
+        "max": 26
+      },
+      "minecraft:movement": {
+        "value": 0.28
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:navigation.walk": {
+        "can_path_over_water": false,
+        "avoid_water": true,
+        "can_pass_doors": false,
+        "avoid_damage_blocks": true
+      },
+      "minecraft:jump.static": {},
+      "minecraft:physics": {},
+      "minecraft:fire_immune": true,
+      "minecraft:nameable": {},
+      "minecraft:pushable": {
+        "is_pushable": true,
+        "is_pushable_by_piston": true
+      },
+      "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:breathable": {
+        "total_supply": 15,
+        "suffocate_time": 0
+      },
+      "minecraft:attack": {
+        "damage": 6
+      },
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
+      "minecraft:behavior.melee_attack": {
+        "priority": 2,
+        "speed_multiplier": 1.3,
+        "track_target": true
+      },
+      "minecraft:behavior.tempt": {
+        "priority": 3,
+        "speed_multiplier": 1.2,
+        "items": [
+          "voidbound:bloom_pod",
+          "voidbound:ender_fruit"
+        ]
+      },
+      "minecraft:behavior.random_stroll": {
+        "priority": 5,
+        "speed_multiplier": 0.8
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 6,
+        "look_distance": 10
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 7
+      },
+      "minecraft:experience_reward": {
+        "on_death": "query.last_hit_by_player ? 7 : 0"
+      },
+      "minecraft:loot": {
+        "table": "loot_tables/entities/cinder_stag.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "format_version": "1.21.120",
+  "minecraft:block": {
+    "description": {
+      "identifier": "voidbound:echo_ore",
+      "menu_category": {
+        "category": "nature"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.voidbound:echo_ore.name",
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "voidbound_echo_ore",
+          "render_method": "opaque",
+          "ambient_occlusion": 1.0
+        }
+      },
+      "minecraft:map_color": "#7FB8A8",
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 3.0
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 15
+      },
+      "minecraft:light_emission": 4,
+      "minecraft:loot": "loot_tables/blocks/echo_ore.json"
+    }
+  }
+}

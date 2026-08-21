@@ -1,0 +1,57 @@
+{
+  "format_version": "1.21.120",
+  "minecraft:local_light_settings": {
+    "minecraft:end_rod": {
+      "light_color": "#D8B4FF",
+      "light_type": "point_light"
+    },
+    "minecraft:end_portal_frame": {
+      "light_color": "#B76BFF",
+      "light_type": "static_light"
+    },
+    "voidbound:rift_lantern": {
+      "light_color": "#C77BFF",
+      "light_type": "point_light"
+    },
+    "voidbound:voidbloom": {
+      "light_color": "#A85CFF",
+      "light_type": "static_light"
+    },
+    "voidbound:lumen_bulb": {
+      "light_color": "#5FE8D2",
+      "light_type": "static_light"
+    },
+    "voidbound:void_crystal_block": {
+      "light_color": "#C77BFF",
+      "light_type": "static_light"
+    },
+    "voidbound:echo_ore": {
+      "light_color": "#5FE8D2",
+      "light_type": "static_light"
+    },
+    "voidbound:ender_bush": {
+      "light_color": "#3FE0C4",
+      "light_type": "static_light"
+    },
+    "voidbound:ender_log": {
+      "light_color": "#9A7BD8",
+      "light_type": "static_light"
+    },
+    "voidbound:ender_leaves": {
+      "light_color": "#B57BE8",
+      "light_type": "static_light"
+    },
+    "minecraft:end_gateway": {
+      "light_color": "#C77BFF",
+      "light_type": "static_light"
+    },
+    "voidbound:echo_lamp": {
+      "light_color": "#5FE8D2",
+      "light_type": "point_light"
+    },
+    "voidbound:void_crystal_bricks": {
+      "light_color": "#C77BFF",
+      "light_type": "static_light"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "format_version": "1.8.0",
+  "minecraft:spawn_rules": {
+    "description": {
+      "identifier": "voidbound:ender_beetle",
+      "population_control": "animal"
+    },
+    "conditions": [
+      {
+        "minecraft:spawns_on_surface": {},
+        "minecraft:brightness_filter": {
+          "min": 0,
+          "max": 15,
+          "adjust_for_weather": false
+        },
+        "minecraft:biome_filter": {
+          "test": "has_biome_tag",
+          "operator": "==",
+          "value": "the_end"
+        },
+        "minecraft:height_filter": {
+          "min": 0,
+          "max": 128
+        },
+        "minecraft:density_limit": {
+          "surface": 3
+        },
+        "minecraft:herd": {
+          "min_size": 1,
+          "max_size": 3
+        },
+        "minecraft:weight": {
+          "default": 5
+        },
+        "minecraft:spawns_on_block_filter": [
+          "minecraft:end_stone",
+          "voidbound:shattered_end_stone",
+          "voidbound:verdant_end_stone"
+        ]
+      }
+    ]
+  }
+}

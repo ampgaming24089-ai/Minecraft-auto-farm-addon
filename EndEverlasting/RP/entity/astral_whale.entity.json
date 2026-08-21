@@ -1,0 +1,38 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:astral_whale",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_astral_whale"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.astral_whale"
+      },
+      "animations": {
+        "idle": "animation.voidbound.astral_whale.idle",
+        "move": "animation.voidbound.astral_whale.move",
+        "vb_alert": "animation.voidbound.astral_whale.alert",
+        "vb_death": "animation.voidbound.astral_whale.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
+      },
+      "scripts": {
+        "animate": [
+          "idle",
+          "move",
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#2E4A78",
+        "overlay_color": "#6FD8F0"
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:waystone"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "BVB",
+      "BSB",
+      "BBB"
+    ],
+    "key": {
+      "B": {
+        "item": "voidbound:ender_bricks"
+      },
+      "V": {
+        "item": "voidbound:voidsteel_ingot"
+      },
+      "S": {
+        "item": "voidbound:echo_shard"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:voidsteel_ingot"
+      }
+    ],
+    "result": {
+      "item": "voidbound:waystone",
+      "count": 1
+    }
+  }
+}

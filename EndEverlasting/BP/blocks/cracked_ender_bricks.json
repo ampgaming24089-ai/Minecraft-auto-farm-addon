@@ -1,0 +1,29 @@
+{
+  "format_version": "1.21.120",
+  "minecraft:block": {
+    "description": {
+      "identifier": "voidbound:cracked_ender_bricks",
+      "menu_category": {
+        "category": "construction"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.voidbound:cracked_ender_bricks.name",
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "voidbound_cracked_ender_bricks",
+          "render_method": "opaque",
+          "ambient_occlusion": 1.0
+        }
+      },
+      "minecraft:map_color": "#B8B08C",
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1.4
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 9
+      }
+    }
+  }
+}

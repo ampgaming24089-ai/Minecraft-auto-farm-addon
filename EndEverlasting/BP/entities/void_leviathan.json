@@ -1,0 +1,96 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "voidbound:void_leviathan",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "void_leviathan",
+          "voidbound",
+          "mob"
+        ]
+      },
+      "minecraft:collision_box": {
+        "width": 5.0,
+        "height": 3.0
+      },
+      "minecraft:health": {
+        "value": 140,
+        "max": 140
+      },
+      "minecraft:scale": {
+        "value": 1.0
+      },
+      "minecraft:physics": {
+        "has_gravity": false,
+        "has_collision": true
+      },
+      "minecraft:movement": {
+        "value": 0.08
+      },
+      "minecraft:movement.hover": {},
+      "minecraft:navigation.hover": {
+        "can_path_over_water": true,
+        "can_sink": false,
+        "can_pass_doors": false,
+        "can_path_from_air": true,
+        "avoid_water": true,
+        "avoid_damage_blocks": true
+      },
+      "minecraft:can_fly": {},
+      "minecraft:knockback_resistance": {
+        "value": 1.0
+      },
+      "minecraft:fire_immune": true,
+      "minecraft:breathable": {
+        "total_supply": 15,
+        "suffocate_time": 0,
+        "breathes_air": true,
+        "breathes_water": true
+      },
+      "minecraft:nameable": {},
+      "minecraft:pushable": {
+        "is_pushable": false,
+        "is_pushable_by_piston": false
+      },
+      "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
+      "minecraft:behavior.melee_attack": {
+        "priority": 2,
+        "speed_multiplier": 1.1,
+        "track_target": true
+      },
+      "minecraft:attack": {
+        "damage": 9
+      },
+      "minecraft:behavior.random_hover": {
+        "priority": 6,
+        "xz_dist": 14,
+        "y_dist": 5,
+        "y_offset": 0,
+        "interval": 160,
+        "hover_height": [
+          6,
+          14
+        ]
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 7,
+        "look_distance": 32
+      },
+      "minecraft:experience_reward": {
+        "on_death": "query.last_hit_by_player ? 25 : 0"
+      },
+      "minecraft:loot": {
+        "table": "loot_tables/entities/void_leviathan.json"
+      }
+    }
+  }
+}

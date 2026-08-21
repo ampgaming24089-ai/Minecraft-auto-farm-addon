@@ -1,0 +1,128 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.voidbound.shard_wraith",
+        "texture_width": 64,
+        "texture_height": 32,
+        "visible_bounds_width": 1.8,
+        "visible_bounds_height": 2.0,
+        "visible_bounds_offset": [
+          0,
+          0.9,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "shroud",
+          "pivot": [
+            0,
+            6,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -4,
+                2,
+                -4
+              ],
+              "size": [
+                8,
+                9,
+                8
+              ],
+              "uv": [
+                0,
+                13
+              ]
+            }
+          ]
+        },
+        {
+          "name": "hood",
+          "parent": "shroud",
+          "pivot": [
+            0,
+            13,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -3,
+                10,
+                -3
+              ],
+              "size": [
+                6,
+                6,
+                6
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tatter_left",
+          "parent": "shroud",
+          "pivot": [
+            -4,
+            5,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -5,
+                0,
+                -1
+              ],
+              "size": [
+                1,
+                5,
+                3
+              ],
+              "uv": [
+                34,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tatter_right",
+          "parent": "shroud",
+          "pivot": [
+            4,
+            5,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                4,
+                0,
+                -1
+              ],
+              "size": [
+                1,
+                5,
+                3
+              ],
+              "uv": [
+                44,
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

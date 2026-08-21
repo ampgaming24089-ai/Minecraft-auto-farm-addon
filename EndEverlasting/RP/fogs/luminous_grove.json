@@ -1,0 +1,45 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:fog_settings": {
+    "description": {
+      "identifier": "voidbound:fog_luminous_grove"
+    },
+    "distance": {
+      "air": {
+        "fog_start": 0.62,
+        "fog_end": 1.0,
+        "fog_color": "#14424C",
+        "render_distance_type": "render"
+      }
+    },
+    "volumetric": {
+      "density": {
+        "air": {
+          "max_density": 0.022,
+          "uniform": false,
+          "zero_density_height": 150.0,
+          "max_density_height": 24.0
+        }
+      },
+      "media_coefficients": {
+        "air": {
+          "scattering": [
+            0.02,
+            0.046,
+            0.044
+          ],
+          "absorption": [
+            0.002,
+            0.001,
+            0.003
+          ]
+        }
+      },
+      "henyey_greenstein_g": {
+        "air": {
+          "henyey_greenstein_g": 0.8
+        }
+      }
+    }
+  }
+}

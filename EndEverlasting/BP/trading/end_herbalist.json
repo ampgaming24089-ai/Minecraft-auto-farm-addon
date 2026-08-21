@@ -1,0 +1,177 @@
+{
+  "tiers": [
+    {
+      "groups": [
+        {
+          "num_to_select": 2,
+          "trades": [
+            {
+              "wants": [
+                {
+                  "item": "voidbound:bloom_pod",
+                  "quantity": {
+                    "min": 6,
+                    "max": 9
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 1,
+                    "max": 1
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:lumen_berry",
+                  "quantity": {
+                    "min": 10,
+                    "max": 14
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 1,
+                    "max": 1
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 1,
+                    "max": 1
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:bloomstalk_seed",
+                  "quantity": {
+                    "min": 3,
+                    "max": 5
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "total_exp_required": 20,
+      "groups": [
+        {
+          "num_to_select": 2,
+          "trades": [
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 2,
+                    "max": 2
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:ender_fruit_pie",
+                  "quantity": {
+                    "min": 2,
+                    "max": 3
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 2,
+                    "max": 2
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:cooked_haunch",
+                  "quantity": {
+                    "min": 5,
+                    "max": 8
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 3,
+                    "max": 3
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:ender_sapling",
+                  "quantity": {
+                    "min": 2,
+                    "max": 4
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 5,
+                    "max": 5
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "minecraft:golden_apple",
+                  "quantity": {
+                    "min": 1,
+                    "max": 2
+                  }
+                }
+              ],
+              "max_uses": 4,
+              "reward_exp": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

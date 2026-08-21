@@ -1,0 +1,39 @@
+{
+  "format_version": "1.21.120",
+  "minecraft:block": {
+    "description": {
+      "identifier": "voidbound:ender_pillar",
+      "menu_category": {
+        "category": "construction"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.voidbound:ender_pillar.name",
+      "minecraft:geometry": "minecraft:geometry.full_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "voidbound_ender_pillar",
+          "render_method": "opaque",
+          "ambient_occlusion": 1.0
+        },
+        "up": {
+          "texture": "voidbound_ender_pillar_top",
+          "render_method": "opaque",
+          "ambient_occlusion": 1.0
+        },
+        "down": {
+          "texture": "voidbound_ender_pillar_top",
+          "render_method": "opaque",
+          "ambient_occlusion": 1.0
+        }
+      },
+      "minecraft:map_color": "#A8A183",
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1.6
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 12
+      }
+    }
+  }
+}

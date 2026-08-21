@@ -1,0 +1,46 @@
+{
+  "format_version": "1.10.0",
+  "animation_controllers": {
+    "controller.animation.voidbound.mob.state": {
+      "initial_state": "calm",
+      "states": {
+        "calm": {
+          "blend_transition": 0.3,
+          "transitions": [
+            {
+              "dying": "!query.is_alive"
+            },
+            {
+              "alert": "query.has_target"
+            }
+          ]
+        },
+        "alert": {
+          "animations": [
+            "vb_alert"
+          ],
+          "blend_transition": 0.25,
+          "transitions": [
+            {
+              "dying": "!query.is_alive"
+            },
+            {
+              "calm": "!query.has_target"
+            }
+          ]
+        },
+        "dying": {
+          "animations": [
+            "vb_death"
+          ],
+          "blend_transition": 0.15,
+          "transitions": [
+            {
+              "calm": "query.is_alive"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

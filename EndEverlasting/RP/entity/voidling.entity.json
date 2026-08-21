@@ -1,0 +1,38 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:voidling",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_voidling"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.voidling"
+      },
+      "animations": {
+        "idle": "animation.voidbound.voidling.idle",
+        "move": "animation.voidbound.voidling.move",
+        "vb_alert": "animation.voidbound.voidling.alert",
+        "vb_death": "animation.voidbound.voidling.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
+      },
+      "scripts": {
+        "animate": [
+          "idle",
+          "move",
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#150A20",
+        "overlay_color": "#FF5BC8"
+      }
+    }
+  }
+}

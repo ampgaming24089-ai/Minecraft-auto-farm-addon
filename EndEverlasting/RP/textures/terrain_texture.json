@@ -1,0 +1,161 @@
+{
+  "resource_pack_name": "voidbound",
+  "texture_name": "atlas.terrain",
+  "padding": 8,
+  "num_mip_levels": 4,
+  "texture_data": {
+    "voidbound_shattered_end_stone": {
+      "textures": "textures/blocks/voidbound_shattered_end_stone"
+    },
+    "voidbound_verdant_end_stone": {
+      "textures": "textures/blocks/voidbound_verdant_end_stone"
+    },
+    "voidbound_echo_ore": {
+      "textures": "textures/blocks/voidbound_echo_ore"
+    },
+    "voidbound_void_crystal_block": {
+      "textures": "textures/blocks/voidbound_void_crystal_block"
+    },
+    "voidbound_void_glass": {
+      "textures": "textures/blocks/voidbound_void_glass"
+    },
+    "voidbound_voidbloom": {
+      "textures": "textures/blocks/voidbound_voidbloom"
+    },
+    "voidbound_lumen_bulb": {
+      "textures": "textures/blocks/voidbound_lumen_bulb"
+    },
+    "voidbound_rift_lantern_side": {
+      "textures": "textures/blocks/voidbound_rift_lantern_side"
+    },
+    "voidbound_rift_lantern_top": {
+      "textures": "textures/blocks/voidbound_rift_lantern_top"
+    },
+    "voidbound_ender_log": {
+      "textures": "textures/blocks/voidbound_ender_log"
+    },
+    "voidbound_ender_log_top": {
+      "textures": "textures/blocks/voidbound_ender_log_top"
+    },
+    "voidbound_ender_leaves": {
+      "textures": "textures/blocks/voidbound_ender_leaves"
+    },
+    "voidbound_ender_bush": {
+      "textures": "textures/blocks/voidbound_ender_bush"
+    },
+    "voidbound_ender_planks": {
+      "textures": "textures/blocks/voidbound_ender_planks"
+    },
+    "voidbound_ender_bricks": {
+      "textures": "textures/blocks/voidbound_ender_bricks"
+    },
+    "voidbound_void_crystal_bricks": {
+      "textures": "textures/blocks/voidbound_void_crystal_bricks"
+    },
+    "voidbound_echo_lamp": {
+      "textures": "textures/blocks/voidbound_echo_lamp"
+    },
+    "voidbound_chiseled_ender_bricks": {
+      "textures": "textures/blocks/voidbound_chiseled_ender_bricks"
+    },
+    "voidbound_ender_pillar": {
+      "textures": "textures/blocks/voidbound_ender_pillar"
+    },
+    "voidbound_ender_pillar_top": {
+      "textures": "textures/blocks/voidbound_ender_pillar_top"
+    },
+    "voidbound_ender_tiles": {
+      "textures": "textures/blocks/voidbound_ender_tiles"
+    },
+    "voidbound_waystone_side": {
+      "textures": "textures/blocks/voidbound_waystone_side"
+    },
+    "voidbound_waystone_top": {
+      "textures": "textures/blocks/voidbound_waystone_top"
+    },
+    "voidbound_ender_sapling": {
+      "textures": "textures/blocks/voidbound_ender_sapling"
+    },
+    "voidbound_void_chitin_block": {
+      "textures": "textures/blocks/voidbound_void_chitin_block"
+    },
+    "voidbound_polished_end_stone": {
+      "textures": "textures/blocks/voidbound_polished_end_stone"
+    },
+    "voidbound_cracked_ender_bricks": {
+      "textures": "textures/blocks/voidbound_cracked_ender_bricks"
+    },
+    "voidbound_ender_vines": {
+      "textures": "textures/blocks/voidbound_ender_vines"
+    },
+    "voidbound_echo_cluster": {
+      "textures": "textures/blocks/voidbound_echo_cluster"
+    },
+    "voidbound_mossy_end_stone": {
+      "textures": "textures/blocks/voidbound_mossy_end_stone"
+    },
+    "voidbound_pale_shroom": {
+      "textures": "textures/blocks/voidbound_pale_shroom"
+    },
+    "voidbound_glowspore_soil": {
+      "textures": "textures/blocks/voidbound_glowspore_soil"
+    },
+    "voidbound_sporelight_cap": {
+      "textures": "textures/blocks/voidbound_sporelight_cap"
+    },
+    "voidbound_sporelight_fungus": {
+      "textures": "textures/blocks/voidbound_sporelight_fungus"
+    },
+    "voidbound_bonespire_stone": {
+      "textures": "textures/blocks/voidbound_bonespire_stone"
+    },
+    "voidbound_frost_bloom": {
+      "textures": "textures/blocks/voidbound_frost_bloom"
+    },
+    "voidbound_crystalline_end_stone": {
+      "textures": "textures/blocks/voidbound_crystalline_end_stone"
+    },
+    "voidbound_ashen_end_stone": {
+      "textures": "textures/blocks/voidbound_ashen_end_stone"
+    },
+    "voidbound_ember_vent": {
+      "textures": "textures/blocks/voidbound_ember_vent"
+    },
+    "voidbound_aurora_stone": {
+      "textures": "textures/blocks/voidbound_aurora_stone"
+    },
+    "voidbound_spore_tendril": {
+      "textures": "textures/blocks/voidbound_spore_tendril"
+    },
+    "voidbound_frost_icicle": {
+      "textures": "textures/blocks/voidbound_frost_icicle"
+    },
+    "voidbound_crystal_dripstone": {
+      "textures": "textures/blocks/voidbound_crystal_dripstone"
+    },
+    "voidbound_ash_stalactite": {
+      "textures": "textures/blocks/voidbound_ash_stalactite"
+    },
+    "voidbound_aurora_veil": {
+      "textures": "textures/blocks/voidbound_aurora_veil"
+    },
+    "voidbound_dressed_end_stone": {
+      "textures": "textures/blocks/voidbound_dressed_end_stone"
+    },
+    "voidbound_lantern_post": {
+      "textures": "textures/blocks/voidbound_lantern_post"
+    },
+    "voidbound_bloomstalk_stage_0": {
+      "textures": "textures/blocks/voidbound_bloomstalk_stage_0"
+    },
+    "voidbound_bloomstalk_stage_1": {
+      "textures": "textures/blocks/voidbound_bloomstalk_stage_1"
+    },
+    "voidbound_bloomstalk_stage_3": {
+      "textures": "textures/blocks/voidbound_bloomstalk_stage_3"
+    },
+    "voidbound_bloomstalk_stage_2": {
+      "textures": "textures/blocks/voidbound_bloomstalk_stage_2"
+    }
+  }
+}

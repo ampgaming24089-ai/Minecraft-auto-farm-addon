@@ -1,0 +1,17 @@
+{
+  "format_version": "1.13.0",
+  "minecraft:ore_feature": {
+    "description": {
+      "identifier": "voidbound:shattered_end_stone_feature"
+    },
+    "count": 26,
+    "replace_rules": [
+      {
+        "places_block": "voidbound:shattered_end_stone",
+        "may_replace": [
+          "minecraft:end_stone"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "voidbound:rift_sovereign",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "rift_sovereign",
+          "voidbound",
+          "monster",
+          "boss",
+          "mob"
+        ]
+      },
+      "minecraft:boss": {
+        "should_darken_sky": true,
+        "hud_range": 70,
+        "name": "entity.voidbound:rift_sovereign.name"
+      },
+      "minecraft:collision_box": {
+        "width": 2.0,
+        "height": 3.2
+      },
+      "minecraft:health": {
+        "value": 400,
+        "max": 400
+      },
+      "minecraft:attack": {
+        "damage": 12
+      },
+      "minecraft:knockback_resistance": {
+        "value": 1.0
+      },
+      "minecraft:fire_immune": true,
+      "minecraft:persistent": {},
+      "minecraft:movement": {
+        "value": 0.22
+      },
+      "minecraft:can_fly": {},
+      "minecraft:physics": {
+        "has_gravity": false,
+        "has_collision": true
+      },
+      "minecraft:pushable": {
+        "is_pushable": false,
+        "is_pushable_by_piston": false
+      },
+      "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "must_see": false,
+        "reselect_targets": true,
+        "within_radius": 48,
+        "entity_types": [
+          {
+            "filters": {
+              "test": "is_family",
+              "subject": "other",
+              "value": "player"
+            },
+            "max_dist": 48
+          }
+        ]
+      },
+      "minecraft:behavior.melee_attack": {
+        "priority": 3,
+        "speed_multiplier": 1.1,
+        "track_target": true
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 7,
+        "look_distance": 24
+      },
+      "minecraft:experience_reward": {
+        "on_death": "query.last_hit_by_player ? 500 : 0"
+      },
+      "minecraft:loot": {
+        "table": "loot_tables/entities/rift_sovereign.json"
+      },
+      "minecraft:movement.hover": {},
+      "minecraft:navigation.hover": {
+        "can_path_over_water": true,
+        "can_sink": false,
+        "can_pass_doors": false,
+        "can_path_from_air": true,
+        "avoid_water": true,
+        "avoid_damage_blocks": false
+      },
+      "minecraft:behavior.random_hover": {
+        "priority": 5,
+        "xz_dist": 5,
+        "y_dist": 3,
+        "y_offset": 1,
+        "interval": 70,
+        "hover_height": [
+          3,
+          7
+        ]
+      }
+    }
+  }
+}

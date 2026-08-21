@@ -1,0 +1,32 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:ender_fruit_pie"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "FFF",
+      "WWW"
+    ],
+    "key": {
+      "F": {
+        "item": "voidbound:ender_fruit"
+      },
+      "W": {
+        "item": "minecraft:wheat"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:ender_fruit"
+      }
+    ],
+    "result": {
+      "item": "voidbound:ender_fruit_pie",
+      "count": 2
+    }
+  }
+}

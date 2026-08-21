@@ -1,0 +1,29 @@
+{
+  "format_version": "1.21.20",
+  "minecraft:scatter_feature": {
+    "description": {
+      "identifier": "voidbound:echo_cluster_patch_feature"
+    },
+    "places_feature": "voidbound:echo_cluster_feature",
+    "project_input_to_floor": true,
+    "distribution": {
+      "iterations": 5,
+      "coordinate_eval_order": "xzy",
+      "x": {
+        "distribution": "gaussian",
+        "extent": [
+          -5,
+          5
+        ]
+      },
+      "y": 0,
+      "z": {
+        "distribution": "gaussian",
+        "extent": [
+          -5,
+          5
+        ]
+      }
+    }
+  }
+}

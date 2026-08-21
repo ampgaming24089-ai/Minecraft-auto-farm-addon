@@ -1,0 +1,90 @@
+{
+  "resource_pack_name": "voidbound",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "voidbound_echo_shard": {
+      "textures": "textures/items/voidbound_echo_shard"
+    },
+    "voidbound_void_crystal": {
+      "textures": "textures/items/voidbound_void_crystal"
+    },
+    "voidbound_rift_compass": {
+      "textures": "textures/items/voidbound_rift_compass"
+    },
+    "voidbound_lumen_berry": {
+      "textures": "textures/items/voidbound_lumen_berry"
+    },
+    "voidbound_void_helmet": {
+      "textures": "textures/items/voidbound_void_helmet"
+    },
+    "voidbound_void_chestplate": {
+      "textures": "textures/items/voidbound_void_chestplate"
+    },
+    "voidbound_void_leggings": {
+      "textures": "textures/items/voidbound_void_leggings"
+    },
+    "voidbound_void_boots": {
+      "textures": "textures/items/voidbound_void_boots"
+    },
+    "voidbound_raw_haunch": {
+      "textures": "textures/items/voidbound_raw_haunch"
+    },
+    "voidbound_cooked_haunch": {
+      "textures": "textures/items/voidbound_cooked_haunch"
+    },
+    "voidbound_echo_bread": {
+      "textures": "textures/items/voidbound_echo_bread"
+    },
+    "voidbound_void_sword": {
+      "textures": "textures/items/voidbound_void_sword"
+    },
+    "voidbound_void_pickaxe": {
+      "textures": "textures/items/voidbound_void_pickaxe"
+    },
+    "voidbound_void_axe": {
+      "textures": "textures/items/voidbound_void_axe"
+    },
+    "voidbound_void_shovel": {
+      "textures": "textures/items/voidbound_void_shovel"
+    },
+    "voidbound_void_hoe": {
+      "textures": "textures/items/voidbound_void_hoe"
+    },
+    "voidbound_ender_fruit": {
+      "textures": "textures/items/voidbound_ender_fruit"
+    },
+    "voidbound_sovereign_crown": {
+      "textures": "textures/items/voidbound_sovereign_crown"
+    },
+    "voidbound_rift_charm": {
+      "textures": "textures/items/voidbound_rift_charm"
+    },
+    "voidbound_echo_horn": {
+      "textures": "textures/items/voidbound_echo_horn"
+    },
+    "voidbound_ender_fruit_pie": {
+      "textures": "textures/items/voidbound_ender_fruit_pie"
+    },
+    "voidbound_astral_shard": {
+      "textures": "textures/items/voidbound_astral_shard"
+    },
+    "voidbound_void_chitin": {
+      "textures": "textures/items/voidbound_void_chitin"
+    },
+    "voidbound_voidsteel_ingot": {
+      "textures": "textures/items/voidbound_voidsteel_ingot"
+    },
+    "voidbound_titan_core": {
+      "textures": "textures/items/voidbound_titan_core"
+    },
+    "voidbound_bloomstalk_seed": {
+      "textures": "textures/items/voidbound_bloomstalk_seed"
+    },
+    "voidbound_bloom_pod": {
+      "textures": "textures/items/voidbound_bloom_pod"
+    },
+    "voidbound_void_sigil": {
+      "textures": "textures/items/voidbound_void_sigil"
+    }
+  }
+}
