@@ -1,4 +1,5 @@
 dist/
 node_modules/
 .DS_Store
-EndEverlasting/tools/mobgen/preview/
+EternalEnd/tools/mobgen/preview/
+EternalEnd/tools/skygen/preview_tiled.png
