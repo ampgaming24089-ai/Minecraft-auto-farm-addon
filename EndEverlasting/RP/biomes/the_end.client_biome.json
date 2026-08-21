@@ -6,7 +6,7 @@
     },
     "components": {
       "minecraft:sky_color": {
-        "sky_color": "#1E0A32"
+        "sky_color": "#123640"
       },
       "minecraft:fog_appearance": {
         "fog_identifier": "voidbound:fog_end_open"
