@@ -47,6 +47,27 @@ def painter(bone, face, fx, fy, fw, fh):
         t = fy / max(1.0, fh - 1.0)
         return mix(pelt(fx, fy, fw, fh, seed), MAGENTA, max(0.0, t - 0.55) * 1.6)
 
+    if bone.startswith("growth") or bone == "pendant":
+        # Crystal: hot at the tip, cooling into the hide it grew out of.
+        t = fy / max(1.0, fh - 1.0)
+        return mix(mix(ORCHID, MAGENTA, 0.4), WHITE, max(0.0, 0.55 - t * 0.6))
+
+    if bone.startswith("collar") or bone.startswith("pauldron"):
+        # Dark metal with a lit rim and a row of rivets, so the gear reads as
+        # gear rather than as more animal.
+        n = fbm(fx * 2.6, fy * 2.6, 16, seed, octaves=2, base_period=3)
+        metal = mix(hex_rgba("#2A2038"), hex_rgba("#6A5C82"), 0.25 + n * 0.4)
+        if fy == 0:
+            return mix(metal, ORCHID, 0.45)
+        if fy == fh - 1:
+            return shade(metal, -0.35)
+        if bone.startswith("pauldron") and fx % 4 == 1 and fy % 4 == 2:
+            return mix(metal, WHITE, 0.35)          # rivet
+        return metal
+
+    if bone.startswith("whisker") or bone.startswith("tuft"):
+        return mix(ROYAL, ORCHID, 0.4)
+
     base = pelt(fx, fy, fw, fh, seed)
     # Tiger striping over the flanks and haunches, so the animal has markings
     # rather than being one dark shape.

@@ -1975,6 +1975,87 @@ def end_sky():
     out(c, ENVIRONMENT, "end_sky")
 
 
+def moon_phases():
+    """textures/environment/moon_phases.png - eight phases in a 4x2 grid.
+
+    Bedrock lays the moon out exactly the way Java does, so this is one of the
+    few sky textures that genuinely transfers. It is generated rather than
+    borrowed: an End moon should not be a photograph of ours, and shipping
+    someone else's art inside a redistributed add-on is a licensing problem
+    rather than a technical one.
+
+    The phase is not drawn as a crescent shape - it is drawn as a *terminator*,
+    a moving line with the lit side falling off into shadow, because a hard
+    crescent reads as a sticker and a soft one reads as a sphere.
+    """
+    cell = 64
+    c = Canvas(cell * 4, cell * 2)
+
+    body_lit = hex_rgba("#E8D8F4")
+    body_mid = hex_rgba("#9C7ABE")
+    body_dark = hex_rgba("#3A2456")
+    halo = hex_rgba("#C08AF0")
+
+    for phase in range(8):
+        ox = (phase % 4) * cell
+        oy = (phase // 4) * cell
+        # Minecraft's order is full, waning gibbous, last quarter, waning
+        # crescent, new, waxing crescent, first quarter, waxing gibbous. The
+        # first attempt swept a cosine across and produced a sequence that
+        # went nearly-dark, half, nearly-full, dark - which is not a lunar
+        # month, it is a flicker. Each phase names its own terminator instead.
+        WANING = {1: -0.5, 2: 0.0, 3: 0.5}
+        WAXING = {5: -0.5, 6: 0.0, 7: 0.5}
+
+        for y in range(cell):
+            for x in range(cell):
+                nx = (x + 0.5) / cell * 2 - 1
+                ny = (y + 0.5) / cell * 2 - 1
+                d = math.hypot(nx, ny)
+                if d > 1.0:
+                    # A soft violet halo just outside the disc.
+                    if d < 1.18:
+                        a = int(120 * (1.0 - (d - 1.0) / 0.18) ** 2)
+                        c.set(ox + x, oy + y, (halo[0], halo[1], halo[2], a))
+                    continue
+
+                # Sphere shading: the limb darkens toward the edge.
+                z = math.sqrt(max(0.0, 1.0 - d * d))
+                lift = 0.35 + 0.65 * z
+
+                # Craters, as circular depressions at fixed spots.
+                crater = 0.0
+                for cx, cy, cr in ((-0.32, -0.18, 0.30), (0.28, 0.34, 0.24),
+                                   (0.10, -0.46, 0.18), (-0.50, 0.36, 0.20),
+                                   (0.46, -0.28, 0.15), (-0.08, 0.10, 0.26)):
+                    cd = math.hypot(nx - cx, ny - cy) / cr
+                    if cd < 1.0:
+                        crater = max(crater, (1.0 - cd) ** 0.6)
+                grain = fbm(x * 0.9, y * 0.9, cell, 5150, octaves=4, base_period=8)
+
+                tone = mix(body_mid, body_lit, lift * (0.55 + grain * 0.45))
+                tone = mix(tone, body_dark, crater * 0.55)
+
+                # The terminator is an ellipse, not a straight line: it is the
+                # edge of a sphere seen at an angle, so it narrows toward the
+                # poles. Softened over a band so it reads as a curve rather
+                # than a cut.
+                limb = math.sqrt(max(0.0, 1.0 - ny * ny))
+                if phase == 0:
+                    shadow = 0.0
+                elif phase == 4:
+                    shadow = 1.0
+                elif phase in WANING:
+                    shadow = max(0.0, min(1.0, (WANING[phase] * limb - nx) * 3.0 + 0.5))
+                else:
+                    shadow = max(0.0, min(1.0, (nx - WAXING[phase] * limb) * 3.0 + 0.5))
+                tone = mix(tone, (10, 6, 20, 255), shadow * 0.94)
+                c.set(ox + x, oy + y, tone)
+
+    os.makedirs(ENVIRONMENT, exist_ok=True)
+    out(c, ENVIRONMENT, "moon_phases")
+
+
 # --------------------------------------------------------------------------
 # Pack icons
 # --------------------------------------------------------------------------
@@ -3151,6 +3232,7 @@ def main():
         item_void_leggings,
         item_void_boots,
         end_sky,
+        moon_phases,
     ]
     for recipe in recipes:
         recipe()

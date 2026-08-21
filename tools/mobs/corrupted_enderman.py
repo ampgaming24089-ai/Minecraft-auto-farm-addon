@@ -71,6 +71,41 @@ for i, (x, y, z, count) in enumerate(STRIPS):
         link["rotation"] = [92 if j == 0 else 6 + j, (i * 37) % 40 - 20 if j == 0 else 0, 0]
     bones.extend(chain)
 
+# --- Ornament. It is a thing coming apart, so the pieces that have already
+# left it hang in the air around it: a broken halo over the head and shards
+# orbiting the torso, each on its own bone so they can drift.
+for i in range(7):
+    angle = (i / 7.0) * math.pi * 2
+    if i in (2, 5):
+        continue                                  # the halo is broken
+    rx = math.cos(angle) * 7
+    rz = math.sin(angle) * 7
+    uv = atlas.box((3, 1, 2))
+    bones.append(bone("halo_%d" % i, [rx, HIP + 40, rz],
+                      [cube([rx - 1.5, HIP + 40, rz - 1], [3, 1, 2], uv)],
+                      parent="head", rotation=[0, math.degrees(angle), 0]))
+
+for i, (rx, ry, rz, size) in enumerate([(7, HIP + 24, 2, 2), (-8, HIP + 20, -3, 3),
+                                        (6, HIP + 14, -4, 2), (-6, HIP + 30, 3, 2),
+                                        (9, HIP + 6, 1, 2), (-7, HIP + 2, -2, 3)]):
+    uv = atlas.box((size, size, size))
+    bones.append(bone("debris_%d" % i, [rx, ry, rz],
+                      [cube([rx - size / 2.0, ry, rz - size / 2.0],
+                            [size, size, size], uv)], parent="torso",
+                      rotation=[i * 23, i * 41, i * 17]))
+
+# Rifts opening down the arms and legs, matching the one on the chest.
+for side in (1, -1):
+    tag = "l" if side > 0 else "r"
+    uv = atlas.box((1, 14, 1))
+    bones.append(bone("armrift_" + tag, [side * 5, HIP + 14, -1.6],
+                      [cube([side * 5 - 0.5, HIP + 4, -2.1], [1, 14, 1], uv)],
+                      parent="arm_" + tag))
+    uv = atlas.box((1, 10, 1))
+    bones.append(bone("legrift_" + tag, [side * 2.5, HIP - 2, -1.6],
+                      [cube([side * 2.5 - 0.5, HIP - 12, -2.1], [1, 10, 1], uv)],
+                      parent="leg_" + tag))
+
 write("RP/models/entity/corrupted_enderman.geo.json",
       geometry("geometry.voidbound.corrupted_enderman", (256, 256), bones,
                bounds=(2, 4, (0, 1.8, 0))))

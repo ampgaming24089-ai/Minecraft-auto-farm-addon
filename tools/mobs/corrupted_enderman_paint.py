@@ -20,7 +20,16 @@ def painter(bone, face, fx, fy, fw, fh):
     seed = hash(bone) & 0xffff
     n = fbm(fx * 2.4, fy * 2.4, 16, seed, octaves=3, base_period=4)
 
-    if bone == "rift":
+    if bone.startswith("halo"):
+        return mix(AMBER, WHITE, 0.55)
+
+    if bone.startswith("debris"):
+        # Pieces that have already left it: dark rock with a burning face.
+        if face in ("north", "up"):
+            return mix(EMBER, AMBER, 0.4)
+        return mix(VOID, DEEP, 0.35)
+
+    if bone.endswith("rift_l") or bone.endswith("rift_r") or bone == "rift":
         # The corruption itself: white-hot at the centre, cooling outward.
         t = abs(fx - (fw - 1) / 2.0) / max(1.0, (fw - 1) / 2.0)
         return mix(mix(WHITE, AMBER, t), EMBER, t * t)

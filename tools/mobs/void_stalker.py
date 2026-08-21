@@ -49,6 +49,56 @@ bones.extend(spine_row(atlas, "spine", "chest", [0, 23, -13], 5, (2, 6, 3), 3.6,
 bones.extend(spine_row(atlas, "rump", "hips", [0, 21, 3], 4, (2, 4, 3), 3.4,
                        taper=0.9))
 
+# --- Ornament. A shape is not a design; the whale earned its keep with the
+# gear strapped to it, so the Stalker gets the same treatment - something
+# collared and armoured it, and crystal is growing out through the plates.
+uv = atlas.box((11, 3, 5))
+bones.append(bone("collar", [0, 18, -12],
+                  [cube([-5.5, 15, -13], [11, 3, 5], uv)], parent="chest"))
+for side, mirror in ((1, False), (-1, True)):
+    uv = atlas.box((3, 4, 3))
+    bones.append(bone("collar_stud_%s" % ("l" if side > 0 else "r"),
+                      [side * 4, 20, -11],
+                      [cube([side * 4 - 1.5, 18, -12], [3, 4, 3], uv, mirror=mirror)],
+                      parent="collar"))
+# A pendant crystal hanging from the collar, so it swings when it moves.
+uv = atlas.box((3, 5, 3))
+bones.append(bone("pendant", [0, 15, -11],
+                  [cube([-1.5, 10, -12.5], [3, 5, 3], uv)], parent="collar"))
+
+# Shoulder plates bolted over the forelegs.
+for side, mirror in ((1, False), (-1, True)):
+    uv = atlas.box((6, 6, 8))
+    ox = side * 3 if side > 0 else side * 3 - 6
+    bones.append(bone("pauldron_%s" % ("l" if side > 0 else "r"), [side * 5, 19, -9],
+                      [cube([ox, 16, -13], [6, 6, 8], uv, mirror=mirror)],
+                      parent="chest", rotation=[0, 0, side * -14]))
+
+# Crystal breaking out through the hide along the flanks and haunches.
+for i, (x, y, z, h) in enumerate([(4, 21, -8, 5), (-4, 21, -5, 4),
+                                  (4, 19, 6, 4), (-4, 20, 9, 5),
+                                  (0, 24, -2, 6)]):
+    uv = atlas.box((2, h, 2))
+    bones.append(bone("growth_%d" % i, [x, y, z],
+                      [cube([x - 1, y, z - 1], [2, h, 2], uv)],
+                      parent="chest" if z < 2 else "hips",
+                      rotation=[-20, 0, (18 if x >= 0 else -18)]))
+
+# Ear tufts and whiskers - small, but they finish a cat's head.
+for side, mirror in ((1, False), (-1, True)):
+    uv = atlas.box((1, 4, 1))
+    bones.append(bone("tuft_%s" % ("l" if side > 0 else "r"), [side * 2.5, 25, -24],
+                      [cube([side * 2.5 - 0.5, 25, -24.5], [1, 4, 1], uv, mirror=mirror)],
+                      parent="ear_%s" % ("l" if side > 0 else "r"),
+                      rotation=[-14, 0, side * 20]))
+    for i in range(2):
+        uv = atlas.box((5, 1, 1))
+        wx = side * 3 if side > 0 else side * 3 - 5
+        bones.append(bone("whisker_%s%d" % ("l" if side > 0 else "r", i),
+                          [side * 3, 15 + i, -26],
+                          [cube([wx, 15 + i, -26.5], [5, 1, 1], uv, mirror=mirror)],
+                          parent="head_snout", rotation=[0, 0, side * (8 + i * 10)]))
+
 write("RP/models/entity/void_stalker.geo.json",
       geometry("geometry.voidbound.void_stalker", (256, 256), bones,
                bounds=(2.5, 2, (0, 1, 0))))

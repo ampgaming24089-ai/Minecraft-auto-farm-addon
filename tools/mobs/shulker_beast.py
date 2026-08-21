@@ -78,6 +78,40 @@ tail, tip = taper_chain(atlas, "tail", "body", [0, 20, 16], 5, (5, 5, 6), 5.0,
                         shrink=0.84)
 bones.extend(tail)
 
+# --- Ornament. The shell is the animal's identity, so it earns spikes and a
+# lit rim; the wings get claws at the joints and the tail a barb.
+for i, (y, z, count) in enumerate([(31, 4, 4), (34, 6, 3), (36, 8, 2)]):
+    for j in range(count):
+        t = (j - (count - 1) / 2.0)
+        uv = atlas.box((2, 5 - i, 2))
+        bones.append(bone("spike_%d_%d" % (i, j), [t * 4, y, z],
+                          [cube([t * 4 - 1, y, z], [2, 5 - i, 2], uv)],
+                          parent="shell_%d" % i,
+                          rotation=[-20 - i * 8, 0, t * 12]))
+
+# A claw at each wing's wrist, which is what tells the eye it is a hand.
+for side, mirror in ((1, False), (-1, True)):
+    tag = "wing_" + ("l" if side > 0 else "r")
+    for i in range(2):
+        uv = atlas.box((1, 1, 5))
+        px = side * 20 if side > 0 else side * 20 - 1
+        bones.append(bone("%s_claw%d" % (tag, i), [side * 20, 26, 6],
+                          [cube([px, 25 + i * 1.5, 2], [1, 1, 5], uv, mirror=mirror)],
+                          parent=tag, rotation=[-14 - i * 8, side * 8, 0]))
+
+# Tail barb, and a pair of vents along the flanks that vent light.
+uv = atlas.box((3, 3, 7))
+bones.append(bone("barb", [0, 20, 40], [cube([-1.5, 18.5, 38], [3, 3, 7], uv)],
+                  parent="tail_4"))
+for side, mirror in ((1, False), (-1, True)):
+    for i in range(3):
+        uv = atlas.box((1, 3, 4))
+        vx = side * 6 if side > 0 else side * 6 - 1
+        bones.append(bone("vent_%s%d" % ("l" if side > 0 else "r", i),
+                          [side * 6, 19, 4 + i * 4],
+                          [cube([vx, 17, 4 + i * 4], [1, 3, 4], uv, mirror=mirror)],
+                          parent="body"))
+
 write("RP/models/entity/shulker_beast.geo.json",
       geometry("geometry.voidbound.shulker_beast", (256, 256), bones,
                bounds=(4, 3, (0, 1.4, 0))))

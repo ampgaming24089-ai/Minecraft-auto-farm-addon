@@ -69,6 +69,38 @@ for i, (x, y, z, w, h, d) in enumerate([(6, HIP + 28, 5, 3, 7, 3),
                       [cube([x - w / 2.0, y, z - d / 2.0], [w, h, d], uv)],
                       parent="torso", rotation=[-22, 0, (12 if x >= 0 else -12)]))
 
+# --- Ornament. What holds a golem together is as interesting as the golem:
+# a core burning in its chest, iron bands clamping the masses shut, and runes
+# cut into the plates.
+uv = atlas.box((7, 7, 4))
+bones.append(bone("core", [0, HIP + 18, -6],
+                  [cube([-3.5, HIP + 15, -10], [7, 7, 4], uv)], parent="torso"))
+uv = atlas.box((11, 11, 3))
+bones.append(bone("core_frame", [0, HIP + 18, -6],
+                  [cube([-5.5, HIP + 13, -9], [11, 11, 3], uv)], parent="torso"))
+
+# Bands clamping the torso and each upper arm.
+for i, (w, h, d, y, parent) in enumerate([(21, 3, 15, HIP + 22, "torso"),
+                                          (17, 3, 15, HIP + 8, "torso")]):
+    uv = atlas.box((w, h, d))
+    bones.append(bone("band_%d" % i, [0, y, 0],
+                      [cube([-w / 2.0, y, -d / 2.0], [w, h, d], uv)], parent=parent))
+for side in (1, -1):
+    tag = "l" if side > 0 else "r"
+    uv = atlas.box((9, 3, 10))
+    bones.append(bone("armband_" + tag, [side * 12, HIP + 16, 0],
+                      [cube([side * 12 - 4.5, HIP + 16, -5], [9, 3, 10], uv)],
+                      parent="arm_" + tag))
+
+# More crystal, and bigger, breaking out of the back and forearms.
+for i, (x, y, z, w, h, d, parent) in enumerate([
+        (4, HIP + 32, 6, 4, 10, 4, "torso"), (-6, HIP + 29, 6, 3, 8, 3, "torso"),
+        (11, HIP + 10, 3, 3, 7, 3, "arm_l"), (-11, HIP + 10, 3, 3, 7, 3, "arm_r")]):
+    uv = atlas.box((w, h, d))
+    bones.append(bone("bigshard_%d" % i, [x, y, z],
+                      [cube([x - w / 2.0, y, z - d / 2.0], [w, h, d], uv)],
+                      parent=parent, rotation=[-26, 0, (16 if x >= 0 else -16)]))
+
 write("RP/models/entity/purpur_golem.geo.json",
       geometry("geometry.voidbound.purpur_golem", (256, 256), bones,
                bounds=(3, 4, (0, 1.6, 0))))

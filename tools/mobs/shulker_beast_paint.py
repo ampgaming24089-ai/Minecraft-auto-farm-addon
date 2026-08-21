@@ -49,6 +49,18 @@ def painter(bone, face, fx, fy, fw, fh):
             base = mix(base, ORCHID, 0.5)
         return base
 
+    if bone.startswith("spike") or bone == "barb":
+        t = fy / max(1.0, fh - 1.0)
+        return mix(mix(ORCHID, MAGENTA, 0.45), WHITE, max(0.0, 0.55 - t * 0.6))
+
+    if bone.startswith("vent") or "_claw" in bone:
+        # Vents burn; claws are bone. Both need to be brighter than the hide
+        # or they vanish against it.
+        if bone.startswith("vent"):
+            t = 1.0 - fy / max(1.0, fh - 1.0)
+            return mix(MAGENTA, WHITE, t * 0.6)
+        return mix(BONE, ROYAL, fy / max(1.0, fh - 1.0) * 0.5)
+
     if bone.startswith("shell"):
         # Shulker plate: hard, banded, with a lit rim on the leading edge.
         band = shade(mix(ROYAL, ORCHID, 0.3), -0.1 if fy % 3 else 0.18)
