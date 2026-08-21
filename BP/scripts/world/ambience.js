@@ -11,6 +11,11 @@
  * camera's immediate surroundings, so the effect reads as depth rather than as
  * dust on the lens. Rates are per-player and deliberately low - this runs
  * forever, for everyone in the dimension, on phones.
+ *
+ * One layer is not decoration. Standing near a drop into the void raises a
+ * column of motes off the edge, which makes the edge legible: in a dimension
+ * where the ground simply stops and the fall is fatal, that is worth more than
+ * any amount of sparkle.
  */
 
 import { system, world } from "@minecraft/server";
@@ -36,6 +41,19 @@ const SPORE_CHANCE = 0.55;
 
 /** How close to a grove counts as inside it. */
 const GROVE_RANGE = 22;
+
+/**
+ * Edge detection: how far out to sample, and the band an island can live in.
+ * Four samples per player every other interval is a handful of block reads a
+ * second - cheap enough to run forever, dense enough to catch a ledge.
+ */
+const EDGE_REACH = 5;
+const EDGE_INTERVALS = 2;
+const GROUND_MIN_Y = 4;
+const GROUND_MAX_Y = 128;
+
+/** Nothing below within this many blocks means the player is over open void. */
+const EDGE_DROP = 12;
 
 function spawn(dimension, effect, at) {
   try {
@@ -96,6 +114,52 @@ function ambientFor(player) {
       x: x + Math.cos(angle) * distance,
       y: y + 22 + Math.random() * 16,
       z: z + Math.sin(angle) * distance,
+    });
+  }
+
+  edgeDraft(player);
+}
+
+/**
+ * Ground height under a column, or undefined when the chunk is not loaded.
+ *
+ * Block handles are lazy: getTopmostBlock hands one back and reading typeId is
+ * what actually touches the chunk, so the whole read has to sit inside the
+ * guard, not just the call.
+ */
+function groundHeight(dimension, x, z) {
+  try {
+    if (!dimension.isChunkLoaded({ x, y: GROUND_MIN_Y, z })) return undefined;
+    const block = dimension.getTopmostBlock({ x, z });
+    if (!block) return undefined;
+    const height = block.y;
+    if (height < GROUND_MIN_Y || height > GROUND_MAX_Y) return undefined;
+    return height;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Raise motes off any edge the player is standing near. */
+function edgeDraft(player) {
+  if (system.currentTick % (INTERVAL_TICKS * EDGE_INTERVALS) !== 0) return;
+
+  const { x, y, z } = player.location;
+  const dimension = player.dimension;
+  const here = groundHeight(dimension, Math.floor(x), Math.floor(z));
+  // Airborne or over unloaded ground: nothing to stand on the edge of.
+  if (here === undefined || Math.abs(y - here) > 3) return;
+
+  for (const [dx, dz] of [[EDGE_REACH, 0], [-EDGE_REACH, 0], [0, EDGE_REACH], [0, -EDGE_REACH]]) {
+    const sampleX = Math.floor(x) + dx;
+    const sampleZ = Math.floor(z) + dz;
+    const there = groundHeight(dimension, sampleX, sampleZ);
+    // Undefined means nothing at all below - the void. A long drop counts too.
+    if (there !== undefined && here - there < EDGE_DROP) continue;
+    spawn(dimension, "voidbound:void_updraft", {
+      x: sampleX + 0.5,
+      y: here - 2,
+      z: sampleZ + 0.5,
     });
   }
 }

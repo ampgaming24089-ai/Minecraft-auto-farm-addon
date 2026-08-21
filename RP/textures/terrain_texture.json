@@ -84,6 +84,18 @@
     },
     "voidbound_cracked_ender_bricks": {
       "textures": "textures/blocks/voidbound_cracked_ender_bricks"
+    },
+    "voidbound_ender_vines": {
+      "textures": "textures/blocks/voidbound_ender_vines"
+    },
+    "voidbound_echo_cluster": {
+      "textures": "textures/blocks/voidbound_echo_cluster"
+    },
+    "voidbound_mossy_end_stone": {
+      "textures": "textures/blocks/voidbound_mossy_end_stone"
+    },
+    "voidbound_pale_shroom": {
+      "textures": "textures/blocks/voidbound_pale_shroom"
     }
   }
 }

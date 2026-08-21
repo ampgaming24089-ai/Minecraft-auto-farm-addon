@@ -1,24 +1,26 @@
-# End Ascendant — an End overhaul for Minecraft Bedrock
+# End Unbound — an End overhaul for Minecraft Bedrock
 
 The End has been one biome, one sky and two structures since 1.9. End
 Ascendant rebuilds it for Bedrock **26.4** (internal `1.26.40`, current hotfix
 `26.44`): a forest, three bosses, thirteen mobs, a full tool and armour tier, a
 food chain, a waystone travel network, five structure types scattered across the
-outer islands, and an atmosphere that moves.
+outer islands, an animation pack for the player and every mob in it, and an
+atmosphere that moves.
 
 Everything runs on documented, non-experimental APIs. No experiments toggle,
 no world conversion, no commands typed by the player.
 
 | | |
 |---|---|
-| Blocks | 23 |
+| Blocks | 27 |
 | Items | 25 |
 | Mobs | 16, three of them bosses |
 | Recipes | 32 |
 | Structures | 5 kinds, procedurally varied |
-| Particle effects | 12 |
-| Animations | 29 clips across 14 models |
-| Textures | 142, all generated from code |
+| Worldgen features | 15, across 9 placement rules |
+| Particle effects | 13 |
+| Animations | 108 clips, including a player animation pack |
+| Textures | 150, all generated from code |
 
 ```
 ./build_addon.sh --check      # validate everything, then build the .mcaddon
@@ -34,7 +36,7 @@ not the PBR lighting.
 ### The sky and the light
 
 The End's built-in look is a flat purple void: two constant white directional
-lights, a near-black sky, no depth. End Ascendant replaces the whole Vibrant
+lights, a near-black sky, no depth. End Unbound replaces the whole Vibrant
 Visuals stack for `minecraft:the_end`.
 
 | File | What it does |
@@ -53,7 +55,7 @@ through `lighting/global.json`. That is the part most End packs get wrong.
 ### Fog that knows where you are
 
 Bedrock exposes exactly one End biome, so a biome-bound fog can only ever be
-one mood. End Ascendant ships four fog definitions and pushes the right one onto
+one mood. End Unbound ships four fog definitions and pushes the right one onto
 each player's fog stack — the layer that sits above biome fog:
 
 - **`fog_end_open`** — the default, bound to the biome. Thin violet haze that
@@ -177,6 +179,99 @@ planted tree wants to be a little smaller than a wild one so a grove you build
 does not swallow whatever you built it next to. Logs and leaves only replace
 air, so a trunk that leans can never carve through something you built.
 
+### The animation pack
+
+Bedrock ships the player with about eighty animation clips and no way for an
+add-on to add an eighty-first without taking ownership of the whole file. So
+this pack copies Mojang's own `player.entity.json` verbatim and *adds* to it:
+nothing vanilla is replaced, three extra animation controllers go into
+`scripts.animate`, and every clip they play is an offset layered on top of
+whatever vanilla already posed. That is the whole trick — the amplitudes are
+small on purpose, because anything larger stops reading as a flourish and
+starts reading as a broken skeleton the moment vanilla's own clip disagrees.
+
+Eight of the clips are continuous and need no script at all, because Molang can
+already see the state that triggers them:
+
+| Clip | When | What it does |
+|---|---|---|
+| `idle_breathe` | standing still | Two breathing cycles at different rates, so it never resolves into an obvious loop |
+| `sprint_lean` | sprinting on the ground | Leans into the run, counter-rotates the head so you still look where you are going |
+| `sneak_prowl` | sneaking | Lower than vanilla's crouch, arms tucked, weight shifting foot to foot |
+| `fall_brace` | falling faster than 4 m/s | Arms up, legs tucked — falling is the End's signature way to die |
+| `glide_soar` | elytra gliding | Arms swept back along the wing, not spread |
+| `swim_roll` | swimming | Body roll driven by distance moved, so it matches the stroke |
+| `eat_relish` | using a food item | A fast nod under a slow tilt: chewing, without a jaw bone to chew with |
+| `draw_steady` | drawing a bow, crossbow or trident | A tremor that **scales with `variable.item_use_normalized`** — a snap shot is steady, a long hold visibly costs you |
+
+The other seven are one-shots that no query could predict, because they answer
+events rather than states. Those fire from script through `/playanimation`,
+which is the only route from the script API to a player's skeleton:
+
+- **Victory** and **salute** on a boss dying — the player who landed the killing
+  blow celebrates, everyone else within 40 blocks salutes.
+- **Reach** when you attune a waystone or arrive through one.
+- **Slam** when the Titan Core goes off, matching the shockwave it already made.
+- **Savour** after eating anything the pack added.
+- **Recoil** on taking a real hit in the End (6+ damage, so ordinary chip
+  damage does not turn the dimension into a flinching contest).
+- **Land absorb**, which is controller-driven rather than scripted: a knee bend
+  on touching down, short enough never to fight whatever you do next.
+
+Every `/playanimation` call passes a stop expression built from the clip's own
+length. Without one the last keyframe holds and the player stands frozen in the
+pose, which is a far worse failure than no animation at all.
+
+### Mob actions
+
+Every mob got idle and move clips in an earlier pass. This one gives all
+sixteen an **attack**, a **hurt**, a **death** and an **alert** stance — 64
+clips, generated rather than drawn.
+
+They are generated because they are a rule and not an idea. An attack is a
+wind-up and a follow-through, a hurt is a recoil, a death is a collapse; what
+changes between creatures is which bones those map onto and how far they
+travel. `tools/gen_mob_actions.py` holds that as a table of bones per mob plus
+a single `scale` dial, because a whale that recoils as sharply as a beetle
+looks weightless and a beetle that recoils as slowly as a whale looks broken.
+The hand-authored idle and move clips stay in their own file, untouched.
+
+Two of the four are pure client data. One shared animation controller reads
+`query.has_target` for the alert stance and `query.is_alive` for the collapse,
+and because every client entity maps the same two short names — `vb_alert`,
+`vb_death` — to its own clips, **one controller drives all sixteen mobs**.
+
+Attack and hurt cannot work that way: no Molang query can see a swing land, and
+hooking `minecraft:behavior.delayed_attack` would mean retuning every mob's
+combat just to get an animation out of it. So those fire from script on
+`entityHitEntity` and `entityHurt`, again through `/playanimation`, which
+reaches an entity's skeleton without touching its behaviour at all.
+
+Death clips all run 0.95 s. Bedrock keeps a dead entity for about twenty ticks
+and then removes it, so a longer collapse is one nobody ever sees the end of.
+
+### Detail on the ground
+
+Four things that make the End look inhabited by its own geology rather than
+poured out of one bucket:
+
+- **Ender vines** hang from the *undersides* of islands. The feature attaches
+  to the block above rather than below, which is the bit that fixes the way End
+  islands currently just stop at their own edge.
+- **Echo clusters** grow on stone in loose scatters and drop echo shards — a
+  surface deposit you spot from the air, so exploring competes with mining.
+- **Pale shrooms** cover the forest floor, denser than the clusters.
+- **Mossy end stone** replaces plain end stone the way an ore does, so it
+  blends into the terrain instead of sitting on it as obvious blobs. Its moss
+  follows its own noise field rather than the stone's, so the two patterns
+  cross instead of tracing each other.
+
+There is a fifth thing, and it is not decoration. Standing near a drop raises a
+column of motes off the edge: four block samples every second, and if any of
+them finds nothing below or a fall of 12+ blocks, the void gets an updraft. In
+a dimension where the ground simply stops and the fall is fatal, an edge you
+can see is worth more than any amount of sparkle.
+
 ### The sky, and making it move
 
 `RP/textures/environment/end_sky.png` replaces the End's skybox. This is
@@ -235,15 +330,15 @@ the player so they read as depth rather than as dust on the lens.
 - **Rift Compass** — points at the nearest structure by name, distance and
   bearing, and names the runner-up so you can pick a route.
 
-### End Ascendant armour
+### End Unbound armour
 
 The endgame set, a clear step past netherite:
 
 | | Helm | Cuirass | Greaves | Sabatons | Set |
 |---|---|---|---|---|---|
-| End Ascendant protection | 4 | 9 | 7 | 4 | **24** |
+| End Unbound protection | 4 | 9 | 7 | 4 | **24** |
 | Netherite protection | 3 | 8 | 6 | 3 | 20 |
-| End Ascendant durability | 561 | 816 | 765 | 663 | |
+| End Unbound durability | 561 | 816 | 765 | 663 | |
 | Netherite durability | 407 | 592 | 555 | 481 | |
 
 Enchantability is 18 against netherite's 15, and pieces repair with void
@@ -338,8 +433,8 @@ npm run check
 
 | Check | What it catches |
 |---|---|
-| `check:ids` | Every `minecraft:` and `voidbound:` identifier in every JSON value and JS string, against Mojang's published id tables. This is what caught `minecraft:end_stone_bricks` — Bedrock calls that block `minecraft:end_bricks`. It also checks that `local_lighting` only names blocks (it once named `end_crystal`, which is an entity), and scans the raw file text for whole-number fields written as floats — `"speed": 14.0` is a different literal from `"speed": 14` to the engine, and JSON parsing erases the difference, so this rule has to read the text. Client entities get their own pass: a geometry, animation, render controller or texture path that does not resolve renders the mob as a blank cube or as nothing at all, silently, so every one of those four cross-references is resolved against the files actually in the pack. |
-| `check:json` | Every JSON file against `@minecraft/bedrock-schemas` for the target version |
+| `check:ids` | Every `minecraft:` and `voidbound:` identifier in every JSON value and JS string, against Mojang's published id tables. This is what caught `minecraft:end_stone_bricks` — Bedrock calls that block `minecraft:end_bricks`. It also checks that `local_lighting` only names blocks (it once named `end_crystal`, which is an entity), and scans the raw file text for whole-number fields written as floats — `"speed": 14.0` is a different literal from `"speed": 14` to the engine, and JSON parsing erases the difference, so this rule has to read the text. Client entities get their own pass: a geometry, animation, render controller or texture path that does not resolve renders the mob as a blank cube or as nothing at all, silently, so every one of those four cross-references is resolved against the files actually in the pack — plus the short names each animation controller asks for, and whether anything reaches a declared clip at all. Animation identifiers named from *script* are checked too, which is why the emote and mob-action tables spell every one out in full: a name assembled at runtime is a name no validator can see. A `minecraft:*` client entity is recognised as an override of a vanilla one, so only the identifiers this pack actually owns are demanded of it. |
+| `check:json` | Every JSON file against `@minecraft/bedrock-schemas` for the target version. Animation and animation-controller files have **no schema in the package**, so `check:ids` covers them instead: a vector that is not three components, a keyframe key that is not a time, keyframes out of order or landing past `animation_length`, a non-looping clip with no length at all (its last pose would hold for ever), and a script that stops a clip before the clip has finished. |
 | `check:scripts` | Runs the siting, blueprint and loot code against a stub of `@minecraft/server` — 12,000+ assertions over 200 seeds per structure. It also imports and *starts* every system, because a module that throws at load takes the whole script pack offline in game with nothing in the log pointing at the cause, and asserts `main.js` actually calls each one. |
 | `check:types` | TypeScript over the scripts against the real `@minecraft/server` 2.9.0 type definitions |
 
@@ -411,6 +506,12 @@ half those errors were already fixed. Check the path before chasing one:
   cadence and damage are all tuned blind.
 - Waystone menu behaviour on touch devices, and whether cancelling the form
   leaves anything stuck.
+- Whether the player clips read as offsets or as fights with vanilla's own
+  poses. The amplitudes are conservative for exactly this reason, but they are
+  tuned blind and the sneak and fall poses are the two most likely to need
+  pulling back.
+- Whether `/playanimation` behaves the same on every platform for emotes; it is
+  the standard technique but this pack has not run it on console.
 - Sapling growth timing; `GROW_TICKS` in `BP/scripts/content/enderSapling.js`
   is a first guess at one minute.
 - Armour rendering on the player model, and whether the plate art lines up
@@ -438,12 +539,17 @@ half those errors were already fixed. Check the path before chasing one:
 | Waystone cap and network rules | `MAX_STONES` in `BP/scripts/content/waystones.js` |
 | Sapling growth time | `GROW_TICKS` in `BP/scripts/content/enderSapling.js` |
 | Flyer ceilings and leash lengths | `FLYERS` in `BP/scripts/world/flightControl.js` |
+| Player clip amplitudes | `RP/animations/voidbound.player.animation.json` |
+| When each player clip plays | `RP/animation_controllers/voidbound.player.animation_controllers.json` |
+| Mob action weight per creature | `MOBS` scale in `tools/gen_mob_actions.py` |
+| Which events fire which emote | `BP/scripts/content/emotes.js` |
+| Ambient particle rates and edge detection | `BP/scripts/world/ambience.js` |
 
 ## Layout
 
 ```
 BP/                     behavior pack
-  blocks/ items/        23 blocks, 25 items (4 of them armour, 5 tools)
+  blocks/ items/        27 blocks, 25 items (4 of them armour, 5 tools)
   entities/ spawn_rules/ loot_tables/
   features/ feature_rules/   ore, shattered stone and flora generation
   recipes/
@@ -456,9 +562,23 @@ RP/                     resource pack
   lighting/ atmospherics/ color_grading/ pbr/ local_lighting/ fogs/
   biomes/               client biome binding the above to the End
   textures/             generated art + texture sets
-  models/ animations/ entity/ render_controllers/ attachables/
+  models/ animations/ animation_controllers/ entity/
+  render_controllers/ attachables/
 tools/                  art generation and the four checks
 ```
+
+## Two names, and why they differ
+
+The pack is renamed on every ship so it never imports as a duplicate of the
+last build. Its *identifiers* are not: blocks, items, entities and animations
+have all been `voidbound:` / `animation.voidbound.` since the first version and
+will stay that way. Renaming a block id breaks every world that already has one
+placed, so the display name is the only thing allowed to move.
+
+Overriding `RP/entity/player.entity.json` has a cost worth stating plainly: the
+copy here is Mojang's file from the 26.4 samples, so if a later drop adds a clip
+to the player, this pack will hold the older version until it is refreshed.
+`python3 tools/fetch_vanilla_refs.py` documents where the source lives.
 
 ## Compatibility
 

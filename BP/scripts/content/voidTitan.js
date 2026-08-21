@@ -13,6 +13,7 @@
 
 import { EntityDamageCause, system, world } from "@minecraft/server";
 import { END_DIMENSION } from "../world/generator.js";
+import { playEmote } from "./emotes.js";
 
 const BOSS_ID = "voidbound:void_titan";
 const CORE_ID = "voidbound:titan_core";
@@ -288,7 +289,7 @@ function tick() {
     try {
       driveBoss(boss);
     } catch (error) {
-      console.warn(`[End Ascendant] titan tick failed: ${error}`);
+      console.warn(`[End Unbound] titan tick failed: ${error}`);
     }
   }
 }
@@ -309,6 +310,7 @@ function useCore(player) {
 
   const origin = player.location;
   spawnParticle(player.dimension, "voidbound:titan_slam", origin);
+  playEmote(player, "slam");
 
   let nearby;
   try {

@@ -14,12 +14,16 @@
       },
       "animations": {
         "move": "animation.voidbound.chorus_hopper.move",
-        "idle": "animation.voidbound.chorus_hopper.idle"
+        "idle": "animation.voidbound.chorus_hopper.idle",
+        "vb_alert": "animation.voidbound.chorus_hopper.alert",
+        "vb_death": "animation.voidbound.chorus_hopper.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
       },
       "scripts": {
         "animate": [
           "move",
-          "idle"
+          "idle",
+          "vb_state"
         ]
       },
       "render_controllers": [

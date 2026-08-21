@@ -9,11 +9,13 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 OUT_DIR="dist"
-OUT_FILE="$OUT_DIR/EndAscendant.mcaddon"
+OUT_FILE="$OUT_DIR/EndUnbound.mcaddon"
 
 if [[ "${1:-}" == "--check" ]]; then
   echo "==> Regenerating textures"
   python3 tools/gen_art.py
+  echo "==> Regenerating mob action clips"
+  python3 tools/gen_mob_actions.py
   echo "==> Checking identifiers"
   node tools/check_ids.mjs
   echo "==> Validating JSON against Mojang schemas"

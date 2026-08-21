@@ -14,12 +14,16 @@
       },
       "animations": {
         "idle": "animation.voidbound.endstone_golem.idle",
-        "walk": "animation.voidbound.endstone_golem.walk"
+        "walk": "animation.voidbound.endstone_golem.walk",
+        "vb_alert": "animation.voidbound.endstone_golem.alert",
+        "vb_death": "animation.voidbound.endstone_golem.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
       },
       "scripts": {
         "animate": [
           "idle",
-          "walk"
+          "walk",
+          "vb_state"
         ]
       },
       "render_controllers": [

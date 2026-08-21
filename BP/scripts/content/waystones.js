@@ -17,6 +17,7 @@
 
 import { system, world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
+import { playEmote } from "./emotes.js";
 import { END_DIMENSION } from "../world/generator.js";
 
 const BLOCK_ID = "voidbound:waystone";
@@ -143,6 +144,7 @@ function beam(dimension, location, effect) {
 function travel(player, stone) {
   const dimension = player.dimension;
   beam(dimension, player.location, "voidbound:rift_burst");
+  playEmote(player, "reach");
 
   try {
     player.teleport(
@@ -265,6 +267,7 @@ export function startWaystones() {
           // Cosmetic.
         }
         beam(player.dimension, location, "voidbound:rift_burst");
+        playEmote(player, "reach");
       }
       openMenu(player, keyOf(location));
     });

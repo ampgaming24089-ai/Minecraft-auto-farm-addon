@@ -14,12 +14,16 @@
       },
       "animations": {
         "idle": "animation.voidbound.echo_sentinel.idle",
-        "move": "animation.voidbound.echo_sentinel.move"
+        "move": "animation.voidbound.echo_sentinel.move",
+        "vb_alert": "animation.voidbound.echo_sentinel.alert",
+        "vb_death": "animation.voidbound.echo_sentinel.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
       },
       "scripts": {
         "animate": [
           "idle",
-          "move"
+          "move",
+          "vb_state"
         ]
       },
       "render_controllers": [

@@ -1,0 +1,173 @@
+{
+  "format_version": "1.10.0",
+  "animation_controllers": {
+    "controller.animation.voidbound.player.locomotion": {
+      "initial_state": "still",
+      "states": {
+        "still": {
+          "animations": [
+            "vb_idle_breathe"
+          ],
+          "blend_transition": 0.25,
+          "transitions": [
+            {
+              "sneak": "query.is_sneaking"
+            },
+            {
+              "sprint": "query.is_sprinting && query.is_on_ground"
+            },
+            {
+              "moving": "query.modified_move_speed > 0.02"
+            }
+          ]
+        },
+        "moving": {
+          "blend_transition": 0.25,
+          "transitions": [
+            {
+              "sneak": "query.is_sneaking"
+            },
+            {
+              "sprint": "query.is_sprinting && query.is_on_ground"
+            },
+            {
+              "still": "query.modified_move_speed <= 0.02"
+            }
+          ]
+        },
+        "sprint": {
+          "animations": [
+            "vb_sprint_lean"
+          ],
+          "blend_transition": 0.2,
+          "transitions": [
+            {
+              "sneak": "query.is_sneaking"
+            },
+            {
+              "moving": "!query.is_sprinting || !query.is_on_ground"
+            }
+          ]
+        },
+        "sneak": {
+          "animations": [
+            "vb_sneak_prowl"
+          ],
+          "blend_transition": 0.2,
+          "transitions": [
+            {
+              "still": "!query.is_sneaking"
+            }
+          ]
+        }
+      }
+    },
+    "controller.animation.voidbound.player.airborne": {
+      "initial_state": "grounded",
+      "states": {
+        "grounded": {
+          "blend_transition": 0.2,
+          "transitions": [
+            {
+              "gliding": "query.is_gliding"
+            },
+            {
+              "falling": "!query.is_on_ground && !query.is_in_water && query.vertical_speed < -4.0"
+            }
+          ]
+        },
+        "falling": {
+          "animations": [
+            "vb_fall_brace"
+          ],
+          "blend_transition": 0.15,
+          "transitions": [
+            {
+              "gliding": "query.is_gliding"
+            },
+            {
+              "landing": "query.is_on_ground || query.is_in_water"
+            }
+          ]
+        },
+        "landing": {
+          "animations": [
+            "vb_land_absorb"
+          ],
+          "blend_transition": 0.1,
+          "transitions": [
+            {
+              "grounded": "query.all_animations_finished"
+            },
+            {
+              "falling": "!query.is_on_ground && !query.is_in_water && query.vertical_speed < -4.0"
+            }
+          ]
+        },
+        "gliding": {
+          "animations": [
+            "vb_glide_soar"
+          ],
+          "blend_transition": 0.3,
+          "transitions": [
+            {
+              "grounded": "!query.is_gliding"
+            }
+          ]
+        }
+      }
+    },
+    "controller.animation.voidbound.player.action": {
+      "initial_state": "none",
+      "states": {
+        "none": {
+          "blend_transition": 0.2,
+          "transitions": [
+            {
+              "swimming": "query.is_swimming"
+            },
+            {
+              "drawing": "query.is_using_item && (query.get_equipped_item_name == 'bow' || query.get_equipped_item_name == 'crossbow' || query.get_equipped_item_name == 'trident')"
+            },
+            {
+              "eating": "query.is_using_item"
+            }
+          ]
+        },
+        "swimming": {
+          "animations": [
+            "vb_swim_roll"
+          ],
+          "blend_transition": 0.3,
+          "transitions": [
+            {
+              "none": "!query.is_swimming"
+            }
+          ]
+        },
+        "eating": {
+          "animations": [
+            "vb_eat_relish"
+          ],
+          "blend_transition": 0.2,
+          "transitions": [
+            {
+              "none": "!query.is_using_item"
+            }
+          ]
+        },
+        "drawing": {
+          "animations": [
+            "vb_draw_steady"
+          ],
+          "blend_transition": 0.15,
+          "transitions": [
+            {
+              "none": "!query.is_using_item"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

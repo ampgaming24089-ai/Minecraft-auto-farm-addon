@@ -14,12 +14,16 @@
       },
       "animations": {
         "move": "animation.voidbound.crystal_crawler.move",
-        "idle": "animation.voidbound.crystal_crawler.idle"
+        "idle": "animation.voidbound.crystal_crawler.idle",
+        "vb_alert": "animation.voidbound.crystal_crawler.alert",
+        "vb_death": "animation.voidbound.crystal_crawler.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
       },
       "scripts": {
         "animate": [
           "move",
-          "idle"
+          "idle",
+          "vb_state"
         ]
       },
       "render_controllers": [

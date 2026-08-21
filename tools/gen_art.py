@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate every End Ascendant texture from source.
+"""Regenerate every End Unbound texture from source.
 
     python3 tools/gen_art.py
 
@@ -2221,6 +2221,99 @@ def block_flora_and_stone():
     emit(cracked, BLOCKS, "voidbound_cracked_ender_bricks", roughness=244)
 
 
+def block_end_detail():
+    """Four pieces of natural clutter: vines, clusters, moss and shrooms.
+
+    The End reads as empty largely because every surface is the same flat
+    yellow and every island edge just stops. These are the small things that
+    make somewhere look inhabited by its own geology - growth on the ground,
+    growth hanging off the underside, and a second stone colour so the terrain
+    is not one tone from horizon to horizon.
+    """
+    # Ender vines: strands hanging from an overhang, thinning as they fall.
+    vines = Canvas(16)
+    cord = mix(PALETTE["void"], hex_rgba("#8E5FB8"), 0.62)
+    cord_hi = mix(cord, hex_rgba("#E0B8F5"), 0.45)
+    bead = hex_rgba("#5FE8D2")
+    rng = Rng(6270)
+    for start_x in (2, 5, 8, 11, 14):
+        px = float(start_x)
+        # Each strand ends at its own depth, so the fringe is ragged.
+        depth = rng.int(8, 16)
+        for y in range(depth):
+            px += rng.range(-0.35, 0.35)
+            x = int(round(px)) % 16
+            thin = y > depth - 4
+            vines.blend(x, y, mix(cord_hi, cord, min(1.0, y / 9.0)))
+            if not thin:
+                vines.blend((x + 1) % 16, y, shade(cord, -0.22))
+            if rng.chance(0.12):
+                vines.blend(x, y, bead)
+    emit(vines, BLOCKS, "voidbound_ender_vines", roughness=206,
+         emissive_from=bead[:3], emissive_gain=1.1, emissive_threshold=0.3)
+
+    # Echo crystal cluster: a splay of shards from a common root.
+    cluster = Canvas(16)
+    shard = hex_rgba("#6FE6D8")
+    shard_lo = mix(shard, PALETTE["void"], 0.6)
+    for base_x, tip_x, tip_y, width in (
+        (7, 4, 3, 1.6), (8, 8, 1, 2.0), (9, 12, 5, 1.4), (6, 5, 8, 1.1), (10, 11, 9, 1.0)
+    ):
+        steps = 15 - tip_y
+        for i in range(steps + 1):
+            t = i / max(1, steps)
+            x = base_x + (tip_x - base_x) * t
+            y = 15 - (15 - tip_y) * t
+            half = max(0.5, width * (1.0 - t * 0.85))
+            for ox in range(int(-half), int(half) + 1):
+                px = int(round(x)) + ox
+                if 0 <= px < 16:
+                    cluster.blend(px, int(round(y)),
+                                  mix(shard, shard_lo, min(1.0, t * 0.5 + abs(ox) * 0.3)))
+        cluster.blend(int(round(tip_x)), tip_y, (235, 255, 252, 255))
+    emit(cluster, BLOCKS, "voidbound_echo_cluster", roughness=48,
+         emissive_from=shard[:3], emissive_gain=1.5, emissive_threshold=0.22)
+
+    # Mossy end stone: the substrate again, with growth taking the low ground.
+    moss = stone_base(2814, PALETTE["endstone"], PALETTE["endstone_dark"], contrast=0.26)
+    growth = hex_rgba("#5E8F6A")
+    growth_lo = mix(growth, PALETTE["void"], 0.45)
+
+    def creep(x, y, cur):
+        # Moss follows one noise field and ignores the stone's own, so the two
+        # patterns cross instead of tracing each other.
+        n = fbm(x * 1.5, y * 1.5, 16, 2815, octaves=3, base_period=6)
+        if n < 0.52:
+            return cur
+        t = min(1.0, (n - 0.52) / 0.36)
+        return mix(cur, mix(growth_lo, growth, t), 0.35 + t * 0.55)
+
+    moss.each(creep)
+    speckle(moss, 2816, 0.05, [mix(growth, hex_rgba("#B8E8C4"), 0.5), shade(growth_lo, -0.2)])
+    emit(moss, BLOCKS, "voidbound_mossy_end_stone", roughness=232)
+
+    # Pale shroom: a stubby cap on a short stalk, lit from underneath.
+    shroom = Canvas(16)
+    stalk = hex_rgba("#D8CFE8")
+    cap = hex_rgba("#F0E4FF")
+    gill = hex_rgba("#9C5FD6")
+    for y in range(9, 15):
+        shroom.set(7, y, stalk)
+        shroom.set(8, y, shade(stalk, -0.2))
+    for y in range(4, 10):
+        spread = 6 - abs(y - 7)
+        for x in range(8 - spread, 9 + spread):
+            if not 0 <= x < 16:
+                continue
+            top = y < 8
+            shroom.blend(x, y, cap if top else mix(gill, cap, 0.35))
+    for x in range(3, 13, 2):
+        shroom.blend(x, 9, gill)
+    shroom.blend(6, 5, (255, 255, 255, 255))
+    emit(shroom, BLOCKS, "voidbound_pale_shroom", roughness=176,
+         emissive_from=cap[:3], emissive_gain=1.2, emissive_threshold=0.42)
+
+
 # --------------------------------------------------------------------------
 
 
@@ -2268,6 +2361,7 @@ def main():
         block_decor_set,
         block_waystone,
         block_flora_and_stone,
+        block_end_detail,
         item_gameplay_set,
         item_ender_fruit,
         item_sovereign_crown,

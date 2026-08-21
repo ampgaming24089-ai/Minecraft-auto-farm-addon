@@ -14,12 +14,16 @@
       },
       "animations": {
         "idle": "animation.voidbound.rift_sovereign.idle",
-        "move": "animation.voidbound.rift_sovereign.move"
+        "move": "animation.voidbound.rift_sovereign.move",
+        "vb_alert": "animation.voidbound.rift_sovereign.alert",
+        "vb_death": "animation.voidbound.rift_sovereign.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
       },
       "scripts": {
         "animate": [
           "idle",
-          "move"
+          "move",
+          "vb_state"
         ]
       },
       "render_controllers": [

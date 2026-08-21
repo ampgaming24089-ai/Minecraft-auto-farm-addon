@@ -1,5 +1,5 @@
-pack.name=End Ascendant [Resources]
-pack.description=Vibrant Visuals lighting, atmospherics, volumetric fog and PBR art for the End Ascendant End.
+pack.name=End Unbound [Resources]
+pack.description=Vibrant Visuals lighting, atmospherics, volumetric fog and PBR art for the End Unbound End.
 
 ## Blocks
 tile.voidbound:shattered_end_stone.name=Shattered End Stone
@@ -49,6 +49,10 @@ item.voidbound:void_leggings.name=Ender Greaves
 item.voidbound:void_boots.name=Ender Sabatons
 
 tile.voidbound:waystone.name=Waystone
+tile.voidbound:ender_vines.name=Ender Vines
+tile.voidbound:echo_cluster.name=Echo Cluster
+tile.voidbound:pale_shroom.name=Pale Shroom
+tile.voidbound:mossy_end_stone.name=Mossy End Stone
 tile.voidbound:ender_sapling.name=Ender Sapling
 tile.voidbound:polished_end_stone.name=Polished End Stone
 tile.voidbound:cracked_ender_bricks.name=Cracked Ender Bricks

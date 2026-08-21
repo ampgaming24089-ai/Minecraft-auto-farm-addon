@@ -14,12 +14,16 @@
       },
       "animations": {
         "drift": "animation.voidbound.shard_wraith.drift",
-        "move": "animation.voidbound.shard_wraith.move"
+        "move": "animation.voidbound.shard_wraith.move",
+        "vb_alert": "animation.voidbound.shard_wraith.alert",
+        "vb_death": "animation.voidbound.shard_wraith.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
       },
       "scripts": {
         "animate": [
           "drift",
-          "move"
+          "move",
+          "vb_state"
         ]
       },
       "render_controllers": [

@@ -306,7 +306,38 @@ for (const file of walk(join(ROOT, "RP", "models"))) {
 const ANIMATIONS = collectIdentifiers(join(ROOT, "RP", "animations"), null, "animations");
 const CONTROLLERS = new Set([
   ...collectIdentifiers(join(ROOT, "RP", "render_controllers"), null, "render_controllers"),
+  ...collectIdentifiers(join(ROOT, "RP", "animation_controllers"), null, "animation_controllers"),
 ]);
+
+/**
+ * Animation controllers name their clips by the *short* name the client entity
+ * gives them, not by identifier. A typo there resolves to nothing and the state
+ * silently plays no animation, which looks exactly like a controller that never
+ * fires. So collect what each controller asks for, and check it below against
+ * the entities that actually run that controller.
+ */
+const CONTROLLER_WANTS = new Map();
+const AC_DIR = join(ROOT, "RP", "animation_controllers");
+if (existsSync(AC_DIR)) {
+  for (const file of walk(AC_DIR)) {
+    if (!file.endsWith(".json")) continue;
+    let data;
+    try {
+      data = JSON.parse(readFileSync(file, "utf8"));
+    } catch {
+      continue;
+    }
+    for (const [id, controller] of Object.entries(data.animation_controllers ?? {})) {
+      const wants = new Set();
+      for (const state of Object.values(controller.states ?? {})) {
+        for (const entry of state.animations ?? []) {
+          wants.add(typeof entry === "string" ? entry : Object.keys(entry)[0]);
+        }
+      }
+      CONTROLLER_WANTS.set(id, wants);
+    }
+  }
+}
 
 const ENTITY_DIR = join(ROOT, "RP", "entity");
 if (existsSync(ENTITY_DIR)) {
@@ -321,35 +352,278 @@ if (existsSync(ENTITY_DIR)) {
     }
     if (!description) continue;
 
+    // A `minecraft:*` client entity is an override of a vanilla one, so most of
+    // what it names lives in the vanilla pack and cannot be resolved from here.
+    // Only the identifiers this pack actually owns are checkable, which is
+    // still the part that can be wrong: our own clips, controllers and art.
+    const isOverride = String(description.identifier ?? "").startsWith("minecraft:");
+    const ours = (id) => /(^|\.)(voidbound|voidbound)(\.|:)/.test(id) || id.includes("voidbound_");
+    const skip = (id) => isOverride && !ours(id);
+
     const note = (what, why) => problems.push({ id: `${rel}: ${what}`, files: new Set([rel]), why });
 
     for (const geometry of Object.values(description.geometry ?? {})) {
+      if (skip(geometry)) continue;
       if (!GEOMETRIES.has(geometry)) note(geometry, "no such geometry in RP/models");
     }
     for (const animation of Object.values(description.animations ?? {})) {
       // A value that is not an identifier is a Molang expression, not a clip.
       if (!animation.startsWith("animation.") && !animation.startsWith("controller.")) continue;
+      if (skip(animation)) continue;
       if (!ANIMATIONS.has(animation) && !CONTROLLERS.has(animation)) {
         note(animation, "no such animation in RP/animations");
       }
     }
     for (const controller of description.render_controllers ?? []) {
       const id = typeof controller === "string" ? controller : Object.keys(controller)[0];
-      if (id && !CONTROLLERS.has(id)) note(id, "no such render controller in RP/render_controllers");
+      if (!id || skip(id)) continue;
+      if (!CONTROLLERS.has(id)) note(id, "no such render controller in RP/render_controllers");
     }
     for (const texture of Object.values(description.textures ?? {})) {
+      if (skip(texture)) continue;
       if (!existsSync(join(ROOT, "RP", `${texture}.png`))) {
         note(texture, "no such texture file under RP/");
       }
     }
-    // A clip named in animations but never listed in scripts.animate never plays.
+    // Every short name our controllers ask for must exist in this entity's map.
+    for (const target of Object.values(description.animations ?? {})) {
+      const wants = CONTROLLER_WANTS.get(target);
+      if (!wants) continue;
+      for (const shortName of wants) {
+        if (!(shortName in (description.animations ?? {}))) {
+          note(`${target} plays "${shortName}"`, "that short name is not in this entity's animations map");
+        }
+      }
+    }
+
+    // A clip never plays unless something reaches it: either scripts.animate
+    // lists it directly, or a controller that *is* listed asks for it by short
+    // name. Both count as reachable - only a clip nothing reaches is a bug.
     const animated = new Set(
       (description.scripts?.animate ?? []).map((entry) =>
         typeof entry === "string" ? entry : Object.keys(entry)[0]
       )
     );
-    for (const name of Object.keys(description.animations ?? {})) {
-      if (!animated.has(name)) note(`animations.${name}`, "declared but never listed in scripts.animate");
+    for (const name of [...animated]) {
+      const wants = CONTROLLER_WANTS.get(description.animations?.[name]);
+      if (wants) for (const shortName of wants) animated.add(shortName);
+    }
+    if (!isOverride) {
+      for (const name of Object.keys(description.animations ?? {})) {
+        if (!animated.has(name)) note(`animations.${name}`, "declared but never listed in scripts.animate");
+      }
+    } else {
+      // For an override, the equivalent check is that every controller we added
+      // to scripts.animate resolves to a controller we actually ship.
+      for (const name of animated) {
+        const target = description.animations?.[name];
+        if (!target || !ours(target)) continue;
+        if (!CONTROLLERS.has(target) && !ANIMATIONS.has(target)) {
+          note(`scripts.animate ${name} -> ${target}`, "no such animation or controller in this pack");
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Animation identifiers named from script.
+ *
+ * `/playanimation` takes a clip by identifier, and a typo there is a command
+ * that fails quietly - no error, no pose, nothing to notice until somebody
+ * wonders why the emote never fires. Any `animation.` or `controller.` literal
+ * in this pack's namespaces has to resolve to something the pack ships.
+ */
+const SCRIPT_DIR = join(ROOT, "BP", "scripts");
+if (existsSync(SCRIPT_DIR)) {
+  const pattern = /\b((?:controller\.)?animation\.(?:voidbound|voidbound)[A-Za-z0-9_.]*)/g;
+  for (const file of walk(SCRIPT_DIR)) {
+    if (!file.endsWith(".js")) continue;
+    const rel = relative(ROOT, file).split("\\").join("/");
+    for (const match of readFileSync(file, "utf8").matchAll(pattern)) {
+      const id = match[1];
+      if (ANIMATIONS.has(id) || CONTROLLERS.has(id)) continue;
+      problems.push({
+        id: `${rel}: ${id}`,
+        files: new Set([rel]),
+        why: "no such animation or controller in the resource pack",
+      });
+    }
+  }
+}
+
+/**
+ * Animation files have no schema in the package, so nothing else looks at
+ * them - and by now they are the largest hand-shaped part of the pack. These
+ * rules cover the mistakes that are silent in game: a vector of the wrong
+ * length, a keyframe time that is not a time, a non-looping clip with no
+ * length (which holds its last pose for ever), and a script that stops a clip
+ * before the clip is finished.
+ */
+const CHANNELS = new Set(["rotation", "position", "scale"]);
+const CLIP_LENGTHS = new Map();
+
+for (const file of walk(join(ROOT, "RP", "animations"))) {
+  if (!file.endsWith(".json")) continue;
+  const rel = relative(ROOT, file).split("\\").join("/");
+  let data;
+  try {
+    data = JSON.parse(readFileSync(file, "utf8"));
+  } catch (error) {
+    problems.push({ id: `${rel}`, files: new Set([rel]), why: `not valid JSON: ${error}` });
+    continue;
+  }
+  const note = (what, why) => problems.push({ id: `${rel}: ${what}`, files: new Set([rel]), why });
+
+  for (const [clipId, clip] of Object.entries(data.animations ?? {})) {
+    const looping = clip.loop === true;
+    if (!looping && typeof clip.animation_length !== "number") {
+      note(clipId, "a non-looping clip needs animation_length, or its last pose holds for ever");
+    }
+    if (typeof clip.animation_length === "number") CLIP_LENGTHS.set(clipId, clip.animation_length);
+
+    for (const [bone, channels] of Object.entries(clip.bones ?? {})) {
+      for (const [channel, value] of Object.entries(channels)) {
+        if (!CHANNELS.has(channel)) {
+          note(`${clipId} ${bone}.${channel}`, "not a rotation, position or scale channel");
+          continue;
+        }
+        // Either a single vector, or a map of time -> vector.
+        const frames = Array.isArray(value) ? { "0.0": value } : value;
+        if (typeof frames !== "object" || frames === null) {
+          note(`${clipId} ${bone}.${channel}`, "expected a vector or a keyframe map");
+          continue;
+        }
+        let last = -Infinity;
+        for (const [time, vector] of Object.entries(frames)) {
+          if (!Array.isArray(value)) {
+            const t = Number(time);
+            if (!Number.isFinite(t) || t < 0) {
+              note(`${clipId} ${bone}.${channel} @${time}`, "keyframe key is not a time in seconds");
+            } else {
+              if (t < last) {
+                note(`${clipId} ${bone}.${channel} @${time}`, "keyframes are out of order");
+              }
+              last = t;
+              if (typeof clip.animation_length === "number" && t > clip.animation_length + 1e-6) {
+                note(`${clipId} ${bone}.${channel} @${time}`,
+                  `keyframe lands past animation_length ${clip.animation_length}, so it never plays`);
+              }
+            }
+          }
+          const vec = Array.isArray(vector) ? vector : vector?.post ?? vector?.pre;
+          if (!Array.isArray(vec) || vec.length !== 3) {
+            note(`${clipId} ${bone}.${channel} @${time}`, "expected a 3-component vector");
+            continue;
+          }
+          for (const component of vec) {
+            if (typeof component === "number") continue;
+            if (typeof component === "string" && component.length > 0) continue;
+            note(`${clipId} ${bone}.${channel} @${time}`, "component is neither a number nor a Molang string");
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * A script that plays a clip passes a stop time. Stopping early cuts the clip
+ * off mid-pose and leaves the skeleton wherever it happened to be, so the stop
+ * time has to be at least as long as the clip itself.
+ */
+for (const file of walk(join(ROOT, "BP", "scripts"))) {
+  if (!file.endsWith(".js")) continue;
+  const rel = relative(ROOT, file).split("\\").join("/");
+  const text = readFileSync(file, "utf8");
+
+  // The per-clip tables: { clip: "animation....", length: 1.8, ... }
+  const tabled = /clip:\s*"((?:controller\.)?animation\.[A-Za-z0-9_.]+)"\s*,\s*length:\s*([0-9.]+)/g;
+  for (const match of text.matchAll(tabled)) {
+    const declared = CLIP_LENGTHS.get(match[1]);
+    if (declared === undefined) continue;
+    if (Number(match[2]) + 1e-6 < declared) {
+      problems.push({
+        id: `${rel}: ${match[1]} stopped at ${match[2]}s`,
+        files: new Set([rel]),
+        why: `the clip runs ${declared}s, so this cuts it off mid-pose`,
+      });
+    }
+  }
+
+  // The shared-constant form: one stop time covering a family of clips.
+  for (const [constant, prefix] of [["ATTACK_SECONDS", ".attack"], ["HURT_SECONDS", ".hurt"]]) {
+    const declared = new RegExp(`const ${constant} = ([0-9.]+)`).exec(text);
+    if (!declared) continue;
+    const stop = Number(declared[1]);
+    for (const [clipId, length] of CLIP_LENGTHS) {
+      if (!clipId.endsWith(prefix)) continue;
+      if (!text.includes(clipId)) continue;
+      if (stop + 1e-6 < length) {
+        problems.push({
+          id: `${rel}: ${constant} = ${stop}`,
+          files: new Set([rel]),
+          why: `${clipId} runs ${length}s, so this cuts it off mid-pose`,
+        });
+      }
+    }
+  }
+}
+
+/**
+ * The player entity override must only ever *add*.
+ *
+ * RP/entity/player.entity.json is Mojang's file from the 26.4 samples with
+ * this pack's controllers appended. Every vanilla clip it drops is a piece of
+ * the player that stops animating, and there is nothing in a content log to
+ * say so. tools/vanilla_refs/player.entity.json is the cached original, so the
+ * two can simply be compared: additions are fine, removals and edits are not.
+ */
+const OVERRIDE = join(ROOT, "RP", "entity", "player.entity.json");
+const REFERENCE = join(ROOT, "tools", "vanilla_refs", "player.entity.json");
+if (existsSync(OVERRIDE) && existsSync(REFERENCE)) {
+  const rel = "RP/entity/player.entity.json";
+  let ours;
+  let theirs;
+  try {
+    ours = JSON.parse(readFileSync(OVERRIDE, "utf8"))["minecraft:client_entity"].description;
+    theirs = JSON.parse(readFileSync(REFERENCE, "utf8"))["minecraft:client_entity"].description;
+  } catch (error) {
+    problems.push({ id: rel, files: new Set([rel]), why: `could not compare with the cached original: ${error}` });
+    ours = theirs = undefined;
+  }
+  if (ours && theirs) {
+    for (const [name, target] of Object.entries(theirs.animations ?? {})) {
+      if (!(name in (ours.animations ?? {}))) {
+        problems.push({ id: `${rel}: ${name}`, files: new Set([rel]),
+          why: "a vanilla animation the override drops - that part of the player stops animating" });
+      } else if (ours.animations[name] !== target) {
+        problems.push({ id: `${rel}: ${name}`, files: new Set([rel]),
+          why: `repointed from ${target} - the override is meant to add, not replace` });
+      }
+    }
+    // Everything outside `animations` and `scripts.animate` should be identical.
+    for (const key of Object.keys(theirs)) {
+      if (key === "animations" || key === "scripts") continue;
+      if (JSON.stringify(theirs[key]) !== JSON.stringify(ours[key])) {
+        problems.push({ id: `${rel}: ${key}`, files: new Set([rel]),
+          why: "differs from the cached vanilla file; the override should only add animations" });
+      }
+    }
+    const vanillaAnimate = theirs.scripts?.animate ?? [];
+    const ourAnimate = ours.scripts?.animate ?? [];
+    for (const entry of vanillaAnimate) {
+      if (!ourAnimate.includes(entry)) {
+        problems.push({ id: `${rel}: scripts.animate ${entry}`, files: new Set([rel]),
+          why: "a vanilla entry the override drops" });
+      }
+    }
+    for (const key of Object.keys(theirs.scripts ?? {})) {
+      if (key === "animate") continue;
+      if (JSON.stringify(theirs.scripts[key]) !== JSON.stringify(ours.scripts?.[key])) {
+        problems.push({ id: `${rel}: scripts.${key}`, files: new Set([rel]),
+          why: "differs from the cached vanilla file; only scripts.animate should gain entries" });
+      }
     }
   }
 }
@@ -357,7 +631,7 @@ if (existsSync(ENTITY_DIR)) {
 console.log(
   `checked ${references.size} distinct identifier(s) ` +
     `against ${VANILLA.size} vanilla ids and ${DEFINED.size} pack definitions, ` +
-    `plus block-reference, client-entity and integer-field rules`
+    `plus block-reference, client-entity, animation, script-animation, override-drift and integer-field rules`
 );
 
 if (problems.length === 0) {

@@ -302,7 +302,9 @@ try {
   // offline in game, with nothing in the content log pointing at the cause.
   const ENTRY_POINTS = [
     ["content/armorSet.js", "startArmorSet"],
+    ["content/emotes.js", "startEmotes"],
     ["content/enderSapling.js", "startEnderSapling"],
+    ["content/mobActions.js", "startMobActions"],
     ["content/riftCompass.js", "startRiftCompass"],
     ["content/riftSovereign.js", "startRiftSovereign"],
     ["content/utilityItems.js", "startUtilityItems"],

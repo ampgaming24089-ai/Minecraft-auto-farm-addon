@@ -14,12 +14,16 @@
       },
       "animations": {
         "idle": "animation.voidbound.lumen_wisp.idle",
-        "move": "animation.voidbound.lumen_wisp.move"
+        "move": "animation.voidbound.lumen_wisp.move",
+        "vb_alert": "animation.voidbound.lumen_wisp.alert",
+        "vb_death": "animation.voidbound.lumen_wisp.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
       },
       "scripts": {
         "animate": [
           "idle",
-          "move"
+          "move",
+          "vb_state"
         ]
       },
       "render_controllers": [

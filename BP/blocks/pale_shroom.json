@@ -1,0 +1,56 @@
+{
+  "format_version": "1.21.120",
+  "minecraft:block": {
+    "description": {
+      "identifier": "voidbound:pale_shroom",
+      "menu_category": {
+        "category": "nature"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "tile.voidbound:pale_shroom.name",
+      "minecraft:geometry": "minecraft:geometry.cross",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "voidbound_pale_shroom",
+          "render_method": "alpha_test",
+          "ambient_occlusion": 0.0,
+          "face_dimming": false
+        }
+      },
+      "minecraft:map_color": "#F0E4FF",
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 0.0
+      },
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 0
+      },
+      "minecraft:light_emission": 6,
+      "minecraft:light_dampening": 0,
+      "minecraft:collision_box": false,
+      "minecraft:selection_box": {
+        "origin": [-5, 0, -5],
+        "size": [10, 12, 10]
+      },
+      "minecraft:replaceable": {},
+      "minecraft:flower_pottable": {},
+      "minecraft:random_offset": {
+        "x": { "range": { "min": -0.25, "max": 0.25 }, "steps": 4 },
+        "z": { "range": { "min": -0.25, "max": 0.25 }, "steps": 4 }
+      },
+      "minecraft:placement_filter": {
+        "conditions": [
+          {
+            "allowed_faces": ["up"],
+            "block_filter": [
+              { "name": "minecraft:end_stone" },
+              { "name": "voidbound:shattered_end_stone" },
+              { "name": "voidbound:verdant_end_stone" },
+              { "name": "voidbound:mossy_end_stone" }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

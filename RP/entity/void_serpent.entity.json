@@ -14,12 +14,16 @@
       },
       "animations": {
         "idle": "animation.voidbound.void_serpent.idle",
-        "move": "animation.voidbound.void_serpent.move"
+        "move": "animation.voidbound.void_serpent.move",
+        "vb_alert": "animation.voidbound.void_serpent.alert",
+        "vb_death": "animation.voidbound.void_serpent.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
       },
       "scripts": {
         "animate": [
           "idle",
-          "move"
+          "move",
+          "vb_state"
         ]
       },
       "render_controllers": [

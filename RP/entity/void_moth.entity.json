@@ -15,13 +15,17 @@
       "animations": {
         "fly": "animation.voidbound.void_moth.fly",
         "idle": "animation.voidbound.void_moth.idle",
-        "move": "animation.voidbound.void_moth.move"
+        "move": "animation.voidbound.void_moth.move",
+        "vb_alert": "animation.voidbound.void_moth.alert",
+        "vb_death": "animation.voidbound.void_moth.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
       },
       "scripts": {
         "animate": [
           "fly",
           "idle",
-          "move"
+          "move",
+          "vb_state"
         ]
       },
       "render_controllers": [
