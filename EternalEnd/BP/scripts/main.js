@@ -1,5 +1,5 @@
 /**
- * End Everlasting - entry point.
+ * Eternal End - entry point.
  *
  * Four systems, started once at load:
  *   sites/generator  places seed-derived structures ahead of the player
@@ -11,7 +11,7 @@
  *   flight control   pulls flyers back when they climb or drift over the void
  *   discovery        acknowledges arriving somewhere new
  *   rift compass     reads the structure map and points at it
- *   armour set       grants the End Everlasting set bonus in the End
+ *   armour set       grants the Eternal End set bonus in the End
  *   saplings         grows a planted sapling into its region's tree
  *   bloomstalk       grows, harvests and replants the End's crop
  *   emotes           one-shot player poses on the moments that earn them
@@ -68,7 +68,7 @@ function start() {
   startVoidTitan();
   startUtilityItems();
   startWaystones();
-  console.log("[End Everlasting] End systems online");
+  console.log("[Eternal End] End systems online");
 }
 
 // worldLoad fires once the world is ready for world.seed and player queries.
@@ -77,6 +77,6 @@ world.afterEvents.worldLoad.subscribe(() => {
   try {
     start();
   } catch (error) {
-    console.error(`[End Everlasting] failed to start: ${error}`);
+    console.error(`[Eternal End] failed to start: ${error}`);
   }
 });

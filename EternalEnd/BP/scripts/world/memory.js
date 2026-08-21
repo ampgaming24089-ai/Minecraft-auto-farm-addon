@@ -43,7 +43,7 @@ export function markBuilt(key) {
   try {
     world.setDynamicProperty(PROPERTY, entries.join(","));
   } catch (error) {
-    console.warn(`[End Everlasting] could not persist built sites: ${error}`);
+    console.warn(`[Eternal End] could not persist built sites: ${error}`);
   }
 }
 

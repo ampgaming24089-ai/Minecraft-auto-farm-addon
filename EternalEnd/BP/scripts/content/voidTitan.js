@@ -289,7 +289,7 @@ function tick() {
     try {
       driveBoss(boss);
     } catch (error) {
-      console.warn(`[End Everlasting] titan tick failed: ${error}`);
+      console.warn(`[Eternal End] titan tick failed: ${error}`);
     }
   }
 }

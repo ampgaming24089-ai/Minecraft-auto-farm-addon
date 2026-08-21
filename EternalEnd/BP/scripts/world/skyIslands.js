@@ -252,7 +252,7 @@ function* buildIsland(dimension, island) {
     yield* dress(dimension, island, biome, cells, rng);
     settled.add(island.key);
   } catch (error) {
-    console.warn(`[End Everlasting] sky island ${island.key} failed: ${error}`);
+    console.warn(`[Eternal End] sky island ${island.key} failed: ${error}`);
   } finally {
     building.delete(island.key);
   }

@@ -381,7 +381,7 @@ function* finish(dimension, patch) {
     yield* paintPatch(dimension, patch.patchX, patch.patchZ, report);
     if (report.complete) markPainted(patch.key);
   } catch (error) {
-    console.warn(`[End Everlasting] painting ${patch.key} failed: ${error}`);
+    console.warn(`[Eternal End] painting ${patch.key} failed: ${error}`);
   } finally {
     inFlight.delete(patch.key);
   }

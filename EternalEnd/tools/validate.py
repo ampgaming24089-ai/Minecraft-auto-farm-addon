@@ -16,6 +16,7 @@ So the pack is checked here instead:
   * every texture shortname an item or block asks for is in the atlases
   * every identifier is unique, and matches the file it lives in
   * every animation identifier the scripts play is a real clip
+  * every bone an animation moves exists in the geometry it is played on
 
 Run it from the addon root:
 
@@ -78,6 +79,7 @@ def collect():
         "bp_entities": {},      # identifier -> path
         "rp_entities": {},
         "geometries": set(),
+        "geometry_bones": {},   # geometry identifier -> set of bone names
         "animations": set(),
         "animation_controllers": set(),
         "render_controllers": set(),
@@ -131,14 +133,22 @@ def collect():
                 identifier = entry.get("description", {}).get("identifier")
                 if identifier:
                     data["geometries"].add(identifier)
+                    data["geometry_bones"][identifier] = {
+                        bone.get("name") for bone in entry.get("bones", [])
+                    }
         for key in doc:
             # The pre-1.12 form puts the identifier in the key itself.
             if key.startswith("geometry."):
                 data["geometries"].add(key.split(":")[0])
 
+    data["animation_bones"] = {}
     for path in walk(os.path.join(RP, "animations")):
         doc = read_json(path) or {}
-        data["animations"].update(doc.get("animations", {}))
+        clips = doc.get("animations", {})
+        data["animations"].update(clips)
+        for name, clip in clips.items():
+            if isinstance(clip, dict):
+                data["animation_bones"][name] = set(clip.get("bones", {}))
 
     for path in walk(os.path.join(RP, "animation_controllers")):
         doc = read_json(path) or {}
@@ -461,6 +471,34 @@ def check_scripts(data):
                 fail(f"{where}: plays '{clip}', which is not a clip in the pack")
 
 
+def check_animation_bones(data):
+    """
+    An animation that moves a bone the model does not have is silent.
+
+    Bedrock neither warns nor fails: the channel is simply dropped, so a
+    renamed bone turns a walk cycle into a mob sliding along with its legs
+    still. The clips are matched to models through the client entity, which is
+    the only place that pairing is written down.
+    """
+    for identifier, path in data["rp_entities"].items():
+        doc = read_json(path)
+        description = doc["minecraft:client_entity"]["description"]
+        geometries = (description.get("geometry") or {}).values()
+        bones = set()
+        for geometry in geometries:
+            bones |= data["geometry_bones"].get(geometry, set())
+        if not bones:
+            continue
+        where = os.path.relpath(path, ROOT)
+        for clip in (description.get("animations") or {}).values():
+            if not ours(clip) or clip.startswith("controller."):
+                continue
+            for name in data["animation_bones"].get(clip, set()):
+                if name not in bones:
+                    fail(f"{where}: {clip} moves bone '{name}', which is not in "
+                         f"{', '.join(geometries)}")
+
+
 def check_manifests():
     seen = {}
     for name in ("BP", "RP"):
@@ -491,6 +529,7 @@ def main():
     check_atlases(data)
     check_spawn_rules(data)
     check_scripts(data)
+    check_animation_bones(data)
     check_manifests()
 
     print(f"entities   {len(data['bp_entities']):>4} behaviour / "

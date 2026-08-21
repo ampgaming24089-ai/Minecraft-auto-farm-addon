@@ -100,7 +100,7 @@ export function startRiftCompass() {
     try {
       survey(player);
     } catch (error) {
-      console.warn(`[End Everlasting] compass survey failed: ${error}`);
+      console.warn(`[Eternal End] compass survey failed: ${error}`);
     }
   });
 
