@@ -15,8 +15,6 @@
       "animations": {
         "look_at_target": "controller.animation.humanoid.look_at_target",
         "move": "animation.humanoid.move",
-        "riding.arms": "animation.humanoid.riding.arms",
-        "riding.legs": "animation.humanoid.riding.legs",
         "vb_alert": "animation.voidbound.enderman.alert",
         "vb_death": "animation.voidbound.enderman.death",
         "vb_state": "controller.animation.voidbound.mob.state"

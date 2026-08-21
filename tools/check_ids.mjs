@@ -339,6 +339,29 @@ if (existsSync(AC_DIR)) {
   }
 }
 
+/**
+ * Vanilla client assets a *custom* entity may legitimately point at.
+ *
+ * A reskinned enderman is built by naming Mojang's own skeleton and clips
+ * rather than shipping copies of them, so these ids resolve at runtime out of
+ * the vanilla resource pack and will never be found under RP/. The exemption
+ * is deliberately a list rather than a prefix match: a typo in
+ * `animation.humaniod.move` should still be an error, and it is, because it is
+ * not on it.
+ */
+const VANILLA_CLIENT_ASSETS = new Set([
+  "geometry.enderman.v1.8",
+  "geometry.villager_v2",
+  "geometry.humanoid.custom",
+  "animation.humanoid.move",
+  "animation.humanoid.riding.arms",
+  "animation.humanoid.riding.legs",
+  "animation.humanoid.attack.rotations",
+  "animation.enderman.scary_face",
+  "controller.animation.humanoid.look_at_target",
+  "controller.animation.humanoid.move",
+]);
+
 const ENTITY_DIR = join(ROOT, "RP", "entity");
 if (existsSync(ENTITY_DIR)) {
   for (const file of walk(ENTITY_DIR)) {
@@ -363,13 +386,13 @@ if (existsSync(ENTITY_DIR)) {
     const note = (what, why) => problems.push({ id: `${rel}: ${what}`, files: new Set([rel]), why });
 
     for (const geometry of Object.values(description.geometry ?? {})) {
-      if (skip(geometry)) continue;
+      if (skip(geometry) || VANILLA_CLIENT_ASSETS.has(geometry)) continue;
       if (!GEOMETRIES.has(geometry)) note(geometry, "no such geometry in RP/models");
     }
     for (const animation of Object.values(description.animations ?? {})) {
       // A value that is not an identifier is a Molang expression, not a clip.
       if (!animation.startsWith("animation.") && !animation.startsWith("controller.")) continue;
-      if (skip(animation)) continue;
+      if (skip(animation) || VANILLA_CLIENT_ASSETS.has(animation)) continue;
       if (!ANIMATIONS.has(animation) && !CONTROLLERS.has(animation)) {
         note(animation, "no such animation in RP/animations");
       }

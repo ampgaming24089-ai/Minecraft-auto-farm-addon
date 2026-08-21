@@ -1,6 +1,6 @@
 import sys, math
 sys.path.insert(0, "tools")
-from mobkit import UVAtlas, bone, cube, geometry, muzzle, limb, taper_chain, write
+from mobkit import UVAtlas, bone, cube, geometry, muzzle, limb, stand, taper_chain, write
 
 # The End King: an armoured figure, so the design is almost entirely *layers*.
 # A humanoid with a texture painted to look like armour reads as pyjamas; what
@@ -130,7 +130,7 @@ for i in range(3):
     blade_y -= length
 
 write("RP/models/entity/end_king.geo.json",
-      geometry("geometry.voidbound.end_king", (512, 512), bones,
+      geometry("geometry.voidbound.end_king", (512, 512), stand(bones),
                bounds=(3, 5, (0, 2, 0))))
 print("end_king: %d bones, %d cubes"
       % (len(bones), sum(len(b.get("cubes", [])) for b in bones)))

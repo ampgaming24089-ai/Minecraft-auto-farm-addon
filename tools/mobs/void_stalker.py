@@ -1,6 +1,6 @@
 import sys
 sys.path.insert(0, "tools")
-from mobkit import UVAtlas, bone, cube, geometry, muzzle, limb, taper_chain, spine_row, write
+from mobkit import UVAtlas, bone, cube, geometry, muzzle, limb, taper_chain, spine_row, write, stand
 
 # Void Stalker: a big cat built low and long. The whole read is predator
 # posture - shoulders higher than hips, head carried below the shoulder line,
@@ -100,6 +100,6 @@ for side, mirror in ((1, False), (-1, True)):
                           parent="head_snout", rotation=[0, 0, side * (8 + i * 10)]))
 
 write("RP/models/entity/void_stalker.geo.json",
-      geometry("geometry.voidbound.void_stalker", (256, 256), bones,
+      geometry("geometry.voidbound.void_stalker", (256, 256), stand(bones),
                bounds=(2.5, 2, (0, 1, 0))))
 print("void_stalker: %d bones" % len(bones))

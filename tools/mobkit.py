@@ -344,3 +344,33 @@ def muzzle(atlas, name, parent, anchor, skull, snout, jaw_drop=7.0, teeth=4,
                                 [bw, bh, bd], uv)], parent=name))
 
     return bones
+
+
+def stand(bones, floor=0.0):
+    """Lift a finished bone list so its lowest point sits on `floor`.
+
+    Bedrock draws a model with the entity's feet at y=0, so any cube below
+    that is buried in the ground - a beast built from the chest down ends up
+    knee-deep in the island it is standing on. Legs get built downward from a
+    hip height that is chosen for proportion, not for where the floor is, so
+    rather than fudging the hip every time, the whole rig gets translated once
+    at the end. Pivots and origins are all in the same model space, so a
+    uniform shift keeps every joint exactly where it was.
+    """
+    low = None
+    for entry in bones:
+        for shape in entry.get("cubes") or []:
+            bottom = shape["origin"][1] - (shape.get("inflate") or 0.0)
+            low = bottom if low is None else min(low, bottom)
+    if low is None:
+        return bones
+    delta = floor - low
+    if abs(delta) < 1e-6:
+        return bones
+    for entry in bones:
+        entry["pivot"][1] += delta
+        for shape in entry.get("cubes") or []:
+            shape["origin"][1] += delta
+            if "pivot" in shape:
+                shape["pivot"][1] += delta
+    return bones
