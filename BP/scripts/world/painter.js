@@ -70,6 +70,13 @@ const NATURAL = new Set([
 const GROUND_MIN_Y = 4;
 const GROUND_MAX_Y = 128;
 
+/** How often a column grows something off its underside, and how far it hangs. */
+const UNDERSIDE_CHANCE = 0.34;
+const UNDERSIDE_LENGTH = 5;
+
+/** How far down to look for the bottom of an island before giving up. */
+const UNDERSIDE_SEARCH = 24;
+
 let cache;
 const inFlight = new Set();
 
@@ -96,7 +103,7 @@ function markPainted(key) {
   try {
     world.setDynamicProperty(PROPERTY, [...painted].join(","));
   } catch (error) {
-    console.warn(`[End Divided] could not persist painted patches: ${error}`);
+    console.warn(`[End Everlasting] could not persist painted patches: ${error}`);
   }
 }
 
@@ -113,6 +120,31 @@ const permutations = new Map();
 function cachedPermutation(id) {
   if (!permutations.has(id)) permutations.set(id, permutation(id));
   return permutations.get(id);
+}
+
+/**
+ * The lowest solid block of the island under this column, or undefined.
+ *
+ * Walks down from the surface until it finds air with solid ground above it.
+ * Bounded, because a column over the void has no bottom and this must not
+ * search the whole world to discover that.
+ */
+function bottomOf(dimension, x, z, fromY) {
+  let solid = fromY;
+  for (let y = fromY - 1; y >= fromY - UNDERSIDE_SEARCH; y--) {
+    let block;
+    try {
+      block = dimension.getBlock({ x, y, z });
+    } catch {
+      return undefined;
+    }
+    if (!block) return undefined;
+    if (block.typeId === "minecraft:air") return solid;
+    solid = y;
+  }
+  // Still solid after the whole search: this is a thick column, not an island
+  // edge, and hanging growth off the middle of one would float.
+  return undefined;
 }
 
 /** Weighted pick from a biome's flora list. */
@@ -204,6 +236,28 @@ function* paintPatch(dimension, patchX, patchZ, report) {
             if (below && NATURAL.has(below.typeId)) below.setPermutation(filler);
           } catch {
             break;
+          }
+        }
+      }
+
+      // The underside. An End island stopping dead at its own bottom face is
+      // the single biggest tell that it was generated rather than grown, so
+      // whatever that biome hangs gets hung from it.
+      if (biome.hanging && rng.next() < UNDERSIDE_CHANCE) {
+        const growth = cachedPermutation(biome.hanging);
+        if (growth) {
+          const floor = bottomOf(dimension, x, z, top.y);
+          if (floor !== undefined) {
+            const length = rng.int(1, UNDERSIDE_LENGTH);
+            for (let down = 1; down <= length; down++) {
+              try {
+                const cell = dimension.getBlock({ x, y: floor - down, z });
+                if (!cell || cell.typeId !== "minecraft:air") break;
+                cell.setPermutation(growth);
+              } catch {
+                break;
+              }
+            }
           }
         }
       }
@@ -300,7 +354,7 @@ function* finish(dimension, patch) {
     yield* paintPatch(dimension, patch.patchX, patch.patchZ, report);
     if (report.complete) markPainted(patch.key);
   } catch (error) {
-    console.warn(`[End Divided] painting ${patch.key} failed: ${error}`);
+    console.warn(`[End Everlasting] painting ${patch.key} failed: ${error}`);
   } finally {
     inFlight.delete(patch.key);
   }

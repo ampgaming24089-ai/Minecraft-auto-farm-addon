@@ -407,12 +407,69 @@ try {
         check(`${biome.id} flora ${entry.id} exists`, KNOWN_IDS.has(entry.id));
         check(`${biome.id} flora ${entry.id} has weight`, entry.weight > 0);
       }
+      // A biome that paints ground but hangs nothing leaves its islands
+      // stopping dead at the bottom face, which is the thing this was for.
+      if (biome.surface) {
+        check(`${biome.id} hangs something underneath`, typeof biome.hanging === "string");
+        if (biome.hanging) check(`${biome.id} hanging ${biome.hanging} exists`, KNOWN_IDS.has(biome.hanging));
+      }
       check(`${biome.id} has a name`, typeof biome.name === "string" && biome.name.length > 0);
       check(`${biome.id} has a colour code`, /^§[0-9a-fk-or]$/.test(biome.colour));
       if (biome.particle) {
         check(`${biome.id} sets particleLift`, typeof biome.particleLift === "number");
       }
     }
+  }
+
+  // --- sky islands -----------------------------------------------------------
+  // These hang in air a player will fly through, so the two things that matter
+  // are that siting is stable and that nothing lands on vanilla's island.
+  {
+    const { islandInCell, islandsNear } = await load("world/skyIslands.js");
+
+    check("island siting is deterministic", (() => {
+      for (let i = -200; i < 200; i++) {
+        const a = islandInCell(i, i * 3);
+        const b = islandInCell(i, i * 3);
+        if (JSON.stringify(a) !== JSON.stringify(b)) return false;
+      }
+      return true;
+    })());
+
+    {
+      let sited = 0;
+      let cells = 0;
+      let tooLow = 0;
+      let tooHigh = 0;
+      let nearOrigin = 0;
+      let badRadius = 0;
+      for (let cx = -60; cx < 60; cx++) {
+        for (let cz = -60; cz < 60; cz++) {
+          cells += 1;
+          const island = islandInCell(cx, cz);
+          if (!island) continue;
+          sited += 1;
+          if (island.y < 96) tooLow += 1;
+          if (island.y > 210) tooHigh += 1;
+          if (Math.hypot(island.x, island.z) < 900) nearOrigin += 1;
+          if (!(island.radius >= 4 && island.radius <= 12)) badRadius += 1;
+        }
+      }
+      const rate = sited / cells;
+      check("islands are sited at roughly the intended rate",
+        rate > 0.2 && rate < 0.4, `${(rate * 100).toFixed(1)}%`);
+      check("no island sits below the band", tooLow === 0, `${tooLow} too low`);
+      check("no island sits above the band", tooHigh === 0, `${tooHigh} too high`);
+      // The main island, the pillars, the gateway and the arena all live here.
+      check("no island generates near the origin", nearOrigin === 0, `${nearOrigin} inside`);
+      check("island radii are sane", badRadius === 0, `${badRadius} out of range`);
+    }
+
+    check("islandsNear finds what islandInCell sites", (() => {
+      const near = islandsNear(5000, 5000, 2);
+      if (near.length === 0) return true; // A quiet patch is legitimate.
+      return near.every((island) => Math.hypot(island.x - 5000, island.z - 5000) < 500);
+    })());
   }
 
   // --- the painter only ever replaces worldgen ------------------------------
@@ -448,6 +505,7 @@ try {
   const ENTRY_POINTS = [
     ["content/armorSet.js", "startArmorSet"],
     ["content/emotes.js", "startEmotes"],
+    ["content/bloomstalk.js", "startBloomstalk"],
     ["content/enderSapling.js", "startEnderSapling"],
     ["content/mobActions.js", "startMobActions"],
     ["content/riftCompass.js", "startRiftCompass"],
@@ -462,6 +520,7 @@ try {
     ["world/flightControl.js", "startFlightControl"],
     ["world/generator.js", "startGenerator"],
     ["world/painter.js", "startPainter"],
+    ["world/skyIslands.js", "startSkyIslands"],
   ];
   for (const [relPath, exportName] of ENTRY_POINTS) {
     let module;

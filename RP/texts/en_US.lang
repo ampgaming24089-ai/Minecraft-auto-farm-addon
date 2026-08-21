@@ -1,5 +1,5 @@
-pack.name=End Divided [Resources]
-pack.description=Vibrant Visuals lighting, atmospherics, volumetric fog and PBR art for the End Divided End.
+pack.name=End Everlasting [Resources]
+pack.description=Vibrant Visuals lighting, atmospherics, volumetric fog and PBR art for the End Everlasting End.
 
 ## Blocks
 tile.voidbound:shattered_end_stone.name=Shattered End Stone
@@ -49,6 +49,14 @@ item.voidbound:void_leggings.name=Ender Greaves
 item.voidbound:void_boots.name=Ender Sabatons
 
 tile.voidbound:waystone.name=Waystone
+tile.voidbound:spore_tendril.name=Spore Tendril
+tile.voidbound:frost_icicle.name=Frost Icicle
+tile.voidbound:crystal_dripstone.name=Crystal Dripstone
+tile.voidbound:ash_stalactite.name=Ash Stalactite
+tile.voidbound:aurora_veil.name=Aurora Veil
+tile.voidbound:dressed_end_stone.name=Dressed End Stone
+tile.voidbound:lantern_post.name=Lantern Post
+tile.voidbound:bloomstalk.name=Bloomstalk
 tile.voidbound:glowspore_soil.name=Glowspore Soil
 tile.voidbound:sporelight_cap.name=Sporelight Cap
 tile.voidbound:sporelight_fungus.name=Sporelight Fungus
@@ -75,6 +83,11 @@ tile.voidbound:ender_sapling.name=Ender Sapling
 tile.voidbound:polished_end_stone.name=Polished End Stone
 tile.voidbound:cracked_ender_bricks.name=Cracked Ender Bricks
 tile.voidbound:void_chitin_block.name=Block of Void Chitin
+
+## Farming and trade
+item.voidbound:bloomstalk_seed.name=Bloomstalk Seed
+item.voidbound:bloom_pod.name=Bloom Pod
+item.voidbound:void_sigil.name=Void Sigil
 
 ## Materials
 item.voidbound:astral_shard.name=Astral Shard
@@ -115,6 +128,19 @@ item.spawn_egg.entity.voidbound:astral_whale.name=Spawn Astral Whale
 item.spawn_egg.entity.voidbound:voidling.name=Spawn Voidling
 item.spawn_egg.entity.voidbound:ender_beetle.name=Spawn Ender Beetle
 item.spawn_egg.entity.voidbound:void_titan.name=Spawn Void Titan
+entity.voidbound:void_leviathan.name=Void Leviathan
+entity.voidbound:drift_jelly.name=Drift Jelly
+entity.voidbound:cinder_stag.name=Cinder Stag
+entity.voidbound:glowmite.name=Glowmite
+item.spawn_egg.entity.voidbound:void_leviathan.name=Spawn Void Leviathan
+item.spawn_egg.entity.voidbound:drift_jelly.name=Spawn Drift Jelly
+item.spawn_egg.entity.voidbound:cinder_stag.name=Spawn Cinder Stag
+item.spawn_egg.entity.voidbound:glowmite.name=Spawn Glowmite
+entity.voidbound:end_villager.name=End Villager
+entity.voidbound:end_villager.merchant=Void Merchant
+entity.voidbound:end_villager.smith=Shard Smith
+entity.voidbound:end_villager.herbalist=Spore Herbalist
+item.spawn_egg.entity.voidbound:end_villager.name=Spawn End Villager
 
 ## Interaction prompts
 action.interact.voidbound.survey=Survey

@@ -76,6 +76,15 @@
     },
     "voidbound_titan_core": {
       "textures": "textures/items/voidbound_titan_core"
+    },
+    "voidbound_bloomstalk_seed": {
+      "textures": "textures/items/voidbound_bloomstalk_seed"
+    },
+    "voidbound_bloom_pod": {
+      "textures": "textures/items/voidbound_bloom_pod"
+    },
+    "voidbound_void_sigil": {
+      "textures": "textures/items/voidbound_void_sigil"
     }
   }
 }

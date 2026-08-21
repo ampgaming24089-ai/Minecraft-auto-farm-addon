@@ -1,0 +1,177 @@
+{
+  "tiers": [
+    {
+      "groups": [
+        {
+          "num_to_select": 2,
+          "trades": [
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_crystal",
+                  "quantity": {
+                    "min": 4,
+                    "max": 6
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 1,
+                    "max": 1
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 3,
+                    "max": 3
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:void_crystal",
+                  "quantity": {
+                    "min": 5,
+                    "max": 7
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 2,
+                    "max": 2
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:voidsteel_ingot",
+                  "quantity": {
+                    "min": 1,
+                    "max": 2
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "total_exp_required": 30,
+      "groups": [
+        {
+          "num_to_select": 2,
+          "trades": [
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 8,
+                    "max": 8
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:void_sword",
+                  "quantity": {
+                    "min": 1,
+                    "max": 1
+                  }
+                }
+              ],
+              "max_uses": 3,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 9,
+                    "max": 9
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:void_pickaxe",
+                  "quantity": {
+                    "min": 1,
+                    "max": 1
+                  }
+                }
+              ],
+              "max_uses": 3,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 14,
+                    "max": 14
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:void_chestplate",
+                  "quantity": {
+                    "min": 1,
+                    "max": 1
+                  }
+                }
+              ],
+              "max_uses": 2,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 10,
+                    "max": 10
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:void_helmet",
+                  "quantity": {
+                    "min": 1,
+                    "max": 1
+                  }
+                }
+              ],
+              "max_uses": 2,
+              "reward_exp": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

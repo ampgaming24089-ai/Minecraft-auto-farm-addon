@@ -81,6 +81,24 @@ MOBS = {
     "ender_beetle": dict(
         body="body", head="head", limbs=["leg_%d" % i for i in range(6)],
         kind="insect", scale=1.15),
+    "void_leviathan": dict(
+        body="body", head="head", tail="tail",
+        limbs=["wing_left", "wing_right"], kind="whale", scale=0.7),
+    "drift_jelly": dict(
+        body="bell", limbs=["filaments"], kind="float", scale=0.6),
+    "cinder_stag": dict(
+        body="body", head="head",
+        limbs=["antler_left", "antler_right"],
+        legs=["leg_front_left", "leg_front_right", "leg_back_left", "leg_back_right"],
+        kind="quadruped", scale=1.0),
+    "glowmite": dict(
+        body="body", head="head",
+        limbs=["leg_left", "leg_right", "leg_back_left", "leg_back_right"],
+        kind="biped", scale=0.7),
+    "end_villager": dict(
+        body="body", head="head",
+        limbs=["arm_left", "arm_right"],
+        legs=["leg_left", "leg_right"], kind="biped", scale=0.9),
     # The Warden wears the Sentinel's skeleton. Same bones, more weight behind
     # every one of them, which is what makes it read as the boss version.
     "echo_warden": dict(

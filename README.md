@@ -1,11 +1,13 @@
-# End Divided — an End overhaul for Minecraft Bedrock
+# End Everlasting — an End overhaul for Minecraft Bedrock
 
 The End has been one biome, one sky and two structures since 1.9. End
 Ascendant rebuilds it for Bedrock **26.4** (internal `1.26.40`, current hotfix
-`26.44`): **seven biomes** in a dimension the engine says has one, three bosses,
-thirteen mobs, a full tool and armour tier, a food chain, a waystone travel
-network, five structure types scattered across the outer islands, an animation
-pack for the player and every mob in it, and an atmosphere that moves.
+`26.44`): **seven biomes** in a dimension the engine says has one, floating
+islands stacked through the whole world height, **End villages** with traders
+who deal in three professions, crops, a tameable companion, three bosses,
+eighteen other mobs, a full tool and armour tier, a waystone travel network,
+an animation pack for the player and every mob in it, and an atmosphere that
+moves.
 
 Everything runs on documented, non-experimental APIs. No experiments toggle,
 no world conversion, no commands typed by the player.
@@ -13,16 +15,17 @@ no world conversion, no commands typed by the player.
 | | |
 |---|---|
 | Biomes | 7, seed-derived, with their own terrain, fog, light and air |
-| Blocks | 36 |
-| Items | 25 |
-| Mobs | 16, three of them bosses |
-| Recipes | 32 |
-| Structures | 5 kinds, procedurally varied |
+| Blocks | 44 |
+| Items | 28 |
+| Mobs | 21, three of them bosses, one tameable |
+| Recipes | 36 |
+| Structures | 6 kinds, procedurally varied |
+| Trades | 3 professions across 2 tiers each |
 | Worldgen features | 15, across 9 placement rules |
 | Fog definitions | 9, one per biome plus depth and structures |
 | Particle effects | 18 |
-| Animations | 108 clips, including a player animation pack |
-| Textures | 168, all generated from code |
+| Animations | 138 clips, including a player animation pack |
+| Textures | 206, all generated from code |
 
 ```
 ./build_addon.sh --check      # validate everything, then build the .mcaddon
@@ -38,7 +41,7 @@ not the PBR lighting.
 ### The sky and the light
 
 The End's built-in look is a flat purple void: two constant white directional
-lights, a near-black sky, no depth. End Divided replaces the whole Vibrant
+lights, a near-black sky, no depth. End Everlasting replaces the whole Vibrant
 Visuals stack for `minecraft:the_end`.
 
 | File | What it does |
@@ -57,7 +60,7 @@ through `lighting/global.json`. That is the part most End packs get wrong.
 ### Fog that knows where you are
 
 Bedrock exposes exactly one End biome, so a biome-bound fog can only ever be
-one mood. End Divided ships four fog definitions and pushes the right one onto
+one mood. End Everlasting ships four fog definitions and pushes the right one onto
 each player's fog stack — the layer that sits above biome fog:
 
 - **`fog_end_open`** — the default, bound to the biome. Thin violet haze that
@@ -241,6 +244,87 @@ rate low enough to supplement natural spawning rather than replace it —
 vanilla endermen keep their share of the spawn budget, which was a specific
 thing to protect.
 
+### Using the height of the world
+
+The End generates one band of islands around y=60 and then a hundred and fifty
+blocks of nothing above it. That is most of the dimension unused, and it is why
+the End reads as flat however wide it is — everything sits at eye level, so
+there is never anything to climb toward.
+
+`BP/scripts/world/skyIslands.js` hangs more land through the whole column,
+between y=96 and y=210, sited from the seed exactly the way structures are.
+Each one is built from **the biome underneath it**, so a Glowspore Basin gets
+magenta islands overhead and an Ashen Waste gets charcoal ones: looking up in a
+region tells you which region you are in.
+
+Two rules keep it from wrecking anything. An island is only ever built into
+air — the entire footprint is tested before a single block is placed, and one
+non-air block anywhere in it abandons the site and remembers the refusal, so
+nothing this places can overwrite terrain, a structure or a build. And nothing
+generates within 900 blocks of the origin, so the main island, the pillars, the
+gateway and the dragon arena are untouched.
+
+### Undersides
+
+An End island stopping dead at its own bottom face is the single biggest tell
+that it was generated rather than grown, so every biome now hangs something off
+it: spore tendrils, frost icicles, crystal dripstone, ender vines, ash
+stalactites, and a fraying aurora veil that is a hanging sheet rather than
+strands. The painter finds the lowest solid block of each column and grows down
+from it — bounded, because a column over the void has no bottom and that must
+not be discovered by searching the whole world.
+
+### End villages
+
+Every other structure in the pack is a ruin or a threat. This is the one that
+is occupied, and everything about how it is built says so from a distance:
+dressed stone that belongs to no biome, lantern posts along the paths, a well
+at the centre with the huts on a ring facing inward, a market stall, and a crop
+plot already planted.
+
+The residents are **End villagers** — an enderman's proportions under a hooded
+robe, which is the point: related to the things out there without being one.
+Each picks a profession at spawn:
+
+| Profession | Buys | Sells |
+|---|---|---|
+| **Void Merchant** | echo shards, void chitin, ender fruit | iron, emeralds, torches; at tier two, diamonds, ender pearls and a single elytra |
+| **Shard Smith** | void crystals | voidsteel, and at tier two the pack's own swords, picks and armour |
+| **Spore Herbalist** | bloom pods, lumen berries | bloomstalk seed, pies, cooked haunches, saplings, golden apples |
+
+They all deal in **void sigils**, which are minted from voidsteel and crystal —
+so a player who cannot find a village can still enter its economy, and one who
+can has a reason to farm.
+
+They flee rather than fight. A trader that brawls is a trader you lose, and
+these are the only friendly faces out there.
+
+### Farming, and something to keep
+
+**Bloomstalk** is the End's crop: four growth stages, plantable on End stone or
+any biome surface, bone-mealable. Breaking a ripe one drops pods *and* seed and
+**replants itself at stage zero**, so an established plot keeps producing;
+breaking an unripe one just gives the seed back, so pulling a crop early is a
+mistake rather than a loss.
+
+**Glowmites** are what the pods are really for. They tame on bloom pods, breed
+on them, follow their owner, and gain health when tamed — the first thing in
+this dimension you can keep rather than kill.
+
+### The new mobs
+
+- **Void Leviathan** — the colossus. Wide ribbed wings, a lit underside so it
+  is still something rather than a black shape passing overhead, and a
+  deliberately slow wingbeat because anything that size moving fast reads as
+  weightless. Spawn weight 1: seeing one should be an event, not scenery.
+- **Drift Jelly** — a bell that pulses and filaments that arrive late, which is
+  the entire read of a jellyfish.
+- **Cinder Stag** — charcoal hide with heat in its cracks and antlers that
+  carry the fire. Grazes the Ashen Wastes on a long head-dip cycle; gores
+  anything that starts something.
+- **Glowmite** — small, round, warm, and it hops rather than walks: the body
+  leaves the ground and the legs tuck off the same wave.
+
 ### The animation pack
 
 Bedrock ships the player with about eighty animation clips and no way for an
@@ -392,15 +476,15 @@ the player so they read as depth rather than as dust on the lens.
 - **Rift Compass** — points at the nearest structure by name, distance and
   bearing, and names the runner-up so you can pick a route.
 
-### End Divided armour
+### End Everlasting armour
 
 The endgame set, a clear step past netherite:
 
 | | Helm | Cuirass | Greaves | Sabatons | Set |
 |---|---|---|---|---|---|
-| End Divided protection | 4 | 9 | 7 | 4 | **24** |
+| End Everlasting protection | 4 | 9 | 7 | 4 | **24** |
 | Netherite protection | 3 | 8 | 6 | 3 | 20 |
-| End Divided durability | 561 | 816 | 765 | 663 | |
+| End Everlasting durability | 561 | 816 | 765 | 663 | |
 | Netherite durability | 407 | 592 | 555 | 481 | |
 
 Enchantability is 18 against netherite's 15, and pieces repair with void
@@ -587,6 +671,11 @@ half those errors were already fixed. Check the path before chasing one:
   cadence and damage are all tuned blind.
 - Waystone menu behaviour on touch devices, and whether cancelling the form
   leaves anything stuck.
+- Whether sky islands land at a density that reads as a layer rather than as
+  clutter, and whether `BUILD_RADIUS` at 132 gets them built before a player
+  flies into where one should have been.
+- Whether villages generate on ground flat enough to sit on. The platform blob
+  should handle it, but a village half-buried in a hillside is the failure mode.
 - How the painter feels in play: whether `PATCHES_PER_SCAN` at 3 keeps up with
   a player on an elytra, and whether the first arrival in a region is a visible
   wave of ground changing or reads as always having been there.
@@ -615,7 +704,12 @@ half those errors were already fixed. Check the path before chasing one:
 | Sky, sun, flash, ambient | `RP/lighting/end.json` |
 | Sky colours and scattering | `RP/atmospherics/end.json` |
 | Fog density, colour and shaft hardness | `RP/fogs/*.json` — `henyey_greenstein_g` is the beam-width dial |
-| Star density | `end_sky()` in `tools/gen_art.py` — coverage above ~5% reads as grain |
+| Star density and sky colour | `end_sky()` in `tools/gen_art.py` — coverage above ~5% reads as grain |
+| Sky island height band and rate | `MIN_Y`, `MAX_Y`, `CHANCE`, `CELL` in `BP/scripts/world/skyIslands.js` |
+| Underside growth per biome | `hanging` in `BIOMES`, rate in `UNDERSIDE_CHANCE` in `painter.js` |
+| Village layout and residents | `BP/scripts/structures/endVillage.js` |
+| Trades | `BP/trading/*.json` |
+| Crop growth speed | `STAGE_TICKS` in `BP/scripts/content/bloomstalk.js` |
 | Biome mix, terrain, flora, rosters | `BIOMES` in `BP/scripts/world/biomes.js` |
 | Biome size and border wander | `BIOME_CELL`, `WARP_STRENGTH`, `WARP_PERIOD` in `biomes.js` |
 | What the painter may overwrite | `NATURAL` in `BP/scripts/world/painter.js` |
@@ -641,13 +735,14 @@ half those errors were already fixed. Check the path before chasing one:
 
 ```
 BP/                     behavior pack
-  blocks/ items/        36 blocks, 25 items (4 of them armour, 5 tools)
+  blocks/ items/        44 blocks, 28 items (4 of them armour, 5 tools)
+  trading/              three villager professions
   entities/ spawn_rules/ loot_tables/
   features/ feature_rules/   ore, shattered stone and flora generation
   recipes/
   scripts/
     lib/                rng, vectors, blueprint placement
-    structures/         the five blueprints
+    structures/         the six blueprints
     world/              biomes, painter, siting, generation, atmosphere,
                         discovery, flight control, persistence
     content/            loot, compass, bosses, waystones, saplings, armour set

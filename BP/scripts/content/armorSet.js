@@ -1,5 +1,5 @@
 /**
- * The End Divided set bonus.
+ * The End Everlasting set bonus.
  *
  * Raw numbers alone would make this armour a slightly better netherite, which
  * is not a reason to grind for it. Wearing the whole set in the End instead
@@ -73,7 +73,7 @@ function check() {
           amplifier: 0, showParticles: false,
         });
       } catch (error) {
-        console.warn(`[End Divided] could not apply crown powers: ${error}`);
+        console.warn(`[End Everlasting] could not apply crown powers: ${error}`);
       }
     }
 
@@ -91,11 +91,11 @@ function check() {
           showParticles: false,
         });
       } catch (error) {
-        console.warn(`[End Divided] could not apply set bonus: ${error}`);
+        console.warn(`[End Everlasting] could not apply set bonus: ${error}`);
       }
       if (!wasActive) {
         try {
-          player.onScreenDisplay.setActionBar("§dEnd Divided set §7- slow falling, resistance");
+          player.onScreenDisplay.setActionBar("§dEnd Everlasting set §7- slow falling, resistance");
           player.playSound("beacon.activate", { volume: 0.4, pitch: 1.5 });
         } catch {
           // Cosmetic only.

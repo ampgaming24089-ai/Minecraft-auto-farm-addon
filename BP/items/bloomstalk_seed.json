@@ -1,0 +1,35 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:item": {
+    "description": {
+      "identifier": "voidbound:bloomstalk_seed",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:display_name": {
+        "value": "item.voidbound:bloomstalk_seed.name"
+      },
+      "minecraft:icon": {
+        "textures": {
+          "default": "voidbound_bloomstalk_seed"
+        }
+      },
+      "minecraft:max_stack_size": 64,
+      "minecraft:rarity": "common",
+      "minecraft:block_placer": {
+        "block": "voidbound:bloomstalk",
+        "use_on": [
+          "minecraft:end_stone",
+          "voidbound:glowspore_soil",
+          "voidbound:verdant_end_stone",
+          "voidbound:aurora_stone",
+          "voidbound:mossy_end_stone",
+          "voidbound:dressed_end_stone",
+          "minecraft:farmland"
+        ]
+      }
+    }
+  }
+}

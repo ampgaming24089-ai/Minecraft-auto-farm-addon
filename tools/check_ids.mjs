@@ -689,21 +689,29 @@ for (const [folder, atlas, atlasName] of [
   for (const file of walk(dir)) {
     if (!file.endsWith(".json")) continue;
     const rel = relative(ROOT, file).split("\\").join("/");
-    let components;
+    let definition;
     try {
       const data = JSON.parse(readFileSync(file, "utf8"));
-      components = (data["minecraft:item"] ?? data["minecraft:block"])?.components;
+      definition = data["minecraft:item"] ?? data["minecraft:block"];
     } catch {
       continue;
     }
-    if (!components) continue;
+    if (!definition?.components) continue;
 
     const keys = [];
-    const icon = components["minecraft:icon"];
-    if (typeof icon === "string") keys.push(icon);
-    else for (const value of Object.values(icon?.textures ?? {})) keys.push(value);
-    for (const instance of Object.values(components["minecraft:material_instances"] ?? {})) {
-      if (typeof instance?.texture === "string") keys.push(instance.texture);
+    // A block with states carries most of its art in `permutations`, not in
+    // the top-level components - a crop's four growth stages live nowhere
+    // else. Scanning only the top level would call three of those four
+    // textures orphaned and miss a real missing one entirely.
+    const blocks = [definition.components, ...(definition.permutations ?? []).map((p) => p.components)];
+    for (const components of blocks) {
+      if (!components) continue;
+      const icon = components["minecraft:icon"];
+      if (typeof icon === "string") keys.push(icon);
+      else for (const value of Object.values(icon?.textures ?? {})) keys.push(value);
+      for (const instance of Object.values(components["minecraft:material_instances"] ?? {})) {
+        if (typeof instance?.texture === "string") keys.push(instance.texture);
+      }
     }
 
     for (const key of keys) {

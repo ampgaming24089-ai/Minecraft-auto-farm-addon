@@ -123,6 +123,39 @@
     },
     "voidbound_aurora_stone": {
       "textures": "textures/blocks/voidbound_aurora_stone"
+    },
+    "voidbound_spore_tendril": {
+      "textures": "textures/blocks/voidbound_spore_tendril"
+    },
+    "voidbound_frost_icicle": {
+      "textures": "textures/blocks/voidbound_frost_icicle"
+    },
+    "voidbound_crystal_dripstone": {
+      "textures": "textures/blocks/voidbound_crystal_dripstone"
+    },
+    "voidbound_ash_stalactite": {
+      "textures": "textures/blocks/voidbound_ash_stalactite"
+    },
+    "voidbound_aurora_veil": {
+      "textures": "textures/blocks/voidbound_aurora_veil"
+    },
+    "voidbound_dressed_end_stone": {
+      "textures": "textures/blocks/voidbound_dressed_end_stone"
+    },
+    "voidbound_lantern_post": {
+      "textures": "textures/blocks/voidbound_lantern_post"
+    },
+    "voidbound_bloomstalk_stage_0": {
+      "textures": "textures/blocks/voidbound_bloomstalk_stage_0"
+    },
+    "voidbound_bloomstalk_stage_1": {
+      "textures": "textures/blocks/voidbound_bloomstalk_stage_1"
+    },
+    "voidbound_bloomstalk_stage_3": {
+      "textures": "textures/blocks/voidbound_bloomstalk_stage_3"
+    },
+    "voidbound_bloomstalk_stage_2": {
+      "textures": "textures/blocks/voidbound_bloomstalk_stage_2"
     }
   }
 }

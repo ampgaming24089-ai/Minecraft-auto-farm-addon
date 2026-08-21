@@ -63,7 +63,7 @@ function setAnchor(player) {
     player.setDynamicProperty(ANCHOR_Z, Math.floor(at.z) + 0.5);
   } catch (error) {
     player.sendMessage("§cThe charm will not hold that place.");
-    console.warn(`[End Divided] could not store anchor: ${error}`);
+    console.warn(`[End Everlasting] could not store anchor: ${error}`);
     return;
   }
   player.sendMessage(
@@ -174,7 +174,7 @@ export function startUtilityItems() {
       if (onCooldown(player, "horn", HORN_COOLDOWN)) return;
       sound(player);
     } catch (error) {
-      console.warn(`[End Divided] utility item failed: ${error}`);
+      console.warn(`[End Everlasting] utility item failed: ${error}`);
     }
   });
 

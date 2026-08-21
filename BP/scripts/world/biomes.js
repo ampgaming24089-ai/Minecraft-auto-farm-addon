@@ -46,7 +46,9 @@ const WARP_PERIOD = 352;
  *
  * `weight` is relative frequency. `surface` is what the painter lays down and
  * `filler` what it puts underneath; `flora` is scattered on top by weight.
- * `fog` and `particle` are identifiers in the resource pack, `particleLift`
+ * `hanging` is what grows on the underside of that biome's islands, which is
+ * what stops an island edge simply stopping. `fog` and `particle` are
+ * identifiers in the resource pack, `particleLift`
  * is how far above the player its emitters start - the difference between
  * weather and a ground effect, since frost has to fall from somewhere and
  * embers have to climb out of something. `mobs` is the roster the region-gated
@@ -81,6 +83,7 @@ export const BIOMES = {
       { id: "voidbound:sporelight_cap", weight: 1, pillar: 3 },
     ],
     floraChance: 0.16,
+    hanging: "voidbound:spore_tendril",
     fog: "voidbound:fog_glowspore",
     particle: "voidbound:spore_drift",
     particleLift: -1,
@@ -99,6 +102,7 @@ export const BIOMES = {
       { id: "voidbound:bonespire_stone", weight: 2, pillar: 6 },
     ],
     floraChance: 0.10,
+    hanging: "voidbound:frost_icicle",
     fog: "voidbound:fog_bonespire",
     particle: "voidbound:frost_fall",
     particleLift: 9,
@@ -118,6 +122,7 @@ export const BIOMES = {
       { id: "voidbound:voidbloom", weight: 3 },
     ],
     floraChance: 0.13,
+    hanging: "voidbound:crystal_dripstone",
     fog: "voidbound:fog_crystalline",
     particle: "voidbound:crystal_glint",
     particleLift: 0,
@@ -138,6 +143,7 @@ export const BIOMES = {
       { id: "voidbound:ender_sapling", weight: 2 },
     ],
     floraChance: 0.18,
+    hanging: "voidbound:ender_vines",
     fog: "voidbound:fog_luminous_grove",
     particle: "voidbound:grove_spores",
     particleLift: 1,
@@ -157,6 +163,7 @@ export const BIOMES = {
       { id: "voidbound:shattered_end_stone", weight: 4, pillar: 2 },
     ],
     floraChance: 0.07,
+    hanging: "voidbound:ash_stalactite",
     fog: "voidbound:fog_ashen",
     particle: "voidbound:ember_rise",
     particleLift: -2,
@@ -176,6 +183,7 @@ export const BIOMES = {
       { id: "voidbound:lumen_bulb", weight: 2 },
     ],
     floraChance: 0.09,
+    hanging: "voidbound:aurora_veil",
     fog: "voidbound:fog_aurora",
     particle: "voidbound:aurora_shimmer",
     particleLift: 22,

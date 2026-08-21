@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate every End Divided texture from source.
+"""Regenerate every End Everlasting texture from source.
 
     python3 tools/gen_art.py
 
@@ -1920,7 +1920,12 @@ def end_sky():
     """
     size = 128
     c = Canvas(size, size)
-    c.fill(hex_rgba("#120A26"))
+    # A saturated deep violet rather than near-black. The previous base lost
+    # to any lit terrain in the same frame, which read as an empty sky rather
+    # than a deep one. It still has to be perfectly flat: any low-frequency
+    # variation makes the six cube faces average differently and the corners
+    # appear as seams.
+    c.fill(hex_rgba("#241145"))
 
     rng = Rng(31337)
     tints = [
@@ -2469,6 +2474,460 @@ def block_biome_set():
          emissive_from=(200, 240, 228), emissive_gain=0.6, emissive_threshold=0.56)
 
 
+def block_underside_set():
+    """What hangs off the bottom of an island, one per biome.
+
+    End islands stop dead at their own underside, which is the single biggest
+    reason they read as generated rather than grown. Every one of these is
+    built to be seen from *below and at a distance*, so they are top-heavy:
+    dense where they meet the rock, thinning to nothing, because that is the
+    shape the eye reads as hanging.
+    """
+    def hanging(seed, cord, cord_hi, bead, name, strands=5, bead_chance=0.14,
+                gain=1.1, threshold=0.3, taper=True):
+        c = Canvas(16)
+        rng = Rng(seed)
+        for start in range(1, 16, max(2, 16 // strands)):
+            px = float(start)
+            depth = rng.int(9, 16)
+            for y in range(depth):
+                px += rng.range(-0.3, 0.3)
+                x = int(round(px)) % 16
+                t = y / max(1, depth - 1)
+                c.blend(x, y, mix(cord_hi, cord, t))
+                # The second column drops away as the strand thins, which is
+                # what makes it taper instead of ending in a stump.
+                if not (taper and t > 0.62):
+                    c.blend((x + 1) % 16, y, shade(cord, -0.22))
+                if rng.chance(bead_chance):
+                    c.blend(x, y, bead)
+        emit(c, BLOCKS, name, roughness=196,
+             emissive_from=bead[:3], emissive_gain=gain, emissive_threshold=threshold)
+
+    # Glowspore: fat wet tendrils with spore pods down their length.
+    hanging(6410, mix(PALETTE["void"], hex_rgba("#C0508E"), 0.7),
+            hex_rgba("#FF9AD8"), hex_rgba("#FFD0EC"), "voidbound_spore_tendril",
+            strands=4, bead_chance=0.20, gain=1.4, threshold=0.24)
+
+    # Bonespire: icicles, so straight columns rather than wandering strands.
+    ice = Canvas(16)
+    ice_hi = hex_rgba("#DCEEFF")
+    ice_lo = hex_rgba("#5C7EA6")
+    rng = Rng(6420)
+    for start in (1, 4, 7, 10, 13):
+        depth = rng.int(6, 15)
+        width_at = lambda t: max(0, int(round((1.0 - t) * 1.6)))
+        for y in range(depth):
+            t = y / max(1, depth - 1)
+            half = width_at(t)
+            for dx in range(-half, half + 1):
+                x = (start + dx) % 16
+                ice.blend(x, y, mix(ice_hi, ice_lo, t * 0.85))
+        ice.blend(start % 16, min(15, depth - 1), hex_rgba("#FFFFFF"))
+    emit(ice, BLOCKS, "voidbound_frost_icicle", roughness=64,
+         emissive_from=ice_hi[:3], emissive_gain=1.2, emissive_threshold=0.42)
+
+    # Crystalline: faceted dripstone, wide at the rock and pointed below.
+    drip = Canvas(16)
+    facet = hex_rgba("#B07CF4")
+    facet_lo = hex_rgba("#3E1E6E")
+    for start, depth in ((3, 13), (8, 16), (12, 10)):
+        for y in range(depth):
+            t = y / max(1, depth - 1)
+            half = max(0, int(round((1.0 - t) * 2.2)))
+            for dx in range(-half, half + 1):
+                x = (start + dx) % 16
+                # A bright core column, darker flanks: reads as a facet edge.
+                lit = 0.0 if dx == 0 else abs(dx) / max(1, half)
+                drip.blend(x, y, shade(mix(facet, facet_lo, t), 0.25 - lit * 0.5))
+    emit(drip, BLOCKS, "voidbound_crystal_dripstone", roughness=52,
+         emissive_from=facet[:3], emissive_gain=1.45, emissive_threshold=0.3)
+
+    # Ashen: brittle grey stalactites, no glow at all - the one dead biome.
+    ash = Canvas(16)
+    ash_hi = hex_rgba("#6A625E")
+    ash_lo = hex_rgba("#1E1B1A")
+    rng = Rng(6440)
+    for start in (2, 6, 9, 13):
+        depth = rng.int(5, 14)
+        for y in range(depth):
+            t = y / max(1, depth - 1)
+            half = max(0, int(round((1.0 - t) * 1.8)))
+            for dx in range(-half, half + 1):
+                x = (start + dx) % 16
+                ash.blend(x, y, mix(ash_hi, ash_lo, t * 0.9 + rng.range(0, 0.2)))
+    emit(ash, BLOCKS, "voidbound_ash_stalactite", roughness=250, mer=True)
+
+    # Aurora: a hanging sheet rather than strands - it should read as fabric.
+    veil = Canvas(16)
+    veil_hi = hex_rgba("#8FF0DC")
+    veil_lo = hex_rgba("#2A5A7E")
+    for y in range(16):
+        for x in range(16):
+            wave = math.sin((x / 16.0) * math.pi * 2 + y * 0.28) * 0.5 + 0.5
+            fall = y / 15.0
+            # The sheet frays as it falls: alpha follows both the wave and the
+            # drop, so the bottom edge is ragged instead of a straight cut.
+            alpha = max(0.0, (1.0 - fall * 1.15) * (0.35 + wave * 0.65))
+            if alpha <= 0.04:
+                continue
+            colour = mix(veil_hi, veil_lo, fall * 0.8 + wave * 0.2)
+            veil.set(x, y, (colour[0], colour[1], colour[2], int(255 * alpha)))
+    emit(veil, BLOCKS, "voidbound_aurora_veil", roughness=90,
+         emissive_from=veil_hi[:3], emissive_gain=1.3, emissive_threshold=0.3)
+
+
+def block_crop_and_village():
+    """The End crop through its four stages, and what a village is built of."""
+    stalk = mix(PALETTE["void"], hex_rgba("#7FA88E"), 0.6)
+    leaf = hex_rgba("#7FD8B0")
+    bloom = hex_rgba("#FFE07A")
+    bloom_hot = hex_rgba("#FFF6C8")
+
+    for stage in range(4):
+        c = Canvas(16)
+        t = (stage + 1) / 4.0
+        height = int(4 + 10 * t)
+        for x in (5, 8, 11):
+            for y in range(15, 15 - height, -1):
+                c.set(x, y, stalk if (y + x) % 3 else shade(stalk, 0.2))
+        # Leaves come in from stage 1, buds from stage 2, flowers at stage 3.
+        if stage >= 1:
+            for x, y in ((4, 11), (12, 12), (7, 9), (9, 10)):
+                if 15 - y < height:
+                    c.blend(x, y, leaf)
+                    c.blend(x + (1 if x < 8 else -1), y, mix(leaf, stalk, 0.4))
+        if stage >= 2:
+            for x, y in ((5, 15 - height + 1), (11, 15 - height + 2)):
+                c.blend(x, max(0, y), mix(bloom, leaf, 0.5))
+        if stage == 3:
+            for x in (5, 8, 11):
+                top = max(0, 15 - height)
+                c.blend(x, top, bloom_hot)
+                c.blend(x, top + 1, bloom)
+                c.blend(x - 1, top + 1, mix(bloom, leaf, 0.35))
+                c.blend(x + 1, top + 1, mix(bloom, leaf, 0.35))
+        emit(c, BLOCKS, "voidbound_bloomstalk_stage_%d" % stage, roughness=186,
+             emissive_from=bloom_hot[:3], emissive_gain=1.2 if stage == 3 else 0.5,
+             emissive_threshold=0.4)
+
+    # Village stone: dressed, pale, deliberately unlike anything the biomes
+    # make, so a village reads as *built* from a long way off.
+    dressed = stone_base(7701, hex_rgba("#CFC6B0"), hex_rgba("#6E6858"), contrast=0.20)
+
+    def dress(x, y, cur):
+        if x in (0, 15) or y in (0, 15):
+            return shade(cur, -0.34)
+        if x in (1, 14) or y in (1, 14):
+            return shade(cur, 0.16)
+        return cur
+
+    dressed.each(dress)
+    emit(dressed, BLOCKS, "voidbound_dressed_end_stone", roughness=222)
+
+    # Lantern-post block: a carved column with a lit slot on every face.
+    post = Canvas(16)
+    wood = mix(PALETTE["void"], hex_rgba("#8C7AA4"), 0.55)
+    lamp = hex_rgba("#FFDC96")
+
+    def post_face(x, y, _cur):
+        n = fbm(x * 2.8, y * 0.8, 16, 7702, octaves=3, base_period=4)
+        base = mix(shade(wood, -0.22), wood, n)
+        if x in (0, 1, 14, 15):
+            return shade(base, -0.3)
+        if 5 <= x <= 10 and 4 <= y <= 10:
+            d = max(abs(x - 7.5), abs(y - 7)) / 3.5
+            return mix(lamp, shade(lamp, -0.5), d)
+        return base
+
+    post.each(post_face)
+    emit(post, BLOCKS, "voidbound_lantern_post", roughness=170,
+         emissive_from=lamp[:3], emissive_gain=1.5, emissive_threshold=0.34)
+
+
+def item_farm_and_trade():
+    """The seed, the harvest, and the currency a village runs on."""
+    # Bloomstalk seed: a small pod with a pale husk split down one side.
+    c = Canvas(16)
+    husk = hex_rgba("#CFE8D4")
+    core = hex_rgba("#7FD8B0")
+    radial(c, 8, 9, 4.4, husk, mix(core, PALETTE["void"], 0.4), falloff=1.25)
+    for y in range(5, 14):
+        c.blend(8, y, shade(core, -0.25))
+    for x, y in ((6, 6), (10, 11)):
+        c.blend(x, y, hex_rgba("#FFFFFF"))
+    bevel(c)
+    c.outline(mix(PALETTE["void"], (0, 0, 0, 255), 0.5))
+    emit(c, ITEMS, "voidbound_bloomstalk_seed", roughness=180,
+         emissive_from=core[:3], emissive_gain=0.7, emissive_threshold=0.45)
+
+    # Bloom pod: the harvest. Fatter, brighter, and clearly the same plant.
+    c = Canvas(16)
+    pod = hex_rgba("#FFE07A")
+    pod_hot = hex_rgba("#FFF6C8")
+    radial(c, 8, 8.5, 5.6, pod_hot, mix(pod, hex_rgba("#5E7A38"), 0.55), falloff=1.15)
+    for i in range(4):
+        angle = i * math.pi / 4 + 0.4
+        for t in range(2, 6):
+            c.blend(int(round(8 + math.cos(angle) * t)),
+                    int(round(8.5 + math.sin(angle) * t)),
+                    mix(pod, hex_rgba("#8FBF6A"), 0.4))
+    for y in range(1, 5):
+        c.set(8, y, mix(PALETTE["void"], hex_rgba("#7FA88E"), 0.6))
+    bevel(c)
+    c.outline(mix(PALETTE["void"], (0, 0, 0, 255), 0.55))
+    emit(c, ITEMS, "voidbound_bloom_pod", roughness=150,
+         emissive_from=pod_hot[:3], emissive_gain=1.3, emissive_threshold=0.28)
+
+    # Void sigil: what End villagers deal in. A coin has to read as struck
+    # metal at 16px, so it is a disc with a raised rim and a cut mark.
+    c = Canvas(16)
+    metal = hex_rgba("#B9A6D8")
+    metal_lo = hex_rgba("#4A3A68")
+    mark = hex_rgba("#7CE8FF")
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x + 0.5 - 8, y + 0.5 - 8)
+            if d > 6.6:
+                continue
+            if d > 5.3:
+                c.set(x, y, shade(metal_lo, 0.1))          # rim
+            else:
+                c.set(x, y, mix(metal, metal_lo, d / 5.3 * 0.7))
+    for y in range(4, 12):
+        c.blend(8, y, mark)
+    for x in range(5, 12):
+        c.blend(x, 8, mix(mark, metal, 0.35))
+    c.blend(8, 8, hex_rgba("#EAFBFF"))
+    bevel(c, light=0.34, dark=0.3)
+    c.outline(mix(PALETTE["void"], (0, 0, 0, 255), 0.6))
+    emit(c, ITEMS, "voidbound_void_sigil", metalness=215, roughness=56,
+         emissive_from=mark[:3], emissive_gain=1.1, emissive_threshold=0.42)
+
+
+def entity_void_leviathan():
+    """128x128: the colossus of the End sky.
+
+    Everything about it is built to be read from a long way off, because that
+    is where it will usually be: a vivid magenta hide against the violet sky,
+    huge wing membranes with visible ribbing so the shape stays legible in
+    silhouette, and a lit underside so it is still something rather than a
+    black shape when it passes overhead.
+    """
+    c = Canvas(128, 128)
+    hide = hex_rgba("#8E2A6E")
+    hide_hi = hex_rgba("#F06AC0")
+    hide_lo = mix(hide, PALETTE["void"], 0.55)
+    membrane = hex_rgba("#D64AA0")
+    lit = hex_rgba("#FFB8E8")
+
+    def body(face, fx, fy, fw, fh):
+        n = fbm(fx * 1.2, fy * 1.2, 32, 9801, octaves=4, base_period=5)
+        base = mix(hide_lo, hide, n * 0.85)
+        if face == "bottom":
+            mid = 1.0 - abs(fx - (fw - 1) / 2.0) / max(1.0, (fw - 1) / 2.0)
+            return mix(base, lit, 0.3 + mid * 0.55)
+        if face == "top":
+            # Banding along the spine, which is what reads at distance.
+            if int(fy) % 4 < 2:
+                return mix(shade(base, -0.16), hide_hi, 0.28)
+            return shade(base, -0.16)
+        return base
+
+    paint_box(c, 0, 0, 18, 12, 30, body)          # body
+    paint_box(c, 0, 46, 14, 10, 12, body)         # head
+
+    def wing(_face, fx, fy, fw, fh):
+        span = fx / float(max(1, fw - 1))
+        drop = fy / float(max(1, fh - 1))
+        # Ribs every few pixels across the membrane, fading outboard.
+        if int(fx) % 5 == 0 and span < 0.9:
+            return mix(hide, hide_hi, 0.5)
+        base = mix(membrane, mix(hide_lo, membrane, 0.4), drop * 0.6)
+        return mix(base, lit, max(0.0, 0.35 - span * 0.35))
+
+    paint_box(c, 0, 74, 26, 2, 14, wing)
+    paint_box(c, 62, 74, 26, 2, 14, wing)
+
+    def tail(_face, fx, fy, fw, fh):
+        t = fy / float(max(1, fh - 1))
+        return mix(hide, hide_lo, t)
+
+    paint_box(c, 0, 104, 6, 6, 18, tail)
+
+    emit(c, ENTITY, "voidbound_void_leviathan", roughness=178,
+         emissive_from=lit[:3], emissive_gain=1.25, emissive_threshold=0.3)
+
+
+def entity_drift_jelly():
+    """32x32: a bell and a curtain of trailing filaments."""
+    c = Canvas(32, 32)
+    bell = hex_rgba("#7FE8E0")
+    bell_lo = mix(bell, PALETTE["void"], 0.6)
+    core = hex_rgba("#EAFFFC")
+
+    def dome(face, fx, fy, fw, fh):
+        n = fbm(fx * 2.0, fy * 2.0, 16, 9811, octaves=3, base_period=4)
+        base = mix(bell_lo, bell, n)
+        if face == "top":
+            d = math.hypot(fx - (fw - 1) / 2.0, fy - (fh - 1) / 2.0)
+            return mix(core, base, min(1.0, d / max(1.0, fw / 2.0)))
+        # A lit rim around the lower edge of the bell.
+        if fy >= fh - 2:
+            return mix(base, core, 0.55)
+        return base
+
+    paint_box(c, 0, 0, 8, 6, 8, dome)
+
+    def strand(_face, _fx, fy, _fw, fh):
+        t = fy / float(max(1, fh - 1))
+        return mix(core, (bell_lo[0], bell_lo[1], bell_lo[2], 90), t)
+
+    paint_box(c, 0, 20, 6, 6, 2, strand)
+
+    emit(c, ENTITY, "voidbound_drift_jelly", roughness=88,
+         emissive_from=core[:3], emissive_gain=1.5, emissive_threshold=0.28)
+
+
+def entity_cinder_stag():
+    """64x64: charcoal hide, ember cracks, and antlers that carry the fire."""
+    c = Canvas(64, 64)
+    hide = hex_rgba("#3A3230")
+    hide_hi = hex_rgba("#6A5C55")
+    ember = hex_rgba("#FF7A2E")
+    ember_hot = hex_rgba("#FFD79A")
+
+    def coat(face, fx, fy, fw, fh):
+        n = fbm(fx * 1.8, fy * 1.8, 16, 9821, octaves=4, base_period=4)
+        base = mix(hide, hide_hi, n * 0.7)
+        # Heat running in the cracks of the hide, hottest along the back.
+        crack = fbm(fx * 3.2, fy * 3.2, 16, 9822, octaves=2, base_period=6)
+        if crack > 0.74:
+            heat = (crack - 0.74) / 0.26
+            weight = 0.8 if face == "top" else 0.5
+            return mix(base, mix(ember, ember_hot, heat), weight)
+        if face == "bottom":
+            return shade(base, -0.2)
+        return base
+
+    paint_box(c, 0, 0, 10, 10, 18, coat)      # body
+    paint_box(c, 0, 40, 7, 8, 8, coat)        # head
+
+    def limb(_face, _fx, fy, _fw, fh):
+        t = fy / float(max(1, fh - 1))
+        return mix(hide_hi, hide, 0.3 + t * 0.6)
+
+    paint_box(c, 30, 40, 3, 12, 3, limb)
+
+    def horn(_face, _fx, fy, _fw, fh):
+        t = fy / float(max(1, fh - 1))
+        # The antler is the light source: hot at the tip, dark at the skull.
+        return mix(hide, mix(ember, ember_hot, 1.0 - t), (1.0 - t) * 0.85)
+
+    paint_box(c, 44, 40, 2, 9, 2, horn)
+
+    emit(c, ENTITY, "voidbound_cinder_stag", roughness=222,
+         emissive_from=ember_hot[:3], emissive_gain=1.5, emissive_threshold=0.3)
+
+
+def entity_glowmite():
+    """32x32: small, round and warm - the one thing in the End to keep."""
+    c = Canvas(32, 32)
+    fluff = hex_rgba("#E8D8F4")
+    fluff_lo = hex_rgba("#8A76A8")
+    glow = hex_rgba("#FFE9A0")
+
+    def coat(face, fx, fy, fw, fh):
+        n = fbm(fx * 2.6, fy * 2.6, 16, 9831, octaves=4, base_period=3)
+        base = mix(fluff_lo, fluff, n)
+        if face == "top":
+            return mix(base, hex_rgba("#FFFFFF"), 0.22)
+        if face == "bottom":
+            # Lit underside, so it glows on whatever it is standing on.
+            return mix(base, glow, 0.5)
+        return base
+
+    paint_box(c, 0, 0, 8, 6, 8, coat)
+
+    def face_paint(face, fx, fy, fw, fh):
+        base = mix(fluff_lo, fluff, fbm(fx * 2.2, fy * 2.2, 16, 9832, octaves=3, base_period=3))
+        if face == "north":
+            # Two big eyes and a lit snout - the whole appeal of the thing.
+            if fy in (2, 3) and fx in (1, 2, 5, 6):
+                return hex_rgba("#241832")
+            if fy in (2,) and fx in (1, 5):
+                return hex_rgba("#FFFFFF")
+            if fy >= 4 and 3 <= fx <= 4:
+                return glow
+        return base
+
+    paint_box(c, 0, 16, 8, 6, 6, face_paint)
+
+    def leg(_face, _fx, fy, _fw, fh):
+        return mix(fluff, fluff_lo, fy / float(max(1, fh - 1)))
+
+    paint_box(c, 20, 22, 2, 3, 2, leg)
+
+    emit(c, ENTITY, "voidbound_glowmite", roughness=234,
+         emissive_from=glow[:3], emissive_gain=1.3, emissive_threshold=0.38)
+
+
+def entity_end_villager():
+    """64x64: an enderman's build wearing a trader's habit.
+
+    It has to read as *related to* the endermen without being one, so the
+    proportions are theirs - narrow, long-limbed - and everything else is not:
+    a heavy hooded robe, a sash in the profession's colour, and the pale eyes
+    turned down rather than staring.
+    """
+    c = Canvas(64, 64)
+    robe = mix(PALETTE["void"], hex_rgba("#4A3A6E"), 0.7)
+    robe_hi = mix(robe, hex_rgba("#9C86C8"), 0.45)
+    skin = mix(PALETTE["void"], hex_rgba("#1A1428"), 0.5)
+    eyes = hex_rgba("#C8F0FF")
+    sash = hex_rgba("#E8C766")
+
+    def cloth(face, fx, fy, fw, fh):
+        n = fbm(fx * 1.6, fy * 1.6, 16, 9901, octaves=3, base_period=4)
+        base = mix(robe, robe_hi, n * 0.6)
+        # A sash across the chest, which is where the profession colour goes.
+        if face == "north" and 3 <= fy <= 5:
+            return mix(sash, base, 0.25 + abs(fx - fw / 2.0) / max(1.0, fw) * 0.5)
+        if face == "bottom":
+            return shade(base, -0.3)
+        # Vertical folds, heavier toward the hem.
+        if int(fx) % 3 == 0:
+            return shade(base, -0.14 - (fy / max(1.0, fh)) * 0.12)
+        return base
+
+    paint_box(c, 0, 0, 8, 14, 5, cloth)
+
+    def hood(face, fx, fy, fw, fh):
+        n = fbm(fx * 1.9, fy * 1.9, 16, 9902, octaves=3, base_period=4)
+        base = mix(shade(robe, -0.12), robe_hi, n * 0.5)
+        if face == "north":
+            # The hood's opening: dark, with two low eyes inside it.
+            if 2 <= fy <= 6 and 1 <= fx <= fw - 2:
+                if fy in (4, 5) and fx in (2, fw - 3):
+                    return eyes
+                return skin
+        if face == "top":
+            return shade(base, 0.16)
+        return base
+
+    paint_box(c, 0, 38, 8, 8, 8, hood)
+
+    def limb(face, _fx, fy, _fw, fh):
+        t = fy / float(max(1, fh - 1))
+        # Sleeves to the elbow, bare from there down.
+        return mix(robe_hi, robe, 0.4) if t < 0.55 else mix(skin, robe, 0.25)
+
+    paint_box(c, 34, 38, 2, 16, 2, limb)
+
+    emit(c, ENTITY, "voidbound_end_villager", roughness=214,
+         emissive_from=eyes[:3], emissive_gain=1.2, emissive_threshold=0.45)
+
+
 # --------------------------------------------------------------------------
 
 
@@ -2509,6 +2968,11 @@ def main():
         entity_voidling,
         entity_ender_beetle,
         entity_void_titan,
+        entity_void_leviathan,
+        entity_drift_jelly,
+        entity_cinder_stag,
+        entity_glowmite,
+        entity_end_villager,
         block_ender_log,
         block_ender_leaves,
         block_ender_bush,
@@ -2518,10 +2982,13 @@ def main():
         block_flora_and_stone,
         block_end_detail,
         block_biome_set,
+        block_underside_set,
+        block_crop_and_village,
         item_gameplay_set,
         item_ender_fruit,
         item_sovereign_crown,
         item_material_set,
+        item_farm_and_trade,
         particle_atlas,
         armor_layers,
         item_void_helmet,

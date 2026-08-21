@@ -1,0 +1,38 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "voidbound:cinder_stag",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/voidbound_cinder_stag"
+      },
+      "geometry": {
+        "default": "geometry.voidbound.cinder_stag"
+      },
+      "animations": {
+        "idle": "animation.voidbound.cinder_stag.idle",
+        "walk": "animation.voidbound.cinder_stag.walk",
+        "vb_alert": "animation.voidbound.cinder_stag.alert",
+        "vb_death": "animation.voidbound.cinder_stag.death",
+        "vb_state": "controller.animation.voidbound.mob.state"
+      },
+      "scripts": {
+        "animate": [
+          "idle",
+          "walk",
+          "vb_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.voidbound.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#2A2422",
+        "overlay_color": "#FF7A2E"
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:lantern_post"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      " B ",
+      "RLR",
+      " B "
+    ],
+    "key": {
+      "B": {
+        "item": "voidbound:ender_bricks"
+      },
+      "R": {
+        "item": "voidbound:ender_planks"
+      },
+      "L": {
+        "item": "voidbound:echo_shard"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:echo_shard"
+      }
+    ],
+    "result": {
+      "item": "voidbound:lantern_post",
+      "count": 2
+    }
+  }
+}

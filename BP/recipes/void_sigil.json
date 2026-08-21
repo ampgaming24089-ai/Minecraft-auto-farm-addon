@@ -1,0 +1,36 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "voidbound:void_sigil"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "CVC",
+      "VSV",
+      "CVC"
+    ],
+    "key": {
+      "C": {
+        "item": "voidbound:void_crystal"
+      },
+      "V": {
+        "item": "voidbound:voidsteel_ingot"
+      },
+      "S": {
+        "item": "voidbound:echo_shard"
+      }
+    },
+    "unlock": [
+      {
+        "item": "voidbound:voidsteel_ingot"
+      }
+    ],
+    "result": {
+      "item": "voidbound:void_sigil",
+      "count": 4
+    }
+  }
+}

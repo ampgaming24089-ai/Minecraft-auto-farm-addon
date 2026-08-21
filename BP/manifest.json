@@ -1,12 +1,12 @@
 {
   "format_version": 2,
   "header": {
-    "name": "End Divided [Behavior]",
-    "description": "Seven biomes for a dimension that has one - painted terrain, per-region fog, light and particles, three bosses, thirteen mobs, a waystone network and a full player animation pack. Bedrock 26.4.",
-    "uuid": "6620440a-5485-4dab-9cae-dff56d3c17a3",
+    "name": "End Everlasting [Behavior]",
+    "description": "Seven biomes with floating islands stacked through the world height, End villages with traders, crops, a tameable companion, three bosses, seventeen mobs and a full player animation pack. Bedrock 26.4.",
+    "uuid": "2e8978d0-b53f-432b-8a52-62d8ba2d5798",
     "version": [
       1,
-      5,
+      6,
       0
     ],
     "min_engine_version": [
@@ -18,10 +18,10 @@
   "metadata": {
     "product_type": "addon",
     "authors": [
-      "End Divided"
+      "End Everlasting"
     ],
     "generated_with": {
-      "end_divided_tools": [
+      "end_everlasting_tools": [
         "1.0.0"
       ]
     }
@@ -29,20 +29,20 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "9f4f7ba0-b6d5-439a-8dd3-2c225f2a9b7d",
+      "uuid": "c47c5b4b-2e16-4878-b467-e6ab52b4597f",
       "version": [
         1,
-        5,
+        6,
         0
       ]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "2ee44d5d-5cc3-4508-88fc-3d3931d5730c",
+      "uuid": "eebf73b0-440d-41f3-b5a9-b2f59a55a8db",
       "version": [
         1,
-        5,
+        6,
         0
       ],
       "entry": "scripts/main.js"
@@ -58,10 +58,10 @@
       "version": "2.1.0"
     },
     {
-      "uuid": "0d7084c1-bebb-467e-a25b-f38a38cd8840",
+      "uuid": "07f2ea28-71ea-4e9b-ac3f-1106f8b34d5b",
       "version": [
         1,
-        5,
+        6,
         0
       ]
     }

@@ -29,6 +29,10 @@ const FLYERS = new Map([
   // The whale is the biggest thing in the sky, so it gets the longest
   // rope - but a higher ceiling would put it out of render range.
   ["voidbound:astral_whale", { ceiling: 14, leash: 44 }],
+  // The Leviathan gets the most rope of anything, because it is meant to be
+  // seen crossing the sky - but the ceiling is what stops it becoming a dot.
+  ["voidbound:void_leviathan", { ceiling: 18, leash: 60 }],
+  ["voidbound:drift_jelly", { ceiling: 11, leash: 26 }],
 ]);
 
 const CHECK_INTERVAL_TICKS = 10;

@@ -1,0 +1,226 @@
+{
+  "tiers": [
+    {
+      "groups": [
+        {
+          "num_to_select": 2,
+          "trades": [
+            {
+              "wants": [
+                {
+                  "item": "voidbound:echo_shard",
+                  "quantity": {
+                    "min": 6,
+                    "max": 9
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 1,
+                    "max": 1
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_chitin",
+                  "quantity": {
+                    "min": 4,
+                    "max": 6
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 1,
+                    "max": 1
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:ender_fruit",
+                  "quantity": {
+                    "min": 8,
+                    "max": 12
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 1,
+                    "max": 1
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            }
+          ]
+        },
+        {
+          "num_to_select": 2,
+          "trades": [
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 1,
+                    "max": 1
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "minecraft:iron_ingot",
+                  "quantity": {
+                    "min": 3,
+                    "max": 5
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 2,
+                    "max": 2
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "minecraft:emerald",
+                  "quantity": {
+                    "min": 4,
+                    "max": 6
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 1,
+                    "max": 1
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "minecraft:torch",
+                  "quantity": {
+                    "min": 12,
+                    "max": 20
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "total_exp_required": 24,
+      "groups": [
+        {
+          "num_to_select": 2,
+          "trades": [
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 4,
+                    "max": 4
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "minecraft:diamond",
+                  "quantity": {
+                    "min": 1,
+                    "max": 2
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 3,
+                    "max": 3
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "minecraft:ender_pearl",
+                  "quantity": {
+                    "min": 4,
+                    "max": 8
+                  }
+                }
+              ],
+              "max_uses": 12,
+              "reward_exp": true
+            },
+            {
+              "wants": [
+                {
+                  "item": "voidbound:void_sigil",
+                  "quantity": {
+                    "min": 6,
+                    "max": 6
+                  }
+                }
+              ],
+              "gives": [
+                {
+                  "item": "minecraft:elytra",
+                  "quantity": {
+                    "min": 1,
+                    "max": 1
+                  }
+                }
+              ],
+              "max_uses": 1,
+              "reward_exp": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -41,7 +41,7 @@ function recordFound(player, key) {
     player.setDynamicProperty(COUNT_PROPERTY, total);
     return total;
   } catch (error) {
-    console.warn(`[End Divided] could not record discovery: ${error}`);
+    console.warn(`[End Everlasting] could not record discovery: ${error}`);
     return undefined;
   }
 }

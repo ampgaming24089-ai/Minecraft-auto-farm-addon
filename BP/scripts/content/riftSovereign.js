@@ -238,7 +238,7 @@ function tick() {
     try {
       driveBoss(boss);
     } catch (error) {
-      console.warn(`[End Divided] sovereign tick failed: ${error}`);
+      console.warn(`[End Everlasting] sovereign tick failed: ${error}`);
     }
   }
 }
