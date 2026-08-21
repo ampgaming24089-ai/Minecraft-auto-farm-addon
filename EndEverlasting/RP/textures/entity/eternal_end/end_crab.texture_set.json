@@ -1,0 +1,7 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:texture_set": {
+    "color": "end_crab",
+    "metalness_emissive_roughness": "end_crab_mer"
+  }
+}

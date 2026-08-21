@@ -1,0 +1,38 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "eternal_end:ender_overlord",
+      "materials": {
+        "default": "entity_emissive_alpha"
+      },
+      "textures": {
+        "default": "textures/entity/eternal_end/ender_overlord"
+      },
+      "geometry": {
+        "default": "geometry.eternal_end.ender_overlord"
+      },
+      "animations": {
+        "idle": "animation.eternal_end.ender_overlord.idle",
+        "move": "animation.eternal_end.ender_overlord.move",
+        "ee_alert": "animation.eternal_end.ender_overlord.alert",
+        "ee_death": "animation.eternal_end.ender_overlord.death",
+        "ee_state": "controller.animation.eternal_end.mob.state"
+      },
+      "scripts": {
+        "animate": [
+          "idle",
+          "move",
+          "ee_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.eternal_end.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#150B28",
+        "overlay_color": "#F05CF0"
+      }
+    }
+  }
+}

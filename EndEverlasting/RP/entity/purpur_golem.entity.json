@@ -1,0 +1,38 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "eternal_end:purpur_golem",
+      "materials": {
+        "default": "entity_emissive_alpha"
+      },
+      "textures": {
+        "default": "textures/entity/eternal_end/purpur_golem"
+      },
+      "geometry": {
+        "default": "geometry.eternal_end.purpur_golem"
+      },
+      "animations": {
+        "idle": "animation.eternal_end.purpur_golem.idle",
+        "move": "animation.eternal_end.purpur_golem.move",
+        "ee_alert": "animation.eternal_end.purpur_golem.alert",
+        "ee_death": "animation.eternal_end.purpur_golem.death",
+        "ee_state": "controller.animation.eternal_end.mob.state"
+      },
+      "scripts": {
+        "animate": [
+          "idle",
+          "move",
+          "ee_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.eternal_end.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#5A2A6B",
+        "overlay_color": "#B04CFF"
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:texture_set": {
+    "color": "teleporter",
+    "metalness_emissive_roughness": "teleporter_mer"
+  }
+}

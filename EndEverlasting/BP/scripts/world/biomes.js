@@ -68,7 +68,9 @@ export const BIOMES = {
     flora: [],
     fog: "voidbound:fog_end_open",
     particle: undefined,
-    mobs: ["voidbound:lumen_wisp", "voidbound:rift_stalker", "voidbound:crystal_crawler"],
+    mobs: ["voidbound:lumen_wisp", "voidbound:rift_stalker", "voidbound:crystal_crawler",
+           "eternal_end:void_stalker", "eternal_end:corrupted_enderman",
+           "eternal_end:void_wisp", "eternal_end:ender_bird"],
   },
   glowspore: {
     id: "glowspore",
@@ -88,7 +90,9 @@ export const BIOMES = {
     particle: "voidbound:spore_drift",
     particleLift: -1,
     particleChance: 0.9,
-    mobs: ["voidbound:void_moth", "voidbound:voidling", "voidbound:chorus_hopper"],
+    mobs: ["voidbound:void_moth", "voidbound:voidling", "voidbound:chorus_hopper",
+           "eternal_end:endermite_hive", "eternal_end:void_slime",
+           "eternal_end:chorus_cow", "eternal_end:chorus_fiend"],
   },
   bonespire: {
     id: "bonespire",
@@ -107,7 +111,9 @@ export const BIOMES = {
     particle: "voidbound:frost_fall",
     particleLift: 9,
     particleChance: 0.75,
-    mobs: ["voidbound:shard_wraith", "voidbound:glimmerfin", "voidbound:echo_sentinel"],
+    mobs: ["voidbound:shard_wraith", "voidbound:glimmerfin", "voidbound:echo_sentinel",
+           "eternal_end:ender_deer", "eternal_end:end_crab",
+           "eternal_end:teleporter"],
   },
   crystalline: {
     id: "crystalline",
@@ -127,7 +133,9 @@ export const BIOMES = {
     particle: "voidbound:crystal_glint",
     particleLift: 0,
     particleChance: 0.7,
-    mobs: ["voidbound:crystal_crawler", "voidbound:shard_wraith", "voidbound:lumen_wisp"],
+    mobs: ["voidbound:crystal_crawler", "voidbound:shard_wraith", "voidbound:lumen_wisp",
+           "eternal_end:end_crab", "eternal_end:purpur_golem",
+           "eternal_end:void_wisp", "eternal_end:sky_ray"],
   },
   verdant: {
     id: "verdant",
@@ -149,7 +157,9 @@ export const BIOMES = {
     particleLift: 1,
     particleChance: 0.8,
     mobs: ["voidbound:chorus_hopper", "voidbound:glimmerfin", "voidbound:ender_beetle",
-           "voidbound:endstone_golem"],
+           "voidbound:endstone_golem", "eternal_end:ender_deer",
+           "eternal_end:chorus_cow", "eternal_end:void_hog",
+           "eternal_end:end_spider"],
   },
   ashen: {
     id: "ashen",
@@ -168,7 +178,9 @@ export const BIOMES = {
     particle: "voidbound:ember_rise",
     particleLift: -2,
     particleChance: 0.85,
-    mobs: ["voidbound:rift_stalker", "voidbound:echo_sentinel", "voidbound:crystal_crawler"],
+    mobs: ["voidbound:rift_stalker", "voidbound:echo_sentinel", "voidbound:crystal_crawler",
+           "eternal_end:obsidian_beast", "eternal_end:void_stalker",
+           "eternal_end:chorus_fiend", "eternal_end:void_hog"],
   },
   aurora: {
     id: "aurora",
@@ -189,7 +201,9 @@ export const BIOMES = {
     particleLift: 22,
     particleChance: 0.6,
     mobs: ["voidbound:astral_whale", "voidbound:lumen_wisp", "voidbound:void_moth",
-           "voidbound:glimmerfin"],
+           "voidbound:glimmerfin", "eternal_end:sky_ray",
+           "eternal_end:ender_bird", "eternal_end:teleporter",
+           "eternal_end:shulker_beast"],
   },
 };
 

@@ -1,0 +1,209 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.eternal_end.void_wisp",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 1.6,
+        "visible_bounds_height": 1.8,
+        "visible_bounds_offset": [
+          0,
+          0.9,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "body",
+          "pivot": [
+            0.0,
+            12.0,
+            0.0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -4.0,
+                8.0,
+                -4.0
+              ],
+              "size": [
+                8,
+                9,
+                8
+              ],
+              "uv": [
+                0,
+                18
+              ]
+            }
+          ]
+        },
+        {
+          "name": "hood",
+          "pivot": [
+            0.0,
+            17.0,
+            0.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -5.0,
+                17.0,
+                -5.0
+              ],
+              "size": [
+                10,
+                8,
+                10
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "flame_0",
+          "pivot": [
+            -1.0,
+            25.0,
+            1.0
+          ],
+          "parent": "hood",
+          "cubes": [
+            {
+              "origin": [
+                -3.0,
+                25.0,
+                -1.0
+              ],
+              "size": [
+                4,
+                8,
+                4
+              ],
+              "uv": [
+                0,
+                35
+              ]
+            }
+          ]
+        },
+        {
+          "name": "flame_1",
+          "pivot": [
+            4.0,
+            25.0,
+            4.0
+          ],
+          "parent": "hood",
+          "cubes": [
+            {
+              "origin": [
+                2.0,
+                25.0,
+                2.0
+              ],
+              "size": [
+                4,
+                8,
+                4
+              ],
+              "uv": [
+                16,
+                35
+              ]
+            }
+          ]
+        },
+        {
+          "name": "flame_2",
+          "pivot": [
+            0.5,
+            25.0,
+            4.5
+          ],
+          "parent": "hood",
+          "cubes": [
+            {
+              "origin": [
+                -1.0,
+                25.0,
+                3.0
+              ],
+              "size": [
+                3,
+                8,
+                3
+              ],
+              "uv": [
+                32,
+                35
+              ]
+            }
+          ]
+        },
+        {
+          "name": "trail_0",
+          "pivot": [
+            -5.0,
+            8.0,
+            0.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -6.0,
+                0.0,
+                -2.0
+              ],
+              "size": [
+                3,
+                9,
+                4
+              ],
+              "uv": [
+                32,
+                18
+              ]
+            }
+          ]
+        },
+        {
+          "name": "trail_1",
+          "pivot": [
+            4.0,
+            8.0,
+            0.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                3.0,
+                0.0,
+                -2.0
+              ],
+              "size": [
+                3,
+                9,
+                4
+              ],
+              "uv": [
+                46,
+                18
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

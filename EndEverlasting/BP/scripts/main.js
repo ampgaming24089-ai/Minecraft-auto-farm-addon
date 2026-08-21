@@ -17,6 +17,7 @@
  *   emotes           one-shot player poses on the moments that earn them
  *   mob actions      attack swings and hurt recoils for the pack's mobs
  *   rift sovereign   drives the boss fight's phases, attacks and death
+ *   sky ray          steers a tamed ray from its rider's view
  *   void titan       drives the Titan's ground attacks and its core item
  *   utility items    the Rift Charm's anchor and the Echo Horn's survey
  *   waystones        the attuned travel network and its menu
@@ -34,6 +35,7 @@ import { startMobActions } from "./content/mobActions.js";
 import { startEnderSapling } from "./content/enderSapling.js";
 import { startRiftCompass } from "./content/riftCompass.js";
 import { startRiftSovereign } from "./content/riftSovereign.js";
+import { startSkyRay } from "./content/skyRay.js";
 import { startVoidTitan } from "./content/voidTitan.js";
 import { startUtilityItems } from "./content/utilityItems.js";
 import { startWaystones } from "./content/waystones.js";
@@ -62,6 +64,7 @@ function start() {
   startEmotes();
   startMobActions();
   startRiftSovereign();
+  startSkyRay();
   startVoidTitan();
   startUtilityItems();
   startWaystones();

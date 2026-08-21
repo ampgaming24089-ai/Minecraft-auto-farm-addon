@@ -1,0 +1,20 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "eternal_end:void_breath",
+      "materials": {
+        "default": "entity_emissive_alpha"
+      },
+      "textures": {
+        "default": "textures/entity/eternal_end/void_breath"
+      },
+      "geometry": {
+        "default": "geometry.eternal_end.projectile"
+      },
+      "render_controllers": [
+        "controller.render.eternal_end.default"
+      ]
+    }
+  }
+}

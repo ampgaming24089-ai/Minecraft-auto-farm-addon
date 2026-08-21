@@ -1,0 +1,48 @@
+{
+  "format_version": "1.8.0",
+  "minecraft:spawn_rules": {
+    "description": {
+      "identifier": "eternal_end:obsidian_beast",
+      "population_control": "monster"
+    },
+    "conditions": [
+      {
+        "minecraft:spawns_on_surface": {},
+        "minecraft:biome_filter": {
+          "test": "has_biome_tag",
+          "operator": "==",
+          "value": "the_end"
+        },
+        "minecraft:height_filter": {
+          "min": 0,
+          "max": 250
+        },
+        "minecraft:density_limit": {
+          "surface": 2
+        },
+        "minecraft:herd": {
+          "min_size": 1,
+          "max_size": 1
+        },
+        "minecraft:weight": {
+          "default": 7
+        },
+        "minecraft:spawns_on_block_filter": [
+          "minecraft:end_stone",
+          "voidbound:shattered_end_stone",
+          "voidbound:verdant_end_stone",
+          "voidbound:crystalline_end_stone",
+          "voidbound:glowspore_soil",
+          "voidbound:ashen_end_stone",
+          "voidbound:bonespire_stone",
+          "voidbound:aurora_stone",
+          "voidbound:mossy_end_stone"
+        ],
+        "minecraft:difficulty_filter": {
+          "min": "easy",
+          "max": "hard"
+        }
+      }
+    ]
+  }
+}

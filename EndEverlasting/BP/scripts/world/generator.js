@@ -113,6 +113,22 @@ function* buildJob(dimension, site, origin) {
       yield;
     }
 
+    // Named bosses a blueprint has chosen to seat. Kept generic rather than a
+    // flag per boss, so adding one is a line in a blueprint and nothing here.
+    for (const lord of plan.lords ?? []) {
+      const offset = rotate(lord, site.facing);
+      try {
+        dimension.spawnEntity(lord.id, {
+          x: origin.x + offset.x,
+          y: origin.y + lord.y,
+          z: origin.z + offset.z,
+        });
+      } catch (error) {
+        console.warn(`[End Everlasting] could not seat ${lord.id} at ${site.key}: ${error}`);
+      }
+      yield;
+    }
+
     for (let i = 0; i < (plan.villagers ?? 0); i++) {
       const angle = rng.float(0, Math.PI * 2);
       const reach = rng.float(3, 9);

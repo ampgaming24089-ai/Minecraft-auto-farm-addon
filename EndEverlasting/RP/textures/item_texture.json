@@ -85,6 +85,57 @@
     },
     "voidbound_void_sigil": {
       "textures": "textures/items/voidbound_void_sigil"
+    },
+    "eternal_end_raw_ender_venison": {
+      "textures": "textures/items/eternal_end_raw_ender_venison"
+    },
+    "eternal_end_cooked_ender_venison": {
+      "textures": "textures/items/eternal_end_cooked_ender_venison"
+    },
+    "eternal_end_raw_chorus_beef": {
+      "textures": "textures/items/eternal_end_raw_chorus_beef"
+    },
+    "eternal_end_cooked_chorus_beef": {
+      "textures": "textures/items/eternal_end_cooked_chorus_beef"
+    },
+    "eternal_end_raw_void_pork": {
+      "textures": "textures/items/eternal_end_raw_void_pork"
+    },
+    "eternal_end_cooked_void_pork": {
+      "textures": "textures/items/eternal_end_cooked_void_pork"
+    },
+    "eternal_end_raw_ray_meat": {
+      "textures": "textures/items/eternal_end_raw_ray_meat"
+    },
+    "eternal_end_cooked_ray_meat": {
+      "textures": "textures/items/eternal_end_cooked_ray_meat"
+    },
+    "eternal_end_raw_ender_poultry": {
+      "textures": "textures/items/eternal_end_raw_ender_poultry"
+    },
+    "eternal_end_cooked_ender_poultry": {
+      "textures": "textures/items/eternal_end_cooked_ender_poultry"
+    },
+    "eternal_end_lumen_feed": {
+      "textures": "textures/items/eternal_end_lumen_feed"
+    },
+    "eternal_end_void_scale": {
+      "textures": "textures/items/eternal_end_void_scale"
+    },
+    "eternal_end_void_ember": {
+      "textures": "textures/items/eternal_end_void_ember"
+    },
+    "eternal_end_void_chitin_plate": {
+      "textures": "textures/items/eternal_end_void_chitin_plate"
+    },
+    "eternal_end_void_heart": {
+      "textures": "textures/items/eternal_end_void_heart"
+    },
+    "eternal_end_overlord_eye": {
+      "textures": "textures/items/eternal_end_overlord_eye"
+    },
+    "eternal_end_crown_shard": {
+      "textures": "textures/items/eternal_end_crown_shard"
     }
   }
 }

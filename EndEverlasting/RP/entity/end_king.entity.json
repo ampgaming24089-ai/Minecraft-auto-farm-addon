@@ -1,0 +1,38 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "eternal_end:end_king",
+      "materials": {
+        "default": "entity_emissive_alpha"
+      },
+      "textures": {
+        "default": "textures/entity/eternal_end/end_king"
+      },
+      "geometry": {
+        "default": "geometry.eternal_end.end_king"
+      },
+      "animations": {
+        "idle": "animation.eternal_end.end_king.idle",
+        "move": "animation.eternal_end.end_king.move",
+        "ee_alert": "animation.eternal_end.end_king.alert",
+        "ee_death": "animation.eternal_end.end_king.death",
+        "ee_state": "controller.animation.eternal_end.mob.state"
+      },
+      "scripts": {
+        "animate": [
+          "idle",
+          "move",
+          "ee_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.eternal_end.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#1A1418",
+        "overlay_color": "#E8A020"
+      }
+    }
+  }
+}

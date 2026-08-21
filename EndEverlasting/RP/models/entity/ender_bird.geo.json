@@ -1,0 +1,316 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.eternal_end.ender_bird",
+        "texture_width": 128,
+        "texture_height": 128,
+        "visible_bounds_width": 2.4,
+        "visible_bounds_height": 1.8,
+        "visible_bounds_offset": [
+          0,
+          0.8,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "body",
+          "pivot": [
+            0.0,
+            12.0,
+            0.0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -4.0,
+                8.0,
+                -6.0
+              ],
+              "size": [
+                8,
+                10,
+                13
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "head",
+          "pivot": [
+            0.0,
+            17.0,
+            -4.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -3.0,
+                17.0,
+                -9.0
+              ],
+              "size": [
+                7,
+                7,
+                7
+              ],
+              "uv": [
+                82,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -1.0,
+                19.0,
+                -12.0
+              ],
+              "size": [
+                3,
+                3,
+                4
+              ],
+              "uv": [
+                108,
+                36
+              ]
+            }
+          ]
+        },
+        {
+          "name": "crest",
+          "pivot": [
+            0.0,
+            24.0,
+            -6.0
+          ],
+          "parent": "head",
+          "cubes": [
+            {
+              "origin": [
+                -1.0,
+                24.0,
+                -8.0
+              ],
+              "size": [
+                3,
+                6,
+                5
+              ],
+              "uv": [
+                36,
+                36
+              ]
+            }
+          ]
+        },
+        {
+          "name": "wing_left",
+          "pivot": [
+            -4.0,
+            16.0,
+            -2.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -13.0,
+                14.0,
+                -5.0
+              ],
+              "size": [
+                9,
+                4,
+                9
+              ],
+              "uv": [
+                0,
+                23
+              ]
+            },
+            {
+              "origin": [
+                -22.0,
+                15.0,
+                -1.0
+              ],
+              "size": [
+                9,
+                3,
+                9
+              ],
+              "uv": [
+                72,
+                23
+              ]
+            }
+          ]
+        },
+        {
+          "name": "wing_right",
+          "pivot": [
+            4.0,
+            16.0,
+            -2.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                4.0,
+                14.0,
+                -5.0
+              ],
+              "size": [
+                9,
+                4,
+                9
+              ],
+              "uv": [
+                36,
+                23
+              ]
+            },
+            {
+              "origin": [
+                13.0,
+                15.0,
+                -1.0
+              ],
+              "size": [
+                9,
+                3,
+                9
+              ],
+              "uv": [
+                0,
+                36
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tail",
+          "pivot": [
+            0.0,
+            12.0,
+            7.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -4.0,
+                10.0,
+                7.0
+              ],
+              "size": [
+                8,
+                2,
+                12
+              ],
+              "uv": [
+                42,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "leg_left",
+          "pivot": [
+            -2.0,
+            8.0,
+            0.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -3.0,
+                2.0,
+                -2.0
+              ],
+              "size": [
+                3,
+                6,
+                3
+              ],
+              "uv": [
+                52,
+                36
+              ]
+            },
+            {
+              "origin": [
+                -3.0,
+                0.0,
+                -4.0
+              ],
+              "size": [
+                3,
+                2,
+                5
+              ],
+              "uv": [
+                76,
+                36
+              ]
+            }
+          ]
+        },
+        {
+          "name": "leg_right",
+          "pivot": [
+            2.0,
+            8.0,
+            0.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                1.0,
+                2.0,
+                -2.0
+              ],
+              "size": [
+                3,
+                6,
+                3
+              ],
+              "uv": [
+                64,
+                36
+              ]
+            },
+            {
+              "origin": [
+                1.0,
+                0.0,
+                -4.0
+              ],
+              "size": [
+                3,
+                2,
+                5
+              ],
+              "uv": [
+                92,
+                36
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

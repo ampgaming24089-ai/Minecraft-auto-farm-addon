@@ -1,0 +1,7 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:texture_set": {
+    "color": "chorus_cow",
+    "metalness_emissive_roughness": "chorus_cow_mer"
+  }
+}

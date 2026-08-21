@@ -1,0 +1,7 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:texture_set": {
+    "color": "sky_ray",
+    "metalness_emissive_roughness": "sky_ray_mer"
+  }
+}

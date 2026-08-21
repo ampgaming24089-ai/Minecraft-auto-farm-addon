@@ -15,6 +15,7 @@
  */
 
 import { system, world } from "@minecraft/server";
+import { ETERNAL_END_CLIPS } from "./eternalEndClips.js";
 
 /** typeId -> the clips that entity owns. */
 const CLIPS = new Map([
@@ -83,6 +84,13 @@ const CLIPS = new Map([
     hurt: "animation.voidbound.voidling.hurt",
   }],
 ]);
+
+// The Eternal End roster's clips are generated rather than written out here,
+// but they are still literal strings in a source file the checker can read -
+// see eternalEndClips.js.
+for (const [typeId, clips] of ETERNAL_END_CLIPS) {
+  CLIPS.set(typeId, clips);
+}
 
 /**
  * The *longest* clip of each kind, in seconds - a whale's swing runs 0.9s

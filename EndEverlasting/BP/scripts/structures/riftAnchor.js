@@ -73,6 +73,10 @@ export const RiftAnchor = {
       beacon: { x: 0, y: frameHeight, z: 0 },
       guards: rng.int(1, 2),
       boss: true,
+      // Anchors are a hole in the world. Sometimes something came through it.
+      lords: rng.chance(0.14)
+        ? [{ id: "eternal_end:ender_overlord", x: 0, y: frameHeight - 4, z: 0 }]
+        : [],
     };
   },
 };

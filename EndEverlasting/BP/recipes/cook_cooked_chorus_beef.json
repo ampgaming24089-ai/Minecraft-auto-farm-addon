@@ -1,0 +1,16 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_furnace": {
+    "description": {
+      "identifier": "eternal_end:cook_cooked_chorus_beef"
+    },
+    "tags": [
+      "furnace",
+      "smoker",
+      "campfire",
+      "soul_campfire"
+    ],
+    "input": "eternal_end:raw_chorus_beef",
+    "output": "eternal_end:cooked_chorus_beef"
+  }
+}

@@ -1,0 +1,223 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "eternal_end:ender_deer",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "component_groups": {
+      "eternal_end:wild": {
+        "minecraft:tameable": {
+          "probability": 0.34,
+          "tame_items": [
+            "eternal_end:lumen_feed"
+          ],
+          "tame_event": {
+            "event": "eternal_end:on_tame",
+            "target": "self"
+          }
+        }
+      },
+      "eternal_end:tamed": {
+        "minecraft:is_tamed": {},
+        "minecraft:persistent": {},
+        "minecraft:health": {
+          "value": 28,
+          "max": 28
+        },
+        "minecraft:behavior.follow_owner": {
+          "priority": 4,
+          "speed_multiplier": 1.2,
+          "start_distance": 10,
+          "stop_distance": 3
+        },
+        "minecraft:behavior.owner_hurt_by_target": {
+          "priority": 1
+        },
+        "minecraft:behavior.owner_hurt_target": {
+          "priority": 2
+        },
+        "minecraft:breedable": {
+          "require_tame": true,
+          "breeds_with": [
+            {
+              "mate_type": "eternal_end:ender_deer",
+              "baby_type": "eternal_end:ender_deer",
+              "breed_event": {
+                "event": "minecraft:entity_born",
+                "target": "baby"
+              }
+            }
+          ],
+          "breed_items": [
+            "eternal_end:lumen_feed"
+          ]
+        }
+      },
+      "eternal_end:baby": {
+        "minecraft:is_baby": {},
+        "minecraft:scale": {
+          "value": 0.55
+        },
+        "minecraft:ageable": {
+          "duration": 1200,
+          "feed_items": [
+            "eternal_end:lumen_feed"
+          ],
+          "grow_up": {
+            "event": "minecraft:ageable_grow_up",
+            "target": "self"
+          }
+        },
+        "minecraft:behavior.follow_parent": {
+          "priority": 5,
+          "speed_multiplier": 1.1
+        }
+      },
+      "eternal_end:adult": {}
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "ender_deer",
+          "eternal_end",
+          "mob",
+          "passive"
+        ]
+      },
+      "minecraft:collision_box": {
+        "width": 1.0,
+        "height": 1.9
+      },
+      "minecraft:health": {
+        "value": 20,
+        "max": 20
+      },
+      "minecraft:movement": {
+        "value": 0.32
+      },
+      "minecraft:knockback_resistance": {
+        "value": 0.0
+      },
+      "minecraft:nameable": {},
+      "minecraft:pushable": {
+        "is_pushable": true,
+        "is_pushable_by_piston": true
+      },
+      "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:breathable": {
+        "total_supply": 15,
+        "suffocate_time": 0
+      },
+      "minecraft:experience_reward": {
+        "on_death": "query.last_hit_by_player ? 3 : 0"
+      },
+      "minecraft:loot": {
+        "table": "loot_tables/entities/ender_deer.json"
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:navigation.walk": {
+        "can_path_over_water": false,
+        "avoid_water": true,
+        "can_pass_doors": false,
+        "avoid_damage_blocks": true
+      },
+      "minecraft:jump.static": {},
+      "minecraft:physics": {},
+      "minecraft:behavior.random_stroll": {
+        "priority": 6,
+        "speed_multiplier": 0.8
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 7,
+        "look_distance": 10
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 8
+      },
+      "minecraft:despawn": {
+        "despawn_from_distance": {
+          "min_distance": 96,
+          "max_distance": 160
+        }
+      },
+      "minecraft:behavior.float": {
+        "priority": 0
+      },
+      "minecraft:behavior.panic": {
+        "priority": 1,
+        "speed_multiplier": 1.4
+      },
+      "minecraft:behavior.tempt": {
+        "priority": 3,
+        "speed_multiplier": 1.1,
+        "items": [
+          "eternal_end:lumen_feed",
+          "eternal_end:lumen_feed"
+        ]
+      },
+      "minecraft:attack": {
+        "damage": 2
+      },
+      "minecraft:behavior.avoid_mob_type": {
+        "priority": 2,
+        "entity_types": [
+          {
+            "filters": {
+              "test": "is_family",
+              "subject": "other",
+              "value": "monster"
+            },
+            "max_dist": 10,
+            "walk_speed_multiplier": 1.5,
+            "sprint_speed_multiplier": 1.5
+          }
+        ]
+      }
+    },
+    "events": {
+      "minecraft:entity_spawned": {
+        "add": {
+          "component_groups": [
+            "eternal_end:wild",
+            "eternal_end:adult"
+          ]
+        }
+      },
+      "minecraft:entity_born": {
+        "add": {
+          "component_groups": [
+            "eternal_end:tamed",
+            "eternal_end:baby"
+          ]
+        }
+      },
+      "minecraft:ageable_grow_up": {
+        "remove": {
+          "component_groups": [
+            "eternal_end:baby"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "eternal_end:adult"
+          ]
+        }
+      },
+      "eternal_end:on_tame": {
+        "remove": {
+          "component_groups": [
+            "eternal_end:wild"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "eternal_end:tamed"
+          ]
+        }
+      }
+    }
+  }
+}

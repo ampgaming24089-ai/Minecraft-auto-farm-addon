@@ -1,0 +1,38 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "eternal_end:void_hog",
+      "materials": {
+        "default": "entity_emissive_alpha"
+      },
+      "textures": {
+        "default": "textures/entity/eternal_end/void_hog"
+      },
+      "geometry": {
+        "default": "geometry.eternal_end.void_hog"
+      },
+      "animations": {
+        "idle": "animation.eternal_end.void_hog.idle",
+        "move": "animation.eternal_end.void_hog.move",
+        "ee_alert": "animation.eternal_end.void_hog.alert",
+        "ee_death": "animation.eternal_end.void_hog.death",
+        "ee_state": "controller.animation.eternal_end.mob.state"
+      },
+      "scripts": {
+        "animate": [
+          "idle",
+          "move",
+          "ee_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.eternal_end.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#191622",
+        "overlay_color": "#B04CFF"
+      }
+    }
+  }
+}

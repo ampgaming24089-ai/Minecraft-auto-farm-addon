@@ -1,0 +1,26 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "eternal_end:lumen_feed"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "minecraft:chorus_fruit"
+      },
+      {
+        "item": "voidbound:lumen_berry"
+      },
+      {
+        "item": "voidbound:bloom_pod"
+      }
+    ],
+    "result": {
+      "item": "eternal_end:lumen_feed",
+      "count": 3
+    }
+  }
+}

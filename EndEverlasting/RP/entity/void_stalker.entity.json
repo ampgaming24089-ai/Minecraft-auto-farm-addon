@@ -1,0 +1,38 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "eternal_end:void_stalker",
+      "materials": {
+        "default": "entity_emissive_alpha"
+      },
+      "textures": {
+        "default": "textures/entity/eternal_end/void_stalker"
+      },
+      "geometry": {
+        "default": "geometry.eternal_end.void_stalker"
+      },
+      "animations": {
+        "idle": "animation.eternal_end.void_stalker.idle",
+        "move": "animation.eternal_end.void_stalker.move",
+        "ee_alert": "animation.eternal_end.void_stalker.alert",
+        "ee_death": "animation.eternal_end.void_stalker.death",
+        "ee_state": "controller.animation.eternal_end.mob.state"
+      },
+      "scripts": {
+        "animate": [
+          "idle",
+          "move",
+          "ee_state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.eternal_end.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#2A1140",
+        "overlay_color": "#B04CFF"
+      }
+    }
+  }
+}

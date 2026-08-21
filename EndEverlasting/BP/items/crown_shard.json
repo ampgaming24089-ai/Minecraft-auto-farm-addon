@@ -1,0 +1,22 @@
+{
+  "format_version": "1.21.100",
+  "minecraft:item": {
+    "description": {
+      "identifier": "eternal_end:crown_shard",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "eternal_end_crown_shard"
+        }
+      },
+      "minecraft:display_name": {
+        "value": "item.eternal_end:crown_shard.name"
+      },
+      "minecraft:max_stack_size": 64
+    }
+  }
+}

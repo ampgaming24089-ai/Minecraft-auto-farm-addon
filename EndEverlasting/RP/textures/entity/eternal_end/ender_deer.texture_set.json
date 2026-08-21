@@ -1,0 +1,7 @@
+{
+  "format_version": "1.16.100",
+  "minecraft:texture_set": {
+    "color": "ender_deer",
+    "metalness_emissive_roughness": "ender_deer_mer"
+  }
+}

@@ -88,6 +88,11 @@ export const VoidSpire = {
       placements: merge(plinth, vault, shaft, crown, veins, flora),
       chests: [{ x: 0, y: -4, z: 0 }],
       beacon: { x: 0, y: height, z: 0 },
+      // A spire this visible is a perch, and once in a while something is on
+      // it. Rare enough that seeing one from a distance means something.
+      lords: rng.chance(0.13)
+        ? [{ id: "eternal_end:void_dragon", x: 0, y: height + 4, z: 0 }]
+        : [],
     };
   },
 };

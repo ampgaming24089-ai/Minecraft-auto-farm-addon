@@ -1,0 +1,300 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.eternal_end.sky_ray",
+        "texture_width": 256,
+        "texture_height": 256,
+        "visible_bounds_width": 5.0,
+        "visible_bounds_height": 2.0,
+        "visible_bounds_offset": [
+          0,
+          1.0,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "body",
+          "pivot": [
+            0.0,
+            16.0,
+            0.0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -7.0,
+                13.0,
+                -14.0
+              ],
+              "size": [
+                14,
+                9,
+                26
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -4.0,
+                22.0,
+                -10.0
+              ],
+              "size": [
+                8,
+                5,
+                17
+              ],
+              "uv": [
+                0,
+                35
+              ]
+            },
+            {
+              "origin": [
+                -5.0,
+                10.0,
+                -10.0
+              ],
+              "size": [
+                10,
+                3,
+                18
+              ],
+              "uv": [
+                50,
+                35
+              ]
+            }
+          ]
+        },
+        {
+          "name": "head",
+          "pivot": [
+            0.0,
+            17.0,
+            -14.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -5.0,
+                14.0,
+                -21.0
+              ],
+              "size": [
+                10,
+                7,
+                8
+              ],
+              "uv": [
+                62,
+                57
+              ]
+            }
+          ]
+        },
+        {
+          "name": "wing_left",
+          "pivot": [
+            -7.0,
+            17.0,
+            -2.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -24.0,
+                15.0,
+                -13.0
+              ],
+              "size": [
+                17,
+                4,
+                24
+              ],
+              "uv": [
+                80,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "wingtip_left",
+          "pivot": [
+            -24.0,
+            18.0,
+            -2.0
+          ],
+          "parent": "wing_left",
+          "cubes": [
+            {
+              "origin": [
+                -38.0,
+                17.0,
+                -8.0
+              ],
+              "size": [
+                14,
+                3,
+                17
+              ],
+              "uv": [
+                150,
+                35
+              ]
+            },
+            {
+              "origin": [
+                -46.0,
+                19.0,
+                -3.0
+              ],
+              "size": [
+                8,
+                2,
+                10
+              ],
+              "uv": [
+                128,
+                57
+              ]
+            }
+          ]
+        },
+        {
+          "name": "wing_right",
+          "pivot": [
+            7.0,
+            17.0,
+            -2.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                7.0,
+                15.0,
+                -13.0
+              ],
+              "size": [
+                17,
+                4,
+                24
+              ],
+              "uv": [
+                162,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "wingtip_right",
+          "pivot": [
+            24.0,
+            18.0,
+            -2.0
+          ],
+          "parent": "wing_right",
+          "cubes": [
+            {
+              "origin": [
+                24.0,
+                17.0,
+                -8.0
+              ],
+              "size": [
+                14,
+                3,
+                17
+              ],
+              "uv": [
+                0,
+                57
+              ]
+            },
+            {
+              "origin": [
+                38.0,
+                19.0,
+                -3.0
+              ],
+              "size": [
+                8,
+                2,
+                10
+              ],
+              "uv": [
+                164,
+                57
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tail",
+          "pivot": [
+            0.0,
+            17.0,
+            12.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -2.0,
+                15.0,
+                12.0
+              ],
+              "size": [
+                4,
+                3,
+                18
+              ],
+              "uv": [
+                106,
+                35
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tail2",
+          "pivot": [
+            0.0,
+            17.0,
+            30.0
+          ],
+          "parent": "tail",
+          "cubes": [
+            {
+              "origin": [
+                -1.0,
+                15.0,
+                30.0
+              ],
+              "size": [
+                3,
+                3,
+                12
+              ],
+              "uv": [
+                98,
+                57
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

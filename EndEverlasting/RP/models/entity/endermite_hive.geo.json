@@ -1,0 +1,214 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.eternal_end.endermite_hive",
+        "texture_width": 128,
+        "texture_height": 128,
+        "visible_bounds_width": 2.4,
+        "visible_bounds_height": 2.0,
+        "visible_bounds_offset": [
+          0,
+          0.8,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "body",
+          "pivot": [
+            0.0,
+            8.0,
+            0.0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -9.0,
+                0.0,
+                -9.0
+              ],
+              "size": [
+                18,
+                10,
+                18
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -6.0,
+                10.0,
+                -6.0
+              ],
+              "size": [
+                12,
+                8,
+                12
+              ],
+              "uv": [
+                72,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -3.0,
+                18.0,
+                -3.0
+              ],
+              "size": [
+                6,
+                6,
+                6
+              ],
+              "uv": [
+                0,
+                28
+              ]
+            }
+          ]
+        },
+        {
+          "name": "mite_0",
+          "pivot": [
+            -8.5,
+            6.0,
+            0.5
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -11.0,
+                4.0,
+                -2.0
+              ],
+              "size": [
+                5,
+                5,
+                7
+              ],
+              "uv": [
+                24,
+                28
+              ]
+            }
+          ]
+        },
+        {
+          "name": "mite_1",
+          "pivot": [
+            9.5,
+            7.0,
+            -1.5
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                7.0,
+                5.0,
+                -4.0
+              ],
+              "size": [
+                5,
+                5,
+                7
+              ],
+              "uv": [
+                48,
+                28
+              ]
+            }
+          ]
+        },
+        {
+          "name": "mite_2",
+          "pivot": [
+            -2.0,
+            13.0,
+            -7.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -4.0,
+                11.0,
+                -9.0
+              ],
+              "size": [
+                4,
+                4,
+                6
+              ],
+              "uv": [
+                72,
+                28
+              ]
+            }
+          ]
+        },
+        {
+          "name": "mite_3",
+          "pivot": [
+            4.0,
+            14.0,
+            9.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                2.0,
+                12.0,
+                7.0
+              ],
+              "size": [
+                4,
+                4,
+                6
+              ],
+              "uv": [
+                92,
+                28
+              ]
+            }
+          ]
+        },
+        {
+          "name": "mite_4",
+          "pivot": [
+            -7.0,
+            5.0,
+            8.0
+          ],
+          "parent": "body",
+          "cubes": [
+            {
+              "origin": [
+                -9.0,
+                3.0,
+                6.0
+              ],
+              "size": [
+                4,
+                4,
+                6
+              ],
+              "uv": [
+                0,
+                40
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

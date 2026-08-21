@@ -90,6 +90,10 @@ export const ShatteredSanctum = {
       chests: [{ x: 0, y: 2, z: halfDepth - 3 }],
       beacon: { x: 0, y: wallHeight, z: 0 },
       warden: true,
+      // Some sanctums are still a throne room, and still occupied.
+      lords: rng.chance(0.15)
+        ? [{ id: "eternal_end:end_king", x: 0, y: 2, z: -halfDepth + 3 }]
+        : [],
     };
   },
 };
