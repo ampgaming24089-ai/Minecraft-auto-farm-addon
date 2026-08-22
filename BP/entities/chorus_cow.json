@@ -85,10 +85,8 @@
           "operator": "!=",
           "value": "minecraft:is_baby"
         },
-        "food": [
-          {
-            "item": "minecraft:chorus_fruit"
-          }
+        "breed_items": [
+          "minecraft:chorus_fruit"
         ]
       },
       "minecraft:behavior.breed": {

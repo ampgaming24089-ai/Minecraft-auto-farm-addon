@@ -45,13 +45,11 @@ import { startFlightControl } from "./world/flightControl.js";
 import { startGenerator } from "./world/generator.js";
 import { startPainter } from "./world/painter.js";
 import { startSkyIslands } from "./world/skyIslands.js";
-import { startSkyBody } from "./world/skyBody.js";
 
 function start() {
   startGenerator();
   startPainter();
   startSkyIslands();
-  startSkyBody();
   startBiomeLife();
   startAtmosphere();
   startAmbience();

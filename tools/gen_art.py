@@ -1346,78 +1346,33 @@ ENVIRONMENT = os.path.join(ROOT, "RP", "textures", "environment")
 def end_sky():
     """Replace the End's skybox tile: textures/environment/end_sky.png.
 
-    The End sky is a cube and the game tiles this one texture across all six
-    faces, which is what makes it hard: a big high-contrast feature turns into
-    wallpaper, and *non-tileable* variation makes each face average to a
-    different brightness so the cube's corners show up as seams.
+    The hard constraint, and it is worth stating plainly because it decides
+    everything else: Bedrock tiles this one texture across all six faces of a
+    cube, many times per face. There is no way to stretch a single image over
+    the sky - no per-face texture, no scale control, nothing a pack can reach.
+    Whatever is in here repeats, dozens of times, in a grid.
 
-    The previous version answered that by having no variation at all - a flat
-    violet with stars on it. That is seam-proof, and it is also an empty sky.
-    The rule it was following is narrower than it looked: the seam problem is
-    caused by variation that does not *wrap*, and `fbm` here is seamless by
-    construction. A tileable nebula shows the identical pattern on every face,
-    so all six average the same and the corners stay invisible.
+    A nebula was tried and it looked exactly like that: a lattice of identical
+    bright boxes marching off to each face's vanishing point. The structure was
+    seamless - the edges met perfectly - and it did not matter at all, because
+    what gives a tile away is not its seam, it is its *content*. Anything the
+    eye can recognise twice is a grid.
 
-    So this is a nebula. The band is a sine of an integer number of wavelengths
-    across the tile - one diagonal, one crossing it - which wraps exactly, and
-    it is warped by tileable noise so it reads as gas rather than as a stripe.
-    Dust lanes cut through where the fine noise runs dark, because a nebula
-    with no dark in it looks like a light leak.
+    So the content has to be things the eye cannot match up: stars. A perfectly
+    flat base means every face and every repeat averages identically and no
+    edge can be found, and the interest comes from contrast between a few
+    bright stars and many faint ones rather than from any shape.
 
-    Stars stay sparse. 2358 stars in a 128px tile was fourteen percent of every
-    pixel, and at the distance a sky is actually viewed that reads as film
-    grain rather than as stars. A real night sky is mostly empty, and the
-    interest comes from *contrast* - a few genuinely bright ones with halos
-    over a scattering of faint - rather than from count.
+    Density is the other half. 2358 stars in a 128px tile is fourteen percent
+    of every pixel, and at the distance a sky is viewed that reads as film
+    grain. A real night sky is mostly empty.
     """
-    size = 256
+    size = 128
     c = Canvas(size, size)
-
-    VOID = hex_rgba("#08040F")
-    DEEP = hex_rgba("#1A0A33")
-    GAS_A = hex_rgba("#7A1FB5")
-    GAS_B = hex_rgba("#D63CE8")
-    GAS_C = hex_rgba("#FF7BEE")
-    COOL = hex_rgba("#3A2A9E")
-
-    def band(x, y, kx, ky, warp):
-        """One wrap-exact wave across the tile, bent by tileable noise."""
-        u = (x * kx + y * ky) / float(size) + warp * 0.42
-        return 0.5 + 0.5 * math.sin(u * math.tau)
-
-    def sky(x, y, _cur):
-        # Every fbm here is called on x and y *unscaled*, and the feature size
-        # is chosen with base_period instead. That is not a style preference:
-        # fbm wraps because its lattice advances by a whole period across the
-        # tile, and multiplying the coordinate by anything other than a whole
-        # number breaks that. The first version of this used 1.4 and 2.2 and
-        # 3.6 for scale, and put a visible vertical seam down every cube face.
-        warp = fbm(x, y, size, 4801, octaves=4, base_period=3) - 0.5
-        cross = fbm(x, y, size, 4802, octaves=3, base_period=5) - 0.5
-
-        main = band(x, y, 1, 1, warp)
-        second = band(x, y, 2, -1, cross)
-        # The main arm carries the sky; the second only adds where they cross.
-        density = main ** 3.4 * 0.78 + second ** 4.0 * 0.22
-        # Clumping, so the arm is not an even smear.
-        clump = fbm(x, y, size, 4803, octaves=4, base_period=7)
-        density *= 0.18 + clump * 1.05
-        # Dust lanes: dark threads through the bright part, not around it.
-        # Soft rather than thresholded: a hard cut turns the lanes into dark
-        # commas sitting on top of the gas instead of dust inside it.
-        lane = fbm(x, y, size, 4804, octaves=4, base_period=11)
-        density *= 0.45 + lane * 0.85
-
-        density = max(0.0, min(1.0, density))
-        # Hotter toward the core of the arm, cooler and bluer at its edges.
-        hue = fbm(x, y, size, 4805, octaves=3, base_period=6)
-        gas = mix(mix(COOL, GAS_A, hue), GAS_B, min(1.0, density * 1.3))
-        if density > 0.72:
-            gas = mix(gas, GAS_C, (density - 0.72) / 0.28 * 0.6)
-        base = mix(VOID, DEEP, 0.35 + hue * 0.4)
-        return mix(base, gas, density)
-
-    c.each(sky)
+    # A saturated deep violet rather than near-black. A darker base loses to
+    # any lit terrain in the same frame, which reads as an empty sky rather
+    # than a deep one. Perfectly flat, for the reason above.
+    c.fill(hex_rgba("#241145"))
 
     rng = Rng(31337)
     tints = [
@@ -1425,20 +1380,16 @@ def end_sky():
         hex_rgba("#A9D8FF"), hex_rgba("#FFC2E8"), hex_rgba("#FFE7C2"),
     ]
 
-    # Three tiers, faintest first so brighter stars land on top. Counts scale
-    # with the tile's area, so the density is the same one that was tuned at
-    # 128 rather than four times it.
-    area = (size / 128.0) ** 2
-    for count, low, high in ((int(300 * area), 0.10, 0.24),
-                             (int(110 * area), 0.30, 0.52),
-                             (int(34 * area), 0.60, 0.86)):
+    # Three tiers, faintest first so brighter stars land on top. The faint tier
+    # is the one that turns into grain, so it is the one kept smallest.
+    for count, low, high in ((300, 0.10, 0.24), (110, 0.30, 0.52), (34, 0.60, 0.86)):
         for _ in range(count):
             sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
             c.set(sx, sy, mix(c.get(sx, sy), rng.pick(tints), rng.range(low, high)))
 
     # The handful that carry the sky. Full brightness with a soft halo, few
     # enough that the halo never reads as a repeating shape across the tile.
-    for _ in range(int(14 * area)):
+    for _ in range(14):
         sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
         tint = rng.pick(tints)
         c.set(sx, sy, tint)
@@ -1448,6 +1399,19 @@ def end_sky():
         for dx, dy in ((1, 1), (1, -1), (-1, 1), (-1, -1)):
             nx, ny = (sx + dx) % size, (sy + dy) % size
             c.set(nx, ny, mix(c.get(nx, ny), tint, 0.12))
+
+    # Four with diffraction spikes. Four in a 128px tile is few enough that two
+    # are rarely in view at once, which is the threshold for the eye picking up
+    # on the repeat - and they are the one thing here with any shape at all.
+    for _ in range(4):
+        sx, sy = rng.int(0, size - 1), rng.int(0, size - 1)
+        tint = rng.pick(tints)
+        for reach in range(1, 4):
+            fade = 0.5 / reach
+            for dx, dy in ((reach, 0), (-reach, 0), (0, reach), (0, -reach)):
+                nx, ny = (sx + dx) % size, (sy + dy) % size
+                c.set(nx, ny, mix(c.get(nx, ny), tint, fade))
+        c.set(sx, sy, tint)
 
     os.makedirs(ENVIRONMENT, exist_ok=True)
     out(c, ENVIRONMENT, "end_sky")

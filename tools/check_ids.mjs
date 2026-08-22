@@ -866,6 +866,171 @@ if (existsSync(RECIPE_DIR)) {
 }
 
 /**
+ * Two of *our own* recipes claiming the same grid.
+ *
+ * The vanilla-ingredient rule above catches a pack recipe fighting a vanilla
+ * one. It says nothing about two pack recipes fighting each other, and that is
+ * exactly what happened: `polished_end_stone` was moved off end stone to dodge
+ * `minecraft:end_bricks` and landed on four `shattered_end_stone` - the shape
+ * `ender_bricks` already had. One collision traded for another, and the only
+ * report was a warning in a log nobody reads until the wrong block comes out
+ * of the grid.
+ *
+ * So the shapes are compared directly. A shaped recipe's signature is its
+ * pattern with the keys resolved to item ids, normalised for the offset and
+ * padding that do not affect what the grid accepts; a shapeless one's is its
+ * sorted ingredient list.
+ */
+{
+  const shapes = new Map();     // signature -> [identifier, ...]
+
+  const trim = (pattern) => {
+    // A pattern is the same recipe wherever it sits in the grid, so leading
+    // and trailing blank rows and columns come off before comparing.
+    let rows = pattern.map((row) => [...row]);
+    const blank = (cell) => cell === undefined || cell === " ";
+    while (rows.length && rows[0].every(blank)) rows.shift();
+    while (rows.length && rows[rows.length - 1].every(blank)) rows.pop();
+    if (!rows.length) return "";
+    const width = Math.max(...rows.map((row) => row.length));
+    rows = rows.map((row) => {
+      const padded = [...row];
+      while (padded.length < width) padded.push(" ");
+      return padded;
+    });
+    let left = 0;
+    while (left < width && rows.every((row) => blank(row[left]))) left += 1;
+    let right = width - 1;
+    while (right >= left && rows.every((row) => blank(row[right]))) right -= 1;
+    return rows.map((row) => row.slice(left, right + 1).join("")).join("/");
+  };
+
+  if (existsSync(RECIPE_DIR)) {
+    for (const file of walk(RECIPE_DIR)) {
+      if (!file.endsWith(".json")) continue;
+      const rel = relative(ROOT, file).split("\\").join("/");
+      let data;
+      try {
+        data = JSON.parse(readFileSync(file, "utf8"));
+      } catch {
+        continue;
+      }
+      for (const [kind, recipe] of Object.entries(data)) {
+        const id = recipe?.description?.identifier;
+        if (!id) continue;
+        const tags = (recipe.tags ?? []).slice().sort().join(",");
+        // A stonecutter is *meant* to offer several outputs for one input -
+        // that is what the block is for - so shared shapes there are not a
+        // collision the way they are on a crafting grid.
+        if (tags.includes("stonecutter")) continue;
+        let signature;
+        if (kind === "minecraft:recipe_shaped" && Array.isArray(recipe.pattern)) {
+          const key = {};
+          for (const [symbol, value] of Object.entries(recipe.key ?? {})) {
+            key[symbol] = value?.item ?? JSON.stringify(value);
+          }
+          const resolved = recipe.pattern.map((row) =>
+            [...row].map((cell) => (cell === " " ? " " : key[cell] ?? cell))
+          );
+          signature = `${tags}|shaped|${trim(resolved)}`;
+        } else if (kind === "minecraft:recipe_shapeless") {
+          const items = (recipe.ingredients ?? [])
+            .map((entry) => entry?.item ?? JSON.stringify(entry))
+            .sort();
+          if (!items.length) continue;
+          signature = `${tags}|shapeless|${items.join(",")}`;
+        } else {
+          continue;
+        }
+        if (!shapes.has(signature)) shapes.set(signature, []);
+        shapes.get(signature).push({ id, rel });
+      }
+    }
+  }
+
+  for (const [, entries] of shapes) {
+    if (entries.length < 2) continue;
+    problems.push({
+      id: entries.map((entry) => entry.id).join(" / "),
+      files: new Set(entries.map((entry) => entry.rel)),
+      why: "these recipes claim the same grid as each other - Bedrock picks one and warns",
+    });
+  }
+}
+
+/**
+ * Component children the engine does not know.
+ *
+ * `minecraft:breedable` has no `food`. It has `breed_items`. The difference is
+ * one content-log line and four mobs that load fine, look fine, and simply
+ * never breed - the engine drops the component and carries on. `npm run
+ * check:json` did not catch it either: the published schemas list every valid
+ * property but none of them sets `additionalProperties: false`, so ajv accepts
+ * any child at all.
+ *
+ * The property lists are still there to be read, though. This closes them: for
+ * every `minecraft:*` component in an entity, any child the component's own
+ * schema does not name is reported. A schema that is simply incomplete goes in
+ * the allowlist with the reason, the way the other rules here record defects.
+ */
+const COMPONENT_CHILD_ALLOWLIST = new Set([
+  // "minecraft:some_component -> some_child",
+]);
+
+const SCHEMA_PACKAGE = join(ROOT, "node_modules", "@minecraft", "bedrock-schemas");
+const COMPONENT_SCHEMAS = join(SCHEMA_PACKAGE, "schemas", "bp", "entities");
+if (existsSync(COMPONENT_SCHEMAS)) {
+  const cache = new Map();
+  const propertiesOf = (component) => {
+    if (cache.has(component)) return cache.get(component);
+    const stem = component.replace(/^minecraft:/, "").split(".").join("_");
+    const file = join(COMPONENT_SCHEMAS, `entity_minecraft_${stem}.schema.json`);
+    let properties = null;
+    if (existsSync(file)) {
+      try {
+        properties = JSON.parse(readFileSync(file, "utf8")).properties ?? null;
+      } catch {
+        properties = null;
+      }
+    }
+    cache.set(component, properties);
+    return properties;
+  };
+
+  for (const file of walk(join(ROOT, "BP", "entities"))) {
+    if (!file.endsWith(".json")) continue;
+    const rel = relative(ROOT, file).split("\\").join("/");
+    let entity;
+    try {
+      entity = JSON.parse(readFileSync(file, "utf8"))["minecraft:entity"];
+    } catch {
+      continue;
+    }
+    if (!entity) continue;
+    const blocks = [entity.components ?? {}];
+    for (const group of Object.values(entity.component_groups ?? {})) blocks.push(group);
+    for (const block of blocks) {
+      for (const [component, body] of Object.entries(block)) {
+        if (!component.startsWith("minecraft:")) continue;
+        if (typeof body !== "object" || body === null || Array.isArray(body)) continue;
+        const properties = propertiesOf(component);
+        if (!properties) continue;      // no schema published for it
+        for (const child of Object.keys(body)) {
+          const signature = `${component} -> ${child}`;
+          if (child in properties || COMPONENT_CHILD_ALLOWLIST.has(signature)) continue;
+          problems.push({
+            id: signature,
+            files: new Set([rel]),
+            why: "the component's schema does not name this child - the engine drops the "
+              + "whole component and only says so in the content log",
+          });
+        }
+      }
+    }
+  }
+}
+
+/**
  * MER maps must be bound by a texture set, or they are files nobody opens.
  *
  * This shipped wrong for five versions: 102 metalness/emissive/roughness maps
@@ -918,7 +1083,7 @@ for (const folder of ["blocks", "items", "entity", "environment", "particle"]) {
 console.log(
   `checked ${references.size} distinct identifier(s) ` +
     `against ${VANILLA.size} vanilla ids and ${DEFINED.size} pack definitions, ` +
-    `plus block-reference, client-entity, animation, script-animation, override-drift, texture-atlas, recipe-collision, texture-set and integer-field rules`
+    `plus block-reference, client-entity, animation, script-animation, override-drift, texture-atlas, recipe-collision, recipe-shape, component-child, texture-set and integer-field rules`
 );
 
 if (problems.length === 0) {

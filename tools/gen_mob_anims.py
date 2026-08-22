@@ -183,6 +183,16 @@ def build(name, bones, airborne):
                                                         18 + index * 3),
                 0, 0]}
 
+    # An animation with an empty `bones` object is rejected outright - Bedrock
+    # logs "Required child not found" and the whole *file* is suspect from
+    # there. It happens whenever a rig has no bone the pass in question writes
+    # to: the Chorus Fiend is trunk, branches and buds, and none of those are
+    # legs or jaws, so its attack came out empty. Falling back to the root bone
+    # gives the clip something to say and keeps the file loadable.
+    for clip in (idle, move, attack, hurt, death):
+        if not clip:
+            clip[root] = {"rotation": [sway(4, 220, 0), 0, 0]}
+
     return {
         "animation.voidbound.%s.idle" % name: {
             "loop": True, "animation_length": 4.0, "bones": idle},

@@ -257,6 +257,9 @@ def behaviour_entity(name, spec):
     if spec["tame"]:
         # A passive worth keeping: it can be fed, healed and bred, and it has
         # a baby form, because a breedable mob with no calf is a dead end.
+        # `breed_items`, not `food`. The component has no `food` child at all,
+        # and Bedrock's answer to one is a content-log line - the mob loads,
+        # the component is dropped, and it simply never breeds.
         components["minecraft:breedable"] = {
             "require_tame": False,
             "breeds_with": [{"mate_type": "voidbound:" + name,
@@ -264,7 +267,7 @@ def behaviour_entity(name, spec):
                              "breed_event": {"event": "minecraft:entity_born"}}],
             "love_filters": {"test": "has_component", "subject": "self",
                              "operator": "!=", "value": "minecraft:is_baby"},
-            "food": [{"item": item} for item in spec["tame"]["breed"]],
+            "breed_items": list(spec["tame"]["breed"]),
         }
         components["minecraft:behavior.breed"] = {"priority": 3,
                                                   "speed_multiplier": 1.0}

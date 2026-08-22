@@ -88,10 +88,8 @@
           "operator": "!=",
           "value": "minecraft:is_baby"
         },
-        "food": [
-          {
-            "item": "voidbound:ender_fruit"
-          }
+        "breed_items": [
+          "voidbound:ender_fruit"
         ]
       },
       "minecraft:behavior.breed": {

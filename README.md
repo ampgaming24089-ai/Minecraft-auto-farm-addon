@@ -41,21 +41,19 @@ not the PBR lighting.
 
 ### The sky and the light
 
-The skybox is a nebula: glowing magenta gas along a diagonal arm, dust lanes
-cutting through it, and stars in three tiers of brightness over the top. The
-End sky is one texture tiled across all six faces of a cube, which is what
-makes this hard - a big high-contrast feature becomes wallpaper, and variation
-that does not *wrap* makes each face average differently so the cube's corners
-show as seams. The nebula is built from waves with a whole number of
-wavelengths across the tile and warped by seamless noise, so it wraps exactly
-and every face averages the same. `npm run check:scripts` asserts the wrap.
+The skybox is a starfield, and the reason it is not more than that is worth
+stating: Bedrock tiles one texture across all six faces of the sky cube, many
+times per face, and gives a pack no way to change that. There is no per-face
+texture and no scale control. A single image stretched over the whole sky is
+not possible - whatever is in that file repeats, in a grid.
 
-A planet hangs over it, and that one cannot come from the skybox at all -
-tiled, it would appear dozens of times, and Bedrock draws no sun or moon in the
-End. It is an entity: a flat plate held at a fixed offset from the player and
-turned to face them, close enough to be inside everyone's entity draw distance
-and scaled to look far away. Because the *offset* is fixed rather than the
-position, walking towards it never brings it closer.
+A nebula was tried. It was seamless, in the sense that its edges met perfectly,
+and it looked like a lattice of identical bright boxes marching off to each
+face's vanishing point. What gives a tile away is not its seam, it is its
+content: anything the eye can recognise twice is a grid. So the sky is a flat
+base - identical on every face, no edge findable - carrying stars in three
+tiers of brightness, a few with halos, four with diffraction spikes. Depth
+comes from contrast between bright and faint rather than from any shape.
 
 
 The End's built-in look is a flat purple void: two constant white directional

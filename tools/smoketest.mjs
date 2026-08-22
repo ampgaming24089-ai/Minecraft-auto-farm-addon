@@ -490,6 +490,52 @@ try {
     }
   }
 
+  // --- the player pack never fights vanilla locomotion ---------------------
+  // Our player clips are layered *over* vanilla's, on the same skeleton, and
+  // Bedrock sums what they say about a bone. Two bones are vanilla's alone:
+  // `root`, which is what stands the player on the ground, and the legs, which
+  // are the walk cycle. A looping clip that touches either fights vanilla for
+  // every frame it is on - `sneak_prowl` moved root down 0.7 for as long as
+  // the player sneaked, and `draw_steady` did it again whenever they drew a
+  // bow, so the model sank into the floor. A one-shot emote may do it, because
+  // it ends.
+  {
+    const path = join(ROOT, "RP", "animations", "voidbound.player.animation.json");
+    if (existsSync(path)) {
+      const clips = JSON.parse(readFileSync(path, "utf8")).animations ?? {};
+      for (const [name, clip] of Object.entries(clips)) {
+        const oneShot = name.includes(".emote_") || clip.loop !== true;
+        if (oneShot) continue;
+        const bones = Object.keys(clip.bones ?? {});
+        const clash = bones.filter((bone) => bone === "root" || bone.includes("leg"));
+        check(`${name.split(".").pop()} leaves vanilla locomotion alone`,
+          clash.length === 0, clash.join(", "));
+      }
+    }
+  }
+
+  // --- every animation clip drives at least one bone -----------------------
+  // Bedrock rejects an animation whose `bones` object is empty with "Required
+  // child not found", and takes a dim view of the rest of the file after it.
+  // The generator can produce one whenever a rig has no bone the pass writes
+  // to - the Chorus Fiend is trunk, branches and buds, none of which are legs
+  // or jaws, so its attack clip came out empty and shipped.
+  {
+    for (const file of ["voidbound.mobs.animation.json",
+                        "voidbound.animation.json",
+                        "voidbound.actions.animation.json",
+                        "voidbound.player.animation.json"]) {
+      const path = join(ROOT, "RP", "animations", file);
+      if (!existsSync(path)) continue;
+      const clips = JSON.parse(readFileSync(path, "utf8")).animations ?? {};
+      const empty = Object.entries(clips)
+        .filter(([, clip]) => !clip.bones || Object.keys(clip.bones).length === 0)
+        .map(([name]) => name);
+      check(`${file}: every clip drives a bone`, empty.length === 0,
+        empty.slice(0, 3).join(", "));
+    }
+  }
+
   // --- the skybox tile wraps -----------------------------------------------
   // The End sky is one texture tiled over all six faces of a cube, so a
   // texture that does not wrap puts a visible line down the middle of every
@@ -692,7 +738,6 @@ try {
     ["world/generator.js", "startGenerator"],
     ["world/painter.js", "startPainter"],
     ["world/skyIslands.js", "startSkyIslands"],
-    ["world/skyBody.js", "startSkyBody"],
   ];
   for (const [relPath, exportName] of ENTRY_POINTS) {
     let module;

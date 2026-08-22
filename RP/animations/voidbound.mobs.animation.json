@@ -8107,7 +8107,15 @@
   "animation.voidbound.chorus_fiend.attack": {
    "loop": true,
    "animation_length": 0.75,
-   "bones": {}
+   "bones": {
+    "trunk_0": {
+     "rotation": [
+      "math.sin(query.anim_time * 220 + 0) * 4",
+      0,
+      0
+     ]
+    }
+   }
   },
   "animation.voidbound.chorus_fiend.hurt": {
    "loop": "hold_on_last_frame",
