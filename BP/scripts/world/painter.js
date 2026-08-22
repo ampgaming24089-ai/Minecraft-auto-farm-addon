@@ -37,18 +37,57 @@ import { worldSeedHash } from "./sites.js";
  *  the bookkeeping does not dwarf the work. */
 const PATCH = 8;
 
-/** How far around a player patches get painted. */
-const PAINT_RADIUS = 56;
+/**
+ * How far around a player patches get painted.
+ *
+ * 56 blocks was well inside render distance, which is exactly why the End
+ * looked untouched until you were standing on it: everything past the disc was
+ * plain end stone in plain sight. This reaches past what a phone loads on
+ * purpose - a column in an unloaded chunk costs one `isChunkLoaded` and comes
+ * back on a later scan, so asking for more than is loaded is nearly free and
+ * paints the moment the chunk arrives.
+ */
+const PAINT_RADIUS = 128;
 
-const SCAN_INTERVAL_TICKS = 40;
+const SCAN_INTERVAL_TICKS = 10;
 
-/** Patches queued per player per scan, so arriving somewhere new is gradual. */
-const PATCHES_PER_SCAN = 3;
+/**
+ * Patches queued per player per scan, and the ceiling on jobs at once.
+ *
+ * The old three-per-two-seconds took a hundred seconds to fill even the small
+ * disc, and that was the throttle, not the engine. `system.runJob` already
+ * self-throttles - it spends the frame's spare time and no more - so the job
+ * budget is the right limiter and this only has to stop the queue growing
+ * without bound.
+ */
+const PATCHES_PER_SCAN = 10;
+const MAX_IN_FLIGHT = 20;
 
-/** Painted-patch memory. Bounded: an evicted patch simply repaints the same
- *  way, because the biome and the RNG are both pure functions of the seed. */
+/**
+ * How many columns to do between yields.
+ *
+ * One yield per column meant 64 job slices to paint one patch, and the slice
+ * overhead dwarfed the six block writes inside it.
+ */
+const SURFACE_YIELD_EVERY = 8;
+const DETAIL_YIELD_EVERY = 4;
+
+/**
+ * Painted-patch memory.
+ *
+ * Repainting is idempotent - the biome is a pure function of position and each
+ * column's RNG is seeded from its own coordinates, so a second visit makes the
+ * same decisions, and flora only ever goes into air that is still air. So this
+ * is an optimisation, not a correctness guard, and it is safe to hold far more
+ * in memory than is written to disk.
+ *
+ * The written half is capped by *bytes*, not by count. A dynamic property
+ * string has a hard ceiling, and the old 4000 keys of `x.z` ran past it - the
+ * write threw, the catch logged, and nothing was ever persisted at all.
+ */
 const PROPERTY = "voidbound.painted";
-const MAX_PATCHES = 4000;
+const MAX_PATCHES = 50000;
+const PERSIST_BUDGET_BYTES = 12000;
 
 /**
  * The only blocks the painter will ever replace.
@@ -82,6 +121,17 @@ const UNDERSIDE_SEARCH = 24;
 let cache;
 const inFlight = new Set();
 
+/**
+ * What actually gets written to disk: the most recent keys, newest last.
+ *
+ * Kept as its own short list rather than derived from the full set. Reversing
+ * and re-joining fifty thousand keys once a second to write twelve kilobytes
+ * of them is the most expensive thing the painter would do, and all but the
+ * tail of that work is thrown away.
+ */
+const recent = [];
+let recentBytes = 0;
+
 function load() {
   if (cache) return cache;
   let raw = "";
@@ -92,21 +142,48 @@ function load() {
     raw = "";
   }
   cache = new Set(raw ? raw.split(",") : []);
+  // Seed the write-back list from what was on disk, so the first save after a
+  // reload does not drop everything the last session painted.
+  if (recent.length === 0 && raw) {
+    for (const key of cache) {
+      recent.push(key);
+      recentBytes += key.length + 1;
+    }
+  }
   return cache;
+}
+
+/** Rebuilding the string on every patch is a string build per patch. */
+let dirty = 0;
+const PERSIST_EVERY = 24;
+
+function persist(force) {
+  if (!force && ++dirty < PERSIST_EVERY) return;
+  dirty = 0;
+  try {
+    world.setDynamicProperty(PROPERTY, recent.join(","));
+  } catch (error) {
+    console.warn(`[Endrealm] could not persist painted patches: ${error}`);
+  }
 }
 
 function markPainted(key) {
   const painted = load();
+  if (painted.has(key)) return;
   painted.add(key);
   if (painted.size > MAX_PATCHES) {
     // Sets keep insertion order, so the first key out is the oldest.
     painted.delete(painted.values().next().value);
   }
-  try {
-    world.setDynamicProperty(PROPERTY, [...painted].join(","));
-  } catch (error) {
-    console.warn(`[Endrealm] could not persist painted patches: ${error}`);
+
+  recent.push(key);
+  recentBytes += key.length + 1;
+  // Trim from the front: the ground a player is standing on is worth keeping,
+  // wherever they were an hour ago is not.
+  while (recentBytes > PERSIST_BUDGET_BYTES && recent.length > 1) {
+    recentBytes -= recent.shift().length + 1;
   }
+  persist(false);
 }
 
 function permutation(id) {
@@ -162,26 +239,37 @@ function pickFlora(biome, rng) {
 }
 
 /**
- * Paint one patch.
+ * Paint one patch, surface first.
  *
- * A generator, so the caller can hand it to runJob and let it yield between
- * columns. Every block read is guarded: block handles are lazy, and reading
- * typeId on one from an unloaded chunk throws.
+ * Two passes over the same columns, and the split is the whole point. The
+ * first lays nothing but the surface block, so the ground under the player
+ * changes colour as fast as the engine will let it. The second goes back over
+ * the columns that took paint and does the slow half - the filler underneath,
+ * the growth hanging off the island's belly, the trees, the flora.
+ *
+ * Done in one pass, every one of those was in front of the next column's
+ * colour change, and a patch only *looked* painted once all of it was done.
+ * Split, the biome arrives immediately and fills in behind itself.
+ *
+ * A generator, so the caller can hand it to runJob. Every block read is
+ * guarded: block handles are lazy, and reading typeId on one from an unloaded
+ * chunk throws.
  */
 function* paintPatch(dimension, patchX, patchZ, report) {
   const originX = patchX * PATCH;
   const originZ = patchZ * PATCH;
 
+  // --- pass one: the colour ------------------------------------------------
+  const painted = [];
+  let steps = 0;
   for (let dx = 0; dx < PATCH; dx++) {
     for (let dz = 0; dz < PATCH; dz++) {
+      if (++steps % SURFACE_YIELD_EVERY === 0) yield;
       const x = originX + dx;
       const z = originZ + dz;
       const biome = biomeAt(x, z);
       // The Barrens paint nothing, which is what keeps them the Barrens.
-      if (!biome.surface) {
-        yield;
-        continue;
-      }
+      if (!biome.surface) continue;
 
       let top;
       try {
@@ -189,121 +277,134 @@ function* paintPatch(dimension, patchX, patchZ, report) {
           // Not painted, and not paintable *yet*. Say so, or the patch gets
           // marked done and this column stays unpainted for ever.
           report.complete = false;
-          yield;
           continue;
         }
         top = dimension.getTopmostBlock({ x, z });
         if (!top) {
           report.complete = false;
-          yield;
           continue;
         }
-        if (top.y < GROUND_MIN_Y || top.y > GROUND_MAX_Y) {
-          yield;
-          continue;
-        }
+        if (top.y < GROUND_MIN_Y || top.y > GROUND_MAX_Y) continue;
         if (!NATURAL.has(top.typeId)) {
           // Somebody's block, or already painted. Either way, done with it.
-          yield;
           continue;
         }
+        const surface = cachedPermutation(biome.surface);
+        if (surface) top.setPermutation(surface);
       } catch {
         report.complete = false;
-        yield;
         continue;
       }
+      painted.push({ x, z, y: top.y, biome });
+    }
+  }
 
-      // Per-column RNG, so the same column always grows the same thing even
-      // if its patch is evicted from memory and painted again later.
-      const rng = new Rng(hash(worldSeedHash(), 0x9e11, x, z));
+  // --- pass two: everything that hangs off it ------------------------------
+  steps = 0;
+  for (const column of painted) {
+    if (++steps % DETAIL_YIELD_EVERY === 0) yield;
+    const { x, z, biome } = column;
+    const top = { y: column.y };
 
-      const surface = cachedPermutation(biome.surface);
-      if (surface) {
+    // Per-column RNG, so the same column always grows the same thing even
+    // if its patch is evicted from memory and painted again later.
+    const rng = new Rng(hash(worldSeedHash(), 0x9e11, x, z));
+
+    // Two layers of filler under the surface, so a cliff face shows the
+    // biome rather than a one-block skin over plain end stone.
+    const filler = cachedPermutation(biome.filler ?? biome.surface);
+    if (filler) {
+      for (let depth = 1; depth <= 2; depth++) {
         try {
-          top.setPermutation(surface);
+          const below = dimension.getBlock({ x, y: top.y - depth, z });
+          if (below && NATURAL.has(below.typeId)) below.setPermutation(filler);
         } catch {
-          report.complete = false;
-          yield;
-          continue;
+          break;
         }
       }
+    }
 
-      // Two layers of filler under the surface, so a cliff face shows the
-      // biome rather than a one-block skin over plain end stone.
-      const filler = cachedPermutation(biome.filler ?? biome.surface);
-      if (filler) {
-        for (let depth = 1; depth <= 2; depth++) {
-          try {
-            const below = dimension.getBlock({ x, y: top.y - depth, z });
-            if (below && NATURAL.has(below.typeId)) below.setPermutation(filler);
-          } catch {
-            break;
-          }
-        }
-      }
-
-      // The underside. An End island stopping dead at its own bottom face is
-      // the single biggest tell that it was generated rather than grown, so
-      // whatever that biome hangs gets hung from it.
-      if (biome.hanging && rng.next() < UNDERSIDE_CHANCE) {
-        const growth = cachedPermutation(biome.hanging);
-        if (growth) {
-          const floor = bottomOf(dimension, x, z, top.y);
-          if (floor !== undefined) {
-            const length = rng.int(1, UNDERSIDE_LENGTH);
-            for (let down = 1; down <= length; down++) {
-              try {
-                const cell = dimension.getBlock({ x, y: floor - down, z });
-                if (!cell || cell.typeId !== "minecraft:air") break;
-                cell.setPermutation(growth);
-              } catch {
-                break;
-              }
-            }
-          }
-        }
-      }
-
-      // Trees, before the ground cover: a trunk wants the column it is going
-      // into to be empty, and a flower placed there first would stop it.
-      //
-      // Spaced on a lattice rather than rolled per block. A pure per-column
-      // roll at this rate puts trunks two apart as often as ten, and a wood
-      // where every trunk is touching its neighbour reads as a wall, not a
-      // wood.
-      if (biome.tree && ((x * 31 + z * 17) & 3) === 0
-          && rng.next() < (biome.treeChance ?? 0) * 4) {
-        const species = TREES[biome.tree];
-        if (species) {
-          try {
-            growTree(dimension, { x, y: top.y + 1, z }, rng, species);
-          } catch {
-            // No room, or the chunk went away. The ground is still painted.
-          }
-        }
-      }
-
-      if (rng.next() < (biome.floraChance ?? 0)) {
-        const entry = pickFlora(biome, rng);
-        const plant = entry && cachedPermutation(entry.id);
-        if (plant) {
-          const height = entry.pillar ? rng.int(1, entry.pillar) : 1;
-          for (let up = 1; up <= height; up++) {
+    // The underside. An End island stopping dead at its own bottom face is
+    // the single biggest tell that it was generated rather than grown, so
+    // whatever that biome hangs gets hung from it.
+    if (biome.hanging && rng.next() < UNDERSIDE_CHANCE) {
+      const growth = cachedPermutation(biome.hanging);
+      if (growth) {
+        const floor = bottomOf(dimension, x, z, top.y);
+        if (floor !== undefined) {
+          const length = rng.int(1, UNDERSIDE_LENGTH);
+          for (let down = 1; down <= length; down++) {
             try {
-              const cell = dimension.getBlock({ x, y: top.y + up, z });
-              // Air only. Never overwrite anything, not even other flora.
+              const cell = dimension.getBlock({ x, y: floor - down, z });
               if (!cell || cell.typeId !== "minecraft:air") break;
-              cell.setPermutation(plant);
+              cell.setPermutation(growth);
             } catch {
               break;
             }
           }
         }
       }
-      yield;
+    }
+
+    // Trees, before the ground cover: a trunk wants the column it is going
+    // into to be empty, and a flower placed there first would stop it.
+    //
+    // Spaced on a lattice rather than rolled per block. A pure per-column
+    // roll at this rate puts trunks two apart as often as ten, and a wood
+    // where every trunk is touching its neighbour reads as a wall, not a
+    // wood.
+    if (biome.tree && ((x * 31 + z * 17) & 3) === 0
+        && rng.next() < (biome.treeChance ?? 0) * 4) {
+      const species = TREES[biome.tree];
+      if (species) {
+        try {
+          growTree(dimension, { x, y: top.y + 1, z }, rng, species);
+        } catch {
+          // No room, or the chunk went away. The ground is still painted.
+        }
+      }
+    }
+
+    if (rng.next() < (biome.floraChance ?? 0)) {
+      const entry = pickFlora(biome, rng);
+      const plant = entry && cachedPermutation(entry.id);
+      if (plant) {
+        const height = entry.pillar ? rng.int(1, entry.pillar) : 1;
+        for (let up = 1; up <= height; up++) {
+          try {
+            const cell = dimension.getBlock({ x, y: top.y + up, z });
+            // Air only. Never overwrite anything, not even other flora.
+            if (!cell || cell.typeId !== "minecraft:air") break;
+            cell.setPermutation(plant);
+          } catch {
+            break;
+          }
+        }
+      }
     }
   }
 }
+
+/**
+ * The offsets of a disc of patches, nearest first.
+ *
+ * Built once. It is the same ring of offsets around every player at every
+ * scan, and at this radius rebuilding and re-sorting it four times a second is
+ * a thousand `hypot` calls and a sort, per player, for an answer that never
+ * changes.
+ */
+const DISC = (() => {
+  const reach = Math.ceil(PAINT_RADIUS / PATCH);
+  const offsets = [];
+  for (let dx = -reach; dx <= reach; dx++) {
+    for (let dz = -reach; dz <= reach; dz++) {
+      const distance = Math.hypot(dx, dz);
+      if (distance <= reach) offsets.push({ dx, dz, distance });
+    }
+  }
+  offsets.sort((a, b) => a.distance - b.distance);
+  return offsets;
+})();
 
 /** Queue the nearest unpainted patches around one player. */
 function scanFor(player) {
@@ -311,26 +412,30 @@ function scanFor(player) {
   const painted = load();
   const centreX = Math.floor(x / PATCH);
   const centreZ = Math.floor(z / PATCH);
-  const reach = Math.ceil(PAINT_RADIUS / PATCH);
 
-  const candidates = [];
-  for (let dx = -reach; dx <= reach; dx++) {
-    for (let dz = -reach; dz <= reach; dz++) {
-      const patchX = centreX + dx;
-      const patchZ = centreZ + dz;
-      const key = `${patchX}.${patchZ}`;
-      if (painted.has(key) || inFlight.has(key)) continue;
-      const distance = Math.hypot(dx, dz);
-      if (distance > reach) continue;
-      // Skip patches whose whole area is Barrens - there is nothing to do and
-      // marking them painted would waste the FIFO on empty work.
-      if (!biomeAt(patchX * PATCH + PATCH / 2, patchZ * PATCH + PATCH / 2).surface) continue;
-      candidates.push({ key, patchX, patchZ, distance });
+  // Walk the disc nearest-first and stop at the first full handful, so the
+  // ground under the player changes before the horizon does - and so the scan
+  // costs a few dozen tests rather than the whole disc.
+  //
+  // The Barrens test is deliberately down here rather than in a filter over
+  // every candidate: `biomeAt` is two noise samples, and running it across
+  // eight hundred patches four times a second is a per-tick spike in an
+  // interval the engine does not budget. Down here it runs a dozen times.
+  const queued = [];
+  for (const offset of DISC) {
+    if (queued.length >= PATCHES_PER_SCAN) break;
+    const patchX = centreX + offset.dx;
+    const patchZ = centreZ + offset.dz;
+    const key = `${patchX}.${patchZ}`;
+    if (painted.has(key) || inFlight.has(key)) continue;
+    // Patches whose middle is Barrens have nothing to do, and marking them
+    // painted would spend the memory on empty work.
+    if (!biomeAt(patchX * PATCH + PATCH / 2, patchZ * PATCH + PATCH / 2).surface) {
+      continue;
     }
+    queued.push({ key, patchX, patchZ, distance: offset.distance });
   }
-  // Nearest first, so the ground under the player changes before the horizon.
-  candidates.sort((a, b) => a.distance - b.distance);
-  return candidates.slice(0, PATCHES_PER_SCAN);
+  return queued;
 }
 
 function scan() {
@@ -350,6 +455,10 @@ function scan() {
       continue;
     }
     for (const patch of queued) {
+      // The engine budgets runJob itself, but nothing budgets how many jobs
+      // are *outstanding*. Without this the queue grows every scan while a
+      // player runs through unpainted ground and never drains.
+      if (inFlight.size >= MAX_IN_FLIGHT) break;
       inFlight.add(patch.key);
       try {
         system.runJob(finish(dimension, patch));
@@ -383,4 +492,21 @@ function* finish(dimension, patch) {
 
 export function startPainter() {
   system.runInterval(scan, SCAN_INTERVAL_TICKS);
+  // Anything still unwritten when the world closes would be repainted on the
+  // next visit - harmless, but free to avoid.
+  try {
+    world.beforeEvents.playerLeave.subscribe(() => persist(true));
+  } catch {
+    // Older runtimes without the event: the periodic write still covers it.
+  }
 }
+
+/** The tuning, exported so the smoke test can hold it to account. */
+export const TUNING = {
+  PATCH,
+  PAINT_RADIUS,
+  SCAN_INTERVAL_TICKS,
+  PATCHES_PER_SCAN,
+  MAX_IN_FLIGHT,
+  PERSIST_BUDGET_BYTES,
+};

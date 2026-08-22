@@ -242,8 +242,24 @@ deliberately timid:
   laid.
 - A patch whose chunks were not loaded stays **unmarked**, so it is picked up
   again later rather than being left plain for the rest of the world's life.
-- Work runs in `system.runJob`, which yields between columns — a first arrival
-  in a region is a few thousand block reads.
+- Work runs in `system.runJob`, which the engine budgets against the frame's
+  spare time.
+
+It paints **surface first**. Each patch is two passes over the same columns:
+the first lays nothing but the surface block, the second goes back for the
+filler underneath, the growth hanging off the island's belly, the trees and
+the flora. Done in one pass, all of that sat in front of the next column's
+colour change and a patch only *looked* painted once every part of it was
+finished. Split, the biome arrives immediately and fills in behind itself.
+
+The first version was also far too timid about rate: three 8×8 patches every
+two seconds inside a 56-block disc — a hundred seconds to convert ground the
+player could take in at a glance, which is exactly why the End stayed plain
+until you were standing on it. It is now a 128-block disc at roughly 1,300
+columns a second, which fills in well under a minute, and the throttle that
+matters is `MAX_IN_FLIGHT` rather than the queue rate: `runJob` already
+self-limits, so the queue only has to be stopped from growing without bound.
+The numbers are asserted in `npm run check:scripts` so they cannot drift back.
 
 **Everything else follows the region.** Fog resolves in priority order: depth
 beats everything, a structure beats its biome (a grove should feel like a grove
@@ -692,9 +708,9 @@ half those errors were already fixed. Check the path before chasing one:
   flies into where one should have been.
 - Whether villages generate on ground flat enough to sit on. The platform blob
   should handle it, but a village half-buried in a hillside is the failure mode.
-- How the painter feels in play: whether `PATCHES_PER_SCAN` at 3 keeps up with
-  a player on an elytra, and whether the first arrival in a region is a visible
-  wave of ground changing or reads as always having been there.
+- How the painter feels in play: whether the raised rate keeps up with a player
+  on an elytra, and whether a first arrival reads as a wave of ground changing
+  or as having always been there.
 - Whether the biome fogs are too strong at their borders. Rates fade but the
   fog swap itself is a hard cut, because Bedrock's fog stack has no crossfade.
 - Whether the player clips read as offsets or as fights with vanilla's own

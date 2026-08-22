@@ -490,6 +490,37 @@ try {
     }
   }
 
+  // --- the painter keeps up with a walking player --------------------------
+  // The first version queued three 8x8 patches every two seconds inside a
+  // 56-block disc: a hundred seconds to convert ground the player could see
+  // all of in one glance, which is why the End looked untouched until you
+  // stood on it. These are the numbers that decide whether a biome arrives or
+  // trickles, so they are asserted rather than left to drift back.
+  {
+    const { TUNING } = await load("world/painter.js");
+    const reach = Math.ceil(TUNING.PAINT_RADIUS / TUNING.PATCH);
+    let disc = 0;
+    for (let dx = -reach; dx <= reach; dx++) {
+      for (let dz = -reach; dz <= reach; dz++) {
+        if (Math.hypot(dx, dz) <= reach) disc += 1;
+      }
+    }
+    const perSecond = TUNING.PATCHES_PER_SCAN / (TUNING.SCAN_INTERVAL_TICKS / 20);
+    const fillSeconds = disc / perSecond;
+
+    check("the painted disc reaches past a glance",
+      TUNING.PAINT_RADIUS >= 112, `${TUNING.PAINT_RADIUS} blocks`);
+    check("a full disc converts in well under a minute",
+      fillSeconds < 40, `${fillSeconds.toFixed(0)}s for ${disc} patches`);
+    check("outstanding jobs are capped",
+      TUNING.MAX_IN_FLIGHT > 0 && TUNING.MAX_IN_FLIGHT < 64,
+      `${TUNING.MAX_IN_FLIGHT}`);
+    // A dynamic property string has a hard ceiling and the old cap ran past
+    // it, so the write threw every time and nothing was ever persisted.
+    check("the persisted memory fits in a dynamic property",
+      TUNING.PERSIST_BUDGET_BYTES <= 30000, `${TUNING.PERSIST_BUDGET_BYTES} bytes`);
+  }
+
   // --- the two manifests agree ---------------------------------------------
   // Bedrock replaces an installed pack only when the incoming version is
   // higher; at an equal version it asks whether this is a duplicate, and
