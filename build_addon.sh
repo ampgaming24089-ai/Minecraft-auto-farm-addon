@@ -25,6 +25,13 @@ if [[ "${1:-}" == "--check" ]]; then
   echo
 fi
 
+# Every build is strictly newer than the last. Bedrock only replaces an
+# installed pack when the incoming version is higher - at an equal version it
+# cannot tell an update from a second copy, so it asks, and whichever the
+# player keeps, half the work is missing.
+echo "==> Raising the pack version"
+python3 tools/bump_version.py
+
 mkdir -p "$OUT_DIR"
 rm -f "$OUT_FILE"
 

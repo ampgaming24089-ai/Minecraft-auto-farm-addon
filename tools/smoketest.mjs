@@ -490,6 +490,39 @@ try {
     }
   }
 
+  // --- the two manifests agree ---------------------------------------------
+  // Bedrock replaces an installed pack only when the incoming version is
+  // higher; at an equal version it asks whether this is a duplicate, and
+  // whichever copy the player keeps, half the work is missing. That is the
+  // "duplicate pack" this project hit twice. The version has to move, the two
+  // manifests have to move together, and the behaviour pack's dependency on
+  // the resource pack is version-pinned - left behind, it loads with no
+  // resources at all.
+  {
+    const bp = JSON.parse(readFileSync(join(ROOT, "BP", "manifest.json"), "utf8"));
+    const rp = JSON.parse(readFileSync(join(ROOT, "RP", "manifest.json"), "utf8"));
+    const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+    check("the packs share a version", same(bp.header.version, rp.header.version),
+      `${bp.header.version} vs ${rp.header.version}`);
+    for (const module of [...(bp.modules ?? []), ...(rp.modules ?? [])]) {
+      check("every module is at the header version",
+        same(module.version, bp.header.version), JSON.stringify(module.version));
+    }
+    const dependency = (bp.dependencies ?? []).find((entry) => entry.uuid);
+    check("the behaviour pack depends on this resource pack",
+      dependency?.uuid === rp.header.uuid, `${dependency?.uuid}`);
+    check("that dependency is pinned to the shipped version",
+      same(dependency?.version, rp.header.version), JSON.stringify(dependency?.version));
+
+    // Five ids, all different: two headers and three modules.
+    const ids = [bp.header.uuid, rp.header.uuid,
+                 ...(bp.modules ?? []).map((m) => m.uuid),
+                 ...(rp.modules ?? []).map((m) => m.uuid)];
+    check("every uuid in the manifests is distinct",
+      new Set(ids).size === ids.length, ids.join(" "));
+  }
+
   // --- the player pack never fights vanilla locomotion ---------------------
   // Our player clips are layered *over* vanilla's, on the same skeleton, and
   // Bedrock sums what they say about a bone. Two bones are vanilla's alone:
