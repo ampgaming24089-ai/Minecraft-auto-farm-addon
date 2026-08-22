@@ -1,12 +1,12 @@
 {
   "format_version": 2,
   "header": {
-    "name": "End Ascendant [Behavior]",
+    "name": "Endrealm [Behavior]",
     "description": "Seven biomes with floating islands stacked through the world height, End villages with traders, crops, four breedable companions, four bosses, 23 mobs and a tree species for every region. Bedrock 26.4.",
-    "uuid": "5eb27cd2-946c-485d-82c7-db88989bbc72",
+    "uuid": "6c1791df-f427-4626-91b8-d6501fa31f13",
     "version": [
       1,
-      8,
+      0,
       1
     ],
     "min_engine_version": [
@@ -18,7 +18,7 @@
   "metadata": {
     "product_type": "addon",
     "authors": [
-      "End Ascendant"
+      "Endrealm"
     ],
     "generated_with": {
       "end_everlasting_tools": [
@@ -29,20 +29,20 @@
   "modules": [
     {
       "type": "data",
-      "uuid": "0061bfe4-bea2-492c-8e3c-9180ce6eff96",
+      "uuid": "2e8b1832-f162-4a7d-9c14-671f2bf3d3a2",
       "version": [
         1,
-        8,
+        0,
         1
       ]
     },
     {
       "type": "script",
       "language": "javascript",
-      "uuid": "55682788-7ae1-4fb8-b2a8-ec2471156db0",
+      "uuid": "8a6f3cee-0ba9-4fc9-877e-a1863f327e0e",
       "version": [
         1,
-        8,
+        0,
         1
       ],
       "entry": "scripts/main.js"
@@ -58,10 +58,10 @@
       "version": "2.1.0"
     },
     {
-      "uuid": "8072046c-7b29-438a-b3a8-88bee160c18b",
+      "uuid": "18e02b1e-0dc1-4920-8ee7-08824f44a727",
       "version": [
         1,
-        8,
+        0,
         1
       ]
     }

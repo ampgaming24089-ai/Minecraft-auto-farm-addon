@@ -257,7 +257,7 @@ function* buildIsland(dimension, island) {
 
     markBuilt(island.key);
   } catch (error) {
-    console.warn(`[End Ascendant] sky island ${island.key} failed: ${error}`);
+    console.warn(`[Endrealm] sky island ${island.key} failed: ${error}`);
   } finally {
     building.delete(island.key);
   }

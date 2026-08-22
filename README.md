@@ -1,8 +1,8 @@
-# End Ascendant — an End overhaul for Minecraft Bedrock
+# Endrealm — an End overhaul for Minecraft Bedrock
 
-The End has been one biome, one sky and two structures since 1.9. End
-Ascendant rebuilds it for Bedrock **26.4** (internal `1.26.40`, current hotfix
-`26.44`): **seven biomes** in a dimension the engine says has one, floating
+The End has been one biome, one sky and two structures since 1.9. Endrealm
+rebuilds it for Bedrock **26.4** (internal `1.26.40`, current hotfix `26.44`):
+**seven biomes** in a dimension the engine says has one, floating
 islands stacked through the whole world height, **End villages** with traders
 who deal in three professions, crops, four breedable companions, **23 mobs**
 built and animated from the ground up, a tree species for every region, a full
@@ -57,7 +57,7 @@ comes from contrast between bright and faint rather than from any shape.
 
 
 The End's built-in look is a flat purple void: two constant white directional
-lights, a near-black sky, no depth. End Ascendant replaces the whole Vibrant
+lights, a near-black sky, no depth. Endrealm replaces the whole Vibrant
 Visuals stack for `minecraft:the_end`.
 
 | File | What it does |
@@ -76,7 +76,7 @@ through `lighting/global.json`. That is the part most End packs get wrong.
 ### Fog that knows where you are
 
 Bedrock exposes exactly one End biome, so a biome-bound fog can only ever be
-one mood. End Ascendant ships four fog definitions and pushes the right one onto
+one mood. Endrealm ships four fog definitions and pushes the right one onto
 each player's fog stack — the layer that sits above biome fog:
 
 - **`fog_end_open`** — the default, bound to the biome. Thin violet haze that
@@ -492,15 +492,15 @@ the player so they read as depth rather than as dust on the lens.
 - **Rift Compass** — points at the nearest structure by name, distance and
   bearing, and names the runner-up so you can pick a route.
 
-### End Ascendant armour
+### Endrealm armour
 
 The endgame set, a clear step past netherite:
 
 | | Helm | Cuirass | Greaves | Sabatons | Set |
 |---|---|---|---|---|---|
-| End Ascendant protection | 4 | 9 | 7 | 4 | **24** |
+| Endrealm protection | 4 | 9 | 7 | 4 | **24** |
 | Netherite protection | 3 | 8 | 6 | 3 | 20 |
-| End Ascendant durability | 561 | 816 | 765 | 663 | |
+| Endrealm durability | 561 | 816 | 765 | 663 | |
 | Netherite durability | 407 | 592 | 555 | 481 | |
 
 Enchantability is 18 against netherite's 15, and pieces repair with void
@@ -798,11 +798,21 @@ that way rather than in game.
 
 ## Two names, and why they differ
 
-The pack is renamed on every ship so it never imports as a duplicate of the
-last build. Its *identifiers* are not: blocks, items, entities and animations
-have all been `voidbound:` / `animation.voidbound.` since the first version and
-will stay that way. Renaming a block id breaks every world that already has one
-placed, so the display name is the only thing allowed to move.
+The pack has been renamed several times. Its *identifiers* never are: blocks,
+items, entities and animations have all been `voidbound:` /
+`animation.voidbound.` since the first version and will stay that way. Renaming
+a block id breaks every world that already has one placed, so the display name
+is the only thing allowed to move.
+
+Renaming is **not** how a duplicate import is avoided, which took two rounds of
+"duplicate pack detected" to learn. Bedrock identifies a pack by the UUIDs in
+its manifests and replaces an installed one only when the incoming version is
+strictly higher; at an equal version it cannot tell an update from a second
+copy, so it asks, and whichever the player keeps, half the work is missing.
+`build_addon.sh` therefore raises the patch number on every build, and the
+UUIDs stay put - re-minting them to escape a prompt orphans the pack in every
+world already using it. `tools/rename_pack.py` re-mints only when the pack is
+genuinely being reissued under a new identity, as here.
 
 Overriding `RP/entity/player.entity.json` has a cost worth stating plainly: the
 copy here is Mojang's file from the 26.4 samples, so if a later drop adds a clip

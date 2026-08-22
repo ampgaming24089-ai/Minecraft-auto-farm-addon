@@ -1,5 +1,5 @@
 /**
- * End Ascendant - entry point.
+ * Endrealm - entry point.
  *
  * Four systems, started once at load:
  *   sites/generator  places seed-derived structures ahead of the player
@@ -11,7 +11,7 @@
  *   flight control   pulls flyers back when they climb or drift over the void
  *   discovery        acknowledges arriving somewhere new
  *   rift compass     reads the structure map and points at it
- *   armour set       grants the End Ascendant set bonus in the End
+ *   armour set       grants the Endrealm set bonus in the End
  *   ender sapling    grows planted saplings into End trees
  *   bloomstalk       grows, harvests and replants the End's crop
  *   emotes           one-shot player poses on the moments that earn them
@@ -65,7 +65,7 @@ function start() {
   startVoidTitan();
   startUtilityItems();
   startWaystones();
-  console.log("[End Ascendant] End systems online");
+  console.log("[Endrealm] End systems online");
 }
 
 // worldLoad fires once the world is ready for world.seed and player queries.
@@ -74,6 +74,6 @@ world.afterEvents.worldLoad.subscribe(() => {
   try {
     start();
   } catch (error) {
-    console.error(`[End Ascendant] failed to start: ${error}`);
+    console.error(`[Endrealm] failed to start: ${error}`);
   }
 });

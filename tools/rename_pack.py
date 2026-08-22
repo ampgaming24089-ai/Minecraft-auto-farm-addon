@@ -44,6 +44,9 @@ def main():
 
     rp["header"]["uuid"] = rp_header
     rp["header"]["name"] = "%s [Resources]" % name
+    # The descriptions name the pack too, and they are what a player reads in
+    # the pack list - a rename that leaves the old name there is half a rename.
+    rp["header"]["description"] = rp["header"].get("description", "").replace(old_name, name)
     rp["header"]["version"] = version
     rp["modules"][0]["uuid"] = fresh()
     rp["modules"][0]["version"] = version
@@ -51,6 +54,7 @@ def main():
 
     bp["header"]["uuid"] = fresh()
     bp["header"]["name"] = "%s [Behavior]" % name
+    bp["header"]["description"] = bp["header"].get("description", "").replace(old_name, name)
     bp["header"]["version"] = version
     bp["metadata"]["authors"] = [name]
     for module in bp["modules"]:
@@ -67,8 +71,21 @@ def main():
             json.dump(data, handle, indent=2)
             handle.write("\n")
 
-    # The name also appears in every console warning and in the set-bonus
-    # message, which is what a player actually sees.
+    # The name appears three ways: spaced in prose and console warnings,
+    # unspaced in the build's output filename, and lowercased in package.json.
+    # Renaming only the spaced form leaves the build still writing the old
+    # .mcaddon, which is how a rename ships as a file nobody asked for.
+    #
+    # The spaced form is matched with the space allowed to be any run of
+    # whitespace, because prose wraps: "End\nAscendant" across a line break in
+    # the README is the same name and a plain string replace walks straight
+    # past it.
+    spellings = [
+        (re.compile(re.escape(old_name).replace(r"\ ", r"\s+")), name),
+        (re.compile(re.escape(old_name.replace(" ", ""))), name.replace(" ", "")),
+        (re.compile(re.escape(old_name.lower().replace(" ", "-"))),
+         name.lower().replace(" ", "-")),
+    ]
     touched = 0
     for base, _dirs, files in os.walk(ROOT):
         if "node_modules" in base or "/.git" in base or "/dist" in base:
@@ -83,9 +100,12 @@ def main():
                 text = open(full).read()
             except (UnicodeDecodeError, OSError):
                 continue
-            if old_name not in text:
+            updated = text
+            for pattern, after in spellings:
+                updated = pattern.sub(after.replace("\\", "\\\\"), updated)
+            if updated == text:
                 continue
-            open(full, "w").write(text.replace(old_name, name))
+            open(full, "w").write(updated)
             touched += 1
 
     print("%s -> %s  v%s" % (old_name, name, version_text))

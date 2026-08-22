@@ -1,12 +1,12 @@
 {
   "format_version": 2,
   "header": {
-    "name": "End Ascendant [Resources]",
-    "description": "Per-biome fog and particles, lighting, a nebula skybox, 224 animation clips and PBR art for End Ascendant.",
-    "uuid": "8072046c-7b29-438a-b3a8-88bee160c18b",
+    "name": "Endrealm [Resources]",
+    "description": "Per-biome fog and particles, lighting, a seamless starfield sky, 224 animation clips and PBR art for Endrealm.",
+    "uuid": "18e02b1e-0dc1-4920-8ee7-08824f44a727",
     "version": [
       1,
-      8,
+      0,
       1
     ],
     "min_engine_version": [
@@ -18,16 +18,16 @@
   "metadata": {
     "product_type": "addon",
     "authors": [
-      "End Ascendant"
+      "Endrealm"
     ]
   },
   "modules": [
     {
       "type": "resources",
-      "uuid": "b5a8d277-db78-412c-aa5a-c33f0aadbce2",
+      "uuid": "bc546f42-90e4-4ea4-a2b1-742d346a34a5",
       "version": [
         1,
-        8,
+        0,
         1
       ]
     }

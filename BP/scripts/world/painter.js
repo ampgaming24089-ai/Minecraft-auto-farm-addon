@@ -105,7 +105,7 @@ function markPainted(key) {
   try {
     world.setDynamicProperty(PROPERTY, [...painted].join(","));
   } catch (error) {
-    console.warn(`[End Ascendant] could not persist painted patches: ${error}`);
+    console.warn(`[Endrealm] could not persist painted patches: ${error}`);
   }
 }
 
@@ -375,7 +375,7 @@ function* finish(dimension, patch) {
     yield* paintPatch(dimension, patch.patchX, patch.patchZ, report);
     if (report.complete) markPainted(patch.key);
   } catch (error) {
-    console.warn(`[End Ascendant] painting ${patch.key} failed: ${error}`);
+    console.warn(`[Endrealm] painting ${patch.key} failed: ${error}`);
   } finally {
     inFlight.delete(patch.key);
   }
